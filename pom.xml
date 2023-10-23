@@ -9,7 +9,7 @@
     <description>Suite BDE</description>
 
     <properties>
-        <ktor_version>2.3.4</ktor_version>
+        <ktor_version>2.3.5</ktor_version>
         <koin_version>3.5.0</koin_version>
         <kotlin.code.style>official</kotlin.code.style>
         <kotlin_version>1.9.10</kotlin_version>
@@ -113,14 +113,9 @@
             <version>8.0.33</version>
         </dependency>
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>2.1.214</version>
-        </dependency>
-        <dependency>
-            <groupId>dev.kord</groupId>
-            <artifactId>kord-core-jvm</artifactId>
-            <version>0.10.0</version>
+            <groupId>at.favre.lib</groupId>
+            <artifactId>bcrypt</artifactId>
+            <version>0.9.0</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
@@ -159,6 +154,12 @@
             <groupId>io.mockk</groupId>
             <artifactId>mockk-jvm</artifactId>
             <version>1.13.8</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>2.1.214</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
