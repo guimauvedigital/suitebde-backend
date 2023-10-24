@@ -13,4 +13,5 @@ fun Application.module() {
     configureSerialization()
     configureRouting()
     configureTasks()
+    configureSentry()
 }
