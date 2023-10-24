@@ -287,7 +287,7 @@
                 <artifactId>sentry-maven-plugin</artifactId>
                 <version>0.0.4</version>
                 <configuration>
-                    <org>nathan-fallet</org>
+                    <org>nathanfallet</org>
                     <project>suitebde</project>
 
                     <authToken>
