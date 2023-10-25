@@ -4,7 +4,7 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.IUsersRepository
-import me.nathanfallet.suitebde.usecases.users.IHashPasswordUseCase
+import me.nathanfallet.suitebde.usecases.auth.IHashPasswordUseCase
 
 class CreateAssociationUseCase(
     private val associationsRepository: IAssociationsRepository,

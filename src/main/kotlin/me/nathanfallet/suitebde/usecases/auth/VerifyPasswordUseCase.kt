@@ -1,4 +1,4 @@
-package me.nathanfallet.suitebde.usecases.users
+package me.nathanfallet.suitebde.usecases.auth
 
 import at.favre.lib.crypto.bcrypt.BCrypt
 

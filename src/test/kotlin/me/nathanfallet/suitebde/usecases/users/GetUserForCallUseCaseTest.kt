@@ -15,6 +15,15 @@ import kotlin.test.assertEquals
 class GetUserForCallUseCaseTest {
 
     @Test
+    fun invokeWithNothing() = runBlocking {
+        val usersRepository = mockk<IUsersRepository>()
+        val useCase = GetUserForCallUseCase(usersRepository)
+        val call = mockk<ApplicationCall>()
+        every { call.principal<JWTPrincipal>()?.subject } returns null
+        assertEquals(null, useCase(call))
+    }
+
+    @Test
     fun invokeWithJWT() = runBlocking {
         val usersRepository = mockk<IUsersRepository>()
         val useCase = GetUserForCallUseCase(usersRepository)

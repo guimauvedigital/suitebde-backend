@@ -1,4 +1,4 @@
-package me.nathanfallet.suitebde.usecases.users
+package me.nathanfallet.suitebde.usecases.auth
 
 import io.ktor.http.*
 import me.nathanfallet.suitebde.models.exceptions.ControllerException

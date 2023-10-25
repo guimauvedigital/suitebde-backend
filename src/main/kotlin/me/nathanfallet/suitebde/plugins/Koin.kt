@@ -10,10 +10,13 @@ import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.IUsersRepository
 import me.nathanfallet.suitebde.usecases.associations.CreateAssociationUseCase
 import me.nathanfallet.suitebde.usecases.associations.GetAssociationForDomainUseCase
+import me.nathanfallet.suitebde.usecases.auth.HashPasswordUseCase
+import me.nathanfallet.suitebde.usecases.auth.LoginUseCase
+import me.nathanfallet.suitebde.usecases.auth.VerifyPasswordUseCase
+import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.GetUserForCallUseCase
-import me.nathanfallet.suitebde.usecases.users.HashPasswordUseCase
-import me.nathanfallet.suitebde.usecases.users.LoginUseCase
-import me.nathanfallet.suitebde.usecases.users.VerifyPasswordUseCase
+import me.nathanfallet.suitebde.usecases.users.GetUserUseCase
+import me.nathanfallet.suitebde.usecases.users.GetUsersInAssociationUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
@@ -46,7 +49,12 @@ fun Application.configureKoin() {
             singleOf(::HashPasswordUseCase)
             singleOf(::VerifyPasswordUseCase)
             singleOf(::LoginUseCase)
+
             singleOf(::GetUserForCallUseCase)
+            singleOf(::GetUsersInAssociationUseCase)
+            singleOf(::GetUserUseCase)
+
+            singleOf(::CheckPermissionUseCase)
         }
         val controllerModule = module {
             singleOf(::AssociationController)

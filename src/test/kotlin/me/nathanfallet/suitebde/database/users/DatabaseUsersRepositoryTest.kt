@@ -77,4 +77,21 @@ class DatabaseUsersRepositoryTest {
         assertEquals(user.superuser, result?.superuser)
     }
 
+    @Test
+    fun getUsersInAssociation() = runBlocking {
+        val database = Database(protocol = "h2", name = "getUsersInAssociation")
+        val repository = DatabaseUsersRepository(database)
+        val user = repository.createUser("associationId", "email", "password", "firstName", "lastName", false)
+            ?: fail("Unable to create user")
+        val result = repository.getUsersInAssociation(user.associationId)
+        assertEquals(1, result.size)
+        assertEquals(user.id, result.first().id)
+        assertEquals(user.associationId, result.first().associationId)
+        assertEquals(user.email, result.first().email)
+        assertEquals(null, result.first().password)
+        assertEquals(user.firstName, result.first().firstName)
+        assertEquals(user.lastName, result.first().lastName)
+        assertEquals(user.superuser, result.first().superuser)
+    }
+
 }

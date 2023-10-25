@@ -56,4 +56,12 @@ class DatabaseUsersRepository(
         }
     }
 
+    override suspend fun getUsersInAssociation(associationId: String): List<User> {
+        return database.dbQuery {
+            Users
+                .select { Users.associationId eq associationId }
+                .map(Users::toUser)
+        }
+    }
+
 }

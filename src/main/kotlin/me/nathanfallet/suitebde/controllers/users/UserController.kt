@@ -1,13 +1,22 @@
 package me.nathanfallet.suitebde.controllers.users
 
+import io.ktor.http.*
 import io.ktor.util.reflect.*
 import me.nathanfallet.suitebde.controllers.AbstractModelController
 import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.exceptions.ControllerException
+import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForDomainUseCase
+import me.nathanfallet.suitebde.usecases.roles.ICheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
+import me.nathanfallet.suitebde.usecases.users.IGetUserUseCase
+import me.nathanfallet.suitebde.usecases.users.IGetUsersInAssociationUseCase
 
 class UserController(
+    private val checkPermissionUseCase: ICheckPermissionUseCase,
+    private val getUsersInAssociationUseCase: IGetUsersInAssociationUseCase,
+    private val getUserUseCase: IGetUserUseCase,
     getAssociationForDomainUseCase: IGetAssociationForDomainUseCase,
     getUserForCallUseCase: IGetUserForCallUseCase
 ) : AbstractModelController<User, Unit, Unit>(
@@ -21,15 +30,23 @@ class UserController(
 ) {
 
     override suspend fun getAll(association: Association, user: User?): List<User> {
-        TODO("Not yet implemented")
+        user?.takeIf {
+            checkPermissionUseCase(Pair(it, Permission.USERS_VIEW))
+        } ?: throw ControllerException(HttpStatusCode.Unauthorized, "You are not allowed to view users")
+        return getUsersInAssociationUseCase(association.id)
     }
 
     override suspend fun get(association: Association, user: User?, id: String): User {
-        TODO("Not yet implemented")
+        user?.takeIf {
+            user.id.equals(id, true) || checkPermissionUseCase(Pair(it, Permission.USERS_VIEW))
+        } ?: throw ControllerException(HttpStatusCode.Unauthorized, "You are not allowed to view users")
+        return getUserUseCase(id)?.takeIf {
+            it.associationId == association.id
+        } ?: throw ControllerException(HttpStatusCode.NotFound, "User not found")
     }
 
     override suspend fun create(association: Association, user: User?, obj: Unit): User {
-        TODO("Not yet implemented")
+        throw ControllerException(HttpStatusCode.MethodNotAllowed, "You cannot create users")
     }
 
     override suspend fun update(association: Association, user: User?, id: String, obj: Unit): User {

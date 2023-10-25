@@ -10,7 +10,7 @@ import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.IUsersRepository
-import me.nathanfallet.suitebde.usecases.users.IHashPasswordUseCase
+import me.nathanfallet.suitebde.usecases.auth.IHashPasswordUseCase
 import kotlin.test.Test
 
 class CreateAssociationUseCaseTest {

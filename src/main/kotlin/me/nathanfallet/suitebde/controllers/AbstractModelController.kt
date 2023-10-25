@@ -51,7 +51,14 @@ abstract class AbstractModelController<out T, in P, in Q>(
                 call.respond(HttpStatusCode.NotFound)
                 return@get
             }
-            call.respond(getAll(association, getUserForCallUseCase(call)), lTypeInfo)
+            val response = try {
+                getAll(association, getUserForCallUseCase(call))
+            } catch (exception: ControllerException) {
+                call.response.status(exception.code)
+                call.respond(mapOf("error" to exception.message))
+                return@get
+            }
+            call.respond(response, lTypeInfo)
         }
     }
 
