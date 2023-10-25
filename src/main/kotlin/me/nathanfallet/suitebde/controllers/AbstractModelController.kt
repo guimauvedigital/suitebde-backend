@@ -13,9 +13,10 @@ import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForDomainUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
 
-abstract class AbstractModelController<T, P, Q>(
+abstract class AbstractModelController<out T, in P, in Q>(
     private val route: String,
     private val typeInfo: TypeInfo,
+    private val lTypeInfo: TypeInfo,
     private val pTypeInfo: TypeInfo,
     private val qTypeInfo: TypeInfo,
     private val getAssociationForDomainUseCase: IGetAssociationForDomainUseCase,
@@ -29,90 +30,110 @@ abstract class AbstractModelController<T, P, Q>(
     abstract suspend fun delete(association: Association, user: User?, id: String)
 
     override fun createRoutes(root: Route) {
-        createAPIRoutes(root)
-    }
-
-    private fun createAPIRoutes(root: Route) {
         root.route("/api/v1/$route") {
             authenticate("api-v1-jwt", optional = true) {
-                get {
-                    val association = getAssociationForDomainUseCase(call.request.host()) ?: run {
-                        call.respond(HttpStatusCode.NotFound)
-                        return@get
-                    }
-                    call.respond(getAll(association, getUserForCallUseCase(call)))
-                }
-                get("/{id}") {
-                    val association = getAssociationForDomainUseCase(call.request.host()) ?: run {
-                        call.respond(HttpStatusCode.NotFound)
-                        return@get
-                    }
-                    val response = try {
-                        get(association, getUserForCallUseCase(call), call.parameters["id"] ?: return@get)
-                    } catch (exception: ControllerException) {
-                        call.response.status(exception.code)
-                        call.respond(mapOf("error" to exception.message))
-                        return@get
-                    }
-                    call.respond(response, typeInfo)
-                }
-                post {
-                    val association = getAssociationForDomainUseCase(call.request.host()) ?: run {
-                        call.respond(HttpStatusCode.NotFound)
-                        return@post
-                    }
-                    val response = try {
-                        create(association, getUserForCallUseCase(call), call.receive(pTypeInfo))
-                    } catch (exception: ControllerException) {
-                        call.response.status(exception.code)
-                        call.respond(mapOf("error" to exception.message))
-                        return@post
-                    } catch (exception: ContentTransformationException) {
-                        call.response.status(HttpStatusCode.BadRequest)
-                        call.respond(mapOf("error" to "Invalid request body"))
-                        return@post
-                    }
-                    call.response.status(HttpStatusCode.Created)
-                    call.respond(response, typeInfo)
-                }
-                put("/{id}") {
-                    val association = getAssociationForDomainUseCase(call.request.host()) ?: run {
-                        call.respond(HttpStatusCode.NotFound)
-                        return@put
-                    }
-                    val response = try {
-                        update(
-                            association,
-                            getUserForCallUseCase(call),
-                            call.parameters["id"] ?: return@put,
-                            call.receive(qTypeInfo)
-                        )
-                    } catch (exception: ControllerException) {
-                        call.response.status(exception.code)
-                        call.respond(mapOf("error" to exception.message))
-                        return@put
-                    } catch (exception: ContentTransformationException) {
-                        call.response.status(HttpStatusCode.BadRequest)
-                        call.respond(mapOf("error" to "Invalid request body"))
-                        return@put
-                    }
-                    call.respond(response, typeInfo)
-                }
-                delete("/{id}") {
-                    val association = getAssociationForDomainUseCase(call.request.host()) ?: run {
-                        call.respond(HttpStatusCode.NotFound)
-                        return@delete
-                    }
-                    try {
-                        delete(association, getUserForCallUseCase(call), call.parameters["id"] ?: return@delete)
-                    } catch (exception: ControllerException) {
-                        call.response.status(exception.code)
-                        call.respond(mapOf("error" to exception.message))
-                        return@delete
-                    }
-                    call.respond(HttpStatusCode.NoContent)
-                }
+                createAPIv1Routes(this)
             }
+        }
+    }
+
+    fun createAPIv1Routes(root: Route) {
+        createAPIv1GetRoute(root)
+        createAPIv1GetIdRoute(root)
+        createAPIv1PostRoute(root)
+        createAPIv1PutIdRoute(root)
+        createAPIv1DeleteIdRoute(root)
+    }
+
+    fun createAPIv1GetRoute(root: Route) {
+        root.get {
+            val association = getAssociationForDomainUseCase(call.request.host()) ?: run {
+                call.respond(HttpStatusCode.NotFound)
+                return@get
+            }
+            call.respond(getAll(association, getUserForCallUseCase(call)), lTypeInfo)
+        }
+    }
+
+    fun createAPIv1GetIdRoute(root: Route) {
+        root.get("/{id}") {
+            val association = getAssociationForDomainUseCase(call.request.host()) ?: run {
+                call.respond(HttpStatusCode.NotFound)
+                return@get
+            }
+            val response = try {
+                get(association, getUserForCallUseCase(call), call.parameters["id"] ?: return@get)
+            } catch (exception: ControllerException) {
+                call.response.status(exception.code)
+                call.respond(mapOf("error" to exception.message))
+                return@get
+            }
+            call.respond(response, typeInfo)
+        }
+    }
+
+    fun createAPIv1PostRoute(root: Route) {
+        root.post {
+            val association = getAssociationForDomainUseCase(call.request.host()) ?: run {
+                call.respond(HttpStatusCode.NotFound)
+                return@post
+            }
+            val response = try {
+                create(association, getUserForCallUseCase(call), call.receive(pTypeInfo))
+            } catch (exception: ControllerException) {
+                call.response.status(exception.code)
+                call.respond(mapOf("error" to exception.message))
+                return@post
+            } catch (exception: ContentTransformationException) {
+                call.response.status(HttpStatusCode.BadRequest)
+                call.respond(mapOf("error" to "Invalid request body"))
+                return@post
+            }
+            call.response.status(HttpStatusCode.Created)
+            call.respond(response, typeInfo)
+        }
+    }
+
+    fun createAPIv1PutIdRoute(root: Route) {
+        root.put("/{id}") {
+            val association = getAssociationForDomainUseCase(call.request.host()) ?: run {
+                call.respond(HttpStatusCode.NotFound)
+                return@put
+            }
+            val response = try {
+                update(
+                    association,
+                    getUserForCallUseCase(call),
+                    call.parameters["id"] ?: return@put,
+                    call.receive(qTypeInfo)
+                )
+            } catch (exception: ControllerException) {
+                call.response.status(exception.code)
+                call.respond(mapOf("error" to exception.message))
+                return@put
+            } catch (exception: ContentTransformationException) {
+                call.response.status(HttpStatusCode.BadRequest)
+                call.respond(mapOf("error" to "Invalid request body"))
+                return@put
+            }
+            call.respond(response, typeInfo)
+        }
+    }
+
+    fun createAPIv1DeleteIdRoute(root: Route) {
+        root.delete("/{id}") {
+            val association = getAssociationForDomainUseCase(call.request.host()) ?: run {
+                call.respond(HttpStatusCode.NotFound)
+                return@delete
+            }
+            try {
+                delete(association, getUserForCallUseCase(call), call.parameters["id"] ?: return@delete)
+            } catch (exception: ControllerException) {
+                call.response.status(exception.code)
+                call.respond(mapOf("error" to exception.message))
+                return@delete
+            }
+            call.respond(HttpStatusCode.NoContent)
         }
     }
 

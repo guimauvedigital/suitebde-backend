@@ -13,6 +13,7 @@ class UserController(
 ) : AbstractModelController<User, Unit, Unit>(
     "users",
     typeInfo<User>(),
+    typeInfo<List<User>>(),
     typeInfo<Unit>(),
     typeInfo<Unit>(),
     getAssociationForDomainUseCase,
