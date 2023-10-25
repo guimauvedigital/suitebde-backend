@@ -7,7 +7,10 @@ import me.nathanfallet.suitebde.database.users.DatabaseUsersRepository
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.IUsersRepository
 import me.nathanfallet.suitebde.usecases.associations.CreateAssociationUseCase
+import me.nathanfallet.suitebde.usecases.associations.GetAssociationForDomainUseCase
 import me.nathanfallet.suitebde.usecases.users.HashPasswordUseCase
+import me.nathanfallet.suitebde.usecases.users.LoginUseCase
+import me.nathanfallet.suitebde.usecases.users.VerifyPasswordUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
@@ -35,7 +38,11 @@ fun Application.configureKoin() {
         }
         val useCaseModule = module {
             singleOf(::CreateAssociationUseCase)
+            singleOf(::GetAssociationForDomainUseCase)
+
             singleOf(::HashPasswordUseCase)
+            singleOf(::VerifyPasswordUseCase)
+            singleOf(::LoginUseCase)
         }
 
         modules(

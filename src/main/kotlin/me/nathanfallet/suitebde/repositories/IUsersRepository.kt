@@ -13,4 +13,7 @@ interface IUsersRepository {
         superuser: Boolean
     ): User?
 
+    suspend fun getUser(id: String): User?
+    suspend fun getUserForEmailInAssociation(email: String, associationId: String, includePassword: Boolean): User?
+
 }
