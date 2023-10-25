@@ -1,6 +1,7 @@
 package me.nathanfallet.suitebde.usecases.users
 
-import me.nathanfallet.suitebde.models.exceptions.InvalidCredentialsException
+import io.ktor.http.*
+import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.IUsersRepository
 
@@ -12,7 +13,7 @@ class LoginUseCase(
     override suspend fun invoke(input: Triple<String, String, String>): User {
         return repository.getUserForEmailInAssociation(input.first, input.second, true)?.takeIf {
             verifyPasswordUseCase(Pair(input.third, it.password ?: ""))
-        } ?: throw InvalidCredentialsException()
+        } ?: throw ControllerException(HttpStatusCode.Unauthorized, "Invalid credentials")
     }
 
 }

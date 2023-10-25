@@ -1,6 +1,8 @@
 package me.nathanfallet.suitebde.plugins
 
 import io.ktor.server.application.*
+import me.nathanfallet.suitebde.controllers.associations.AssociationController
+import me.nathanfallet.suitebde.controllers.users.UserController
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.database.associations.DatabaseAssociationRepository
 import me.nathanfallet.suitebde.database.users.DatabaseUsersRepository
@@ -8,6 +10,7 @@ import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.IUsersRepository
 import me.nathanfallet.suitebde.usecases.associations.CreateAssociationUseCase
 import me.nathanfallet.suitebde.usecases.associations.GetAssociationForDomainUseCase
+import me.nathanfallet.suitebde.usecases.users.GetUserForCallUseCase
 import me.nathanfallet.suitebde.usecases.users.HashPasswordUseCase
 import me.nathanfallet.suitebde.usecases.users.LoginUseCase
 import me.nathanfallet.suitebde.usecases.users.VerifyPasswordUseCase
@@ -43,12 +46,18 @@ fun Application.configureKoin() {
             singleOf(::HashPasswordUseCase)
             singleOf(::VerifyPasswordUseCase)
             singleOf(::LoginUseCase)
+            singleOf(::GetUserForCallUseCase)
+        }
+        val controllerModule = module {
+            singleOf(::AssociationController)
+            singleOf(::UserController)
         }
 
         modules(
             databaseModule,
             repositoryModule,
-            useCaseModule
+            useCaseModule,
+            controllerModule
         )
     }
 }
