@@ -3,26 +3,26 @@ package me.nathanfallet.suitebde.plugins
 import io.ktor.server.application.*
 import me.nathanfallet.suitebde.controllers.associations.AssociationController
 import me.nathanfallet.suitebde.controllers.associations.AssociationRouter
+import me.nathanfallet.suitebde.controllers.associations.IAssociationController
 import me.nathanfallet.suitebde.controllers.auth.AuthController
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
+import me.nathanfallet.suitebde.controllers.auth.IAuthController
+import me.nathanfallet.suitebde.controllers.users.IUserController
 import me.nathanfallet.suitebde.controllers.users.UserController
 import me.nathanfallet.suitebde.controllers.users.UserRouter
+import me.nathanfallet.suitebde.controllers.web.IWebController
+import me.nathanfallet.suitebde.controllers.web.WebController
+import me.nathanfallet.suitebde.controllers.web.WebRouter
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.database.associations.DatabaseAssociationRepository
 import me.nathanfallet.suitebde.database.users.DatabaseUsersRepository
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.IUsersRepository
-import me.nathanfallet.suitebde.usecases.associations.CreateAssociationUseCase
-import me.nathanfallet.suitebde.usecases.associations.GetAssociationForDomainUseCase
-import me.nathanfallet.suitebde.usecases.associations.GetAssociationsUseCase
-import me.nathanfallet.suitebde.usecases.auth.HashPasswordUseCase
-import me.nathanfallet.suitebde.usecases.auth.LoginUseCase
-import me.nathanfallet.suitebde.usecases.auth.VerifyPasswordUseCase
+import me.nathanfallet.suitebde.usecases.associations.*
+import me.nathanfallet.suitebde.usecases.auth.*
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
-import me.nathanfallet.suitebde.usecases.users.GetUserForCallUseCase
-import me.nathanfallet.suitebde.usecases.users.GetUserUseCase
-import me.nathanfallet.suitebde.usecases.users.GetUsersInAssociationUseCase
-import me.nathanfallet.suitebde.usecases.users.UpdateUserUseCase
+import me.nathanfallet.suitebde.usecases.roles.ICheckPermissionUseCase
+import me.nathanfallet.suitebde.usecases.users.*
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
@@ -41,35 +41,33 @@ fun Application.configureKoin() {
             }
         }
         val repositoryModule = module {
-            single<IAssociationsRepository> {
-                DatabaseAssociationRepository(get())
-            }
-            single<IUsersRepository> {
-                DatabaseUsersRepository(get())
-            }
+            single<IAssociationsRepository> { DatabaseAssociationRepository(get()) }
+            single<IUsersRepository> { DatabaseUsersRepository(get()) }
         }
         val useCaseModule = module {
-            singleOf(::CreateAssociationUseCase)
-            singleOf(::GetAssociationsUseCase)
-            singleOf(::GetAssociationForDomainUseCase)
+            single<ICreateAssociationUseCase> { CreateAssociationUseCase(get(), get(), get()) }
+            single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
+            single<IGetAssociationForDomainUseCase> { GetAssociationForDomainUseCase(get()) }
 
-            singleOf(::HashPasswordUseCase)
-            singleOf(::VerifyPasswordUseCase)
-            singleOf(::LoginUseCase)
+            single<IHashPasswordUseCase> { HashPasswordUseCase() }
+            single<IVerifyPasswordUseCase> { VerifyPasswordUseCase() }
+            single<ILoginUseCase> { LoginUseCase(get(), get()) }
 
-            singleOf(::GetUserForCallUseCase)
-            singleOf(::GetUsersInAssociationUseCase)
-            singleOf(::GetUserUseCase)
-            singleOf(::UpdateUserUseCase)
+            single<IGetUserForCallUseCase> { GetUserForCallUseCase(get()) }
+            single<IGetUsersInAssociationUseCase> { GetUsersInAssociationUseCase(get()) }
+            single<IGetUserUseCase> { GetUserUseCase(get()) }
+            single<IUpdateUserUseCase> { UpdateUserUseCase(get()) }
 
-            singleOf(::CheckPermissionUseCase)
+            single<ICheckPermissionUseCase> { CheckPermissionUseCase() }
         }
         val controllerModule = module {
-            singleOf(::AssociationController)
-            singleOf(::AuthController)
-            singleOf(::UserController)
+            single<IWebController> { WebController() }
+            single<IAssociationController> { AssociationController(get()) }
+            single<IAuthController> { AuthController(get()) }
+            single<IUserController> { UserController(get(), get(), get(), get()) }
         }
         val routerModule = module {
+            singleOf(::WebRouter)
             singleOf(::AssociationRouter)
             singleOf(::AuthRouter)
             singleOf(::UserRouter)

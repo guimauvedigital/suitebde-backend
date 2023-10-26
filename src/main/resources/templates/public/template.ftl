@@ -1,0 +1,3 @@
+<#macro page>
+
+</#macro>

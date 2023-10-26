@@ -89,6 +89,11 @@
         </dependency>
         <dependency>
             <groupId>io.ktor</groupId>
+            <artifactId>ktor-server-freemarker-jvm</artifactId>
+            <version>${ktor_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
             <artifactId>ktor-server-test-host-jvm</artifactId>
             <version>${ktor_version}</version>
         </dependency>
