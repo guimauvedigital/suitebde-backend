@@ -1,6 +1,7 @@
 package me.nathanfallet.suitebde.usecases.auth
 
+import me.nathanfallet.suitebde.database.auth.LoginPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.ISuspendUseCase
 
-interface ILoginUseCase : ISuspendUseCase<Triple<String, String, String>, User>
+interface ILoginUseCase : ISuspendUseCase<LoginPayload, User>

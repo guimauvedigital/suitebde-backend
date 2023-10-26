@@ -1,10 +1,9 @@
 package me.nathanfallet.suitebde.controllers.models
 
-import me.nathanfallet.suitebde.controllers.IController
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.users.User
 
-interface IModelController<T, P, Q> : IController {
+interface IModelController<T, P, Q> {
 
     suspend fun getAll(association: Association, user: User?): List<T>
     suspend fun get(association: Association, user: User?, id: String): T

@@ -5,6 +5,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import me.nathanfallet.suitebde.database.auth.LoginPayload
 import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.users.User
@@ -23,7 +24,7 @@ class LoginUseCaseTest {
         val user = User("id", "association", "email", "hash", "first", "last", false)
         coEvery { repository.getUserForEmailInAssociation("email", "association", true) } returns user
         every { verifyPasswordUseCase.invoke(Pair("password", "hash")) } returns true
-        assertEquals(user, useCase.invoke(Triple("email", "association", "password")))
+        assertEquals(user, useCase.invoke(LoginPayload("email", "association", "password")))
     }
 
     @Test
@@ -33,7 +34,7 @@ class LoginUseCaseTest {
         val useCase = LoginUseCase(repository, verifyPasswordUseCase)
         coEvery { repository.getUserForEmailInAssociation("email", "association", true) } returns null
         val exception = assertThrows<ControllerException> {
-            useCase.invoke(Triple("email", "association", "password"))
+            useCase.invoke(LoginPayload("email", "association", "password"))
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
         assertEquals(LocalizedString.ERROR_AUTH_INVALID_CREDENTIALS, exception.error)
@@ -48,7 +49,7 @@ class LoginUseCaseTest {
         coEvery { repository.getUserForEmailInAssociation("email", "association", true) } returns user
         every { verifyPasswordUseCase.invoke(Pair("password", "hash")) } returns false
         val exception = assertThrows<ControllerException> {
-            useCase.invoke(Triple("email", "association", "password"))
+            useCase.invoke(LoginPayload("email", "association", "password"))
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
         assertEquals(LocalizedString.ERROR_AUTH_INVALID_CREDENTIALS, exception.error)

@@ -27,17 +27,13 @@ open class ModelRouter<out T, in P, in Q>(
     override fun createRoutes(root: Route) {
         root.route("/api/v1/$route") {
             authenticate("api-v1-jwt", optional = true) {
-                createAPIv1Routes(this)
+                createAPIv1GetRoute(this)
+                createAPIv1GetIdRoute(this)
+                createAPIv1PostRoute(this)
+                createAPIv1PutIdRoute(this)
+                createAPIv1DeleteIdRoute(this)
             }
         }
-    }
-
-    fun createAPIv1Routes(root: Route) {
-        createAPIv1GetRoute(root)
-        createAPIv1GetIdRoute(root)
-        createAPIv1PostRoute(root)
-        createAPIv1PutIdRoute(root)
-        createAPIv1DeleteIdRoute(root)
     }
 
     fun createAPIv1GetRoute(root: Route) {

@@ -3,6 +3,8 @@ package me.nathanfallet.suitebde.plugins
 import io.ktor.server.application.*
 import me.nathanfallet.suitebde.controllers.associations.AssociationController
 import me.nathanfallet.suitebde.controllers.associations.AssociationRouter
+import me.nathanfallet.suitebde.controllers.auth.AuthController
+import me.nathanfallet.suitebde.controllers.auth.AuthRouter
 import me.nathanfallet.suitebde.controllers.users.UserController
 import me.nathanfallet.suitebde.controllers.users.UserRouter
 import me.nathanfallet.suitebde.database.Database
@@ -12,6 +14,7 @@ import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.IUsersRepository
 import me.nathanfallet.suitebde.usecases.associations.CreateAssociationUseCase
 import me.nathanfallet.suitebde.usecases.associations.GetAssociationForDomainUseCase
+import me.nathanfallet.suitebde.usecases.associations.GetAssociationsUseCase
 import me.nathanfallet.suitebde.usecases.auth.HashPasswordUseCase
 import me.nathanfallet.suitebde.usecases.auth.LoginUseCase
 import me.nathanfallet.suitebde.usecases.auth.VerifyPasswordUseCase
@@ -47,6 +50,7 @@ fun Application.configureKoin() {
         }
         val useCaseModule = module {
             singleOf(::CreateAssociationUseCase)
+            singleOf(::GetAssociationsUseCase)
             singleOf(::GetAssociationForDomainUseCase)
 
             singleOf(::HashPasswordUseCase)
@@ -62,10 +66,12 @@ fun Application.configureKoin() {
         }
         val controllerModule = module {
             singleOf(::AssociationController)
+            singleOf(::AuthController)
             singleOf(::UserController)
         }
         val routerModule = module {
             singleOf(::AssociationRouter)
+            singleOf(::AuthRouter)
             singleOf(::UserRouter)
         }
 

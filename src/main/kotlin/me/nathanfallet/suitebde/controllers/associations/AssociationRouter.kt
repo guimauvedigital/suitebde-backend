@@ -11,9 +11,13 @@ class AssociationRouter(
 
     override fun createRoutes(root: Route) {
         root.route("/api/v1/associations") {
-            get {
-                call.respond(controller.getAll())
-            }
+            createAPIv1GetRoute(this)
+        }
+    }
+
+    fun createAPIv1GetRoute(root: Route) {
+        root.get {
+            call.respond(controller.getAll())
         }
     }
 
