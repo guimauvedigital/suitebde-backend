@@ -5,6 +5,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.IUsersRepository
@@ -35,7 +36,7 @@ class LoginUseCaseTest {
             useCase.invoke(Triple("email", "association", "password"))
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals("Invalid credentials", exception.message)
+        assertEquals(LocalizedString.ERROR_AUTH_INVALID_CREDENTIALS, exception.error)
     }
 
     @Test
@@ -50,7 +51,7 @@ class LoginUseCaseTest {
             useCase.invoke(Triple("email", "association", "password"))
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals("Invalid credentials", exception.message)
+        assertEquals(LocalizedString.ERROR_AUTH_INVALID_CREDENTIALS, exception.error)
     }
 
 }

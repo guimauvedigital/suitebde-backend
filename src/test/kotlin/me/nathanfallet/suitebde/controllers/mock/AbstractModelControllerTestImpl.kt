@@ -3,6 +3,7 @@ package me.nathanfallet.suitebde.controllers.mock
 import io.ktor.http.*
 import io.ktor.util.reflect.*
 import me.nathanfallet.suitebde.controllers.AbstractModelController
+import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.users.User
@@ -23,17 +24,17 @@ class AbstractModelControllerTestImpl(
 ) {
 
     override suspend fun getAll(association: Association, user: User?): List<String> {
-        if (user == null) throw ControllerException(HttpStatusCode.Unauthorized, "Mock error")
+        if (user == null) throw ControllerException(HttpStatusCode.Unauthorized, LocalizedString.ERROR_MOCK)
         return listOf("mock getAll")
     }
 
     override suspend fun get(association: Association, user: User?, id: String): String {
-        if (user == null) throw ControllerException(HttpStatusCode.Unauthorized, "Mock error")
+        if (user == null) throw ControllerException(HttpStatusCode.Unauthorized, LocalizedString.ERROR_MOCK)
         return "mock get $id"
     }
 
     override suspend fun delete(association: Association, user: User?, id: String) {
-        if (user == null) throw ControllerException(HttpStatusCode.Unauthorized, "Mock error")
+        if (user == null) throw ControllerException(HttpStatusCode.Unauthorized, LocalizedString.ERROR_MOCK)
     }
 
     override suspend fun update(
@@ -42,12 +43,12 @@ class AbstractModelControllerTestImpl(
         id: String,
         obj: AbstractModelControllerBody
     ): String {
-        if (user == null) throw ControllerException(HttpStatusCode.Unauthorized, "Mock error")
+        if (user == null) throw ControllerException(HttpStatusCode.Unauthorized, LocalizedString.ERROR_MOCK)
         return "mock put ${obj.value}"
     }
 
     override suspend fun create(association: Association, user: User?, obj: AbstractModelControllerBody): String {
-        if (user == null) throw ControllerException(HttpStatusCode.Unauthorized, "Mock error")
+        if (user == null) throw ControllerException(HttpStatusCode.Unauthorized, LocalizedString.ERROR_MOCK)
         return "mock post ${obj.value}"
     }
 

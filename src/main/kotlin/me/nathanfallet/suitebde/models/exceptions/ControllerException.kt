@@ -1,8 +1,9 @@
 package me.nathanfallet.suitebde.models.exceptions
 
 import io.ktor.http.*
+import me.nathanfallet.suitebde.models.LocalizedString
 
 class ControllerException(
     val code: HttpStatusCode,
-    override val message: String
-) : Exception(message)
+    val error: LocalizedString
+) : Exception(error.value)

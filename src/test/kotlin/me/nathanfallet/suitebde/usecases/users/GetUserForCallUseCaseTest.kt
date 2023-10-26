@@ -19,7 +19,7 @@ class GetUserForCallUseCaseTest {
         val usersRepository = mockk<IUsersRepository>()
         val useCase = GetUserForCallUseCase(usersRepository)
         val call = mockk<ApplicationCall>()
-        every { call.principal<JWTPrincipal>()?.subject } returns null
+        every { call.principal<JWTPrincipal>() } returns null
         assertEquals(null, useCase(call))
     }
 

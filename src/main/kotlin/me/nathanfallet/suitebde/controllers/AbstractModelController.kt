@@ -7,6 +7,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.reflect.*
+import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.users.User
@@ -93,7 +94,7 @@ abstract class AbstractModelController<out T, in P, in Q>(
                 return@post
             } catch (exception: ContentTransformationException) {
                 call.response.status(HttpStatusCode.BadRequest)
-                call.respond(mapOf("error" to "Invalid request body"))
+                call.respond(mapOf("error" to LocalizedString.ERROR_BODY_INVALID.value))
                 return@post
             }
             call.response.status(HttpStatusCode.Created)
@@ -120,7 +121,7 @@ abstract class AbstractModelController<out T, in P, in Q>(
                 return@put
             } catch (exception: ContentTransformationException) {
                 call.response.status(HttpStatusCode.BadRequest)
-                call.respond(mapOf("error" to "Invalid request body"))
+                call.respond(mapOf("error" to LocalizedString.ERROR_BODY_INVALID.value))
                 return@put
             }
             call.respond(response, typeInfo)

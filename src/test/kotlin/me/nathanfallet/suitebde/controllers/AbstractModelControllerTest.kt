@@ -11,6 +11,7 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import me.nathanfallet.suitebde.controllers.mock.AbstractModelControllerBody
 import me.nathanfallet.suitebde.controllers.mock.AbstractModelControllerTestImpl
+import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.plugins.Serialization
@@ -81,7 +82,7 @@ class AbstractModelControllerTest {
         }
         val response = client.get("/")
         assertEquals(HttpStatusCode.Unauthorized, response.status)
-        assertEquals(mapOf("error" to "Mock error"), response.body())
+        assertEquals(mapOf("error" to LocalizedString.ERROR_MOCK.value), response.body())
     }
 
     @Test
@@ -127,7 +128,7 @@ class AbstractModelControllerTest {
         }
         val response = client.get("/id")
         assertEquals(HttpStatusCode.Unauthorized, response.status)
-        assertEquals(mapOf("error" to "Mock error"), response.body())
+        assertEquals(mapOf("error" to LocalizedString.ERROR_MOCK.value), response.body())
     }
 
     @Test
@@ -182,7 +183,7 @@ class AbstractModelControllerTest {
             setBody(AbstractModelControllerBody("mock post"))
         }
         assertEquals(HttpStatusCode.Unauthorized, response.status)
-        assertEquals(mapOf("error" to "Mock error"), response.body())
+        assertEquals(mapOf("error" to LocalizedString.ERROR_MOCK.value), response.body())
     }
 
     @Test
@@ -200,7 +201,7 @@ class AbstractModelControllerTest {
             setBody("invalid")
         }
         assertEquals(HttpStatusCode.BadRequest, response.status)
-        assertEquals(mapOf("error" to "Invalid request body"), response.body())
+        assertEquals(mapOf("error" to LocalizedString.ERROR_BODY_INVALID.value), response.body())
     }
 
     @Test
@@ -255,7 +256,7 @@ class AbstractModelControllerTest {
             setBody(AbstractModelControllerBody("mock put"))
         }
         assertEquals(HttpStatusCode.Unauthorized, response.status)
-        assertEquals(mapOf("error" to "Mock error"), response.body())
+        assertEquals(mapOf("error" to LocalizedString.ERROR_MOCK.value), response.body())
     }
 
     @Test
@@ -273,7 +274,7 @@ class AbstractModelControllerTest {
             setBody("invalid")
         }
         assertEquals(HttpStatusCode.BadRequest, response.status)
-        assertEquals(mapOf("error" to "Invalid request body"), response.body())
+        assertEquals(mapOf("error" to LocalizedString.ERROR_BODY_INVALID.value), response.body())
     }
 
     @Test
@@ -318,7 +319,7 @@ class AbstractModelControllerTest {
         }
         val response = client.delete("/id")
         assertEquals(HttpStatusCode.Unauthorized, response.status)
-        assertEquals(mapOf("error" to "Mock error"), response.body())
+        assertEquals(mapOf("error" to LocalizedString.ERROR_MOCK.value), response.body())
     }
 
 }
