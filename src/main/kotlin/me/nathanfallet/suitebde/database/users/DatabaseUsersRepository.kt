@@ -6,6 +6,7 @@ import me.nathanfallet.suitebde.repositories.IUsersRepository
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.update
 
 class DatabaseUsersRepository(
     private val database: Database
@@ -61,6 +62,19 @@ class DatabaseUsersRepository(
             Users
                 .select { Users.associationId eq associationId }
                 .map(Users::toUser)
+        }
+    }
+
+    override suspend fun updateUser(user: User) {
+        database.dbQuery {
+            Users.update({ Users.id eq user.id }) {
+                it[this.email] = user.email
+                it[this.firstName] = user.firstName
+                it[this.lastName] = user.lastName
+                user.password?.let { password ->
+                    it[this.password] = password
+                }
+            }
         }
     }
 

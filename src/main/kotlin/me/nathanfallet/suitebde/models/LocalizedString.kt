@@ -8,6 +8,8 @@ enum class LocalizedString(val value: String) {
     ERROR_USERS_VIEW_NOT_ALLOWED("You are not allowed to view users"),
     ERROR_USERS_NOT_FOUND("User not found"),
     ERROR_USERS_CREATE_NOT_ALLOWED("You cannot create users"),
+    ERROR_USERS_UPDATE_NOT_ALLOWED("You are not allowed to update users"),
+    ERROR_USERS_DELETE_NOT_ALLOWED("You cannot delete users"),
 
     ERROR_AUTH_INVALID_CREDENTIALS("Invalid credentials"),
 

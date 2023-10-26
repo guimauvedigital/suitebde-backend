@@ -1,4 +1,4 @@
-package me.nathanfallet.suitebde.controllers
+package me.nathanfallet.suitebde.controllers.models
 
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -7,14 +7,14 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.reflect.*
+import me.nathanfallet.suitebde.controllers.IRouter
 import me.nathanfallet.suitebde.models.LocalizedString
-import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
-import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForDomainUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
 
-abstract class AbstractModelController<out T, in P, in Q>(
+open class ModelRouter<out T, in P, in Q>(
+    private val controller: IModelController<T, P, Q>,
     private val route: String,
     private val typeInfo: TypeInfo,
     private val lTypeInfo: TypeInfo,
@@ -22,13 +22,7 @@ abstract class AbstractModelController<out T, in P, in Q>(
     private val qTypeInfo: TypeInfo,
     private val getAssociationForDomainUseCase: IGetAssociationForDomainUseCase,
     private val getUserForCallUseCase: IGetUserForCallUseCase
-) : IController {
-
-    abstract suspend fun getAll(association: Association, user: User?): List<T>
-    abstract suspend fun get(association: Association, user: User?, id: String): T
-    abstract suspend fun create(association: Association, user: User?, obj: P): T
-    abstract suspend fun update(association: Association, user: User?, id: String, obj: Q): T
-    abstract suspend fun delete(association: Association, user: User?, id: String)
+) : IRouter {
 
     override fun createRoutes(root: Route) {
         root.route("/api/v1/$route") {
@@ -53,7 +47,7 @@ abstract class AbstractModelController<out T, in P, in Q>(
                 return@get
             }
             val response = try {
-                getAll(association, getUserForCallUseCase(call))
+                controller.getAll(association, getUserForCallUseCase(call))
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
                 call.respond(mapOf("error" to exception.message))
@@ -70,7 +64,7 @@ abstract class AbstractModelController<out T, in P, in Q>(
                 return@get
             }
             val response = try {
-                get(association, getUserForCallUseCase(call), call.parameters["id"] ?: return@get)
+                controller.get(association, getUserForCallUseCase(call), call.parameters["id"] ?: return@get)
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
                 call.respond(mapOf("error" to exception.message))
@@ -87,7 +81,7 @@ abstract class AbstractModelController<out T, in P, in Q>(
                 return@post
             }
             val response = try {
-                create(association, getUserForCallUseCase(call), call.receive(pTypeInfo))
+                controller.create(association, getUserForCallUseCase(call), call.receive(pTypeInfo))
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
                 call.respond(mapOf("error" to exception.message))
@@ -109,7 +103,7 @@ abstract class AbstractModelController<out T, in P, in Q>(
                 return@put
             }
             val response = try {
-                update(
+                controller.update(
                     association,
                     getUserForCallUseCase(call),
                     call.parameters["id"] ?: return@put,
@@ -135,7 +129,7 @@ abstract class AbstractModelController<out T, in P, in Q>(
                 return@delete
             }
             try {
-                delete(association, getUserForCallUseCase(call), call.parameters["id"] ?: return@delete)
+                controller.delete(association, getUserForCallUseCase(call), call.parameters["id"] ?: return@delete)
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
                 call.respond(mapOf("error" to exception.message))

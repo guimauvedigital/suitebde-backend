@@ -2,7 +2,9 @@ package me.nathanfallet.suitebde.plugins
 
 import io.ktor.server.application.*
 import me.nathanfallet.suitebde.controllers.associations.AssociationController
+import me.nathanfallet.suitebde.controllers.associations.AssociationRouter
 import me.nathanfallet.suitebde.controllers.users.UserController
+import me.nathanfallet.suitebde.controllers.users.UserRouter
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.database.associations.DatabaseAssociationRepository
 import me.nathanfallet.suitebde.database.users.DatabaseUsersRepository
@@ -17,6 +19,7 @@ import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.GetUserForCallUseCase
 import me.nathanfallet.suitebde.usecases.users.GetUserUseCase
 import me.nathanfallet.suitebde.usecases.users.GetUsersInAssociationUseCase
+import me.nathanfallet.suitebde.usecases.users.UpdateUserUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
@@ -53,6 +56,7 @@ fun Application.configureKoin() {
             singleOf(::GetUserForCallUseCase)
             singleOf(::GetUsersInAssociationUseCase)
             singleOf(::GetUserUseCase)
+            singleOf(::UpdateUserUseCase)
 
             singleOf(::CheckPermissionUseCase)
         }
@@ -60,12 +64,17 @@ fun Application.configureKoin() {
             singleOf(::AssociationController)
             singleOf(::UserController)
         }
+        val routerModule = module {
+            singleOf(::AssociationRouter)
+            singleOf(::UserRouter)
+        }
 
         modules(
             databaseModule,
             repositoryModule,
             useCaseModule,
-            controllerModule
+            controllerModule,
+            routerModule
         )
     }
 }

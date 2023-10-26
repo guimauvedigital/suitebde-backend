@@ -1,4 +1,4 @@
-package me.nathanfallet.suitebde.controllers
+package me.nathanfallet.suitebde.controllers.models
 
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -7,12 +7,12 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.config.*
 import io.ktor.server.testing.*
+import io.ktor.util.reflect.*
 import io.mockk.coEvery
 import io.mockk.mockk
-import me.nathanfallet.suitebde.controllers.mock.AbstractModelControllerBody
-import me.nathanfallet.suitebde.controllers.mock.AbstractModelControllerTestImpl
 import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.plugins.Serialization
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForDomainUseCase
@@ -20,7 +20,7 @@ import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class AbstractModelControllerTest {
+class ModelRouterTest {
 
     private val association = Association("id", "name")
     private val user = User("id", "username", "email", "password", "firstname", "lastname", false)
@@ -39,31 +39,50 @@ class AbstractModelControllerTest {
         }
     }
 
+    private fun createRouter(
+        controller: IModelController<String, ModelRouterTestBody, ModelRouterTestBody>,
+        getAssociationForDomainUseCase: IGetAssociationForDomainUseCase,
+        getUserForCallUseCase: IGetUserForCallUseCase
+    ): ModelRouter<String, ModelRouterTestBody, ModelRouterTestBody> {
+        return ModelRouter(
+            controller,
+            "test",
+            typeInfo<String>(),
+            typeInfo<List<String>>(),
+            typeInfo<ModelRouterTestBody>(),
+            typeInfo<ModelRouterTestBody>(),
+            getAssociationForDomainUseCase,
+            getUserForCallUseCase
+        )
+    }
+
     @Test
     fun testAPIv1GetRoute() = testApplication {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, getUserForCallUseCase)
         coEvery { getAssociationForDomainUseCase("localhost") } returns association
         coEvery { getUserForCallUseCase(any()) } returns user
-        val controller = AbstractModelControllerTestImpl(getAssociationForDomainUseCase, getUserForCallUseCase)
+        coEvery { controller.getAll(association, user) } returns listOf("mock")
         routing {
-            controller.createAPIv1GetRoute(this)
+            router.createAPIv1GetRoute(this)
         }
         val response = client.get("/")
         assertEquals(HttpStatusCode.OK, response.status)
-        assertEquals(listOf("mock getAll"), response.body())
+        assertEquals(listOf("mock"), response.body())
     }
 
     @Test
     fun testAPIv1GetRouteNoAssociation() = testApplication {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, mockk())
         coEvery { getAssociationForDomainUseCase("localhost") } returns null
-        val controller =
-            AbstractModelControllerTestImpl(getAssociationForDomainUseCase, mockk<IGetUserForCallUseCase>())
         routing {
-            controller.createAPIv1GetRoute(this)
+            router.createAPIv1GetRoute(this)
         }
         val response = client.get("/")
         assertEquals(HttpStatusCode.NotFound, response.status)
@@ -74,11 +93,16 @@ class AbstractModelControllerTest {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, getUserForCallUseCase)
         coEvery { getAssociationForDomainUseCase("localhost") } returns association
         coEvery { getUserForCallUseCase(any()) } returns null
-        val controller = AbstractModelControllerTestImpl(getAssociationForDomainUseCase, getUserForCallUseCase)
+        coEvery { controller.getAll(association, null) } throws ControllerException(
+            HttpStatusCode.Unauthorized,
+            LocalizedString.ERROR_MOCK
+        )
         routing {
-            controller.createAPIv1GetRoute(this)
+            router.createAPIv1GetRoute(this)
         }
         val response = client.get("/")
         assertEquals(HttpStatusCode.Unauthorized, response.status)
@@ -90,26 +114,28 @@ class AbstractModelControllerTest {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, getUserForCallUseCase)
         coEvery { getAssociationForDomainUseCase("localhost") } returns association
         coEvery { getUserForCallUseCase(any()) } returns user
-        val controller = AbstractModelControllerTestImpl(getAssociationForDomainUseCase, getUserForCallUseCase)
+        coEvery { controller.get(association, user, "id") } returns "mock"
         routing {
-            controller.createAPIv1GetIdRoute(this)
+            router.createAPIv1GetIdRoute(this)
         }
         val response = client.get("/id")
         assertEquals(HttpStatusCode.OK, response.status)
-        assertEquals("mock get id", response.body())
+        assertEquals("mock", response.body())
     }
 
     @Test
     fun testAPIv1GetIdRouteNoAssociation() = testApplication {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, mockk())
         coEvery { getAssociationForDomainUseCase("localhost") } returns null
-        val controller =
-            AbstractModelControllerTestImpl(getAssociationForDomainUseCase, mockk<IGetUserForCallUseCase>())
         routing {
-            controller.createAPIv1GetIdRoute(this)
+            router.createAPIv1GetIdRoute(this)
         }
         val response = client.get("/id")
         assertEquals(HttpStatusCode.NotFound, response.status)
@@ -120,11 +146,16 @@ class AbstractModelControllerTest {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, getUserForCallUseCase)
         coEvery { getAssociationForDomainUseCase("localhost") } returns association
         coEvery { getUserForCallUseCase(any()) } returns null
-        val controller = AbstractModelControllerTestImpl(getAssociationForDomainUseCase, getUserForCallUseCase)
+        coEvery { controller.get(association, null, "id") } throws ControllerException(
+            HttpStatusCode.Unauthorized,
+            LocalizedString.ERROR_MOCK
+        )
         routing {
-            controller.createAPIv1GetIdRoute(this)
+            router.createAPIv1GetIdRoute(this)
         }
         val response = client.get("/id")
         assertEquals(HttpStatusCode.Unauthorized, response.status)
@@ -136,33 +167,35 @@ class AbstractModelControllerTest {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, getUserForCallUseCase)
         coEvery { getAssociationForDomainUseCase("localhost") } returns association
         coEvery { getUserForCallUseCase(any()) } returns user
-        val controller = AbstractModelControllerTestImpl(getAssociationForDomainUseCase, getUserForCallUseCase)
+        coEvery { controller.create(association, user, ModelRouterTestBody("mock post")) } returns "mock"
         routing {
-            controller.createAPIv1PostRoute(this)
+            router.createAPIv1PostRoute(this)
         }
         val response = client.post("/") {
             contentType(ContentType.Application.Json)
-            setBody(AbstractModelControllerBody("mock post"))
+            setBody(ModelRouterTestBody("mock post"))
         }
         assertEquals(HttpStatusCode.Created, response.status)
-        assertEquals("mock post mock post", response.body())
+        assertEquals("mock", response.body())
     }
 
     @Test
     fun testAPIv1PostRouteNoAssociation() = testApplication {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, mockk())
         coEvery { getAssociationForDomainUseCase("localhost") } returns null
-        val controller =
-            AbstractModelControllerTestImpl(getAssociationForDomainUseCase, mockk<IGetUserForCallUseCase>())
         routing {
-            controller.createAPIv1PostRoute(this)
+            router.createAPIv1PostRoute(this)
         }
         val response = client.post("/") {
             contentType(ContentType.Application.Json)
-            setBody(AbstractModelControllerBody("mock post"))
+            setBody(ModelRouterTestBody("mock post"))
         }
         assertEquals(HttpStatusCode.NotFound, response.status)
     }
@@ -172,15 +205,20 @@ class AbstractModelControllerTest {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, getUserForCallUseCase)
         coEvery { getAssociationForDomainUseCase("localhost") } returns association
         coEvery { getUserForCallUseCase(any()) } returns null
-        val controller = AbstractModelControllerTestImpl(getAssociationForDomainUseCase, getUserForCallUseCase)
+        coEvery { controller.create(association, null, ModelRouterTestBody("mock post")) } throws ControllerException(
+            HttpStatusCode.Unauthorized,
+            LocalizedString.ERROR_MOCK
+        )
         routing {
-            controller.createAPIv1PostRoute(this)
+            router.createAPIv1PostRoute(this)
         }
         val response = client.post("/") {
             contentType(ContentType.Application.Json)
-            setBody(AbstractModelControllerBody("mock post"))
+            setBody(ModelRouterTestBody("mock post"))
         }
         assertEquals(HttpStatusCode.Unauthorized, response.status)
         assertEquals(mapOf("error" to LocalizedString.ERROR_MOCK.value), response.body())
@@ -191,11 +229,12 @@ class AbstractModelControllerTest {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, getUserForCallUseCase)
         coEvery { getAssociationForDomainUseCase("localhost") } returns association
         coEvery { getUserForCallUseCase(any()) } returns user
-        val controller = AbstractModelControllerTestImpl(getAssociationForDomainUseCase, getUserForCallUseCase)
         routing {
-            controller.createAPIv1PostRoute(this)
+            router.createAPIv1PostRoute(this)
         }
         val response = client.post("/") {
             setBody("invalid")
@@ -209,33 +248,35 @@ class AbstractModelControllerTest {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, getUserForCallUseCase)
         coEvery { getAssociationForDomainUseCase("localhost") } returns association
         coEvery { getUserForCallUseCase(any()) } returns user
-        val controller = AbstractModelControllerTestImpl(getAssociationForDomainUseCase, getUserForCallUseCase)
+        coEvery { controller.update(association, user, "id", ModelRouterTestBody("mock put")) } returns "mock"
         routing {
-            controller.createAPIv1PutIdRoute(this)
+            router.createAPIv1PutIdRoute(this)
         }
         val response = client.put("/id") {
             contentType(ContentType.Application.Json)
-            setBody(AbstractModelControllerBody("mock put"))
+            setBody(ModelRouterTestBody("mock put"))
         }
         assertEquals(HttpStatusCode.OK, response.status)
-        assertEquals("mock put mock put", response.body())
+        assertEquals("mock", response.body())
     }
 
     @Test
     fun testAPIv1PutRouteNoAssociation() = testApplication {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, mockk())
         coEvery { getAssociationForDomainUseCase("localhost") } returns null
-        val controller =
-            AbstractModelControllerTestImpl(getAssociationForDomainUseCase, mockk<IGetUserForCallUseCase>())
         routing {
-            controller.createAPIv1PutIdRoute(this)
+            router.createAPIv1PutIdRoute(this)
         }
         val response = client.put("/id") {
             contentType(ContentType.Application.Json)
-            setBody(AbstractModelControllerBody("mock put"))
+            setBody(ModelRouterTestBody("mock put"))
         }
         assertEquals(HttpStatusCode.NotFound, response.status)
     }
@@ -245,15 +286,27 @@ class AbstractModelControllerTest {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, getUserForCallUseCase)
         coEvery { getAssociationForDomainUseCase("localhost") } returns association
         coEvery { getUserForCallUseCase(any()) } returns null
-        val controller = AbstractModelControllerTestImpl(getAssociationForDomainUseCase, getUserForCallUseCase)
+        coEvery {
+            controller.update(
+                association,
+                null,
+                "id",
+                ModelRouterTestBody("mock put")
+            )
+        } throws ControllerException(
+            HttpStatusCode.Unauthorized,
+            LocalizedString.ERROR_MOCK
+        )
         routing {
-            controller.createAPIv1PutIdRoute(this)
+            router.createAPIv1PutIdRoute(this)
         }
         val response = client.put("/id") {
             contentType(ContentType.Application.Json)
-            setBody(AbstractModelControllerBody("mock put"))
+            setBody(ModelRouterTestBody("mock put"))
         }
         assertEquals(HttpStatusCode.Unauthorized, response.status)
         assertEquals(mapOf("error" to LocalizedString.ERROR_MOCK.value), response.body())
@@ -264,11 +317,12 @@ class AbstractModelControllerTest {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, getUserForCallUseCase)
         coEvery { getAssociationForDomainUseCase("localhost") } returns association
         coEvery { getUserForCallUseCase(any()) } returns user
-        val controller = AbstractModelControllerTestImpl(getAssociationForDomainUseCase, getUserForCallUseCase)
         routing {
-            controller.createAPIv1PutIdRoute(this)
+            router.createAPIv1PutIdRoute(this)
         }
         val response = client.put("/id") {
             setBody("invalid")
@@ -282,11 +336,13 @@ class AbstractModelControllerTest {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, getUserForCallUseCase)
         coEvery { getAssociationForDomainUseCase("localhost") } returns association
         coEvery { getUserForCallUseCase(any()) } returns user
-        val controller = AbstractModelControllerTestImpl(getAssociationForDomainUseCase, getUserForCallUseCase)
+        coEvery { controller.delete(association, user, "id") } returns Unit
         routing {
-            controller.createAPIv1DeleteIdRoute(this)
+            router.createAPIv1DeleteIdRoute(this)
         }
         val response = client.delete("/id")
         assertEquals(HttpStatusCode.NoContent, response.status)
@@ -296,11 +352,11 @@ class AbstractModelControllerTest {
     fun testAPIv1DeleteRouteNoAssociation() = testApplication {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, mockk())
         coEvery { getAssociationForDomainUseCase("localhost") } returns null
-        val controller =
-            AbstractModelControllerTestImpl(getAssociationForDomainUseCase, mockk<IGetUserForCallUseCase>())
         routing {
-            controller.createAPIv1DeleteIdRoute(this)
+            router.createAPIv1DeleteIdRoute(this)
         }
         val response = client.delete("/id")
         assertEquals(HttpStatusCode.NotFound, response.status)
@@ -311,11 +367,16 @@ class AbstractModelControllerTest {
         val client = installApp(this)
         val getAssociationForDomainUseCase = mockk<IGetAssociationForDomainUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val controller = mockk<IModelController<String, ModelRouterTestBody, ModelRouterTestBody>>()
+        val router = createRouter(controller, getAssociationForDomainUseCase, getUserForCallUseCase)
         coEvery { getAssociationForDomainUseCase("localhost") } returns association
         coEvery { getUserForCallUseCase(any()) } returns null
-        val controller = AbstractModelControllerTestImpl(getAssociationForDomainUseCase, getUserForCallUseCase)
+        coEvery { controller.delete(association, null, "id") } throws ControllerException(
+            HttpStatusCode.Unauthorized,
+            LocalizedString.ERROR_MOCK
+        )
         routing {
-            controller.createAPIv1DeleteIdRoute(this)
+            router.createAPIv1DeleteIdRoute(this)
         }
         val response = client.delete("/id")
         assertEquals(HttpStatusCode.Unauthorized, response.status)

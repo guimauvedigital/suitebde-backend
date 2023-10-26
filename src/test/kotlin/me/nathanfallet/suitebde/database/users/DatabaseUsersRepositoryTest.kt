@@ -94,4 +94,34 @@ class DatabaseUsersRepositoryTest {
         assertEquals(user.superuser, result.first().superuser)
     }
 
+    @Test
+    fun updateUser() = runBlocking {
+        val database = Database(protocol = "h2", name = "updateUser")
+        val repository = DatabaseUsersRepository(database)
+        val user = repository.createUser("associationId", "email", "password", "firstName", "lastName", false)
+            ?: fail("Unable to create user")
+        val updatedUser = user.copy(
+            email = "email2",
+            password = "password2",
+            firstName = "firstName2",
+            lastName = "lastName2"
+        )
+        repository.updateUser(updatedUser)
+        val userFromDatabase = database.dbQuery {
+            Users
+                .selectAll()
+                .map {
+                    Users.toUser(it, true)
+                }
+                .singleOrNull()
+        }
+        assertEquals(userFromDatabase?.id, updatedUser.id)
+        assertEquals(userFromDatabase?.associationId, updatedUser.associationId)
+        assertEquals(userFromDatabase?.email, updatedUser.email)
+        assertEquals(userFromDatabase?.password, updatedUser.password)
+        assertEquals(userFromDatabase?.firstName, updatedUser.firstName)
+        assertEquals(userFromDatabase?.lastName, updatedUser.lastName)
+        assertEquals(userFromDatabase?.superuser, updatedUser.superuser)
+    }
+
 }
