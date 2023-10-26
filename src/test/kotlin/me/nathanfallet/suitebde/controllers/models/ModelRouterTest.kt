@@ -45,12 +45,12 @@ class ModelRouterTest {
         getUserForCallUseCase: IGetUserForCallUseCase
     ): ModelRouter<String, ModelRouterTestBody, ModelRouterTestBody> {
         return ModelRouter(
-            controller,
             "test",
             typeInfo<String>(),
             typeInfo<List<String>>(),
             typeInfo<ModelRouterTestBody>(),
             typeInfo<ModelRouterTestBody>(),
+            controller,
             getAssociationForDomainUseCase,
             getUserForCallUseCase
         )

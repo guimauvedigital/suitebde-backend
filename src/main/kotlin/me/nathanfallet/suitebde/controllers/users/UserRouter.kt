@@ -11,12 +11,12 @@ class UserRouter(
     getAssociationForDomainUseCase: IGetAssociationForDomainUseCase,
     getUserForCallUseCase: IGetUserForCallUseCase
 ) : ModelRouter<User, Unit, Unit>(
-    userController,
     "users",
     typeInfo<User>(),
     typeInfo<List<User>>(),
     typeInfo<Unit>(),
     typeInfo<Unit>(),
+    userController,
     getAssociationForDomainUseCase,
     getUserForCallUseCase
 )

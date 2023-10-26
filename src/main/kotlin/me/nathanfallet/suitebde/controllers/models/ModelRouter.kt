@@ -14,12 +14,12 @@ import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForDomainUs
 import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
 
 open class ModelRouter<out T, in P, in Q>(
+    val route: String,
+    val typeInfo: TypeInfo,
+    val lTypeInfo: TypeInfo,
+    val pTypeInfo: TypeInfo,
+    val qTypeInfo: TypeInfo,
     private val controller: IModelController<T, P, Q>,
-    private val route: String,
-    private val typeInfo: TypeInfo,
-    private val lTypeInfo: TypeInfo,
-    private val pTypeInfo: TypeInfo,
-    private val qTypeInfo: TypeInfo,
     private val getAssociationForDomainUseCase: IGetAssociationForDomainUseCase,
     private val getUserForCallUseCase: IGetUserForCallUseCase
 ) : IRouter {
