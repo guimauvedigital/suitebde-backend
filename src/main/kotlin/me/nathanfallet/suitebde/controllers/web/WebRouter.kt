@@ -3,14 +3,13 @@ package me.nathanfallet.suitebde.controllers.web
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
-import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import me.nathanfallet.suitebde.controllers.IRouter
-import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForDomainUseCase
+import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 
 class WebRouter(
-    private val getAssociationForDomainUseCase: IGetAssociationForDomainUseCase,
+    private val getAssociationForCallUseCase: IGetAssociationForCallUseCase,
 ) : IRouter {
 
     override fun createRoutes(root: Route) {
@@ -19,7 +18,7 @@ class WebRouter(
 
     fun createGetRoute(root: Route) {
         root.get {
-            val association = getAssociationForDomainUseCase(call.request.host()) ?: run {
+            val association = getAssociationForCallUseCase(call) ?: run {
                 call.respond(
                     FreeMarkerContent(
                         "root/home.ftl",
