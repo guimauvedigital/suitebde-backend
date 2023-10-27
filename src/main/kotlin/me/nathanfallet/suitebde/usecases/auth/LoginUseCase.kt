@@ -1,8 +1,8 @@
 package me.nathanfallet.suitebde.usecases.auth
 
 import io.ktor.http.*
-import me.nathanfallet.suitebde.database.auth.LoginPayload
 import me.nathanfallet.suitebde.models.LocalizedString
+import me.nathanfallet.suitebde.models.auth.LoginPayload
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.IUsersRepository

@@ -1,5 +1,6 @@
 package me.nathanfallet.suitebde.database.associations
 
+import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.DomainInAssociation
@@ -10,11 +11,23 @@ class DatabaseAssociationRepository(
     private val database: Database
 ) : IAssociationsRepository {
 
-    override suspend fun createAssociation(name: String): Association? {
+    override suspend fun createAssociation(
+        name: String,
+        school: String,
+        city: String,
+        validated: Boolean,
+        createdAt: Instant,
+        expiresAt: Instant
+    ): Association? {
         return database.dbQuery {
             Associations.insert {
                 it[id] = generateId()
                 it[this.name] = name
+                it[this.school] = school
+                it[this.city] = city
+                it[this.validated] = validated
+                it[this.createdAt] = createdAt.toString()
+                it[this.expiresAt] = expiresAt.toString()
             }.resultedValues?.map(Associations::toAssociation)?.singleOrNull()
         }
     }
@@ -23,6 +36,10 @@ class DatabaseAssociationRepository(
         database.dbQuery {
             Associations.update({ Associations.id eq association.id }) {
                 it[name] = association.name
+                it[school] = association.school
+                it[city] = association.city
+                it[validated] = association.validated
+                it[expiresAt] = association.expiresAt.toString()
             }
         }
     }

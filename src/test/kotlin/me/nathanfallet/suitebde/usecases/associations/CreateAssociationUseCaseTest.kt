@@ -5,6 +5,7 @@ import io.mockk.coVerifyOrder
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.users.User
@@ -21,21 +22,37 @@ class CreateAssociationUseCaseTest {
         val usersRepository = mockk<IUsersRepository>()
         val hashPasswordUseCase = mockk<IHashPasswordUseCase>()
         val useCase = CreateAssociationUseCase(associationRepository, usersRepository, hashPasswordUseCase)
-        coEvery { associationRepository.createAssociation(any()) } returns Association("associationId", "name")
+        coEvery {
+            associationRepository.createAssociation(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } returns Association(
+            "associationId", "name", "school", "city",
+            false, Clock.System.now(), Clock.System.now()
+        )
         coEvery { usersRepository.createUser(any(), any(), any(), any(), any(), any()) } returns User(
-            "id",
-            "associationId",
-            "email",
-            null,
-            "firstName",
-            "lastName",
-            true
+            "id", "associationId", "email", null,
+            "firstName", "lastName", true
         )
         every { hashPasswordUseCase(any()) } returns "hash"
-        useCase(CreateAssociationPayload("name", "email", "password", "firstName", "lastName"))
+        useCase(
+            CreateAssociationPayload(
+                "name", "school", "city", "email",
+                "password", "firstName", "lastName"
+            )
+        )
         coVerifyOrder {
-            associationRepository.createAssociation("name")
-            usersRepository.createUser("associationId", "email", "hash", "firstName", "lastName", true)
+            associationRepository.createAssociation(
+                "name", "school", "city", false, any(), any()
+            )
+            usersRepository.createUser(
+                "associationId", "email", "hash", "firstName", "lastName", true
+            )
         }
     }
 

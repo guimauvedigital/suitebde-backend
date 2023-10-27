@@ -9,6 +9,7 @@ import io.ktor.server.config.*
 import io.ktor.server.testing.*
 import io.mockk.coEvery
 import io.mockk.mockk
+import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.plugins.Serialization
 import kotlin.test.Test
@@ -16,7 +17,10 @@ import kotlin.test.assertEquals
 
 class AssociationRouterTest {
 
-    private val association = Association("id", "name")
+    private val association = Association(
+        "id", "name", "school", "city",
+        true, Clock.System.now(), Clock.System.now()
+    )
 
     private fun installApp(application: ApplicationTestBuilder): HttpClient {
         application.environment {

@@ -6,6 +6,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
@@ -22,11 +23,22 @@ import kotlin.test.assertEquals
 
 class UserControllerTest {
 
-    private val association = Association("associationId", "name")
-    private val user = User("id", "associationId", "email", "password", "firstname", "lastname", false)
-    private val targetUser = User("targetId", "associationId", "email", "password", "firstname", "lastname", false)
-    private val targetUser2 =
-        User("targetId2", "associationId2", "email2", "password2", "firstname2", "lastname2", false)
+    private val association = Association(
+        "associationId", "name", "school", "city",
+        true, Clock.System.now(), Clock.System.now()
+    )
+    private val user = User(
+        "id", "associationId", "email", "password",
+        "firstname", "lastname", false
+    )
+    private val targetUser = User(
+        "targetId", "associationId", "email", "password",
+        "firstname", "lastname", false
+    )
+    private val targetUser2 = User(
+        "targetId2", "associationId2", "email2", "password2",
+        "firstname2", "lastname2", false
+    )
 
     @Test
     fun testGetAll() = runBlocking {

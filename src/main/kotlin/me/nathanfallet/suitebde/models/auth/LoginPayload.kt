@@ -1,4 +1,4 @@
-package me.nathanfallet.suitebde.database.auth
+package me.nathanfallet.suitebde.models.auth
 
 import kotlinx.serialization.Serializable
 

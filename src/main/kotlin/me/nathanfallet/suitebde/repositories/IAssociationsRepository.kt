@@ -1,11 +1,20 @@
 package me.nathanfallet.suitebde.repositories
 
+import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.DomainInAssociation
 
 interface IAssociationsRepository {
 
-    suspend fun createAssociation(name: String): Association?
+    suspend fun createAssociation(
+        name: String,
+        school: String,
+        city: String,
+        validated: Boolean,
+        createdAt: Instant,
+        expiresAt: Instant
+    ): Association?
+
     suspend fun updateAssociation(association: Association)
     suspend fun deleteAssociation(association: Association)
     suspend fun getAssociation(id: String): Association?

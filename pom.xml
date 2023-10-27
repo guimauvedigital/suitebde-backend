@@ -9,10 +9,11 @@
     <description>Suite BDE</description>
 
     <properties>
-        <ktor_version>2.3.5</ktor_version>
-        <koin_version>3.5.0</koin_version>
         <kotlin.code.style>official</kotlin.code.style>
         <kotlin_version>1.9.10</kotlin_version>
+        <ktor_version>2.3.5</ktor_version>
+        <koin_version>3.5.0</koin_version>
+        <kotlinx_datetime_version>0.4.0</kotlinx_datetime_version>
         <logback_version>1.4.11</logback_version>
         <exposed_version>0.41.1</exposed_version>
         <jacoco_version>0.8.10</jacoco_version>
@@ -101,6 +102,11 @@
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-stdlib-jdk7</artifactId>
             <version>${kotlin_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-datetime-jvm</artifactId>
+            <version>${kotlinx_datetime_version}</version>
         </dependency>
         <dependency>
             <groupId>io.insert-koin</groupId>
