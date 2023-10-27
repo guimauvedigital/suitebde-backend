@@ -19,6 +19,7 @@ interface IAssociationsRepository {
     suspend fun deleteAssociation(association: Association)
     suspend fun getAssociation(id: String): Association?
     suspend fun getAssociations(): List<Association>
+    suspend fun getValidatedAssociations(): List<Association>
     suspend fun getAssociationForDomain(domain: String): Association?
 
     suspend fun createDomain(domain: String, associationId: String): DomainInAssociation?

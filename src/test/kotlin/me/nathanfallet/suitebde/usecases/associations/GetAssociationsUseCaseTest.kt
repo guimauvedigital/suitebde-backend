@@ -12,7 +12,19 @@ import kotlin.test.assertEquals
 class GetAssociationsUseCaseTest {
 
     @Test
-    fun invoke() = runBlocking {
+    fun invokeTrue() = runBlocking {
+        val associationRepository = mockk<IAssociationsRepository>()
+        val useCase = GetAssociationsUseCase(associationRepository)
+        val association = Association(
+            "id", "name", "school", "city",
+            true, Clock.System.now(), Clock.System.now()
+        )
+        coEvery { associationRepository.getValidatedAssociations() } returns listOf(association)
+        assertEquals(listOf(association), useCase(true))
+    }
+
+    @Test
+    fun invokeFalse() = runBlocking {
         val associationRepository = mockk<IAssociationsRepository>()
         val useCase = GetAssociationsUseCase(associationRepository)
         val association = Association(
@@ -20,7 +32,7 @@ class GetAssociationsUseCaseTest {
             true, Clock.System.now(), Clock.System.now()
         )
         coEvery { associationRepository.getAssociations() } returns listOf(association)
-        assertEquals(listOf(association), useCase(Unit))
+        assertEquals(listOf(association), useCase(false))
     }
 
 }

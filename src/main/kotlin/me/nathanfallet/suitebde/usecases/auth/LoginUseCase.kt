@@ -15,7 +15,7 @@ class LoginUseCase(
     override suspend fun invoke(input: LoginPayload): User {
         return repository.getUserForEmailInAssociation(input.email, input.associationId, true)?.takeIf {
             verifyPasswordUseCase(Pair(input.password, it.password ?: ""))
-        } ?: throw ControllerException(HttpStatusCode.Unauthorized, LocalizedString.ERROR_AUTH_INVALID_CREDENTIALS)
+        } ?: throw ControllerException(HttpStatusCode.Unauthorized, LocalizedString.AUTH_INVALID_CREDENTIALS)
     }
 
 }

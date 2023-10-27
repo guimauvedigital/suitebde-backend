@@ -7,8 +7,9 @@ class GetAssociationsUseCase(
     private val repository: IAssociationsRepository
 ) : IGetAssociationsUseCase {
 
-    override suspend fun invoke(input: Unit): List<Association> {
-        return repository.getAssociations()
+    override suspend fun invoke(input: Boolean): List<Association> {
+        return if (input) repository.getValidatedAssociations()
+        else repository.getAssociations()
     }
 
 }

@@ -37,7 +37,7 @@ class LoginUseCaseTest {
             useCase.invoke(LoginPayload("email", "association", "password"))
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.ERROR_AUTH_INVALID_CREDENTIALS, exception.error)
+        assertEquals(LocalizedString.AUTH_INVALID_CREDENTIALS, exception.error)
     }
 
     @Test
@@ -52,7 +52,7 @@ class LoginUseCaseTest {
             useCase.invoke(LoginPayload("email", "association", "password"))
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.ERROR_AUTH_INVALID_CREDENTIALS, exception.error)
+        assertEquals(LocalizedString.AUTH_INVALID_CREDENTIALS, exception.error)
     }
 
 }

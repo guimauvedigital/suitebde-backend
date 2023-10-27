@@ -72,7 +72,7 @@ class UserControllerTest {
             controller.getAll(call)
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
-        assertEquals(LocalizedString.ERROR_ASSOCIATIONS_NOT_FOUND, exception.error)
+        assertEquals(LocalizedString.ASSOCIATIONS_NOT_FOUND, exception.error)
     }
 
     @Test
@@ -88,7 +88,7 @@ class UserControllerTest {
             controller.getAll(call)
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_VIEW_NOT_ALLOWED, exception.error)
+        assertEquals(LocalizedString.USERS_VIEW_NOT_ALLOWED, exception.error)
     }
 
     @Test
@@ -112,7 +112,7 @@ class UserControllerTest {
             controller.getAll(call)
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_VIEW_NOT_ALLOWED, exception.error)
+        assertEquals(LocalizedString.USERS_VIEW_NOT_ALLOWED, exception.error)
     }
 
     @Test
@@ -148,7 +148,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
-        assertEquals(LocalizedString.ERROR_ASSOCIATIONS_NOT_FOUND, exception.error)
+        assertEquals(LocalizedString.ASSOCIATIONS_NOT_FOUND, exception.error)
     }
 
     @Test
@@ -165,7 +165,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_VIEW_NOT_ALLOWED, exception.error)
+        assertEquals(LocalizedString.USERS_VIEW_NOT_ALLOWED, exception.error)
     }
 
     @Test
@@ -206,7 +206,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_NOT_FOUND, exception.error)
+        assertEquals(LocalizedString.USERS_NOT_FOUND, exception.error)
     }
 
     @Test
@@ -233,7 +233,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_NOT_FOUND, exception.error)
+        assertEquals(LocalizedString.USERS_NOT_FOUND, exception.error)
     }
 
     @Test
@@ -258,7 +258,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_VIEW_NOT_ALLOWED, exception.error)
+        assertEquals(LocalizedString.USERS_VIEW_NOT_ALLOWED, exception.error)
     }
 
     @Test
@@ -292,7 +292,7 @@ class UserControllerTest {
             controller.create(call, Unit)
         }
         assertEquals(HttpStatusCode.MethodNotAllowed, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_CREATE_NOT_ALLOWED, exception.error)
+        assertEquals(LocalizedString.USERS_CREATE_NOT_ALLOWED, exception.error)
     }
 
     @Test
@@ -308,7 +308,7 @@ class UserControllerTest {
             controller.delete(call)
         }
         assertEquals(HttpStatusCode.MethodNotAllowed, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_DELETE_NOT_ALLOWED, exception.error)
+        assertEquals(LocalizedString.USERS_DELETE_NOT_ALLOWED, exception.error)
     }
 
 }

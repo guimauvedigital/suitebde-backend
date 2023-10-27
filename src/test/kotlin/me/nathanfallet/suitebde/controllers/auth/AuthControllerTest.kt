@@ -17,7 +17,7 @@ class AuthControllerTest {
     fun testLogin() = runBlocking {
         val loginUseCase = mockk<ILoginUseCase>()
         coEvery { loginUseCase(LoginPayload("email", "associationId", "password")) } returns user
-        val controller = AuthController(loginUseCase)
+        val controller = AuthController(loginUseCase, mockk())
         assertEquals(user, controller.login(LoginPayload("email", "associationId", "password")))
     }
 

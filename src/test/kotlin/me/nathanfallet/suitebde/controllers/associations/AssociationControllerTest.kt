@@ -19,7 +19,7 @@ class AssociationControllerTest {
     @Test
     fun testGetAll() = runBlocking {
         val getAssociationsUseCase = mockk<IGetAssociationsUseCase>()
-        coEvery { getAssociationsUseCase(Unit) } returns listOf(association)
+        coEvery { getAssociationsUseCase(true) } returns listOf(association)
         val controller = AssociationController(getAssociationsUseCase)
         assertEquals(listOf(association), controller.getAll())
     }

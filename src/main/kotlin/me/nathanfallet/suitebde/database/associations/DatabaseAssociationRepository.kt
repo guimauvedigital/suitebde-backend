@@ -69,6 +69,14 @@ class DatabaseAssociationRepository(
         }
     }
 
+    override suspend fun getValidatedAssociations(): List<Association> {
+        return database.dbQuery {
+            Associations
+                .select { Associations.validated eq true }
+                .map(Associations::toAssociation)
+        }
+    }
+
     override suspend fun getAssociationForDomain(domain: String): Association? {
         return database.dbQuery {
             DomainsInAssociations

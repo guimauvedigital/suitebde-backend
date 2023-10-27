@@ -24,55 +24,55 @@ class UserController(
 
     override suspend fun getAll(call: ApplicationCall): List<User> {
         val association = getAssociationForCallUseCase(call) ?: throw ControllerException(
-            HttpStatusCode.NotFound, LocalizedString.ERROR_ASSOCIATIONS_NOT_FOUND
+            HttpStatusCode.NotFound, LocalizedString.ASSOCIATIONS_NOT_FOUND
         )
         getUserForCallUseCase(call)?.takeIf {
             checkPermissionUseCase(Pair(it, Permission.USERS_VIEW))
         } ?: throw ControllerException(
-            HttpStatusCode.Unauthorized, LocalizedString.ERROR_USERS_VIEW_NOT_ALLOWED
+            HttpStatusCode.Unauthorized, LocalizedString.USERS_VIEW_NOT_ALLOWED
         )
         return getUsersInAssociationUseCase(association.id)
     }
 
     override suspend fun get(call: ApplicationCall): User {
         val association = getAssociationForCallUseCase(call) ?: throw ControllerException(
-            HttpStatusCode.NotFound, LocalizedString.ERROR_ASSOCIATIONS_NOT_FOUND
+            HttpStatusCode.NotFound, LocalizedString.ASSOCIATIONS_NOT_FOUND
         )
         val id = call.parameters["id"] ?: throw ControllerException(
             HttpStatusCode.BadRequest, LocalizedString.ERROR_MISSING_ID
         )
         getUserForCallUseCase(call)?.takeIf {
             it.id.equals(id, true) || checkPermissionUseCase(Pair(it, Permission.USERS_VIEW))
-        } ?: throw ControllerException(HttpStatusCode.Unauthorized, LocalizedString.ERROR_USERS_VIEW_NOT_ALLOWED)
+        } ?: throw ControllerException(HttpStatusCode.Unauthorized, LocalizedString.USERS_VIEW_NOT_ALLOWED)
         return getUserUseCase(id)?.takeIf {
             it.associationId == association.id
-        } ?: throw ControllerException(HttpStatusCode.NotFound, LocalizedString.ERROR_USERS_NOT_FOUND)
+        } ?: throw ControllerException(HttpStatusCode.NotFound, LocalizedString.USERS_NOT_FOUND)
     }
 
     override suspend fun create(call: ApplicationCall, payload: Unit): User {
-        throw ControllerException(HttpStatusCode.MethodNotAllowed, LocalizedString.ERROR_USERS_CREATE_NOT_ALLOWED)
+        throw ControllerException(HttpStatusCode.MethodNotAllowed, LocalizedString.USERS_CREATE_NOT_ALLOWED)
     }
 
     override suspend fun update(call: ApplicationCall, payload: Unit): User {
         val association = getAssociationForCallUseCase(call) ?: throw ControllerException(
-            HttpStatusCode.NotFound, LocalizedString.ERROR_ASSOCIATIONS_NOT_FOUND
+            HttpStatusCode.NotFound, LocalizedString.ASSOCIATIONS_NOT_FOUND
         )
         val id = call.parameters["id"] ?: throw ControllerException(
             HttpStatusCode.BadRequest, LocalizedString.ERROR_MISSING_ID
         )
         getUserForCallUseCase(call)?.takeIf {
             it.id.equals(id, true) || checkPermissionUseCase(Pair(it, Permission.USERS_UPDATE))
-        } ?: throw ControllerException(HttpStatusCode.Unauthorized, LocalizedString.ERROR_USERS_UPDATE_NOT_ALLOWED)
+        } ?: throw ControllerException(HttpStatusCode.Unauthorized, LocalizedString.USERS_UPDATE_NOT_ALLOWED)
         val targetUser = getUserUseCase(id)?.takeIf {
             it.associationId == association.id
-        } ?: throw ControllerException(HttpStatusCode.NotFound, LocalizedString.ERROR_USERS_NOT_FOUND)
+        } ?: throw ControllerException(HttpStatusCode.NotFound, LocalizedString.USERS_NOT_FOUND)
         updateUserUseCase(targetUser)
         // TODO: Update user from payload, checking if user is allowed to do so
         return targetUser
     }
 
     override suspend fun delete(call: ApplicationCall) {
-        throw ControllerException(HttpStatusCode.MethodNotAllowed, LocalizedString.ERROR_USERS_DELETE_NOT_ALLOWED)
+        throw ControllerException(HttpStatusCode.MethodNotAllowed, LocalizedString.USERS_DELETE_NOT_ALLOWED)
     }
 
 }
