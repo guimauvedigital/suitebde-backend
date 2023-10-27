@@ -19,23 +19,23 @@ class CreateAssociationUseCase(
     override suspend fun invoke(input: CreateAssociationPayload): Association? {
         val createdAt = Clock.System.now()
         val expiresAt = createdAt.plus(1, DateTimeUnit.MONTH, TimeZone.currentSystemDefault())
-        return associationsRepository.createAssociation(
+        val association = associationsRepository.createAssociation(
             input.name,
             input.school,
             input.city,
             false,
             createdAt,
             expiresAt
-        )?.also {
-            usersRepository.createUser(
-                it.id,
-                input.email,
-                hashPasswordUseCase(input.password),
-                input.firstName,
-                input.lastName,
-                true
-            )
-        }
+        ) ?: return null
+        usersRepository.createUser(
+            association.id,
+            input.email,
+            hashPasswordUseCase(input.password),
+            input.firstName,
+            input.lastName,
+            true
+        )
+        return association
     }
 
 }

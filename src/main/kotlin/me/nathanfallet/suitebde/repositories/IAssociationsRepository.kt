@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.repositories
 
 import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.associations.DomainInAssociation
 
 interface IAssociationsRepository {
@@ -25,5 +26,9 @@ interface IAssociationsRepository {
     suspend fun createDomain(domain: String, associationId: String): DomainInAssociation?
     suspend fun deleteDomain(domain: String)
     suspend fun getDomains(associationId: String): List<DomainInAssociation>
+
+    suspend fun createCodeInEmail(email: String, code: String, associationId: String?, expiresAt: Instant): CodeInEmail?
+    suspend fun updateCodeInEmail(email: String, code: String, expiresAt: Instant)
+    suspend fun deleteCodeInEmailBefore(date: Instant)
 
 }

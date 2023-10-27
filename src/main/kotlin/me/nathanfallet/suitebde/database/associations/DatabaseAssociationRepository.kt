@@ -3,6 +3,7 @@ package me.nathanfallet.suitebde.database.associations
 import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.associations.DomainInAssociation
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import org.jetbrains.exposed.sql.*
@@ -109,6 +110,39 @@ class DatabaseAssociationRepository(
             DomainsInAssociations
                 .select { DomainsInAssociations.associationId eq associationId }
                 .map(DomainsInAssociations::toDomainInAssociation)
+        }
+    }
+
+    override suspend fun createCodeInEmail(
+        email: String,
+        code: String,
+        associationId: String?,
+        expiresAt: Instant
+    ): CodeInEmail? {
+        return database.dbQuery {
+            CodesInEmails.insert {
+                it[this.email] = email
+                it[this.code] = code
+                it[this.associationId] = associationId
+                it[this.expiresAt] = expiresAt.toString()
+            }.resultedValues?.map(CodesInEmails::toCodeInEmail)?.singleOrNull()
+        }
+    }
+
+    override suspend fun updateCodeInEmail(email: String, code: String, expiresAt: Instant) {
+        database.dbQuery {
+            CodesInEmails.update({ CodesInEmails.email eq email }) {
+                it[this.code] = code
+                it[this.expiresAt] = expiresAt.toString()
+            }
+        }
+    }
+
+    override suspend fun deleteCodeInEmailBefore(date: Instant) {
+        database.dbQuery {
+            CodesInEmails.deleteWhere {
+                Op.build { expiresAt less date.toString() }
+            }
         }
     }
 

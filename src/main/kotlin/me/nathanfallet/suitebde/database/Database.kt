@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.database
 
 import kotlinx.coroutines.Dispatchers
 import me.nathanfallet.suitebde.database.associations.Associations
+import me.nathanfallet.suitebde.database.associations.CodesInEmails
 import me.nathanfallet.suitebde.database.associations.DomainsInAssociations
 import me.nathanfallet.suitebde.database.users.Users
 import org.jetbrains.exposed.sql.SchemaUtils
@@ -37,6 +38,7 @@ class Database(
         transaction(database) {
             SchemaUtils.create(Associations)
             SchemaUtils.create(DomainsInAssociations)
+            SchemaUtils.create(CodesInEmails)
             SchemaUtils.create(Users)
         }
     }
