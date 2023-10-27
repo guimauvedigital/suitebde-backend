@@ -1,14 +1,13 @@
 package me.nathanfallet.suitebde.controllers.models
 
-import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.users.User
+import io.ktor.server.application.*
 
 interface IModelController<T, P, Q> {
 
-    suspend fun getAll(association: Association, user: User?): List<T>
-    suspend fun get(association: Association, user: User?, id: String): T
-    suspend fun create(association: Association, user: User?, payload: P): T
-    suspend fun update(association: Association, user: User?, id: String, payload: Q): T
-    suspend fun delete(association: Association, user: User?, id: String)
+    suspend fun getAll(call: ApplicationCall): List<T>
+    suspend fun get(call: ApplicationCall): T
+    suspend fun create(call: ApplicationCall, payload: P): T
+    suspend fun update(call: ApplicationCall, payload: Q): T
+    suspend fun delete(call: ApplicationCall)
 
 }
