@@ -16,7 +16,7 @@ interface IAssociationsRepository {
         expiresAt: Instant
     ): Association?
 
-    suspend fun updateAssociation(association: Association)
+    suspend fun updateAssociation(association: Association): Int
     suspend fun deleteAssociation(association: Association)
     suspend fun getAssociation(id: String): Association?
     suspend fun getAssociations(): List<Association>
@@ -27,8 +27,9 @@ interface IAssociationsRepository {
     suspend fun deleteDomain(domain: String)
     suspend fun getDomains(associationId: String): List<DomainInAssociation>
 
+    suspend fun getCodeInEmail(code: String): CodeInEmail?
     suspend fun createCodeInEmail(email: String, code: String, associationId: String?, expiresAt: Instant): CodeInEmail?
-    suspend fun updateCodeInEmail(email: String, code: String, expiresAt: Instant)
+    suspend fun updateCodeInEmail(email: String, code: String, associationId: String?, expiresAt: Instant): Int
     suspend fun deleteCodeInEmailBefore(date: Instant)
 
 }

@@ -53,7 +53,7 @@ class DatabaseAssociationRepositoryTest {
             validated = true,
             expiresAt = tomorrow
         ) ?: fail("Unable to create association")
-        repository.updateAssociation(association)
+        assertEquals(1, repository.updateAssociation(association))
         val associationFromDatabase = database.dbQuery {
             Associations
                 .selectAll()
@@ -192,6 +192,19 @@ class DatabaseAssociationRepositoryTest {
     }
 
     @Test
+    fun getCodeInEmail() = runBlocking {
+        val database = Database(protocol = "h2", name = "getCodeInEmail")
+        val repository = DatabaseAssociationRepository(database)
+        val codeInEmail = repository.createCodeInEmail("email", "code", "associationId", tomorrow)
+            ?: fail("Unable to create code in email")
+        val codeInEmailFromDatabase = repository.getCodeInEmail(codeInEmail.code)
+        assertEquals(codeInEmailFromDatabase?.email, codeInEmail.email)
+        assertEquals(codeInEmailFromDatabase?.code, codeInEmail.code)
+        assertEquals(codeInEmailFromDatabase?.associationId, codeInEmail.associationId)
+        assertEquals(codeInEmailFromDatabase?.expiresAt, codeInEmail.expiresAt)
+    }
+
+    @Test
     fun createCodeInEmail() = runBlocking {
         val database = Database(protocol = "h2", name = "createCodeInEmail")
         val repository = DatabaseAssociationRepository(database)
@@ -214,7 +227,10 @@ class DatabaseAssociationRepositoryTest {
         val repository = DatabaseAssociationRepository(database)
         val codeInEmail = repository.createCodeInEmail("email", "code", "associationId", tomorrow)
             ?: fail("Unable to create code in email")
-        repository.updateCodeInEmail("email", "newCode", tomorrow)
+        assertEquals(
+            1,
+            repository.updateCodeInEmail("email", "newCode", "newAssociationId", tomorrow)
+        )
         val codeInEmailFromDatabase = database.dbQuery {
             CodesInEmails
                 .selectAll()
@@ -223,7 +239,7 @@ class DatabaseAssociationRepositoryTest {
         }
         assertEquals(codeInEmailFromDatabase?.email, codeInEmail.email)
         assertEquals(codeInEmailFromDatabase?.code, "newCode")
-        assertEquals(codeInEmailFromDatabase?.associationId, codeInEmail.associationId)
+        assertEquals(codeInEmailFromDatabase?.associationId, "newAssociationId")
         assertEquals(codeInEmailFromDatabase?.expiresAt, codeInEmail.expiresAt)
     }
 

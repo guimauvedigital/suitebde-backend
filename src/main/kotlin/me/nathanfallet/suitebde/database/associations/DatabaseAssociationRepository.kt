@@ -33,8 +33,8 @@ class DatabaseAssociationRepository(
         }
     }
 
-    override suspend fun updateAssociation(association: Association) {
-        database.dbQuery {
+    override suspend fun updateAssociation(association: Association): Int {
+        return database.dbQuery {
             Associations.update({ Associations.id eq association.id }) {
                 it[name] = association.name
                 it[school] = association.school
@@ -113,6 +113,15 @@ class DatabaseAssociationRepository(
         }
     }
 
+    override suspend fun getCodeInEmail(code: String): CodeInEmail? {
+        return database.dbQuery {
+            CodesInEmails
+                .select { CodesInEmails.code eq code }
+                .map(CodesInEmails::toCodeInEmail)
+                .singleOrNull()
+        }
+    }
+
     override suspend fun createCodeInEmail(
         email: String,
         code: String,
@@ -129,10 +138,16 @@ class DatabaseAssociationRepository(
         }
     }
 
-    override suspend fun updateCodeInEmail(email: String, code: String, expiresAt: Instant) {
-        database.dbQuery {
+    override suspend fun updateCodeInEmail(
+        email: String,
+        code: String,
+        associationId: String?,
+        expiresAt: Instant
+    ): Int {
+        return database.dbQuery {
             CodesInEmails.update({ CodesInEmails.email eq email }) {
                 it[this.code] = code
+                it[this.associationId] = associationId
                 it[this.expiresAt] = expiresAt.toString()
             }
         }

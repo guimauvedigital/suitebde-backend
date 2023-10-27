@@ -65,8 +65,8 @@ class DatabaseUsersRepository(
         }
     }
 
-    override suspend fun updateUser(user: User) {
-        database.dbQuery {
+    override suspend fun updateUser(user: User): Int {
+        return database.dbQuery {
             Users.update({ Users.id eq user.id }) {
                 it[this.email] = user.email
                 it[this.firstName] = user.firstName

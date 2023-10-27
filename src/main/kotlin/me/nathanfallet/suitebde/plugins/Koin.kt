@@ -18,6 +18,8 @@ import me.nathanfallet.suitebde.database.associations.DatabaseAssociationReposit
 import me.nathanfallet.suitebde.database.users.DatabaseUsersRepository
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.IUsersRepository
+import me.nathanfallet.suitebde.usecases.application.ISendEmailUseCase
+import me.nathanfallet.suitebde.usecases.application.SendEmailUseCase
 import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.*
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
@@ -45,9 +47,13 @@ fun Application.configureKoin() {
             single<IUsersRepository> { DatabaseUsersRepository(get()) }
         }
         val useCaseModule = module {
+            single<ISendEmailUseCase> { SendEmailUseCase() }
+
             single<ICreateAssociationUseCase> { CreateAssociationUseCase(get(), get(), get()) }
             single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
             single<IGetAssociationForCallUseCase> { GetAssociationForCallUseCase(get()) }
+            single<ICreateCodeInEmailUseCase> { CreateCodeInEmailUseCase(get()) }
+            single<IGetCodeInEmailUseCase> { GetCodeInEmailUseCase(get()) }
 
             single<IHashPasswordUseCase> { HashPasswordUseCase() }
             single<IVerifyPasswordUseCase> { VerifyPasswordUseCase() }

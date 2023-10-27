@@ -7,8 +7,8 @@ class UpdateUserUseCase(
     private val repository: IUsersRepository
 ) : IUpdateUserUseCase {
 
-    override suspend fun invoke(input: User) {
-        repository.updateUser(input)
+    override suspend fun invoke(input: User): Boolean {
+        return repository.updateUser(input) == 1
     }
 
 }

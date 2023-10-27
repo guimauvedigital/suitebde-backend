@@ -106,7 +106,7 @@ class DatabaseUsersRepositoryTest {
             firstName = "firstName2",
             lastName = "lastName2"
         )
-        repository.updateUser(updatedUser)
+        assertEquals(1, repository.updateUser(updatedUser))
         val userFromDatabase = database.dbQuery {
             Users
                 .selectAll()

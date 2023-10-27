@@ -66,7 +66,9 @@ class UserController(
         val targetUser = getUserUseCase(id)?.takeIf {
             it.associationId == association.id
         } ?: throw ControllerException(HttpStatusCode.NotFound, LocalizedString.USERS_NOT_FOUND)
-        updateUserUseCase(targetUser)
+        updateUserUseCase(targetUser).takeIf { it } ?: throw ControllerException(
+            HttpStatusCode.InternalServerError, LocalizedString.ERROR_INTERNAL
+        )
         // TODO: Update user from payload, checking if user is allowed to do so
         return targetUser
     }
