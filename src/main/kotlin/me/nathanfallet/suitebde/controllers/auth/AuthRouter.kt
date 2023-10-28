@@ -61,6 +61,7 @@ class AuthRouter(
                         password
                     )
                 )
+                call.respond(HttpStatusCode.OK)
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
                 call.respond(
@@ -124,9 +125,7 @@ class AuthRouter(
     fun createGetJoinCodeRoute(root: Route) {
         root.get("/{code}") {
             try {
-                val code = call.parameters["code"] ?: throw ControllerException(
-                    HttpStatusCode.BadRequest, LocalizedString.ERROR_MISSING_ID
-                )
+                val code = call.parameters["code"]!!
                 val payload = controller.join(code)
                 call.respond(
                     FreeMarkerContent(
@@ -149,9 +148,7 @@ class AuthRouter(
     fun createPostJoinCodeRoute(root: Route) {
         root.post("/{code}") {
             try {
-                val code = call.parameters["code"] ?: throw ControllerException(
-                    HttpStatusCode.BadRequest, LocalizedString.ERROR_MISSING_ID
-                )
+                val code = call.parameters["code"]!!
                 val payload = controller.join(code)
                 val parameters = call.receiveParameters()
                 val name = parameters["name"]?.takeIf { it.isNotBlank() }

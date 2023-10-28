@@ -3,9 +3,9 @@
     <h1 class="h3 mb-4 fw-normal">Créer un BDE</h1>
 
     <#if success??>
-        <div class="alert alert-success" role="alert">${success}</div>
+        <div id="alert-success" class="alert alert-success" role="alert">${success}</div>
     <#elseif error??>
-        <div class="alert alert-danger" role="alert">${error}</div>
+        <div id="alert-error" class="alert alert-danger" role="alert">${error}</div>
     <#else>
         <#if code??>
 

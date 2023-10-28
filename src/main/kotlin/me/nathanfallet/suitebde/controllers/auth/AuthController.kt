@@ -28,7 +28,7 @@ class AuthController(
 
     override suspend fun join(payload: JoinPayload) {
         val code = createCodeInEmailUseCase(Pair(payload.email, null)) ?: throw ControllerException(
-            HttpStatusCode.OK,
+            HttpStatusCode.BadRequest,
             LocalizedString.AUTH_JOIN_EMAIL_TAKEN
         )
         sendEmailUseCase(

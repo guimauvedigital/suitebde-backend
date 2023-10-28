@@ -65,7 +65,7 @@ class AuthControllerTest {
         val exception = assertThrows<ControllerException> {
             controller.join(JoinPayload("email"))
         }
-        assertEquals(HttpStatusCode.OK, exception.code)
+        assertEquals(HttpStatusCode.BadRequest, exception.code)
         assertEquals(LocalizedString.AUTH_JOIN_EMAIL_TAKEN, exception.error)
     }
 

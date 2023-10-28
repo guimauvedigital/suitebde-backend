@@ -3,7 +3,7 @@
     <h1 class="h3 mb-4 fw-normal">Connexion</h1>
 
     <#if error??>
-        <div class="alert alert-danger" role="alert">${error}</div>
+        <div id="alert-error" class="alert alert-danger" role="alert">${error}</div>
     </#if>
 
     <div class="form-floating">
