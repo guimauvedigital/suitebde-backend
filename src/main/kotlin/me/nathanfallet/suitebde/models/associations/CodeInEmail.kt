@@ -4,12 +4,9 @@ import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Association(
-    val id: String,
-    val name: String,
-    val school: String,
-    val city: String,
-    val validated: Boolean,
-    val createdAt: Instant,
+data class CodeInEmail(
+    val email: String,
+    val code: String,
+    val associationId: String?,
     val expiresAt: Instant
 )

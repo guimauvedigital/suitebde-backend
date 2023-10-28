@@ -8,7 +8,7 @@ class AssociationController(
 ) : IAssociationController {
 
     override suspend fun getAll(): List<Association> {
-        return getAssociationsUseCase(Unit)
+        return getAssociationsUseCase(true)
     }
 
 }

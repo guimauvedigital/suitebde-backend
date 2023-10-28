@@ -24,6 +24,15 @@ class GetUserForCallUseCaseTest {
     }
 
     @Test
+    fun invokeWithBahPrincipal() = runBlocking {
+        val usersRepository = mockk<IUsersRepository>()
+        val useCase = GetUserForCallUseCase(usersRepository)
+        val call = mockk<ApplicationCall>()
+        every { call.principal<JWTPrincipal>()?.subject } returns null
+        assertEquals(null, useCase(call))
+    }
+
+    @Test
     fun invokeWithJWT() = runBlocking {
         val usersRepository = mockk<IUsersRepository>()
         val useCase = GetUserForCallUseCase(usersRepository)

@@ -5,6 +5,7 @@ import io.mockk.coVerifyOrder
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.users.User
@@ -12,6 +13,7 @@ import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.IUsersRepository
 import me.nathanfallet.suitebde.usecases.auth.IHashPasswordUseCase
 import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class CreateAssociationUseCaseTest {
 
@@ -20,23 +22,68 @@ class CreateAssociationUseCaseTest {
         val associationRepository = mockk<IAssociationsRepository>()
         val usersRepository = mockk<IUsersRepository>()
         val hashPasswordUseCase = mockk<IHashPasswordUseCase>()
+        val association = Association(
+            "associationId", "name", "school", "city",
+            false, Clock.System.now(), Clock.System.now()
+        )
         val useCase = CreateAssociationUseCase(associationRepository, usersRepository, hashPasswordUseCase)
-        coEvery { associationRepository.createAssociation(any()) } returns Association("associationId", "name")
+        coEvery {
+            associationRepository.createAssociation(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } returns association
         coEvery { usersRepository.createUser(any(), any(), any(), any(), any(), any()) } returns User(
-            "id",
-            "associationId",
-            "email",
-            null,
-            "firstName",
-            "lastName",
-            true
+            "id", "associationId", "email", null,
+            "firstName", "lastName", true
         )
         every { hashPasswordUseCase(any()) } returns "hash"
-        useCase(CreateAssociationPayload("name", "email", "password", "firstName", "lastName"))
+        assertEquals(
+            association, useCase(
+                CreateAssociationPayload(
+                    "name", "school", "city", "email",
+                    "password", "firstName", "lastName"
+                )
+            )
+        )
         coVerifyOrder {
-            associationRepository.createAssociation("name")
-            usersRepository.createUser("associationId", "email", "hash", "firstName", "lastName", true)
+            associationRepository.createAssociation(
+                "name", "school", "city", false, any(), any()
+            )
+            usersRepository.createUser(
+                "associationId", "email", "hash", "firstName", "lastName", true
+            )
         }
+    }
+
+    @Test
+    fun invokeWithNull() = runBlocking {
+        val associationRepository = mockk<IAssociationsRepository>()
+        val usersRepository = mockk<IUsersRepository>()
+        val hashPasswordUseCase = mockk<IHashPasswordUseCase>()
+        val useCase = CreateAssociationUseCase(associationRepository, usersRepository, hashPasswordUseCase)
+        coEvery {
+            associationRepository.createAssociation(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } returns null
+        assertEquals(
+            null, useCase(
+                CreateAssociationPayload(
+                    "name", "school", "city", "email",
+                    "password", "firstName", "lastName"
+                )
+            )
+        )
     }
 
 }

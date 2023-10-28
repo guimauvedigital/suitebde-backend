@@ -16,7 +16,7 @@
     <body class="text-center">
     <main class="form-signin w-100 m-auto">
         <form method="post">
-            <img class="mb-4" src="/img/logo_round.png" alt="" width="96" height="96">
+            <img class="mb-4" src="/img/logo_rounded.png" alt="" width="96" height="96">
 
             <#nested>
         </form>

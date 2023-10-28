@@ -46,12 +46,12 @@ class DatabaseUsersRepositoryTest {
     }
 
     @Test
-    fun getUserForEmailInAssociation() = runBlocking {
-        val database = Database(protocol = "h2", name = "getUserForEmailInAssociation")
+    fun getUserForEmail() = runBlocking {
+        val database = Database(protocol = "h2", name = "getUserForEmail")
         val repository = DatabaseUsersRepository(database)
         val user = repository.createUser("associationId", "email", "password", "firstName", "lastName", false)
             ?: fail("Unable to create user")
-        val result = repository.getUserForEmailInAssociation(user.email, user.associationId, false)
+        val result = repository.getUserForEmail(user.email, false)
         assertEquals(user.id, result?.id)
         assertEquals(user.associationId, result?.associationId)
         assertEquals(user.email, result?.email)
@@ -62,12 +62,12 @@ class DatabaseUsersRepositoryTest {
     }
 
     @Test
-    fun getUserForEmailInAssociationWithPassword() = runBlocking {
-        val database = Database(protocol = "h2", name = "getUserForEmailInAssociationWithPassword")
+    fun getUserForEmailWithPassword() = runBlocking {
+        val database = Database(protocol = "h2", name = "getUserForEmailWithPassword")
         val repository = DatabaseUsersRepository(database)
         val user = repository.createUser("associationId", "email", "password", "firstName", "lastName", false)
             ?: fail("Unable to create user")
-        val result = repository.getUserForEmailInAssociation(user.email, user.associationId, true)
+        val result = repository.getUserForEmail(user.email, true)
         assertEquals(user.id, result?.id)
         assertEquals(user.associationId, result?.associationId)
         assertEquals(user.email, result?.email)
@@ -106,7 +106,7 @@ class DatabaseUsersRepositoryTest {
             firstName = "firstName2",
             lastName = "lastName2"
         )
-        repository.updateUser(updatedUser)
+        assertEquals(1, repository.updateUser(updatedUser))
         val userFromDatabase = database.dbQuery {
             Users
                 .selectAll()

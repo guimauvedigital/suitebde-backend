@@ -1,7 +1,9 @@
 package me.nathanfallet.suitebde.database.associations
 
+import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.associations.DomainInAssociation
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import org.jetbrains.exposed.sql.*
@@ -10,19 +12,35 @@ class DatabaseAssociationRepository(
     private val database: Database
 ) : IAssociationsRepository {
 
-    override suspend fun createAssociation(name: String): Association? {
+    override suspend fun createAssociation(
+        name: String,
+        school: String,
+        city: String,
+        validated: Boolean,
+        createdAt: Instant,
+        expiresAt: Instant
+    ): Association? {
         return database.dbQuery {
             Associations.insert {
                 it[id] = generateId()
                 it[this.name] = name
+                it[this.school] = school
+                it[this.city] = city
+                it[this.validated] = validated
+                it[this.createdAt] = createdAt.toString()
+                it[this.expiresAt] = expiresAt.toString()
             }.resultedValues?.map(Associations::toAssociation)?.singleOrNull()
         }
     }
 
-    override suspend fun updateAssociation(association: Association) {
-        database.dbQuery {
+    override suspend fun updateAssociation(association: Association): Int {
+        return database.dbQuery {
             Associations.update({ Associations.id eq association.id }) {
                 it[name] = association.name
+                it[school] = association.school
+                it[city] = association.city
+                it[validated] = association.validated
+                it[expiresAt] = association.expiresAt.toString()
             }
         }
     }
@@ -48,6 +66,14 @@ class DatabaseAssociationRepository(
         return database.dbQuery {
             Associations
                 .selectAll()
+                .map(Associations::toAssociation)
+        }
+    }
+
+    override suspend fun getValidatedAssociations(): List<Association> {
+        return database.dbQuery {
+            Associations
+                .select { Associations.validated eq true }
                 .map(Associations::toAssociation)
         }
     }
@@ -84,6 +110,54 @@ class DatabaseAssociationRepository(
             DomainsInAssociations
                 .select { DomainsInAssociations.associationId eq associationId }
                 .map(DomainsInAssociations::toDomainInAssociation)
+        }
+    }
+
+    override suspend fun getCodeInEmail(code: String): CodeInEmail? {
+        return database.dbQuery {
+            CodesInEmails
+                .select { CodesInEmails.code eq code }
+                .map(CodesInEmails::toCodeInEmail)
+                .singleOrNull()
+        }
+    }
+
+    override suspend fun createCodeInEmail(
+        email: String,
+        code: String,
+        associationId: String?,
+        expiresAt: Instant
+    ): CodeInEmail? {
+        return database.dbQuery {
+            CodesInEmails.insert {
+                it[this.email] = email
+                it[this.code] = code
+                it[this.associationId] = associationId
+                it[this.expiresAt] = expiresAt.toString()
+            }.resultedValues?.map(CodesInEmails::toCodeInEmail)?.singleOrNull()
+        }
+    }
+
+    override suspend fun updateCodeInEmail(
+        email: String,
+        code: String,
+        associationId: String?,
+        expiresAt: Instant
+    ): Int {
+        return database.dbQuery {
+            CodesInEmails.update({ CodesInEmails.email eq email }) {
+                it[this.code] = code
+                it[this.associationId] = associationId
+                it[this.expiresAt] = expiresAt.toString()
+            }
+        }
+    }
+
+    override suspend fun deleteCodeInEmailBefore(date: Instant) {
+        database.dbQuery {
+            CodesInEmails.deleteWhere {
+                Op.build { expiresAt less date.toString() }
+            }
         }
     }
 

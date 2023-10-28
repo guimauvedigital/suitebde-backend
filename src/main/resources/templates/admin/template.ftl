@@ -19,8 +19,8 @@
         <meta charset="utf-8"/>
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-        <link rel="apple-touch-icon" sizes="76x76" href="/img/logo_round.png">
-        <link rel="icon" type="image/png" href="/img/logo_round.png">
+        <link rel="apple-touch-icon" sizes="76x76" href="/img/logo_rounded.png">
+        <link rel="icon" type="image/png" href="/img/logo_rounded.png">
         <title><#if title??>${title} - </#if>Suite BDE</title>
 
         <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700" rel="stylesheet"/>
@@ -48,7 +48,7 @@
                 <i class="fas fa-times p-3 cursor-pointer text-secondary opacity-5 position-absolute end-0 top-0 d-none d-xl-none"
                    aria-hidden="true" id="iconSidenav"></i>
                 <a class="navbar-brand m-0" href="/">
-                    <img src="/img/logo_round.png" class="navbar-brand-img h-100" alt="Logo">
+                    <img src="/img/logo_rounded.png" class="navbar-brand-img h-100" alt="Logo">
                     <span class="ms-1 font-weight-bold">Suite BDE</span>
                 </a>
             </div>

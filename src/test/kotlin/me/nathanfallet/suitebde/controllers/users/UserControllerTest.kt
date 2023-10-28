@@ -6,6 +6,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
@@ -22,11 +23,22 @@ import kotlin.test.assertEquals
 
 class UserControllerTest {
 
-    private val association = Association("associationId", "name")
-    private val user = User("id", "associationId", "email", "password", "firstname", "lastname", false)
-    private val targetUser = User("targetId", "associationId", "email", "password", "firstname", "lastname", false)
-    private val targetUser2 =
-        User("targetId2", "associationId2", "email2", "password2", "firstname2", "lastname2", false)
+    private val association = Association(
+        "associationId", "name", "school", "city",
+        true, Clock.System.now(), Clock.System.now()
+    )
+    private val user = User(
+        "id", "associationId", "email", "password",
+        "firstname", "lastname", false
+    )
+    private val targetUser = User(
+        "targetId", "associationId", "email", "password",
+        "firstname", "lastname", false
+    )
+    private val targetUser2 = User(
+        "targetId2", "associationId2", "email2", "password2",
+        "firstname2", "lastname2", false
+    )
 
     @Test
     fun testGetAll() = runBlocking {
@@ -37,7 +49,7 @@ class UserControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(Pair(user, Permission.USERS_VIEW)) } returns true
+        coEvery { checkPermissionUseCase(Triple(user, association, Permission.USERS_VIEW)) } returns true
         coEvery { getUsersInAssociationUseCase(association.id) } returns listOf(targetUser)
         val controller = UserController(
             getAssociationForCallUseCase,
@@ -60,7 +72,7 @@ class UserControllerTest {
             controller.getAll(call)
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
-        assertEquals(LocalizedString.ERROR_ASSOCIATIONS_NOT_FOUND, exception.error)
+        assertEquals(LocalizedString.ASSOCIATIONS_NOT_FOUND, exception.error)
     }
 
     @Test
@@ -76,7 +88,7 @@ class UserControllerTest {
             controller.getAll(call)
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_VIEW_NOT_ALLOWED, exception.error)
+        assertEquals(LocalizedString.USERS_VIEW_NOT_ALLOWED, exception.error)
     }
 
     @Test
@@ -87,7 +99,7 @@ class UserControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(Pair(user, Permission.USERS_VIEW)) } returns false
+        coEvery { checkPermissionUseCase(Triple(user, association, Permission.USERS_VIEW)) } returns false
         val controller = UserController(
             getAssociationForCallUseCase,
             getUserForCallUseCase,
@@ -100,7 +112,7 @@ class UserControllerTest {
             controller.getAll(call)
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_VIEW_NOT_ALLOWED, exception.error)
+        assertEquals(LocalizedString.USERS_VIEW_NOT_ALLOWED, exception.error)
     }
 
     @Test
@@ -112,7 +124,7 @@ class UserControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(Pair(user, Permission.USERS_VIEW)) } returns true
+        coEvery { checkPermissionUseCase(Triple(user, association, Permission.USERS_VIEW)) } returns true
         coEvery { getUserUseCase(targetUser.id) } returns targetUser
         every { call.parameters["id"] } returns targetUser.id
         val controller = UserController(
@@ -136,7 +148,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
-        assertEquals(LocalizedString.ERROR_ASSOCIATIONS_NOT_FOUND, exception.error)
+        assertEquals(LocalizedString.ASSOCIATIONS_NOT_FOUND, exception.error)
     }
 
     @Test
@@ -153,7 +165,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_VIEW_NOT_ALLOWED, exception.error)
+        assertEquals(LocalizedString.USERS_VIEW_NOT_ALLOWED, exception.error)
     }
 
     @Test
@@ -179,7 +191,7 @@ class UserControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(Pair(user, Permission.USERS_VIEW)) } returns true
+        coEvery { checkPermissionUseCase(Triple(user, association, Permission.USERS_VIEW)) } returns true
         coEvery { getUserUseCase(targetUser.id) } returns null
         every { call.parameters["id"] } returns targetUser.id
         val controller = UserController(
@@ -194,7 +206,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_NOT_FOUND, exception.error)
+        assertEquals(LocalizedString.USERS_NOT_FOUND, exception.error)
     }
 
     @Test
@@ -206,7 +218,7 @@ class UserControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(Pair(user, Permission.USERS_VIEW)) } returns true
+        coEvery { checkPermissionUseCase(Triple(user, association, Permission.USERS_VIEW)) } returns true
         coEvery { getUserUseCase(targetUser2.id) } returns targetUser2
         every { call.parameters["id"] } returns targetUser2.id
         val controller = UserController(
@@ -221,7 +233,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_NOT_FOUND, exception.error)
+        assertEquals(LocalizedString.USERS_NOT_FOUND, exception.error)
     }
 
     @Test
@@ -232,7 +244,7 @@ class UserControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(Pair(user, Permission.USERS_VIEW)) } returns false
+        coEvery { checkPermissionUseCase(Triple(user, association, Permission.USERS_VIEW)) } returns false
         every { call.parameters["id"] } returns targetUser.id
         val controller = UserController(
             getAssociationForCallUseCase,
@@ -246,7 +258,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_VIEW_NOT_ALLOWED, exception.error)
+        assertEquals(LocalizedString.USERS_VIEW_NOT_ALLOWED, exception.error)
     }
 
     @Test
@@ -258,7 +270,7 @@ class UserControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns targetUser
-        coEvery { checkPermissionUseCase(Pair(targetUser, Permission.USERS_VIEW)) } returns false
+        coEvery { checkPermissionUseCase(Triple(targetUser, association, Permission.USERS_VIEW)) } returns false
         every { call.parameters["id"] } returns targetUser.id
         coEvery { getUserUseCase(targetUser.id) } returns targetUser
         val controller = UserController(
@@ -280,7 +292,7 @@ class UserControllerTest {
             controller.create(call, Unit)
         }
         assertEquals(HttpStatusCode.MethodNotAllowed, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_CREATE_NOT_ALLOWED, exception.error)
+        assertEquals(LocalizedString.USERS_CREATE_NOT_ALLOWED, exception.error)
     }
 
     @Test
@@ -296,7 +308,7 @@ class UserControllerTest {
             controller.delete(call)
         }
         assertEquals(HttpStatusCode.MethodNotAllowed, exception.code)
-        assertEquals(LocalizedString.ERROR_USERS_DELETE_NOT_ALLOWED, exception.error)
+        assertEquals(LocalizedString.USERS_DELETE_NOT_ALLOWED, exception.error)
     }
 
 }

@@ -3,15 +3,15 @@
     <h1 class="h3 mb-4 fw-normal">Connexion</h1>
 
     <#if error??>
-        <div class="alert alert-danger" role="alert">${error}</div>
+        <div id="alert-error" class="alert alert-danger" role="alert">${error}</div>
     </#if>
 
     <div class="form-floating">
-        <input type="text" class="form-control" id="email" name="email">
-        <label for="username">Adresse email</label>
+        <input type="email" class="form-control" id="email" name="email" required>
+        <label for="email">Adresse email</label>
     </div>
     <div class="form-floating">
-        <input type="password" class="form-control" id="password" name="password">
+        <input type="password" class="form-control" id="password" name="password" required>
         <label for="password">Mot de passe</label>
     </div>
 

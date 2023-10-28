@@ -1,5 +1,9 @@
 package me.nathanfallet.suitebde.usecases.associations
 
+import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
@@ -13,16 +17,25 @@ class CreateAssociationUseCase(
 ) : ICreateAssociationUseCase {
 
     override suspend fun invoke(input: CreateAssociationPayload): Association? {
-        return associationsRepository.createAssociation(input.name)?.also {
-            usersRepository.createUser(
-                it.id,
-                input.email,
-                hashPasswordUseCase(input.password),
-                input.firstName,
-                input.lastName,
-                true
-            )
-        }
+        val createdAt = Clock.System.now()
+        val expiresAt = createdAt.plus(1, DateTimeUnit.MONTH, TimeZone.currentSystemDefault())
+        val association = associationsRepository.createAssociation(
+            input.name,
+            input.school,
+            input.city,
+            false,
+            createdAt,
+            expiresAt
+        ) ?: return null
+        usersRepository.createUser(
+            association.id,
+            input.email,
+            hashPasswordUseCase(input.password),
+            input.firstName,
+            input.lastName,
+            true
+        )
+        return association
     }
 
 }

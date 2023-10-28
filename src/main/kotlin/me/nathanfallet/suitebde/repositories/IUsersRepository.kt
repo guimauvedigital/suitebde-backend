@@ -14,9 +14,9 @@ interface IUsersRepository {
     ): User?
 
     suspend fun getUser(id: String): User?
-    suspend fun getUserForEmailInAssociation(email: String, associationId: String, includePassword: Boolean): User?
+    suspend fun getUserForEmail(email: String, includePassword: Boolean): User?
     suspend fun getUsersInAssociation(associationId: String): List<User>
 
-    suspend fun updateUser(user: User)
+    suspend fun updateUser(user: User): Int
 
 }
