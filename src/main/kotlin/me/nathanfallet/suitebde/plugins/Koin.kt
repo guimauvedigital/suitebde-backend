@@ -34,7 +34,7 @@ fun Application.configureKoin() {
         val databaseModule = module {
             single {
                 Database(
-                    "mysql",
+                    environment.config.property("database.protocol").getString(),
                     environment.config.property("database.host").getString(),
                     environment.config.property("database.name").getString(),
                     environment.config.property("database.user").getString(),
