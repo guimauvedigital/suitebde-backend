@@ -78,6 +78,14 @@ class DatabaseAssociationRepository(
         }
     }
 
+    override suspend fun getAssociationsExpiringBefore(date: Instant): List<Association> {
+        return database.dbQuery {
+            Associations
+                .select { Associations.expiresAt less date.toString() }
+                .map(Associations::toAssociation)
+        }
+    }
+
     override suspend fun getAssociationForDomain(domain: String): Association? {
         return database.dbQuery {
             DomainsInAssociations
@@ -122,6 +130,14 @@ class DatabaseAssociationRepository(
         }
     }
 
+    override suspend fun getCodesInEmailsExpiringBefore(date: Instant): List<CodeInEmail> {
+        return database.dbQuery {
+            CodesInEmails
+                .select { CodesInEmails.expiresAt less date.toString() }
+                .map(CodesInEmails::toCodeInEmail)
+        }
+    }
+
     override suspend fun createCodeInEmail(
         email: String,
         code: String,
@@ -157,14 +173,6 @@ class DatabaseAssociationRepository(
         database.dbQuery {
             CodesInEmails.deleteWhere {
                 Op.build { CodesInEmails.code eq code }
-            }
-        }
-    }
-
-    override suspend fun deleteCodeInEmailBefore(date: Instant) {
-        database.dbQuery {
-            CodesInEmails.deleteWhere {
-                Op.build { expiresAt less date.toString() }
             }
         }
     }
