@@ -30,6 +30,7 @@ interface IAssociationsRepository {
     suspend fun getCodeInEmail(code: String): CodeInEmail?
     suspend fun createCodeInEmail(email: String, code: String, associationId: String?, expiresAt: Instant): CodeInEmail?
     suspend fun updateCodeInEmail(email: String, code: String, associationId: String?, expiresAt: Instant): Int
+    suspend fun deleteCodeInEmail(code: String)
     suspend fun deleteCodeInEmailBefore(date: Instant)
 
 }

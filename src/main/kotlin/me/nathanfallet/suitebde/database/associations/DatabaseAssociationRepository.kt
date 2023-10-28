@@ -153,6 +153,14 @@ class DatabaseAssociationRepository(
         }
     }
 
+    override suspend fun deleteCodeInEmail(code: String) {
+        database.dbQuery {
+            CodesInEmails.deleteWhere {
+                Op.build { CodesInEmails.code eq code }
+            }
+        }
+    }
+
     override suspend fun deleteCodeInEmailBefore(date: Instant) {
         database.dbQuery {
             CodesInEmails.deleteWhere {

@@ -244,6 +244,21 @@ class DatabaseAssociationRepositoryTest {
     }
 
     @Test
+    fun deleteCodeInEmail() = runBlocking {
+        val database = Database(protocol = "h2", name = "deleteCodeInEmail")
+        val repository = DatabaseAssociationRepository(database)
+        val codeInEmail = repository.createCodeInEmail("email", "code", "associationId", tomorrow)
+            ?: fail("Unable to create code in email")
+        repository.deleteCodeInEmail(codeInEmail.code)
+        val count = database.dbQuery {
+            CodesInEmails
+                .selectAll()
+                .count()
+        }
+        assertEquals(0, count)
+    }
+
+    @Test
     fun deleteCodeInEmailBefore() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteCodeInEmailBefore")
         val repository = DatabaseAssociationRepository(database)

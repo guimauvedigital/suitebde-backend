@@ -11,6 +11,7 @@ import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.application.ISendEmailUseCase
 import me.nathanfallet.suitebde.usecases.associations.ICreateAssociationUseCase
 import me.nathanfallet.suitebde.usecases.associations.ICreateCodeInEmailUseCase
+import me.nathanfallet.suitebde.usecases.associations.IDeleteCodeInEmailUseCase
 import me.nathanfallet.suitebde.usecases.associations.IGetCodeInEmailUseCase
 import me.nathanfallet.suitebde.usecases.auth.ILoginUseCase
 
@@ -18,6 +19,7 @@ class AuthController(
     private val loginUseCase: ILoginUseCase,
     private val createCodeInEmailUseCase: ICreateCodeInEmailUseCase,
     private val getCodeInEmailUseCase: IGetCodeInEmailUseCase,
+    private val deleteCodeInEmailUseCase: IDeleteCodeInEmailUseCase,
     private val createAssociationUseCase: ICreateAssociationUseCase,
     private val sendEmailUseCase: ISendEmailUseCase
 ) : IAuthController {
@@ -58,6 +60,7 @@ class AuthController(
                 lastName = payload.lastName
             )
         ) ?: throw ControllerException(HttpStatusCode.InternalServerError, LocalizedString.ERROR_INTERNAL)
+        deleteCodeInEmailUseCase(payload.code)
     }
 
 }
