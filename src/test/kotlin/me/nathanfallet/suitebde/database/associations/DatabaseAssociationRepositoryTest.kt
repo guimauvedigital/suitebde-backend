@@ -124,6 +124,52 @@ class DatabaseAssociationRepositoryTest {
     }
 
     @Test
+    fun getValidatedAssociations() = runBlocking {
+        val database = Database(protocol = "h2", name = "getValidatedAssociations")
+        val repository = DatabaseAssociationRepository(database)
+        val association = repository.createAssociation(
+            "name", "school", "city",
+            true, now, tomorrow
+        ) ?: fail("Unable to create association")
+        repository.createAssociation(
+            "name 2", "school", "city",
+            false, now, tomorrow
+        ) ?: fail("Unable to create association")
+        val associations = repository.getValidatedAssociations()
+        assertEquals(associations.size, 1)
+        assertEquals(associations.first().id, association.id)
+        assertEquals(associations.first().name, association.name)
+        assertEquals(associations.first().school, association.school)
+        assertEquals(associations.first().city, association.city)
+        assertEquals(associations.first().validated, association.validated)
+        assertEquals(associations.first().createdAt, association.createdAt)
+        assertEquals(associations.first().expiresAt, association.expiresAt)
+    }
+
+    @Test
+    fun getAssociationsExpiringBefore() = runBlocking {
+        val database = Database(protocol = "h2", name = "getAssociationsExpiringBefore")
+        val repository = DatabaseAssociationRepository(database)
+        val association = repository.createAssociation(
+            "name", "school", "city",
+            true, now, yesterday
+        ) ?: fail("Unable to create association")
+        repository.createAssociation(
+            "name 2", "school", "city",
+            true, now, tomorrow
+        ) ?: fail("Unable to create association")
+        val associations = repository.getAssociationsExpiringBefore(now)
+        assertEquals(associations.size, 1)
+        assertEquals(associations.first().id, association.id)
+        assertEquals(associations.first().name, association.name)
+        assertEquals(associations.first().school, association.school)
+        assertEquals(associations.first().city, association.city)
+        assertEquals(associations.first().validated, association.validated)
+        assertEquals(associations.first().createdAt, association.createdAt)
+        assertEquals(associations.first().expiresAt, association.expiresAt)
+    }
+
+    @Test
     fun getAssociationForDomain() = runBlocking {
         val database = Database(protocol = "h2", name = "getAssociationForDomain")
         val repository = DatabaseAssociationRepository(database)
@@ -205,6 +251,22 @@ class DatabaseAssociationRepositoryTest {
     }
 
     @Test
+    fun getCodesInEmailsExpiringBefore() = runBlocking {
+        val database = Database(protocol = "h2", name = "getCodesInEmailsExpiringBefore")
+        val repository = DatabaseAssociationRepository(database)
+        val codeInEmail = repository.createCodeInEmail("email", "code", "associationId", yesterday)
+            ?: fail("Unable to create code in email")
+        repository.createCodeInEmail("email2", "code", "associationId", tomorrow)
+            ?: fail("Unable to create code in email")
+        val codesInEmails = repository.getCodesInEmailsExpiringBefore(now)
+        assertEquals(codesInEmails.size, 1)
+        assertEquals(codesInEmails.first().email, codeInEmail.email)
+        assertEquals(codesInEmails.first().code, codeInEmail.code)
+        assertEquals(codesInEmails.first().associationId, codeInEmail.associationId)
+        assertEquals(codesInEmails.first().expiresAt, codeInEmail.expiresAt)
+    }
+
+    @Test
     fun createCodeInEmail() = runBlocking {
         val database = Database(protocol = "h2", name = "createCodeInEmail")
         val repository = DatabaseAssociationRepository(database)
@@ -250,21 +312,6 @@ class DatabaseAssociationRepositoryTest {
         val codeInEmail = repository.createCodeInEmail("email", "code", "associationId", tomorrow)
             ?: fail("Unable to create code in email")
         repository.deleteCodeInEmail(codeInEmail.code)
-        val count = database.dbQuery {
-            CodesInEmails
-                .selectAll()
-                .count()
-        }
-        assertEquals(0, count)
-    }
-
-    @Test
-    fun deleteCodeInEmailBefore() = runBlocking {
-        val database = Database(protocol = "h2", name = "deleteCodeInEmailBefore")
-        val repository = DatabaseAssociationRepository(database)
-        repository.createCodeInEmail("email", "code", "associationId", yesterday)
-            ?: fail("Unable to create code in email")
-        repository.deleteCodeInEmailBefore(now)
         val count = database.dbQuery {
             CodesInEmails
                 .selectAll()

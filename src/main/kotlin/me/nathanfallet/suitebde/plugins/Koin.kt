@@ -18,6 +18,8 @@ import me.nathanfallet.suitebde.database.associations.DatabaseAssociationReposit
 import me.nathanfallet.suitebde.database.users.DatabaseUsersRepository
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.IUsersRepository
+import me.nathanfallet.suitebde.usecases.application.ExpireUseCase
+import me.nathanfallet.suitebde.usecases.application.IExpireUseCase
 import me.nathanfallet.suitebde.usecases.application.ISendEmailUseCase
 import me.nathanfallet.suitebde.usecases.application.SendEmailUseCase
 import me.nathanfallet.suitebde.usecases.associations.*
@@ -48,10 +50,12 @@ fun Application.configureKoin() {
         }
         val useCaseModule = module {
             single<ISendEmailUseCase> { SendEmailUseCase() }
+            single<IExpireUseCase> { ExpireUseCase(get(), get(), get()) }
 
             single<ICreateAssociationUseCase> { CreateAssociationUseCase(get(), get(), get()) }
             single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
             single<IGetAssociationForCallUseCase> { GetAssociationForCallUseCase(get()) }
+            single<IDeleteAssociationUseCase> { DeleteAssociationUseCase(get()) }
             single<ICreateCodeInEmailUseCase> { CreateCodeInEmailUseCase(get(), get()) }
             single<IGetCodeInEmailUseCase> { GetCodeInEmailUseCase(get()) }
             single<IDeleteCodeInEmailUseCase> { DeleteCodeInEmailUseCase(get()) }
