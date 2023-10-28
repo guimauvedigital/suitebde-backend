@@ -135,7 +135,7 @@ class AuthRouterTest {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val router = AuthRouter(controller)
-        coEvery { controller.join(JoinPayload("email")) } returns Unit
+        coEvery { controller.join(JoinPayload("email"), any()) } returns Unit
         routing {
             router.createPostJoinRoute(this)
         }
@@ -168,7 +168,7 @@ class AuthRouterTest {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val router = AuthRouter(controller)
-        coEvery { controller.join(JoinPayload("email")) } throws ControllerException(
+        coEvery { controller.join(JoinPayload("email"), any()) } throws ControllerException(
             HttpStatusCode.BadRequest,
             LocalizedString.AUTH_JOIN_EMAIL_TAKEN
         )
@@ -189,7 +189,7 @@ class AuthRouterTest {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val router = AuthRouter(controller)
-        coEvery { controller.join("code") } returns JoinPayload("email@email.com")
+        coEvery { controller.join("code", any()) } returns JoinPayload("email@email.com")
         routing {
             router.createGetJoinCodeRoute(this)
         }
@@ -233,7 +233,7 @@ class AuthRouterTest {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val router = AuthRouter(controller)
-        coEvery { controller.join("code") } throws ControllerException(
+        coEvery { controller.join("code", any()) } throws ControllerException(
             HttpStatusCode.NotFound,
             LocalizedString.AUTH_JOIN_CODE_INVALID
         )
@@ -251,13 +251,14 @@ class AuthRouterTest {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val router = AuthRouter(controller)
-        coEvery { controller.join("code") } returns JoinPayload("email")
+        coEvery { controller.join("code", any()) } returns JoinPayload("email")
         coEvery {
             controller.join(
                 JoinCodePayload(
                     "code", "email", "name", "school", "city",
                     "password", "firstname", "lastname"
-                )
+                ),
+                any()
             )
         } returns Unit
         routing {
@@ -286,7 +287,7 @@ class AuthRouterTest {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val router = AuthRouter(controller)
-        coEvery { controller.join("code") } returns JoinPayload("email")
+        coEvery { controller.join("code", any()) } returns JoinPayload("email")
         routing {
             router.createPostJoinCodeRoute(this)
         }
@@ -303,7 +304,7 @@ class AuthRouterTest {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val router = AuthRouter(controller)
-        coEvery { controller.join("code") } throws ControllerException(
+        coEvery { controller.join("code", any()) } throws ControllerException(
             HttpStatusCode.NotFound,
             LocalizedString.AUTH_JOIN_CODE_INVALID
         )

@@ -6,6 +6,7 @@ import io.ktor.server.freemarker.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.controllers.IRouter
 import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.auth.JoinCodePayload
@@ -103,7 +104,7 @@ class AuthRouter(
                 val email = parameters["email"] ?: throw ControllerException(
                     HttpStatusCode.BadRequest, LocalizedString.ERROR_BODY_INVALID
                 )
-                controller.join(JoinPayload(email))
+                controller.join(JoinPayload(email), Clock.System.now())
                 call.respond(
                     FreeMarkerContent(
                         "auth/join.ftl",
@@ -126,7 +127,7 @@ class AuthRouter(
         root.get("/{code}") {
             try {
                 val code = call.parameters["code"]!!
-                val payload = controller.join(code)
+                val payload = controller.join(code, Clock.System.now())
                 call.respond(
                     FreeMarkerContent(
                         "auth/join.ftl",
@@ -149,7 +150,7 @@ class AuthRouter(
         root.post("/{code}") {
             try {
                 val code = call.parameters["code"]!!
-                val payload = controller.join(code)
+                val payload = controller.join(code, Clock.System.now())
                 val parameters = call.receiveParameters()
                 val name = parameters["name"]?.takeIf { it.isNotBlank() }
                 val school = parameters["school"]?.takeIf { it.isNotBlank() }
@@ -177,7 +178,8 @@ class AuthRouter(
                         password,
                         firstName,
                         lastName
-                    )
+                    ),
+                    Clock.System.now()
                 )
                 call.respond(
                     FreeMarkerContent(

@@ -1,6 +1,7 @@
 package me.nathanfallet.suitebde.usecases.associations
 
+import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.usecases.ISuspendUseCase
 
-interface ICreateCodeInEmailUseCase : ISuspendUseCase<Pair<String, String?>, CodeInEmail?>
+interface ICreateCodeInEmailUseCase : ISuspendUseCase<Triple<String, String?, Instant>, CodeInEmail?>

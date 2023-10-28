@@ -22,9 +22,10 @@ class CreateAssociationUseCaseTest {
         val associationRepository = mockk<IAssociationsRepository>()
         val usersRepository = mockk<IUsersRepository>()
         val hashPasswordUseCase = mockk<IHashPasswordUseCase>()
+        val now = Clock.System.now()
         val association = Association(
             "associationId", "name", "school", "city",
-            false, Clock.System.now(), Clock.System.now()
+            false, now, now
         )
         val useCase = CreateAssociationUseCase(associationRepository, usersRepository, hashPasswordUseCase)
         coEvery {
@@ -44,9 +45,11 @@ class CreateAssociationUseCaseTest {
         every { hashPasswordUseCase(any()) } returns "hash"
         assertEquals(
             association, useCase(
-                CreateAssociationPayload(
-                    "name", "school", "city", "email",
-                    "password", "firstName", "lastName"
+                Pair(
+                    CreateAssociationPayload(
+                        "name", "school", "city", "email",
+                        "password", "firstName", "lastName"
+                    ), now
                 )
             )
         )
@@ -78,9 +81,11 @@ class CreateAssociationUseCaseTest {
         } returns null
         assertEquals(
             null, useCase(
-                CreateAssociationPayload(
-                    "name", "school", "city", "email",
-                    "password", "firstName", "lastName"
+                Pair(
+                    CreateAssociationPayload(
+                        "name", "school", "city", "email",
+                        "password", "firstName", "lastName"
+                    ), Clock.System.now()
                 )
             )
         )

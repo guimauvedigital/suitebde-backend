@@ -42,11 +42,12 @@ class AuthControllerTest {
         val createCodeInEmailUseCase = mockk<ICreateCodeInEmailUseCase>()
         val sendEmailUseCase = mockk<ISendEmailUseCase>()
         val controller = AuthController(mockk(), createCodeInEmailUseCase, mockk(), mockk(), mockk(), sendEmailUseCase)
-        coEvery { createCodeInEmailUseCase(Pair("email", null)) } returns CodeInEmail(
+        val now = Clock.System.now()
+        coEvery { createCodeInEmailUseCase(Triple("email", null, now)) } returns CodeInEmail(
             "email", "code", null, Clock.System.now()
         )
         coEvery { sendEmailUseCase(any()) } returns Unit
-        controller.join(JoinPayload("email"))
+        controller.join(JoinPayload("email"), now)
         coVerify {
             sendEmailUseCase(
                 Triple(
@@ -62,9 +63,10 @@ class AuthControllerTest {
     fun testJoinEmailTaken() = runBlocking {
         val createCodeInEmailUseCase = mockk<ICreateCodeInEmailUseCase>()
         val controller = AuthController(mockk(), createCodeInEmailUseCase, mockk(), mockk(), mockk(), mockk())
-        coEvery { createCodeInEmailUseCase(Pair("email", null)) } returns null
+        val now = Clock.System.now()
+        coEvery { createCodeInEmailUseCase(Triple("email", null, now)) } returns null
         val exception = assertThrows<ControllerException> {
-            controller.join(JoinPayload("email"))
+            controller.join(JoinPayload("email"), now)
         }
         assertEquals(HttpStatusCode.BadRequest, exception.code)
         assertEquals(LocalizedString.AUTH_JOIN_EMAIL_TAKEN, exception.error)
@@ -74,19 +76,21 @@ class AuthControllerTest {
     fun testJoinCode() = runBlocking {
         val getCodeInEmailUseCase = mockk<IGetCodeInEmailUseCase>()
         val controller = AuthController(mockk(), mockk(), getCodeInEmailUseCase, mockk(), mockk(), mockk())
-        coEvery { getCodeInEmailUseCase("code") } returns CodeInEmail(
-            "email", "code", null, Clock.System.now()
+        val now = Clock.System.now()
+        coEvery { getCodeInEmailUseCase(Pair("code", now)) } returns CodeInEmail(
+            "email", "code", null, now
         )
-        assertEquals(JoinPayload("email"), controller.join("code"))
+        assertEquals(JoinPayload("email"), controller.join("code", now))
     }
 
     @Test
     fun testJoinCodeInvalid() = runBlocking {
         val getCodeInEmailUseCase = mockk<IGetCodeInEmailUseCase>()
         val controller = AuthController(mockk(), mockk(), getCodeInEmailUseCase, mockk(), mockk(), mockk())
-        coEvery { getCodeInEmailUseCase("code") } returns null
+        val now = Clock.System.now()
+        coEvery { getCodeInEmailUseCase(Pair("code", now)) } returns null
         val exception = assertThrows<ControllerException> {
-            controller.join("code")
+            controller.join("code", now)
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
         assertEquals(LocalizedString.AUTH_JOIN_CODE_INVALID, exception.error)
@@ -98,22 +102,27 @@ class AuthControllerTest {
         val deleteCodeInEmailUseCase = mockk<IDeleteCodeInEmailUseCase>()
         val controller =
             AuthController(mockk(), mockk(), mockk(), deleteCodeInEmailUseCase, createAssociationUseCase, mockk())
+        val now = Clock.System.now()
         coEvery { createAssociationUseCase(any()) } returns Association(
             "id", "name", "school", "city",
-            false, Clock.System.now(), Clock.System.now()
+            false, now, now
         )
         coEvery { deleteCodeInEmailUseCase("code") } returns Unit
         controller.join(
             JoinCodePayload(
                 "code", "email", "name", "school", "city",
                 "password", "firstname", "lastname"
-            )
+            ),
+            now
         )
         coVerify {
             createAssociationUseCase(
-                CreateAssociationPayload(
-                    "name", "school", "city", "email",
-                    "password", "firstname", "lastname"
+                Pair(
+                    CreateAssociationPayload(
+                        "name", "school", "city", "email",
+                        "password", "firstname", "lastname"
+                    ),
+                    now
                 )
             )
             deleteCodeInEmailUseCase("code")
@@ -130,7 +139,8 @@ class AuthControllerTest {
                 JoinCodePayload(
                     "code", "email", "name", "school", "city",
                     "password", "firstname", "lastname"
-                )
+                ),
+                Clock.System.now()
             )
         }
         assertEquals(HttpStatusCode.InternalServerError, exception.code)

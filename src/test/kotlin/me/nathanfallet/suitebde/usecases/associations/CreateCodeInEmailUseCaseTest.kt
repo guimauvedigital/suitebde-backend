@@ -5,6 +5,9 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
+import kotlinx.datetime.DateTimeUnit
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.plus
 import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
@@ -22,12 +25,13 @@ class CreateCodeInEmailUseCaseTest {
         val associationsRepository = mockk<IAssociationsRepository>()
         val usersRepository = mockk<IUsersRepository>()
         val useCase = CreateCodeInEmailUseCase(associationsRepository, usersRepository)
+        val now = Clock.System.now()
         val code = CodeInEmail(
-            "email", "code", "associationId", Clock.System.now()
+            "email", "code", "associationId", now.plus(1, DateTimeUnit.HOUR, TimeZone.currentSystemDefault())
         )
         coEvery { usersRepository.getUserForEmail("email", false) } returns null
         coEvery { associationsRepository.createCodeInEmail("email", any(), "associationId", any()) } returns code
-        val result = useCase.invoke(Pair("email", "associationId"))
+        val result = useCase.invoke(Triple("email", "associationId", now))
         assertEquals("email", result?.email)
         assertEquals("associationId", result?.associationId)
     }
@@ -40,7 +44,7 @@ class CreateCodeInEmailUseCaseTest {
         coEvery { usersRepository.getUserForEmail("email", false) } returns null
         coEvery { associationsRepository.createCodeInEmail("email", any(), "associationId", any()) } throws Exception()
         coEvery { associationsRepository.updateCodeInEmail("email", any(), "associationId", any()) } returns 1
-        val result = useCase.invoke(Pair("email", "associationId"))
+        val result = useCase.invoke(Triple("email", "associationId", Clock.System.now()))
         assertEquals("email", result?.email)
         assertEquals("associationId", result?.associationId)
     }
@@ -54,7 +58,7 @@ class CreateCodeInEmailUseCaseTest {
         coEvery { associationsRepository.createCodeInEmail("email", any(), "associationId", any()) } throws Exception()
         coEvery { associationsRepository.updateCodeInEmail("email", any(), "associationId", any()) } returns 0
         val exception = assertThrows<ControllerException> {
-            useCase.invoke(Pair("email", "associationId"))
+            useCase.invoke(Triple("email", "associationId", Clock.System.now()))
         }
         assertEquals(HttpStatusCode.InternalServerError, exception.code)
         assertEquals(LocalizedString.ERROR_INTERNAL, exception.error)
@@ -68,7 +72,7 @@ class CreateCodeInEmailUseCaseTest {
         coEvery { usersRepository.getUserForEmail("email", false) } returns User(
             "id", "associationId", "email", "password", "firstname", "lastname", false
         )
-        assertEquals(null, useCase.invoke(Pair("email", "associationId")))
+        assertEquals(null, useCase.invoke(Triple("email", "associationId", Clock.System.now())))
     }
 
 }
