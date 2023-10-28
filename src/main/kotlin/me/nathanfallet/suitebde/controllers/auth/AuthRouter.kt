@@ -52,14 +52,12 @@ class AuthRouter(
                 val parameters = call.receiveParameters()
                 val email = parameters["email"]
                 val password = parameters["password"]
-                val associationId = parameters["associationId"]
-                if (email == null || password == null || associationId == null) {
+                if (email == null || password == null) {
                     throw ControllerException(HttpStatusCode.BadRequest, LocalizedString.ERROR_BODY_INVALID)
                 }
                 val user = controller.login(
                     LoginPayload(
                         email,
-                        associationId,
                         password
                     )
                 )

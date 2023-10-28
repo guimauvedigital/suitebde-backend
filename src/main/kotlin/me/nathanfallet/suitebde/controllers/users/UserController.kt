@@ -27,7 +27,7 @@ class UserController(
             HttpStatusCode.NotFound, LocalizedString.ASSOCIATIONS_NOT_FOUND
         )
         getUserForCallUseCase(call)?.takeIf {
-            checkPermissionUseCase(Pair(it, Permission.USERS_VIEW))
+            checkPermissionUseCase(Triple(it, association, Permission.USERS_VIEW))
         } ?: throw ControllerException(
             HttpStatusCode.Unauthorized, LocalizedString.USERS_VIEW_NOT_ALLOWED
         )
@@ -42,7 +42,7 @@ class UserController(
             HttpStatusCode.BadRequest, LocalizedString.ERROR_MISSING_ID
         )
         getUserForCallUseCase(call)?.takeIf {
-            it.id.equals(id, true) || checkPermissionUseCase(Pair(it, Permission.USERS_VIEW))
+            it.id.equals(id, true) || checkPermissionUseCase(Triple(it, association, Permission.USERS_VIEW))
         } ?: throw ControllerException(HttpStatusCode.Unauthorized, LocalizedString.USERS_VIEW_NOT_ALLOWED)
         return getUserUseCase(id)?.takeIf {
             it.associationId == association.id
@@ -61,7 +61,7 @@ class UserController(
             HttpStatusCode.BadRequest, LocalizedString.ERROR_MISSING_ID
         )
         getUserForCallUseCase(call)?.takeIf {
-            it.id.equals(id, true) || checkPermissionUseCase(Pair(it, Permission.USERS_UPDATE))
+            it.id.equals(id, true) || checkPermissionUseCase(Triple(it, association, Permission.USERS_UPDATE))
         } ?: throw ControllerException(HttpStatusCode.Unauthorized, LocalizedString.USERS_UPDATE_NOT_ALLOWED)
         val targetUser = getUserUseCase(id)?.takeIf {
             it.associationId == association.id

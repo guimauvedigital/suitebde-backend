@@ -3,7 +3,6 @@ package me.nathanfallet.suitebde.database.users
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.IUsersRepository
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.update
@@ -42,14 +41,13 @@ class DatabaseUsersRepository(
         }
     }
 
-    override suspend fun getUserForEmailInAssociation(
+    override suspend fun getUserForEmail(
         email: String,
-        associationId: String,
         includePassword: Boolean
     ): User? {
         return database.dbQuery {
             Users
-                .select { Users.associationId eq associationId and (Users.email eq email) }
+                .select { Users.email eq email }
                 .map {
                     Users.toUser(it, includePassword)
                 }

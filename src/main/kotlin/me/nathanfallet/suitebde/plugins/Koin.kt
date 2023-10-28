@@ -52,7 +52,7 @@ fun Application.configureKoin() {
             single<ICreateAssociationUseCase> { CreateAssociationUseCase(get(), get(), get()) }
             single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
             single<IGetAssociationForCallUseCase> { GetAssociationForCallUseCase(get()) }
-            single<ICreateCodeInEmailUseCase> { CreateCodeInEmailUseCase(get()) }
+            single<ICreateCodeInEmailUseCase> { CreateCodeInEmailUseCase(get(), get()) }
             single<IGetCodeInEmailUseCase> { GetCodeInEmailUseCase(get()) }
 
             single<IHashPasswordUseCase> { HashPasswordUseCase() }

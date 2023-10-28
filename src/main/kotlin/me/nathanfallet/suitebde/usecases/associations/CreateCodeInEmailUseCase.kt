@@ -9,20 +9,24 @@ import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.IUsersRepository
 import me.nathanfallet.suitebde.utils.IdHelper
 
 class CreateCodeInEmailUseCase(
-    private val repository: IAssociationsRepository
+    private val associationsRepository: IAssociationsRepository,
+    private val usersRepository: IUsersRepository
 ) : ICreateCodeInEmailUseCase {
 
     override suspend fun invoke(input: Pair<String, String?>): CodeInEmail? {
-        // TODO: Check email availability + still valid code (not expired)
+        usersRepository.getUserForEmail(input.first, false)?.let {
+            return null
+        }
         val code = IdHelper.generateId().take(32)
         val expiresAt = Clock.System.now().plus(1, DateTimeUnit.DAY, TimeZone.currentSystemDefault())
         return try {
-            repository.createCodeInEmail(input.first, code, input.second, expiresAt)
+            associationsRepository.createCodeInEmail(input.first, code, input.second, expiresAt)
         } catch (e: Exception) {
-            repository.updateCodeInEmail(input.first, code, input.second, expiresAt).takeIf {
+            associationsRepository.updateCodeInEmail(input.first, code, input.second, expiresAt).takeIf {
                 it == 1
             } ?: throw ControllerException(HttpStatusCode.InternalServerError, LocalizedString.ERROR_INTERNAL)
             CodeInEmail(input.first, code, input.second, expiresAt)
