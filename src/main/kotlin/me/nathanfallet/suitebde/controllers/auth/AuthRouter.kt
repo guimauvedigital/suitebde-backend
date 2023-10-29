@@ -12,6 +12,7 @@ import me.nathanfallet.suitebde.controllers.IRouter
 import me.nathanfallet.suitebde.models.auth.JoinCodePayload
 import me.nathanfallet.suitebde.models.auth.JoinPayload
 import me.nathanfallet.suitebde.models.auth.LoginPayload
+import me.nathanfallet.suitebde.models.auth.RegisterPayload
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 
@@ -28,6 +29,8 @@ class AuthRouter(
             }
             route("/register") {
                 createGetRegisterRoute(this)
+                createPostRegisterRoute(this)
+                createGetRegisterCodeRoute(this)
             }
             route("/join") {
                 createGetJoinRoute(this)
@@ -89,6 +92,67 @@ class AuthRouter(
                     mapOf("locale" to call.locale)
                 )
             )
+        }
+    }
+
+    fun createPostRegisterRoute(root: Route) {
+        root.post {
+            try {
+                val parameters = call.receiveParameters()
+                val email = parameters["email"] ?: throw ControllerException(
+                    HttpStatusCode.BadRequest, "error_body_invalid"
+                )
+                controller.register(RegisterPayload(email), Clock.System.now(), call.locale, call)
+                call.respond(
+                    FreeMarkerContent(
+                        "auth/join.ftl",
+                        mapOf(
+                            "locale" to call.locale,
+                            "success" to translateUseCase(call.locale, "auth_register_email_sent")
+                        )
+                    )
+                )
+            } catch (exception: ControllerException) {
+                call.response.status(exception.code)
+                call.respond(
+                    FreeMarkerContent(
+                        "auth/register.ftl",
+                        mapOf(
+                            "locale" to call.locale,
+                            "error" to translateUseCase(call.locale, exception.key)
+                        )
+                    )
+                )
+            }
+        }
+    }
+
+    fun createGetRegisterCodeRoute(root: Route) {
+        root.get("/{code}") {
+            try {
+                val code = call.parameters["code"]!!
+                val payload = controller.register(code, Clock.System.now())
+                call.respond(
+                    FreeMarkerContent(
+                        "auth/join.ftl",
+                        mapOf(
+                            "locale" to call.locale,
+                            "code" to payload
+                        )
+                    )
+                )
+            } catch (exception: ControllerException) {
+                call.response.status(exception.code)
+                call.respond(
+                    FreeMarkerContent(
+                        "auth/join.ftl",
+                        mapOf(
+                            "locale" to call.locale,
+                            "error" to translateUseCase(call.locale, exception.key)
+                        )
+                    )
+                )
+            }
         }
     }
 

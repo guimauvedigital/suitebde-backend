@@ -11,9 +11,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import me.nathanfallet.suitebde.models.auth.JoinCodePayload
-import me.nathanfallet.suitebde.models.auth.JoinPayload
-import me.nathanfallet.suitebde.models.auth.LoginPayload
+import me.nathanfallet.suitebde.models.auth.*
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.plugins.*
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
@@ -109,6 +107,135 @@ class AuthRouterTest {
         assertEquals(HttpStatusCode.Unauthorized, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals("t:auth_invalid_credentials", document.getElementById("alert-error")?.text())
+    }
+
+    @Test
+    fun testGetRegisterRoute() = testApplication {
+        val client = installApp(this)
+        val router = AuthRouter(mockk<IAuthController>(), mockk())
+        routing {
+            router.createGetRegisterRoute(this)
+        }
+        val response = client.get("/")
+        assertEquals(HttpStatusCode.OK, response.status)
+        val document = Jsoup.parse(response.bodyAsText())
+        assertEquals(true, document.getElementById("email")?.`is`("input"))
+        assertEquals("email", document.getElementById("email")?.attr("name"))
+        assertEquals("email", document.getElementById("email")?.attr("type"))
+        assertEquals(true, document.getElementById("email")?.hasAttr("required"))
+        assertEquals(true, document.getElementsByAttributeValue("type", "submit").first()?.`is`("button"))
+    }
+
+    @Test
+    fun testPostRegisterRoute() = testApplication {
+        val client = installApp(this)
+        val controller = mockk<IAuthController>()
+        val translateUseCase = mockk<ITranslateUseCase>()
+        val router = AuthRouter(controller, translateUseCase)
+        coEvery { controller.register(RegisterPayload("email"), any(), any(), any()) } returns Unit
+        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
+        routing {
+            router.createPostRegisterRoute(this)
+        }
+        val response = client.post("/") {
+            contentType(ContentType.Application.FormUrlEncoded)
+            setBody(listOf("email" to "email").formUrlEncode())
+        }
+        assertEquals(HttpStatusCode.OK, response.status)
+        val document = Jsoup.parse(response.bodyAsText())
+        assertEquals("t:auth_register_email_sent", document.getElementById("alert-success")?.text())
+    }
+
+    @Test
+    fun testPostRegisterRouteInvalidBody() = testApplication {
+        val client = installApp(this)
+        val translateUseCase = mockk<ITranslateUseCase>()
+        val router = AuthRouter(mockk<IAuthController>(), translateUseCase)
+        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
+        routing {
+            router.createPostRegisterRoute(this)
+        }
+        val response = client.post("/") {
+            contentType(ContentType.Application.FormUrlEncoded)
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        val document = Jsoup.parse(response.bodyAsText())
+        assertEquals("t:error_body_invalid", document.getElementById("alert-error")?.text())
+    }
+
+    @Test
+    fun testPostRegisterRouteEmailTaken() = testApplication {
+        val client = installApp(this)
+        val controller = mockk<IAuthController>()
+        val translateUseCase = mockk<ITranslateUseCase>()
+        val router = AuthRouter(controller, translateUseCase)
+        coEvery { controller.register(RegisterPayload("email"), any(), any(), any()) } throws ControllerException(
+            HttpStatusCode.BadRequest,
+            "auth_register_email_taken"
+        )
+        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
+        routing {
+            router.createPostRegisterRoute(this)
+        }
+        val response = client.post("/") {
+            contentType(ContentType.Application.FormUrlEncoded)
+            setBody(listOf("email" to "email").formUrlEncode())
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        val document = Jsoup.parse(response.bodyAsText())
+        assertEquals("t:auth_register_email_taken", document.getElementById("alert-error")?.text())
+    }
+
+    @Test
+    fun testGetRegisterCodeRoute() = testApplication {
+        val client = installApp(this)
+        val controller = mockk<IAuthController>()
+        val router = AuthRouter(controller, mockk())
+        coEvery { controller.register("code", any()) } returns RegisterWithAssociationPayload("email@email.com", "id")
+        routing {
+            router.createGetRegisterCodeRoute(this)
+        }
+        val response = client.get("/code")
+        assertEquals(HttpStatusCode.OK, response.status)
+        val document = Jsoup.parse(response.bodyAsText())
+        assertEquals(true, document.getElementById("email")?.`is`("input"))
+        assertEquals("email", document.getElementById("email")?.attr("name"))
+        assertEquals("email", document.getElementById("email")?.attr("type"))
+        assertEquals("email@email.com", document.getElementById("email")?.attr("value"))
+        assertEquals(true, document.getElementById("email")?.hasAttr("disabled"))
+        assertEquals(true, document.getElementById("password")?.`is`("input"))
+        assertEquals("password", document.getElementById("password")?.attr("name"))
+        assertEquals("password", document.getElementById("password")?.attr("type"))
+        assertEquals(true, document.getElementById("password")?.hasAttr("required"))
+        assertEquals(true, document.getElementById("first_name")?.`is`("input"))
+        assertEquals("first_name", document.getElementById("first_name")?.attr("name"))
+        assertEquals("text", document.getElementById("first_name")?.attr("type"))
+        assertEquals(true, document.getElementById("first_name")?.hasAttr("required"))
+        assertEquals(true, document.getElementById("last_name")?.`is`("input"))
+        assertEquals("last_name", document.getElementById("last_name")?.attr("name"))
+        assertEquals("text", document.getElementById("last_name")?.attr("type"))
+        assertEquals(true, document.getElementById("last_name")?.hasAttr("required"))
+        assertEquals(true, document.getElementsByAttributeValue("type", "submit").first()?.`is`("button"))
+    }
+
+    @Test
+    fun testGetRegisterCodeRouteNotFound() = testApplication {
+        val client = installApp(this)
+        val controller = mockk<IAuthController>()
+        val translateUseCase = mockk<ITranslateUseCase>()
+        val router = AuthRouter(controller, translateUseCase)
+        coEvery { controller.register("code", any()) } throws ControllerException(
+            HttpStatusCode.NotFound,
+            "auth_code_invalid"
+        )
+        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
+        routing {
+            router.createGetRegisterCodeRoute(this)
+        }
+        val response = client.get("/code")
+        assertEquals(HttpStatusCode.NotFound, response.status)
+        val document = Jsoup.parse(response.bodyAsText())
+        assertEquals("t:auth_code_invalid", document.getElementById("alert-error")?.text())
     }
 
     @Test
@@ -240,7 +367,7 @@ class AuthRouterTest {
         val router = AuthRouter(controller, translateUseCase)
         coEvery { controller.join("code", any()) } throws ControllerException(
             HttpStatusCode.NotFound,
-            "auth_join_code_invalid"
+            "auth_code_invalid"
         )
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
@@ -249,7 +376,7 @@ class AuthRouterTest {
         val response = client.get("/code")
         assertEquals(HttpStatusCode.NotFound, response.status)
         val document = Jsoup.parse(response.bodyAsText())
-        assertEquals("t:auth_join_code_invalid", document.getElementById("alert-error")?.text())
+        assertEquals("t:auth_code_invalid", document.getElementById("alert-error")?.text())
     }
 
     @Test
@@ -317,7 +444,7 @@ class AuthRouterTest {
         val router = AuthRouter(controller, translateUseCase)
         coEvery { controller.join("code", any()) } throws ControllerException(
             HttpStatusCode.NotFound,
-            "auth_join_code_invalid"
+            "auth_code_invalid"
         )
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
@@ -326,7 +453,7 @@ class AuthRouterTest {
         val response = client.post("/code")
         assertEquals(HttpStatusCode.NotFound, response.status)
         val document = Jsoup.parse(response.bodyAsText())
-        assertEquals("t:auth_join_code_invalid", document.getElementById("alert-error")?.text())
+        assertEquals("t:auth_code_invalid", document.getElementById("alert-error")?.text())
     }
 
 }

@@ -79,7 +79,7 @@ fun Application.configureKoin() {
         val controllerModule = module {
             single<IWebController> { WebController() }
             single<IAssociationController> { AssociationController(get()) }
-            single<IAuthController> { AuthController(get(), get(), get(), get(), get(), get(), get(), get()) }
+            single<IAuthController> { AuthController(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             single<IUserController> { UserController(get(), get(), get(), get(), get(), get()) }
         }
         val routerModule = module {

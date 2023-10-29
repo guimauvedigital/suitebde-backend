@@ -5,24 +5,19 @@ import io.ktor.server.application.*
 import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
-import me.nathanfallet.suitebde.models.auth.JoinCodePayload
-import me.nathanfallet.suitebde.models.auth.JoinPayload
-import me.nathanfallet.suitebde.models.auth.LoginPayload
-import me.nathanfallet.suitebde.models.auth.SessionPayload
+import me.nathanfallet.suitebde.models.auth.*
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.usecases.application.ISendEmailUseCase
 import me.nathanfallet.suitebde.usecases.application.ISetSessionForCallUseCase
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
-import me.nathanfallet.suitebde.usecases.associations.ICreateAssociationUseCase
-import me.nathanfallet.suitebde.usecases.associations.ICreateCodeInEmailUseCase
-import me.nathanfallet.suitebde.usecases.associations.IDeleteCodeInEmailUseCase
-import me.nathanfallet.suitebde.usecases.associations.IGetCodeInEmailUseCase
+import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.ILoginUseCase
 import java.util.*
 
 class AuthController(
     private val loginUseCase: ILoginUseCase,
     private val setSessionForCallUseCase: ISetSessionForCallUseCase,
+    private val getAssociationForCallUseCase: IGetAssociationForCallUseCase,
     private val createCodeInEmailUseCase: ICreateCodeInEmailUseCase,
     private val getCodeInEmailUseCase: IGetCodeInEmailUseCase,
     private val deleteCodeInEmailUseCase: IDeleteCodeInEmailUseCase,
@@ -39,6 +34,31 @@ class AuthController(
         setSessionForCallUseCase(call, SessionPayload(user.id))
     }
 
+    override suspend fun register(payload: RegisterPayload, joiningAt: Instant, locale: Locale, call: ApplicationCall) {
+        val association = getAssociationForCallUseCase(call) ?: throw ControllerException(
+            HttpStatusCode.NotFound,
+            "auth_register_no_association"
+        )
+        val code =
+            createCodeInEmailUseCase(payload.email, association.id, joiningAt) ?: throw ControllerException(
+                HttpStatusCode.BadRequest,
+                "auth_register_email_taken"
+            )
+        sendEmailUseCase(
+            payload.email,
+            translateUseCase(locale, "auth_register_email_title"),
+            translateUseCase(locale, "auth_register_email_body", listOf(code.code))
+        )
+    }
+
+    override suspend fun register(code: String, joiningAt: Instant): RegisterWithAssociationPayload {
+        return getCodeInEmailUseCase(code, joiningAt)?.let {
+            it.associationId?.let { associationId ->
+                RegisterWithAssociationPayload(it.email, associationId)
+            }
+        } ?: throw ControllerException(HttpStatusCode.NotFound, "auth_code_invalid")
+    }
+
     override suspend fun join(payload: JoinPayload, joiningAt: Instant, locale: Locale) {
         val code =
             createCodeInEmailUseCase(payload.email, null, joiningAt) ?: throw ControllerException(
@@ -46,30 +66,30 @@ class AuthController(
                 "auth_join_email_taken"
             )
         sendEmailUseCase(
-                payload.email,
-                translateUseCase(locale, "auth_join_email_title"),
-                translateUseCase(locale, "auth_join_email_body", listOf(code.code))
+            payload.email,
+            translateUseCase(locale, "auth_join_email_title"),
+            translateUseCase(locale, "auth_join_email_body", listOf(code.code))
         )
     }
 
     override suspend fun join(code: String, joiningAt: Instant): JoinPayload {
         return getCodeInEmailUseCase(code, joiningAt)?.let {
             JoinPayload(it.email)
-        } ?: throw ControllerException(HttpStatusCode.NotFound, "auth_join_code_invalid")
+        } ?: throw ControllerException(HttpStatusCode.NotFound, "auth_code_invalid")
     }
 
     override suspend fun join(payload: JoinCodePayload, joiningAt: Instant) {
         createAssociationUseCase(
-                CreateAssociationPayload(
-                    name = payload.name,
-                    school = payload.school,
-                    city = payload.city,
-                    email = payload.email,
-                    password = payload.password,
-                    firstName = payload.firstName,
-                    lastName = payload.lastName
-                ),
-                joiningAt
+            CreateAssociationPayload(
+                name = payload.name,
+                school = payload.school,
+                city = payload.city,
+                email = payload.email,
+                password = payload.password,
+                firstName = payload.firstName,
+                lastName = payload.lastName
+            ),
+            joiningAt
         ) ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
         deleteCodeInEmailUseCase(payload.code)
     }
