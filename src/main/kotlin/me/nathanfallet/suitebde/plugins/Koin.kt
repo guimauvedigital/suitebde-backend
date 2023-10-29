@@ -54,6 +54,8 @@ fun Application.configureKoin() {
             single<ISendEmailUseCase> { SendEmailUseCase() }
             single<IExpireUseCase> { ExpireUseCase(get(), get(), get()) }
             single<ITranslateUseCase> { TranslateUseCase(get()) }
+            single<IGetSessionForCallUseCase> { GetSessionForCallUseCase() }
+            single<ISetSessionForCallUseCase> { SetSessionForCallUseCase() }
 
             single<ICreateAssociationUseCase> { CreateAssociationUseCase(get(), get(), get()) }
             single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
@@ -67,7 +69,7 @@ fun Application.configureKoin() {
             single<IVerifyPasswordUseCase> { VerifyPasswordUseCase() }
             single<ILoginUseCase> { LoginUseCase(get(), get()) }
 
-            single<IGetUserForCallUseCase> { GetUserForCallUseCase(get()) }
+            single<IGetUserForCallUseCase> { GetUserForCallUseCase(get(), get()) }
             single<IGetUsersInAssociationUseCase> { GetUsersInAssociationUseCase(get()) }
             single<IGetUserUseCase> { GetUserUseCase(get()) }
             single<IUpdateUserUseCase> { UpdateUserUseCase(get()) }
@@ -77,7 +79,7 @@ fun Application.configureKoin() {
         val controllerModule = module {
             single<IWebController> { WebController() }
             single<IAssociationController> { AssociationController(get()) }
-            single<IAuthController> { AuthController(get(), get(), get(), get(), get(), get(), get()) }
+            single<IAuthController> { AuthController(get(), get(), get(), get(), get(), get(), get(), get()) }
             single<IUserController> { UserController(get(), get(), get(), get(), get(), get()) }
         }
         val routerModule = module {

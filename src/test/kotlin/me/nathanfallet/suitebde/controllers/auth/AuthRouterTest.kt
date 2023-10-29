@@ -8,13 +8,13 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.config.*
 import io.ktor.server.testing.*
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import me.nathanfallet.suitebde.models.auth.JoinCodePayload
 import me.nathanfallet.suitebde.models.auth.JoinPayload
 import me.nathanfallet.suitebde.models.auth.LoginPayload
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
-import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.plugins.*
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import org.jsoup.Jsoup
@@ -66,10 +66,7 @@ class AuthRouterTest {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val router = AuthRouter(controller, mockk())
-        coEvery { controller.login(LoginPayload("email", "password")) } returns User(
-            "id", "association", "email", null,
-            "firstname", "lastname", false
-        )
+        coEvery { controller.login(LoginPayload("email", "password"), any()) } returns Unit
         routing {
             router.createPostLoginRoute(this)
         }
@@ -82,8 +79,8 @@ class AuthRouterTest {
                 ).formUrlEncode()
             )
         }
-        assertEquals(HttpStatusCode.OK, response.status)
-        // TODO: Update this test when we have a real login page
+        assertEquals(HttpStatusCode.Found, response.status)
+        coVerify { controller.login(LoginPayload("email", "password"), any()) }
     }
 
     @Test
@@ -92,7 +89,7 @@ class AuthRouterTest {
         val controller = mockk<IAuthController>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val router = AuthRouter(controller, translateUseCase)
-        coEvery { controller.login(LoginPayload("email", "password")) } throws ControllerException(
+        coEvery { controller.login(LoginPayload("email", "password"), any()) } throws ControllerException(
             HttpStatusCode.Unauthorized,
             "auth_invalid_credentials"
         )

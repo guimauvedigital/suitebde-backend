@@ -1,14 +1,16 @@
 package me.nathanfallet.suitebde.controllers.auth
 
 import io.ktor.http.*
+import io.ktor.server.application.*
 import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.auth.JoinCodePayload
 import me.nathanfallet.suitebde.models.auth.JoinPayload
 import me.nathanfallet.suitebde.models.auth.LoginPayload
+import me.nathanfallet.suitebde.models.auth.SessionPayload
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
-import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.application.ISendEmailUseCase
+import me.nathanfallet.suitebde.usecases.application.ISetSessionForCallUseCase
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.associations.ICreateAssociationUseCase
 import me.nathanfallet.suitebde.usecases.associations.ICreateCodeInEmailUseCase
@@ -19,6 +21,7 @@ import java.util.*
 
 class AuthController(
     private val loginUseCase: ILoginUseCase,
+    private val setSessionForCallUseCase: ISetSessionForCallUseCase,
     private val createCodeInEmailUseCase: ICreateCodeInEmailUseCase,
     private val getCodeInEmailUseCase: IGetCodeInEmailUseCase,
     private val deleteCodeInEmailUseCase: IDeleteCodeInEmailUseCase,
@@ -27,11 +30,12 @@ class AuthController(
     private val translateUseCase: ITranslateUseCase
 ) : IAuthController {
 
-    override suspend fun login(payload: LoginPayload): User {
-        return loginUseCase(payload) ?: throw ControllerException(
+    override suspend fun login(payload: LoginPayload, call: ApplicationCall) {
+        val user = loginUseCase(payload) ?: throw ControllerException(
             HttpStatusCode.Unauthorized,
             "auth_invalid_credentials"
         )
+        setSessionForCallUseCase(Pair(call, SessionPayload(user.id)))
     }
 
     override suspend fun join(payload: JoinPayload, joiningAt: Instant, locale: Locale) {

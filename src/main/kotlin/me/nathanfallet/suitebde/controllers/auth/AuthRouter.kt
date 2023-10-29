@@ -58,13 +58,14 @@ class AuthRouter(
                 if (email == null || password == null) {
                     throw ControllerException(HttpStatusCode.BadRequest, "error_body_invalid")
                 }
-                val user = controller.login(
+                controller.login(
                     LoginPayload(
                         email,
                         password
-                    )
+                    ),
+                    call
                 )
-                call.respond(HttpStatusCode.OK)
+                call.respondRedirect("/")
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
                 call.respond(
