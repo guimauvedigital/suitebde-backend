@@ -17,7 +17,7 @@ class TranslateUseCaseTest {
         every { i18n.t(Locale.ENGLISH, any(), any()) } answers {
             "t:${secondArg<R>().iterator().next()}:${thirdArg<Array<String>>().toList()}"
         }
-        assertEquals("t:error_mock:[args]", useCase(Triple(Locale.ENGLISH, "error_mock", listOf("args"))))
+        assertEquals("t:error_mock:[args]", useCase(Locale.ENGLISH, "error_mock", listOf("args")))
     }
 
 }

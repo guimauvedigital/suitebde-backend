@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.controllers.users
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.User
@@ -26,7 +27,7 @@ class UserController(
             HttpStatusCode.NotFound, "associations_not_found"
         )
         getUserForCallUseCase(call)?.takeIf {
-            checkPermissionUseCase(Triple(it, association, Permission.USERS_VIEW))
+            checkPermissionUseCase(it, association, Permission.USERS_VIEW)
         } ?: throw ControllerException(
             HttpStatusCode.Unauthorized, "users_view_not_allowed"
         )
@@ -41,7 +42,7 @@ class UserController(
             HttpStatusCode.BadRequest, "error_missing_id"
         )
         getUserForCallUseCase(call)?.takeIf {
-            it.id.equals(id, true) || checkPermissionUseCase(Triple(it, association, Permission.USERS_VIEW))
+            it.id.equals(id, true) || checkPermissionUseCase(it, association, Permission.USERS_VIEW)
         } ?: throw ControllerException(HttpStatusCode.Unauthorized, "users_view_not_allowed")
         return getUserUseCase(id)?.takeIf {
             it.associationId == association.id
@@ -60,7 +61,7 @@ class UserController(
             HttpStatusCode.BadRequest, "error_missing_id"
         )
         getUserForCallUseCase(call)?.takeIf {
-            it.id.equals(id, true) || checkPermissionUseCase(Triple(it, association, Permission.USERS_UPDATE))
+            it.id.equals(id, true) || checkPermissionUseCase(it, association, Permission.USERS_UPDATE)
         } ?: throw ControllerException(HttpStatusCode.Unauthorized, "users_update_not_allowed")
         val targetUser = getUserUseCase(id)?.takeIf {
             it.associationId == association.id

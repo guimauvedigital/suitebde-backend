@@ -19,7 +19,7 @@ fun Application.configureTasks() {
 
     Timer().scheduleAtFixedRate(0, 60 * 60 * 1000L) {
         CoroutineScope(Job()).launch {
-            expireUseCase.invoke(Clock.System.now())
+            expireUseCase(Clock.System.now())
         }
     }
 }

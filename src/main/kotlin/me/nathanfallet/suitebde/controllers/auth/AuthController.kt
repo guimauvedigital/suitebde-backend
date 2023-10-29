@@ -3,6 +3,7 @@ package me.nathanfallet.suitebde.controllers.auth
 import io.ktor.http.*
 import io.ktor.server.application.*
 import kotlinx.datetime.Instant
+import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.auth.JoinCodePayload
 import me.nathanfallet.suitebde.models.auth.JoinPayload
@@ -35,33 +36,30 @@ class AuthController(
             HttpStatusCode.Unauthorized,
             "auth_invalid_credentials"
         )
-        setSessionForCallUseCase(Pair(call, SessionPayload(user.id)))
+        setSessionForCallUseCase(call, SessionPayload(user.id))
     }
 
     override suspend fun join(payload: JoinPayload, joiningAt: Instant, locale: Locale) {
         val code =
-            createCodeInEmailUseCase(Triple(payload.email, null, joiningAt)) ?: throw ControllerException(
+            createCodeInEmailUseCase(payload.email, null, joiningAt) ?: throw ControllerException(
                 HttpStatusCode.BadRequest,
                 "auth_join_email_taken"
             )
         sendEmailUseCase(
-            Triple(
                 payload.email,
                 translateUseCase(locale, "auth_join_email_title"),
                 translateUseCase(locale, "auth_join_email_body", listOf(code.code))
-            )
         )
     }
 
     override suspend fun join(code: String, joiningAt: Instant): JoinPayload {
-        return getCodeInEmailUseCase(Pair(code, joiningAt))?.let {
+        return getCodeInEmailUseCase(code, joiningAt)?.let {
             JoinPayload(it.email)
         } ?: throw ControllerException(HttpStatusCode.NotFound, "auth_join_code_invalid")
     }
 
     override suspend fun join(payload: JoinCodePayload, joiningAt: Instant) {
         createAssociationUseCase(
-            Pair(
                 CreateAssociationPayload(
                     name = payload.name,
                     school = payload.school,
@@ -72,7 +70,6 @@ class AuthController(
                     lastName = payload.lastName
                 ),
                 joiningAt
-            )
         ) ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
         deleteCodeInEmailUseCase(payload.code)
     }

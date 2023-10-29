@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
+import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
@@ -37,11 +38,11 @@ class AuthControllerTest {
         val setSessionForCallUseCase = mockk<ISetSessionForCallUseCase>()
         val call = mockk<ApplicationCall>()
         coEvery { loginUseCase(LoginPayload("email", "password")) } returns user
-        every { setSessionForCallUseCase(Pair(call, SessionPayload("id"))) } returns Unit
+        every { setSessionForCallUseCase(call, SessionPayload("id")) } returns Unit
         val controller =
             AuthController(loginUseCase, setSessionForCallUseCase, mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
         controller.login(LoginPayload("email", "password"), call)
-        verify { setSessionForCallUseCase(Pair(call, SessionPayload("id"))) }
+        verify { setSessionForCallUseCase(call, SessionPayload("id")) }
     }
 
     @Test
@@ -72,7 +73,7 @@ class AuthControllerTest {
             translateUseCase
         )
         val now = Clock.System.now()
-        coEvery { createCodeInEmailUseCase(Triple("email", null, now)) } returns CodeInEmail(
+        coEvery { createCodeInEmailUseCase("email", null, now) } returns CodeInEmail(
             "email", "code", null, Clock.System.now()
         )
         coEvery { sendEmailUseCase(any()) } returns Unit
@@ -86,11 +87,9 @@ class AuthControllerTest {
         controller.join(JoinPayload("email"), now, Locale.ENGLISH)
         coVerify {
             sendEmailUseCase(
-                Triple(
-                    "email",
-                    "t:auth_join_email_title:[]",
-                    "t:auth_join_email_body:[code]"
-                )
+                "email",
+                "t:auth_join_email_title:[]",
+                "t:auth_join_email_body:[code]"
             )
         }
     }
@@ -101,7 +100,7 @@ class AuthControllerTest {
         val controller =
             AuthController(mockk(), mockk(), createCodeInEmailUseCase, mockk(), mockk(), mockk(), mockk(), mockk())
         val now = Clock.System.now()
-        coEvery { createCodeInEmailUseCase(Triple("email", null, now)) } returns null
+        coEvery { createCodeInEmailUseCase("email", null, now) } returns null
         val exception = assertThrows<ControllerException> {
             controller.join(JoinPayload("email"), now, Locale.ENGLISH)
         }
@@ -115,7 +114,7 @@ class AuthControllerTest {
         val controller =
             AuthController(mockk(), mockk(), mockk(), getCodeInEmailUseCase, mockk(), mockk(), mockk(), mockk())
         val now = Clock.System.now()
-        coEvery { getCodeInEmailUseCase(Pair("code", now)) } returns CodeInEmail(
+        coEvery { getCodeInEmailUseCase("code", now) } returns CodeInEmail(
             "email", "code", null, now
         )
         assertEquals(JoinPayload("email"), controller.join("code", now))
@@ -127,7 +126,7 @@ class AuthControllerTest {
         val controller =
             AuthController(mockk(), mockk(), mockk(), getCodeInEmailUseCase, mockk(), mockk(), mockk(), mockk())
         val now = Clock.System.now()
-        coEvery { getCodeInEmailUseCase(Pair("code", now)) } returns null
+        coEvery { getCodeInEmailUseCase("code", now) } returns null
         val exception = assertThrows<ControllerException> {
             controller.join("code", now)
         }
@@ -165,13 +164,11 @@ class AuthControllerTest {
         )
         coVerify {
             createAssociationUseCase(
-                Pair(
-                    CreateAssociationPayload(
-                        "name", "school", "city", "email",
-                        "password", "firstname", "lastname"
-                    ),
-                    now
-                )
+                CreateAssociationPayload(
+                    "name", "school", "city", "email",
+                    "password", "firstname", "lastname"
+                ),
+                now
             )
             deleteCodeInEmailUseCase("code")
         }
