@@ -5,7 +5,6 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
-import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
@@ -28,7 +27,7 @@ class CreateCodeInEmailUseCase(
         } catch (e: Exception) {
             associationsRepository.updateCodeInEmail(input.first, code, input.second, expiresAt).takeIf {
                 it == 1
-            } ?: throw ControllerException(HttpStatusCode.InternalServerError, LocalizedString.ERROR_INTERNAL)
+            } ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
             CodeInEmail(input.first, code, input.second, expiresAt)
         }
     }

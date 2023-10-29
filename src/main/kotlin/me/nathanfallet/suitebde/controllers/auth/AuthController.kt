@@ -2,7 +2,6 @@ package me.nathanfallet.suitebde.controllers.auth
 
 import io.ktor.http.*
 import kotlinx.datetime.Instant
-import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.auth.JoinCodePayload
 import me.nathanfallet.suitebde.models.auth.JoinPayload
@@ -10,11 +9,13 @@ import me.nathanfallet.suitebde.models.auth.LoginPayload
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.application.ISendEmailUseCase
+import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.associations.ICreateAssociationUseCase
 import me.nathanfallet.suitebde.usecases.associations.ICreateCodeInEmailUseCase
 import me.nathanfallet.suitebde.usecases.associations.IDeleteCodeInEmailUseCase
 import me.nathanfallet.suitebde.usecases.associations.IGetCodeInEmailUseCase
 import me.nathanfallet.suitebde.usecases.auth.ILoginUseCase
+import java.util.*
 
 class AuthController(
     private val loginUseCase: ILoginUseCase,
@@ -22,24 +23,28 @@ class AuthController(
     private val getCodeInEmailUseCase: IGetCodeInEmailUseCase,
     private val deleteCodeInEmailUseCase: IDeleteCodeInEmailUseCase,
     private val createAssociationUseCase: ICreateAssociationUseCase,
-    private val sendEmailUseCase: ISendEmailUseCase
+    private val sendEmailUseCase: ISendEmailUseCase,
+    private val translateUseCase: ITranslateUseCase
 ) : IAuthController {
 
     override suspend fun login(payload: LoginPayload): User {
-        return loginUseCase(payload)
+        return loginUseCase(payload) ?: throw ControllerException(
+            HttpStatusCode.Unauthorized,
+            "auth_invalid_credentials"
+        )
     }
 
-    override suspend fun join(payload: JoinPayload, joiningAt: Instant) {
+    override suspend fun join(payload: JoinPayload, joiningAt: Instant, locale: Locale) {
         val code =
             createCodeInEmailUseCase(Triple(payload.email, null, joiningAt)) ?: throw ControllerException(
                 HttpStatusCode.BadRequest,
-                LocalizedString.AUTH_JOIN_EMAIL_TAKEN
+                "auth_join_email_taken"
             )
         sendEmailUseCase(
             Triple(
                 payload.email,
-                LocalizedString.AUTH_JOIN_EMAIL_TITLE.value,
-                LocalizedString.AUTH_JOIN_EMAIL_BODY.value.format(code.code)
+                translateUseCase(locale, "auth_join_email_title"),
+                translateUseCase(locale, "auth_join_email_body", listOf(code.code))
             )
         )
     }
@@ -47,7 +52,7 @@ class AuthController(
     override suspend fun join(code: String, joiningAt: Instant): JoinPayload {
         return getCodeInEmailUseCase(Pair(code, joiningAt))?.let {
             JoinPayload(it.email)
-        } ?: throw ControllerException(HttpStatusCode.NotFound, LocalizedString.AUTH_JOIN_CODE_INVALID)
+        } ?: throw ControllerException(HttpStatusCode.NotFound, "auth_join_code_invalid")
     }
 
     override suspend fun join(payload: JoinCodePayload, joiningAt: Instant) {
@@ -64,7 +69,7 @@ class AuthController(
                 ),
                 joiningAt
             )
-        ) ?: throw ControllerException(HttpStatusCode.InternalServerError, LocalizedString.ERROR_INTERNAL)
+        ) ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
         deleteCodeInEmailUseCase(payload.code)
     }
 

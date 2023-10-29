@@ -8,6 +8,7 @@ fun main(args: Array<String>): Unit = EngineMain.main(args)
 
 fun Application.module() {
     // Initialize plugins
+    configureI18n()
     configureKoin()
     configureMonitoring()
     configureSerialization()

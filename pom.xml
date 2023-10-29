@@ -25,6 +25,10 @@
     </properties>
 
     <repositories>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -144,6 +148,11 @@
             <version>0.9.0</version>
         </dependency>
         <dependency>
+            <groupId>com.github.aymanizz</groupId>
+            <artifactId>ktor-i18n</artifactId>
+            <version>2.0.0</version>
+        </dependency>
+        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
             <version>${logback_version}</version>
@@ -162,6 +171,11 @@
             <groupId>me.nathanfallet.ktor.sentry</groupId>
             <artifactId>ktor-sentry</artifactId>
             <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>me.nathanfallet.ktor.freemarker.i18n</groupId>
+            <artifactId>ktor-freemarker-i18n</artifactId>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>io.sentry</groupId>

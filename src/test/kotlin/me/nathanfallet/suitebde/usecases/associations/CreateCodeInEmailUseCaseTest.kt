@@ -8,7 +8,6 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
-import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.users.User
@@ -61,7 +60,7 @@ class CreateCodeInEmailUseCaseTest {
             useCase.invoke(Triple("email", "associationId", Clock.System.now()))
         }
         assertEquals(HttpStatusCode.InternalServerError, exception.code)
-        assertEquals(LocalizedString.ERROR_INTERNAL, exception.error)
+        assertEquals("error_internal", exception.key)
     }
 
     @Test

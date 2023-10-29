@@ -2,7 +2,6 @@ package me.nathanfallet.suitebde.controllers.users
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.User
@@ -24,57 +23,57 @@ class UserController(
 
     override suspend fun getAll(call: ApplicationCall): List<User> {
         val association = getAssociationForCallUseCase(call) ?: throw ControllerException(
-            HttpStatusCode.NotFound, LocalizedString.ASSOCIATIONS_NOT_FOUND
+            HttpStatusCode.NotFound, "associations_not_found"
         )
         getUserForCallUseCase(call)?.takeIf {
             checkPermissionUseCase(Triple(it, association, Permission.USERS_VIEW))
         } ?: throw ControllerException(
-            HttpStatusCode.Unauthorized, LocalizedString.USERS_VIEW_NOT_ALLOWED
+            HttpStatusCode.Unauthorized, "users_view_not_allowed"
         )
         return getUsersInAssociationUseCase(association.id)
     }
 
     override suspend fun get(call: ApplicationCall): User {
         val association = getAssociationForCallUseCase(call) ?: throw ControllerException(
-            HttpStatusCode.NotFound, LocalizedString.ASSOCIATIONS_NOT_FOUND
+            HttpStatusCode.NotFound, "associations_not_found"
         )
         val id = call.parameters["id"] ?: throw ControllerException(
-            HttpStatusCode.BadRequest, LocalizedString.ERROR_MISSING_ID
+            HttpStatusCode.BadRequest, "error_missing_id"
         )
         getUserForCallUseCase(call)?.takeIf {
             it.id.equals(id, true) || checkPermissionUseCase(Triple(it, association, Permission.USERS_VIEW))
-        } ?: throw ControllerException(HttpStatusCode.Unauthorized, LocalizedString.USERS_VIEW_NOT_ALLOWED)
+        } ?: throw ControllerException(HttpStatusCode.Unauthorized, "users_view_not_allowed")
         return getUserUseCase(id)?.takeIf {
             it.associationId == association.id
-        } ?: throw ControllerException(HttpStatusCode.NotFound, LocalizedString.USERS_NOT_FOUND)
+        } ?: throw ControllerException(HttpStatusCode.NotFound, "users_not_found")
     }
 
     override suspend fun create(call: ApplicationCall, payload: Unit): User {
-        throw ControllerException(HttpStatusCode.MethodNotAllowed, LocalizedString.USERS_CREATE_NOT_ALLOWED)
+        throw ControllerException(HttpStatusCode.MethodNotAllowed, "users_create_not_allowed")
     }
 
     override suspend fun update(call: ApplicationCall, payload: Unit): User {
         val association = getAssociationForCallUseCase(call) ?: throw ControllerException(
-            HttpStatusCode.NotFound, LocalizedString.ASSOCIATIONS_NOT_FOUND
+            HttpStatusCode.NotFound, "associations_not_found"
         )
         val id = call.parameters["id"] ?: throw ControllerException(
-            HttpStatusCode.BadRequest, LocalizedString.ERROR_MISSING_ID
+            HttpStatusCode.BadRequest, "error_missing_id"
         )
         getUserForCallUseCase(call)?.takeIf {
             it.id.equals(id, true) || checkPermissionUseCase(Triple(it, association, Permission.USERS_UPDATE))
-        } ?: throw ControllerException(HttpStatusCode.Unauthorized, LocalizedString.USERS_UPDATE_NOT_ALLOWED)
+        } ?: throw ControllerException(HttpStatusCode.Unauthorized, "users_update_not_allowed")
         val targetUser = getUserUseCase(id)?.takeIf {
             it.associationId == association.id
-        } ?: throw ControllerException(HttpStatusCode.NotFound, LocalizedString.USERS_NOT_FOUND)
+        } ?: throw ControllerException(HttpStatusCode.NotFound, "users_not_found")
         updateUserUseCase(targetUser).takeIf { it } ?: throw ControllerException(
-            HttpStatusCode.InternalServerError, LocalizedString.ERROR_INTERNAL
+            HttpStatusCode.InternalServerError, "error_internal"
         )
         // TODO: Update user from payload, checking if user is allowed to do so
         return targetUser
     }
 
     override suspend fun delete(call: ApplicationCall) {
-        throw ControllerException(HttpStatusCode.MethodNotAllowed, LocalizedString.USERS_DELETE_NOT_ALLOWED)
+        throw ControllerException(HttpStatusCode.MethodNotAllowed, "users_delete_not_allowed")
     }
 
 }
