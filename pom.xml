@@ -173,6 +173,11 @@
             <version>1.0.0</version>
         </dependency>
         <dependency>
+            <groupId>me.nathanfallet.ktor.freemarker.i18n</groupId>
+            <artifactId>ktor-freemarker-i18n</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
             <groupId>io.sentry</groupId>
             <artifactId>sentry</artifactId>
             <version>6.32.0</version>

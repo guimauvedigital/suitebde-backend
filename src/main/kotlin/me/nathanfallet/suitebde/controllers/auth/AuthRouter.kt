@@ -43,7 +43,7 @@ class AuthRouter(
             call.respond(
                 FreeMarkerContent(
                     "auth/login.ftl",
-                    null
+                    mapOf("locale" to call.locale)
                 )
             )
         }
@@ -70,7 +70,10 @@ class AuthRouter(
                 call.respond(
                     FreeMarkerContent(
                         "auth/login.ftl",
-                        mapOf("error" to translateUseCase(call.locale, exception.key))
+                        mapOf(
+                            "locale" to call.locale,
+                            "error" to translateUseCase(call.locale, exception.key)
+                        )
                     )
                 )
             }
@@ -82,7 +85,7 @@ class AuthRouter(
             call.respond(
                 FreeMarkerContent(
                     "auth/register.ftl",
-                    null
+                    mapOf("locale" to call.locale)
                 )
             )
         }
@@ -93,7 +96,7 @@ class AuthRouter(
             call.respond(
                 FreeMarkerContent(
                     "auth/join.ftl",
-                    null
+                    mapOf("locale" to call.locale)
                 )
             )
         }
@@ -110,7 +113,10 @@ class AuthRouter(
                 call.respond(
                     FreeMarkerContent(
                         "auth/join.ftl",
-                        mapOf("success" to translateUseCase(call.locale, "auth_join_email_sent"))
+                        mapOf(
+                            "locale" to call.locale,
+                            "success" to translateUseCase(call.locale, "auth_join_email_sent")
+                        )
                     )
                 )
             } catch (exception: ControllerException) {
@@ -118,7 +124,10 @@ class AuthRouter(
                 call.respond(
                     FreeMarkerContent(
                         "auth/join.ftl",
-                        mapOf("error" to translateUseCase(call.locale, exception.key))
+                        mapOf(
+                            "locale" to call.locale,
+                            "error" to translateUseCase(call.locale, exception.key)
+                        )
                     )
                 )
             }
@@ -133,7 +142,10 @@ class AuthRouter(
                 call.respond(
                     FreeMarkerContent(
                         "auth/join.ftl",
-                        mapOf("code" to payload)
+                        mapOf(
+                            "locale" to call.locale,
+                            "code" to payload
+                        )
                     )
                 )
             } catch (exception: ControllerException) {
@@ -141,7 +153,10 @@ class AuthRouter(
                 call.respond(
                     FreeMarkerContent(
                         "auth/join.ftl",
-                        mapOf("error" to translateUseCase(call.locale, exception.key))
+                        mapOf(
+                            "locale" to call.locale,
+                            "error" to translateUseCase(call.locale, exception.key)
+                        )
                     )
                 )
             }
@@ -186,7 +201,10 @@ class AuthRouter(
                 call.respond(
                     FreeMarkerContent(
                         "auth/join.ftl",
-                        mapOf("success" to translateUseCase(call.locale, "auth_join_submitted"))
+                        mapOf(
+                            "locale" to call.locale,
+                            "success" to translateUseCase(call.locale, "auth_join_submitted")
+                        )
                     )
                 )
             } catch (exception: ControllerException) {
@@ -194,7 +212,10 @@ class AuthRouter(
                 call.respond(
                     FreeMarkerContent(
                         "auth/join.ftl",
-                        mapOf("error" to translateUseCase(call.locale, exception.key))
+                        mapOf(
+                            "locale" to call.locale,
+                            "error" to translateUseCase(call.locale, exception.key)
+                        )
                     )
                 )
             }
