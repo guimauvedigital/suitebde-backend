@@ -1,5 +1,6 @@
 package me.nathanfallet.suitebde.controllers.auth
 
+import com.github.aymanizz.ktori18n.locale
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
@@ -8,14 +9,15 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.controllers.IRouter
-import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.auth.JoinCodePayload
 import me.nathanfallet.suitebde.models.auth.JoinPayload
 import me.nathanfallet.suitebde.models.auth.LoginPayload
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
+import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 
 class AuthRouter(
-    private val controller: IAuthController
+    private val controller: IAuthController,
+    private val translateUseCase: ITranslateUseCase
 ) : IRouter {
 
     override fun createRoutes(root: Route) {
@@ -54,7 +56,7 @@ class AuthRouter(
                 val email = parameters["email"]
                 val password = parameters["password"]
                 if (email == null || password == null) {
-                    throw ControllerException(HttpStatusCode.BadRequest, LocalizedString.ERROR_BODY_INVALID)
+                    throw ControllerException(HttpStatusCode.BadRequest, "error_body_invalid")
                 }
                 val user = controller.login(
                     LoginPayload(
@@ -68,7 +70,7 @@ class AuthRouter(
                 call.respond(
                     FreeMarkerContent(
                         "auth/login.ftl",
-                        mapOf("error" to exception.message)
+                        mapOf("error" to translateUseCase(call.locale, exception.key))
                     )
                 )
             }
@@ -102,13 +104,13 @@ class AuthRouter(
             try {
                 val parameters = call.receiveParameters()
                 val email = parameters["email"] ?: throw ControllerException(
-                    HttpStatusCode.BadRequest, LocalizedString.ERROR_BODY_INVALID
+                    HttpStatusCode.BadRequest, "error_body_invalid"
                 )
-                controller.join(JoinPayload(email), Clock.System.now())
+                controller.join(JoinPayload(email), Clock.System.now(), call.locale)
                 call.respond(
                     FreeMarkerContent(
                         "auth/join.ftl",
-                        mapOf("success" to LocalizedString.AUTH_JOIN_EMAIL_SENT.value)
+                        mapOf("success" to translateUseCase(call.locale, "auth_join_email_sent"))
                     )
                 )
             } catch (exception: ControllerException) {
@@ -116,7 +118,7 @@ class AuthRouter(
                 call.respond(
                     FreeMarkerContent(
                         "auth/join.ftl",
-                        mapOf("error" to exception.message)
+                        mapOf("error" to translateUseCase(call.locale, exception.key))
                     )
                 )
             }
@@ -139,7 +141,7 @@ class AuthRouter(
                 call.respond(
                     FreeMarkerContent(
                         "auth/join.ftl",
-                        mapOf("error" to exception.message)
+                        mapOf("error" to translateUseCase(call.locale, exception.key))
                     )
                 )
             }
@@ -166,7 +168,7 @@ class AuthRouter(
                     firstName == null ||
                     lastName == null
                 ) {
-                    throw ControllerException(HttpStatusCode.BadRequest, LocalizedString.ERROR_BODY_INVALID)
+                    throw ControllerException(HttpStatusCode.BadRequest, "error_body_invalid")
                 }
                 controller.join(
                     JoinCodePayload(
@@ -184,7 +186,7 @@ class AuthRouter(
                 call.respond(
                     FreeMarkerContent(
                         "auth/join.ftl",
-                        mapOf("success" to LocalizedString.AUTH_JOIN_SUBMITTED.value)
+                        mapOf("success" to translateUseCase(call.locale, "auth_join_submitted"))
                     )
                 )
             } catch (exception: ControllerException) {
@@ -192,7 +194,7 @@ class AuthRouter(
                 call.respond(
                     FreeMarkerContent(
                         "auth/join.ftl",
-                        mapOf("error" to exception.message)
+                        mapOf("error" to translateUseCase(call.locale, exception.key))
                     )
                 )
             }

@@ -1,5 +1,6 @@
 package me.nathanfallet.suitebde.controllers.models
 
+import com.github.aymanizz.ktori18n.locale
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
@@ -8,8 +9,8 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.reflect.*
 import me.nathanfallet.suitebde.controllers.IRouter
-import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
+import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 
 open class ModelRouter<out T, in P, in Q>(
     val route: String,
@@ -17,7 +18,8 @@ open class ModelRouter<out T, in P, in Q>(
     val lTypeInfo: TypeInfo,
     val pTypeInfo: TypeInfo,
     val qTypeInfo: TypeInfo,
-    private val controller: IModelController<T, P, Q>
+    private val controller: IModelController<T, P, Q>,
+    private val translateUseCase: ITranslateUseCase
 ) : IRouter {
 
     override fun createRoutes(root: Route) {
@@ -42,7 +44,7 @@ open class ModelRouter<out T, in P, in Q>(
                 call.respond(controller.getAll(call), lTypeInfo)
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
-                call.respond(mapOf("error" to exception.message))
+                call.respond(mapOf("error" to translateUseCase(call.locale, exception.key)))
             }
         }
     }
@@ -53,7 +55,7 @@ open class ModelRouter<out T, in P, in Q>(
                 call.respond(controller.get(call), typeInfo)
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
-                call.respond(mapOf("error" to exception.message))
+                call.respond(mapOf("error" to translateUseCase(call.locale, exception.key)))
             }
         }
     }
@@ -66,10 +68,10 @@ open class ModelRouter<out T, in P, in Q>(
                 call.respond(response, typeInfo)
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
-                call.respond(mapOf("error" to exception.message))
+                call.respond(mapOf("error" to translateUseCase(call.locale, exception.key)))
             } catch (exception: ContentTransformationException) {
                 call.response.status(HttpStatusCode.BadRequest)
-                call.respond(mapOf("error" to LocalizedString.ERROR_BODY_INVALID.value))
+                call.respond(mapOf("error" to translateUseCase(call.locale, "error_body_invalid")))
             }
         }
     }
@@ -80,10 +82,10 @@ open class ModelRouter<out T, in P, in Q>(
                 call.respond(controller.update(call, call.receive(qTypeInfo)), typeInfo)
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
-                call.respond(mapOf("error" to exception.message))
+                call.respond(mapOf("error" to translateUseCase(call.locale, exception.key)))
             } catch (exception: ContentTransformationException) {
                 call.response.status(HttpStatusCode.BadRequest)
-                call.respond(mapOf("error" to LocalizedString.ERROR_BODY_INVALID.value))
+                call.respond(mapOf("error" to translateUseCase(call.locale, "error_body_invalid")))
             }
         }
     }
@@ -95,7 +97,7 @@ open class ModelRouter<out T, in P, in Q>(
                 call.respond(HttpStatusCode.NoContent)
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
-                call.respond(mapOf("error" to exception.message))
+                call.respond(mapOf("error" to translateUseCase(call.locale, exception.key)))
             }
         }
     }

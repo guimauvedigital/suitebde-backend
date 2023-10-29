@@ -7,7 +7,6 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
-import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.roles.Permission
@@ -72,7 +71,7 @@ class UserControllerTest {
             controller.getAll(call)
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
-        assertEquals(LocalizedString.ASSOCIATIONS_NOT_FOUND, exception.error)
+        assertEquals("associations_not_found", exception.key)
     }
 
     @Test
@@ -88,7 +87,7 @@ class UserControllerTest {
             controller.getAll(call)
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.USERS_VIEW_NOT_ALLOWED, exception.error)
+        assertEquals("users_view_not_allowed", exception.key)
     }
 
     @Test
@@ -112,7 +111,7 @@ class UserControllerTest {
             controller.getAll(call)
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.USERS_VIEW_NOT_ALLOWED, exception.error)
+        assertEquals("users_view_not_allowed", exception.key)
     }
 
     @Test
@@ -148,7 +147,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
-        assertEquals(LocalizedString.ASSOCIATIONS_NOT_FOUND, exception.error)
+        assertEquals("associations_not_found", exception.key)
     }
 
     @Test
@@ -165,7 +164,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.USERS_VIEW_NOT_ALLOWED, exception.error)
+        assertEquals("users_view_not_allowed", exception.key)
     }
 
     @Test
@@ -179,7 +178,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.BadRequest, exception.code)
-        assertEquals(LocalizedString.ERROR_MISSING_ID, exception.error)
+        assertEquals("error_missing_id", exception.key)
     }
 
     @Test
@@ -206,7 +205,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
-        assertEquals(LocalizedString.USERS_NOT_FOUND, exception.error)
+        assertEquals("users_not_found", exception.key)
     }
 
     @Test
@@ -233,7 +232,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
-        assertEquals(LocalizedString.USERS_NOT_FOUND, exception.error)
+        assertEquals("users_not_found", exception.key)
     }
 
     @Test
@@ -258,7 +257,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.USERS_VIEW_NOT_ALLOWED, exception.error)
+        assertEquals("users_view_not_allowed", exception.key)
     }
 
     @Test
@@ -292,7 +291,7 @@ class UserControllerTest {
             controller.create(call, Unit)
         }
         assertEquals(HttpStatusCode.MethodNotAllowed, exception.code)
-        assertEquals(LocalizedString.USERS_CREATE_NOT_ALLOWED, exception.error)
+        assertEquals("users_create_not_allowed", exception.key)
     }
 
     @Test
@@ -308,7 +307,7 @@ class UserControllerTest {
             controller.delete(call)
         }
         assertEquals(HttpStatusCode.MethodNotAllowed, exception.code)
-        assertEquals(LocalizedString.USERS_DELETE_NOT_ALLOWED, exception.error)
+        assertEquals("users_delete_not_allowed", exception.key)
     }
 
 }

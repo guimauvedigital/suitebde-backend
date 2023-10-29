@@ -1,5 +1,7 @@
 package me.nathanfallet.suitebde.plugins
 
+import com.github.aymanizz.ktori18n.MessageResolver
+import com.github.aymanizz.ktori18n.i18n
 import io.ktor.server.application.*
 import me.nathanfallet.suitebde.controllers.associations.AssociationController
 import me.nathanfallet.suitebde.controllers.associations.AssociationRouter
@@ -18,10 +20,7 @@ import me.nathanfallet.suitebde.database.associations.DatabaseAssociationReposit
 import me.nathanfallet.suitebde.database.users.DatabaseUsersRepository
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.IUsersRepository
-import me.nathanfallet.suitebde.usecases.application.ExpireUseCase
-import me.nathanfallet.suitebde.usecases.application.IExpireUseCase
-import me.nathanfallet.suitebde.usecases.application.ISendEmailUseCase
-import me.nathanfallet.suitebde.usecases.application.SendEmailUseCase
+import me.nathanfallet.suitebde.usecases.application.*
 import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.*
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
@@ -33,6 +32,9 @@ import org.koin.ktor.plugin.Koin
 
 fun Application.configureKoin() {
     install(Koin) {
+        val i18nModule = module {
+            single<MessageResolver> { this@configureKoin.i18n }
+        }
         val databaseModule = module {
             single {
                 Database(
@@ -51,6 +53,7 @@ fun Application.configureKoin() {
         val useCaseModule = module {
             single<ISendEmailUseCase> { SendEmailUseCase() }
             single<IExpireUseCase> { ExpireUseCase(get(), get(), get()) }
+            single<ITranslateUseCase> { TranslateUseCase(get()) }
 
             single<ICreateAssociationUseCase> { CreateAssociationUseCase(get(), get(), get()) }
             single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
@@ -74,7 +77,7 @@ fun Application.configureKoin() {
         val controllerModule = module {
             single<IWebController> { WebController() }
             single<IAssociationController> { AssociationController(get()) }
-            single<IAuthController> { AuthController(get(), get(), get(), get(), get(), get()) }
+            single<IAuthController> { AuthController(get(), get(), get(), get(), get(), get(), get()) }
             single<IUserController> { UserController(get(), get(), get(), get(), get(), get()) }
         }
         val routerModule = module {
@@ -85,6 +88,7 @@ fun Application.configureKoin() {
         }
 
         modules(
+            i18nModule,
             databaseModule,
             repositoryModule,
             useCaseModule,

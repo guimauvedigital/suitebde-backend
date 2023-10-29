@@ -1,16 +1,12 @@
 package me.nathanfallet.suitebde.usecases.auth
 
-import io.ktor.http.*
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import me.nathanfallet.suitebde.models.LocalizedString
 import me.nathanfallet.suitebde.models.auth.LoginPayload
-import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.IUsersRepository
-import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -33,11 +29,7 @@ class LoginUseCaseTest {
         val verifyPasswordUseCase = mockk<IVerifyPasswordUseCase>()
         val useCase = LoginUseCase(repository, verifyPasswordUseCase)
         coEvery { repository.getUserForEmail("email", true) } returns null
-        val exception = assertThrows<ControllerException> {
-            useCase.invoke(LoginPayload("email", "password"))
-        }
-        assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.AUTH_INVALID_CREDENTIALS, exception.error)
+        assertEquals(null, useCase.invoke(LoginPayload("email", "password")))
     }
 
     @Test
@@ -48,11 +40,7 @@ class LoginUseCaseTest {
         val user = User("id", "association", "email", "hash", "first", "last", false)
         coEvery { repository.getUserForEmail("email", true) } returns user
         every { verifyPasswordUseCase.invoke(Pair("password", "hash")) } returns false
-        val exception = assertThrows<ControllerException> {
-            useCase.invoke(LoginPayload("email", "password"))
-        }
-        assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals(LocalizedString.AUTH_INVALID_CREDENTIALS, exception.error)
+        assertEquals(null, useCase.invoke(LoginPayload("email", "password")))
     }
 
 }
