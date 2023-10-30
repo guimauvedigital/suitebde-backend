@@ -1,6 +1,6 @@
 <#import "template.ftl" as template>
 <@template.form>
-    <h1 class="h3 mb-4 fw-normal"><@t key="auth_login_title" /></h1>
+    <h1 class="h3 mb-4 fw-normal" id="auth_login_title"><@t key="auth_login_title" /></h1>
 
     <#if error??>
         <div id="alert-error" class="alert alert-danger" role="alert">${error}</div>

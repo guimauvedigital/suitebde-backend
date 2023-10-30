@@ -4,6 +4,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.auth.LoginPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.IUsersRepository
@@ -19,8 +20,8 @@ class LoginUseCaseTest {
         val useCase = LoginUseCase(repository, verifyPasswordUseCase)
         val user = User("id", "association", "email", "hash", "first", "last", false)
         coEvery { repository.getUserForEmail("email", true) } returns user
-        every { verifyPasswordUseCase.invoke(Pair("password", "hash")) } returns true
-        assertEquals(user, useCase.invoke(LoginPayload("email", "password")))
+        every { verifyPasswordUseCase("password", "hash") } returns true
+        assertEquals(user, useCase(LoginPayload("email", "password")))
     }
 
     @Test
@@ -29,7 +30,7 @@ class LoginUseCaseTest {
         val verifyPasswordUseCase = mockk<IVerifyPasswordUseCase>()
         val useCase = LoginUseCase(repository, verifyPasswordUseCase)
         coEvery { repository.getUserForEmail("email", true) } returns null
-        assertEquals(null, useCase.invoke(LoginPayload("email", "password")))
+        assertEquals(null, useCase(LoginPayload("email", "password")))
     }
 
     @Test
@@ -39,8 +40,8 @@ class LoginUseCaseTest {
         val useCase = LoginUseCase(repository, verifyPasswordUseCase)
         val user = User("id", "association", "email", "hash", "first", "last", false)
         coEvery { repository.getUserForEmail("email", true) } returns user
-        every { verifyPasswordUseCase.invoke(Pair("password", "hash")) } returns false
-        assertEquals(null, useCase.invoke(LoginPayload("email", "password")))
+        every { verifyPasswordUseCase("password", "hash") } returns false
+        assertEquals(null, useCase(LoginPayload("email", "password")))
     }
 
 }

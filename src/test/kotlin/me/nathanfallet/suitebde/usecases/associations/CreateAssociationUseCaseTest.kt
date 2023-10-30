@@ -2,16 +2,16 @@ package me.nathanfallet.suitebde.usecases.associations
 
 import io.mockk.coEvery
 import io.mockk.coVerifyOrder
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
+import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
+import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
-import me.nathanfallet.suitebde.repositories.IUsersRepository
-import me.nathanfallet.suitebde.usecases.auth.IHashPasswordUseCase
+import me.nathanfallet.suitebde.usecases.users.ICreateUserUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -20,14 +20,13 @@ class CreateAssociationUseCaseTest {
     @Test
     fun invoke() = runBlocking {
         val associationRepository = mockk<IAssociationsRepository>()
-        val usersRepository = mockk<IUsersRepository>()
-        val hashPasswordUseCase = mockk<IHashPasswordUseCase>()
+        val createUserUseCase = mockk<ICreateUserUseCase>()
         val now = Clock.System.now()
         val association = Association(
             "associationId", "name", "school", "city",
             false, now, now
         )
-        val useCase = CreateAssociationUseCase(associationRepository, usersRepository, hashPasswordUseCase)
+        val useCase = CreateAssociationUseCase(associationRepository, createUserUseCase)
         coEvery {
             associationRepository.createAssociation(
                 any(),
@@ -38,27 +37,27 @@ class CreateAssociationUseCaseTest {
                 any()
             )
         } returns association
-        coEvery { usersRepository.createUser(any(), any(), any(), any(), any(), any()) } returns User(
+        coEvery { createUserUseCase(any()) } returns User(
             "id", "associationId", "email", null,
             "firstName", "lastName", true
         )
-        every { hashPasswordUseCase(any()) } returns "hash"
         assertEquals(
             association, useCase(
-                Pair(
-                    CreateAssociationPayload(
-                        "name", "school", "city", "email",
-                        "password", "firstName", "lastName"
-                    ), now
-                )
+                CreateAssociationPayload(
+                    "name", "school", "city", "email",
+                    "password", "firstName", "lastName"
+                ), now
             )
         )
         coVerifyOrder {
             associationRepository.createAssociation(
                 "name", "school", "city", false, any(), any()
             )
-            usersRepository.createUser(
-                "associationId", "email", "hash", "firstName", "lastName", true
+            createUserUseCase(
+                CreateUserPayload(
+                    "associationId", "email", "password",
+                    "firstName", "lastName", true
+                ), now
             )
         }
     }
@@ -66,9 +65,7 @@ class CreateAssociationUseCaseTest {
     @Test
     fun invokeWithNull() = runBlocking {
         val associationRepository = mockk<IAssociationsRepository>()
-        val usersRepository = mockk<IUsersRepository>()
-        val hashPasswordUseCase = mockk<IHashPasswordUseCase>()
-        val useCase = CreateAssociationUseCase(associationRepository, usersRepository, hashPasswordUseCase)
+        val useCase = CreateAssociationUseCase(associationRepository, mockk())
         coEvery {
             associationRepository.createAssociation(
                 any(),
@@ -81,12 +78,10 @@ class CreateAssociationUseCaseTest {
         } returns null
         assertEquals(
             null, useCase(
-                Pair(
-                    CreateAssociationPayload(
-                        "name", "school", "city", "email",
-                        "password", "firstName", "lastName"
-                    ), Clock.System.now()
-                )
+                CreateAssociationPayload(
+                    "name", "school", "city", "email",
+                    "password", "firstName", "lastName"
+                ), Clock.System.now()
             )
         )
     }

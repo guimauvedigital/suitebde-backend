@@ -13,6 +13,7 @@ fun Application.module() {
     configureMonitoring()
     configureSerialization()
     configureSecurity()
+    configureSessions()
     configureTemplating()
     configureRouting()
     configureTasks()

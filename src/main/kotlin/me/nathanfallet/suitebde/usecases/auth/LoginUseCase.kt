@@ -1,5 +1,6 @@
 package me.nathanfallet.suitebde.usecases.auth
 
+import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.auth.LoginPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.IUsersRepository
@@ -11,7 +12,7 @@ class LoginUseCase(
 
     override suspend fun invoke(input: LoginPayload): User? {
         return repository.getUserForEmail(input.email, true)?.takeIf {
-            verifyPasswordUseCase(Pair(input.password, it.password ?: ""))
+            verifyPasswordUseCase(input.password, it.password ?: "")
         }
     }
 
