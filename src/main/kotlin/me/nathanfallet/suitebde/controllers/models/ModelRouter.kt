@@ -73,7 +73,8 @@ open class ModelRouter<out T, in P, in Q>(
     fun createAPIv1GetIdRoute(root: Route) {
         root.get("/{id}") {
             try {
-                call.respond(controller.get(call), typeInfo)
+                val id = call.parameters["id"]!!
+                call.respond(controller.get(call, id), typeInfo)
             } catch (exception: ControllerException) {
                 handleExceptionAPI(exception, call)
             }
@@ -101,7 +102,8 @@ open class ModelRouter<out T, in P, in Q>(
     fun createAPIv1PutIdRoute(root: Route) {
         root.put("/{id}") {
             try {
-                call.respond(controller.update(call, call.receive(qTypeInfo)), typeInfo)
+                val id = call.parameters["id"]!!
+                call.respond(controller.update(call, id, call.receive(qTypeInfo)), typeInfo)
             } catch (exception: ControllerException) {
                 handleExceptionAPI(exception, call)
             } catch (exception: ContentTransformationException) {
@@ -117,7 +119,8 @@ open class ModelRouter<out T, in P, in Q>(
     fun createAPIv1DeleteIdRoute(root: Route) {
         root.delete("/{id}") {
             try {
-                controller.delete(call)
+                val id = call.parameters["id"]!!
+                controller.delete(call, id)
                 call.respond(HttpStatusCode.NoContent)
             } catch (exception: ControllerException) {
                 handleExceptionAPI(exception, call)
@@ -150,6 +153,7 @@ open class ModelRouter<out T, in P, in Q>(
     fun createAdminGetIdRoute(root: Route) {
         root.get("/{id}") {
             try {
+                val id = call.parameters["id"]!!
                 call.respond(
                     FreeMarkerContent(
                         "admin/models/form.ftl",
@@ -158,7 +162,7 @@ open class ModelRouter<out T, in P, in Q>(
                             "title" to translateUseCase(call.locale, "admin_menu_$route"),
                             "route" to route,
                             "menu" to getAdminMenuForCallUseCase(call, call.locale),
-                            "item" to controller.get(call),
+                            "item" to controller.get(call, id),
                             "keys" to controller.modelKeys
                         )
                     )

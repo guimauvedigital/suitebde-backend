@@ -8,6 +8,7 @@ import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.models.ModelKey
 import me.nathanfallet.suitebde.models.models.ModelKeyType
 import me.nathanfallet.suitebde.models.roles.Permission
+import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.roles.ICheckPermissionUseCase
@@ -44,12 +45,6 @@ class UserController(
         )
     }
 
-    private fun requireId(call: ApplicationCall): String {
-        return call.parameters["id"] ?: throw ControllerException(
-            HttpStatusCode.BadRequest, "error_missing_id"
-        )
-    }
-
     override suspend fun getAll(call: ApplicationCall): List<User> {
         val association = requireAssociation(call)
         requireUser(call).takeIf {
@@ -60,9 +55,8 @@ class UserController(
         return getUsersInAssociationUseCase(association.id)
     }
 
-    override suspend fun get(call: ApplicationCall): User {
+    override suspend fun get(call: ApplicationCall, id: String): User {
         val association = requireAssociation(call)
-        val id = requireId(call)
         requireUser(call).takeIf {
             it.id == id || checkPermissionUseCase(it, association, Permission.USERS_VIEW)
         } ?: throw ControllerException(
@@ -79,9 +73,8 @@ class UserController(
         throw ControllerException(HttpStatusCode.MethodNotAllowed, "users_create_not_allowed")
     }
 
-    override suspend fun update(call: ApplicationCall, payload: Unit): User {
+    override suspend fun update(call: ApplicationCall, id: String, payload: UpdateUserPayload): User {
         val association = requireAssociation(call)
-        val id = requireId(call)
         requireUser(call).takeIf {
             it.id == id || checkPermissionUseCase(it, association, Permission.USERS_UPDATE)
         } ?: throw ControllerException(
@@ -90,14 +83,18 @@ class UserController(
         val targetUser = getUserUseCase(id)?.takeIf {
             it.associationId == association.id
         } ?: throw ControllerException(HttpStatusCode.NotFound, "users_not_found")
-        updateUserUseCase(targetUser).takeIf { it } ?: throw ControllerException(
+        return updateUserUseCase(
+            targetUser.copy(
+                firstName = payload.firstName ?: targetUser.firstName,
+                lastName = payload.lastName ?: targetUser.lastName,
+                password = payload.password
+            )
+        ) ?: throw ControllerException(
             HttpStatusCode.InternalServerError, "error_internal"
         )
-        // TODO: Update user from payload, checking if user is allowed to do so
-        return targetUser
     }
 
-    override suspend fun delete(call: ApplicationCall) {
+    override suspend fun delete(call: ApplicationCall, id: String) {
         throw ControllerException(HttpStatusCode.MethodNotAllowed, "users_delete_not_allowed")
     }
 

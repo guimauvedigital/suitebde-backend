@@ -86,7 +86,7 @@ fun Application.configureKoin() {
             single<IGetUsersInAssociationUseCase> { GetUsersInAssociationUseCase(get()) }
             single<IGetUserUseCase> { GetUserUseCase(get()) }
             single<ICreateUserUseCase> { CreateUserUseCase(get(), get()) }
-            single<IUpdateUserUseCase> { UpdateUserUseCase(get()) }
+            single<IUpdateUserUseCase> { UpdateUserUseCase(get(), get()) }
 
             single<ICheckPermissionUseCase> { CheckPermissionUseCase() }
 

@@ -108,7 +108,7 @@ class ModelRouterTest {
         val client = installApp(this)
         val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
         val router = createRouter(controller, mockk(), mockk())
-        coEvery { controller.get(any()) } returns mock
+        coEvery { controller.get(any(), "id") } returns mock
         routing {
             router.createAPIv1GetIdRoute(this)
         }
@@ -123,7 +123,7 @@ class ModelRouterTest {
         val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val router = createRouter(controller, translateUseCase, mockk())
-        coEvery { controller.get(any()) } throws ControllerException(
+        coEvery { controller.get(any(), "id") } throws ControllerException(
             HttpStatusCode.NotFound,
             "error_mock"
         )
@@ -196,7 +196,7 @@ class ModelRouterTest {
         val client = installApp(this)
         val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
         val router = createRouter(controller, mockk(), mockk())
-        coEvery { controller.update(any(), mock) } returns mock
+        coEvery { controller.update(any(), "id", mock) } returns mock
         routing {
             router.createAPIv1PutIdRoute(this)
         }
@@ -214,7 +214,7 @@ class ModelRouterTest {
         val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val router = createRouter(controller, translateUseCase, mockk())
-        coEvery { controller.update(any(), mock) } throws ControllerException(
+        coEvery { controller.update(any(), "id", mock) } throws ControllerException(
             HttpStatusCode.NotFound,
             "error_mock"
         )
@@ -251,7 +251,7 @@ class ModelRouterTest {
         val client = installApp(this)
         val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
         val router = createRouter(controller, mockk(), mockk())
-        coEvery { controller.delete(any()) } returns Unit
+        coEvery { controller.delete(any(), "id") } returns Unit
         routing {
             router.createAPIv1DeleteIdRoute(this)
         }
@@ -265,7 +265,7 @@ class ModelRouterTest {
         val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val router = createRouter(controller, translateUseCase, mockk())
-        coEvery { controller.delete(any()) } throws ControllerException(
+        coEvery { controller.delete(any(), "id") } throws ControllerException(
             HttpStatusCode.NotFound,
             "error_mock"
         )
@@ -327,7 +327,7 @@ class ModelRouterTest {
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
-        coEvery { controller.get(any()) } returns mock
+        coEvery { controller.get(any(), "id") } returns mock
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf(menuItem)
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         every { controller.modelKeys } returns modelKeys
