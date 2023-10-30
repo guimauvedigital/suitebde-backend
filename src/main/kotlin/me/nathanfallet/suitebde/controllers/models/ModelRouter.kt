@@ -10,8 +10,10 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.reflect.*
 import me.nathanfallet.suitebde.controllers.IRouter
+import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
+import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 
 open class ModelRouter<out T, in P, in Q>(
     val route: String,
@@ -20,7 +22,8 @@ open class ModelRouter<out T, in P, in Q>(
     val pTypeInfo: TypeInfo,
     val qTypeInfo: TypeInfo,
     private val controller: IModelController<T, P, Q>,
-    private val translateUseCase: ITranslateUseCase
+    private val translateUseCase: ITranslateUseCase,
+    private val getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase
 ) : IRouter {
 
     override fun createRoutes(root: Route) {
@@ -130,7 +133,9 @@ open class ModelRouter<out T, in P, in Q>(
                         "admin/models/list.ftl",
                         mapOf(
                             "locale" to call.locale,
+                            "title" to translateUseCase(call.locale, "admin_menu_$route"),
                             "route" to route,
+                            "menu" to getAdminMenuForCallUseCase(call, call.locale),
                             "items" to controller.getAll(call),
                             "keys" to controller.modelKeys
                         )
@@ -150,7 +155,9 @@ open class ModelRouter<out T, in P, in Q>(
                         "admin/models/form.ftl",
                         mapOf(
                             "locale" to call.locale,
+                            "title" to translateUseCase(call.locale, "admin_menu_$route"),
                             "route" to route,
+                            "menu" to getAdminMenuForCallUseCase(call, call.locale),
                             "item" to controller.get(call),
                             "keys" to controller.modelKeys
                         )

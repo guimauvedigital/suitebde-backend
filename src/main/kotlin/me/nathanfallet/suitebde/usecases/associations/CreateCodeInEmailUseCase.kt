@@ -5,11 +5,11 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
+import me.nathanfallet.suitebde.extensions.generateId
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.IUsersRepository
-import me.nathanfallet.suitebde.utils.IdHelper
 
 class CreateCodeInEmailUseCase(
     private val associationsRepository: IAssociationsRepository,
@@ -20,7 +20,7 @@ class CreateCodeInEmailUseCase(
         usersRepository.getUserForEmail(input.first, false)?.let {
             return null
         }
-        val code = IdHelper.generateId().take(32)
+        val code = String.generateId()
         val expiresAt = input.third.plus(1, DateTimeUnit.HOUR, TimeZone.currentSystemDefault())
         return try {
             associationsRepository.createCodeInEmail(input.first, code, input.second, expiresAt)

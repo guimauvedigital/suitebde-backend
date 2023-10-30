@@ -4,13 +4,11 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card card-body mt-4">
-                    <h6 class="mb-0">
-                        <#if item??>
-                            <@t key="admin_" + route + "_update" />
-                        <#else>
-                            <@t key="admin_" + route + "_create" />
-                        </#if>
-                    </h6>
+                    <#if item??>
+                        <h6 class="mb-0" id="admin_update"><@t key="admin_" + route + "_update" /></h6>
+                    <#else>
+                        <h6 class="mb-0" id="admin_create"><@t key="admin_" + route + "_create" /></h6>
+                    </#if>
                     <hr class="horizontal dark my-3">
 
                     <form method="post" id="form">

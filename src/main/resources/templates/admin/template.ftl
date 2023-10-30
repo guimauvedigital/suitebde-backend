@@ -55,7 +55,25 @@
             <hr class="horizontal dark mt-0">
             <div class="collapse navbar-collapse w-auto h-auto" id="sidenav-collapse-main">
                 <ul class="navbar-nav">
-
+                    <#list menu as item>
+                        <li class="nav-item">
+                            <a class="nav-link" href="${item.url}">
+                                <span class="nav-link-text ms-1">${item.title}</span>
+                            </a>
+                            <div class="collapse show">
+                                <ul class="nav ms-4">
+                                    <#list item.children as child>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="${child.url}">
+                                                <span class="sidenav-mini-icon"> ${child.short}</span>
+                                                <span class="sidenav-normal"> ${child.title}</span>
+                                            </a>
+                                        </li>
+                                    </#list>
+                                </ul>
+                            </div>
+                        </li>
+                    </#list>
                 </ul>
             </div>
             <hr class="horizontal dark">

@@ -4,10 +4,12 @@ import io.ktor.util.reflect.*
 import me.nathanfallet.suitebde.controllers.models.ModelRouter
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
+import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 
 class UserRouter(
     userController: IUserController,
-    translateUseCase: ITranslateUseCase
+    translateUseCase: ITranslateUseCase,
+    getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase
 ) : ModelRouter<User, Unit, Unit>(
     "users",
     typeInfo<User>(),
@@ -15,5 +17,6 @@ class UserRouter(
     typeInfo<Unit>(),
     typeInfo<Unit>(),
     userController,
-    translateUseCase
+    translateUseCase,
+    getAdminMenuForCallUseCase
 )

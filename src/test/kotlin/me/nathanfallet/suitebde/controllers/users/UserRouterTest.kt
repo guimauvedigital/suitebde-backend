@@ -10,7 +10,7 @@ class UserRouterTest {
 
     @Test
     fun testConstructor() {
-        val router = UserRouter(mockk(), mockk())
+        val router = UserRouter(mockk(), mockk(), mockk())
         assertEquals("users", router.route)
         assertEquals(typeOf<User>(), router.typeInfo.kotlinType)
         assertEquals(typeOf<List<User>>(), router.lTypeInfo.kotlinType)

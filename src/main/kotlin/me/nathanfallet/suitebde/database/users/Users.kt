@@ -1,7 +1,7 @@
 package me.nathanfallet.suitebde.database.users
 
+import me.nathanfallet.suitebde.extensions.generateId
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.utils.IdHelper
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.select
@@ -19,7 +19,7 @@ object Users : Table() {
     override val primaryKey = PrimaryKey(id)
 
     fun generateId(): String {
-        val candidate = IdHelper.generateId()
+        val candidate = String.generateId()
         return if (select { id eq candidate }.count() > 0) generateId() else candidate
     }
 
