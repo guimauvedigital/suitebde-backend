@@ -11,13 +11,14 @@ import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.auth.*
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
+import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.application.ISendEmailUseCase
 import me.nathanfallet.suitebde.usecases.application.ISetSessionForCallUseCase
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.ILoginUseCase
-import me.nathanfallet.suitebde.usecases.auth.IRegisterUseCase
+import me.nathanfallet.suitebde.usecases.users.ICreateUserUseCase
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 import kotlin.test.Test
@@ -186,14 +187,14 @@ class AuthControllerTest {
         val deleteCodeInEmailUseCase = mockk<IDeleteCodeInEmailUseCase>()
         val setSessionForCallUseCase = mockk<ISetSessionForCallUseCase>()
         val call = mockk<ApplicationCall>()
-        val registerUseCase = mockk<IRegisterUseCase>()
+        val createUserUseCase = mockk<ICreateUserUseCase>()
         val controller = AuthController(
             mockk(), setSessionForCallUseCase, mockk(), mockk(), mockk(),
-            deleteCodeInEmailUseCase, registerUseCase, mockk(), mockk(), mockk()
+            deleteCodeInEmailUseCase, createUserUseCase, mockk(), mockk(), mockk()
         )
         every { setSessionForCallUseCase(call, SessionPayload("id")) } returns Unit
         val now = Clock.System.now()
-        coEvery { registerUseCase(any()) } returns User(
+        coEvery { createUserUseCase(any()) } returns User(
             "id", "associationId", "email", "password",
             "firstname", "lastname", false
         )
@@ -207,11 +208,11 @@ class AuthControllerTest {
             call
         )
         coVerify {
-            registerUseCase(
-                RegisterCodePayload(
-                    "code", "email", "associationId",
-                    "password", "firstname", "lastname"
-                )
+            createUserUseCase(
+                CreateUserPayload(
+                    "associationId", "email", "password",
+                    "firstname", "lastname", false
+                ), now
             )
             deleteCodeInEmailUseCase("code")
         }
@@ -220,12 +221,12 @@ class AuthControllerTest {
 
     @Test
     fun testRegisterCodePayloadError() = runBlocking {
-        val registerUseCase = mockk<IRegisterUseCase>()
+        val createUserUseCase = mockk<ICreateUserUseCase>()
         val controller = AuthController(
             mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
-            registerUseCase, mockk(), mockk(), mockk()
+            createUserUseCase, mockk(), mockk(), mockk()
         )
-        coEvery { registerUseCase(any()) } returns null
+        coEvery { createUserUseCase(any()) } returns null
         val exception = assertThrows<ControllerException> {
             controller.register(
                 RegisterCodePayload(

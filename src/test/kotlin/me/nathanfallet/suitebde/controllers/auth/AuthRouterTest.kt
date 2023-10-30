@@ -1,6 +1,7 @@
 package me.nathanfallet.suitebde.controllers.auth
 
 import io.ktor.client.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -32,7 +33,7 @@ class AuthRouterTest {
             configureTemplating()
         }
         return application.createClient {
-            install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
+            install(ContentNegotiation) {
                 json(Serialization.json)
             }
         }

@@ -57,7 +57,7 @@ fun Application.configureKoin() {
             single<IGetSessionForCallUseCase> { GetSessionForCallUseCase() }
             single<ISetSessionForCallUseCase> { SetSessionForCallUseCase() }
 
-            single<ICreateAssociationUseCase> { CreateAssociationUseCase(get(), get(), get()) }
+            single<ICreateAssociationUseCase> { CreateAssociationUseCase(get(), get()) }
             single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
             single<IGetAssociationForCallUseCase> { GetAssociationForCallUseCase(get()) }
             single<IDeleteAssociationUseCase> { DeleteAssociationUseCase(get()) }
@@ -68,11 +68,11 @@ fun Application.configureKoin() {
             single<IHashPasswordUseCase> { HashPasswordUseCase() }
             single<IVerifyPasswordUseCase> { VerifyPasswordUseCase() }
             single<ILoginUseCase> { LoginUseCase(get(), get()) }
-            single<IRegisterUseCase> { RegisterUseCase(get(), get()) }
 
             single<IGetUserForCallUseCase> { GetUserForCallUseCase(get(), get()) }
             single<IGetUsersInAssociationUseCase> { GetUsersInAssociationUseCase(get()) }
             single<IGetUserUseCase> { GetUserUseCase(get()) }
+            single<ICreateUserUseCase> { CreateUserUseCase(get(), get()) }
             single<IUpdateUserUseCase> { UpdateUserUseCase(get()) }
 
             single<ICheckPermissionUseCase> { CheckPermissionUseCase() }

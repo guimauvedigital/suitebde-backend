@@ -4,16 +4,16 @@ import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
+import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
+import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
-import me.nathanfallet.suitebde.repositories.IUsersRepository
-import me.nathanfallet.suitebde.usecases.auth.IHashPasswordUseCase
+import me.nathanfallet.suitebde.usecases.users.ICreateUserUseCase
 
 class CreateAssociationUseCase(
     private val associationsRepository: IAssociationsRepository,
-    private val usersRepository: IUsersRepository,
-    private val hashPasswordUseCase: IHashPasswordUseCase
+    private val createUserUseCase: ICreateUserUseCase,
 ) : ICreateAssociationUseCase {
 
     override suspend fun invoke(input: Pair<CreateAssociationPayload, Instant>): Association? {
@@ -26,13 +26,15 @@ class CreateAssociationUseCase(
             input.second,
             expiresAt
         ) ?: return null
-        usersRepository.createUser(
-            association.id,
-            input.first.email,
-            hashPasswordUseCase(input.first.password),
-            input.first.firstName,
-            input.first.lastName,
-            true
+        createUserUseCase(
+            CreateUserPayload(
+                association.id,
+                input.first.email,
+                input.first.password,
+                input.first.firstName,
+                input.first.lastName,
+                true
+            ), input.second
         )
         return association
     }

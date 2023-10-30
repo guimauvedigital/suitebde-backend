@@ -7,12 +7,13 @@ import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.auth.*
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
+import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.usecases.application.ISendEmailUseCase
 import me.nathanfallet.suitebde.usecases.application.ISetSessionForCallUseCase
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.ILoginUseCase
-import me.nathanfallet.suitebde.usecases.auth.IRegisterUseCase
+import me.nathanfallet.suitebde.usecases.users.ICreateUserUseCase
 import java.util.*
 
 class AuthController(
@@ -22,7 +23,7 @@ class AuthController(
     private val createCodeInEmailUseCase: ICreateCodeInEmailUseCase,
     private val getCodeInEmailUseCase: IGetCodeInEmailUseCase,
     private val deleteCodeInEmailUseCase: IDeleteCodeInEmailUseCase,
-    private val registerUseCase: IRegisterUseCase,
+    private val createUserUseCase: ICreateUserUseCase,
     private val createAssociationUseCase: ICreateAssociationUseCase,
     private val sendEmailUseCase: ISendEmailUseCase,
     private val translateUseCase: ITranslateUseCase
@@ -59,9 +60,16 @@ class AuthController(
     }
 
     override suspend fun register(payload: RegisterCodePayload, joiningAt: Instant, call: ApplicationCall) {
-        val user = registerUseCase(payload) ?: throw ControllerException(
-            HttpStatusCode.InternalServerError, "error_internal"
-        )
+        val user = createUserUseCase(
+            CreateUserPayload(
+                associationId = payload.associationId,
+                email = payload.email,
+                password = payload.password,
+                firstName = payload.firstName,
+                lastName = payload.lastName,
+                superuser = false,
+            ), joiningAt
+        ) ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
         setSessionForCallUseCase(call, SessionPayload(user.id))
         deleteCodeInEmailUseCase(payload.code)
     }

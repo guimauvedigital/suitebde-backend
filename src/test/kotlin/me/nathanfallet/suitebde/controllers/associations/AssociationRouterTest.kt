@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.controllers.associations
 
 import io.ktor.client.*
 import io.ktor.client.call.*
+import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
@@ -12,6 +13,7 @@ import io.mockk.mockk
 import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.plugins.Serialization
+import me.nathanfallet.suitebde.plugins.configureSerialization
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -26,11 +28,11 @@ class AssociationRouterTest {
         application.environment {
             config = ApplicationConfig("application.test.conf")
         }
-        application.install(io.ktor.server.plugins.contentnegotiation.ContentNegotiation) {
-            json(Serialization.json)
+        application.application {
+            configureSerialization()
         }
         return application.createClient {
-            install(io.ktor.client.plugins.contentnegotiation.ContentNegotiation) {
+            install(ContentNegotiation) {
                 json(Serialization.json)
             }
         }
