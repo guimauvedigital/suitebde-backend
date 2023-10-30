@@ -301,6 +301,28 @@ class ModelRouterTest {
     }
 
     @Test
+    fun testAdminGetRouteForbidden() = testApplication {
+        val client = installApp(this)
+        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
+        val translateUseCase = mockk<ITranslateUseCase>()
+        val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
+        val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
+        coEvery { getAdminMenuForCallUseCase(any()) } returns listOf(menuItem)
+        coEvery { controller.getAll(any()) } throws ControllerException(
+            HttpStatusCode.Forbidden,
+            "error_mock"
+        )
+        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
+        routing {
+            router.createAdminGetRoute(this)
+        }
+        val response = client.get("/")
+        assertEquals(HttpStatusCode.Forbidden, response.status)
+        val document = Jsoup.parse(response.bodyAsText())
+        assertEquals("403", document.getElementById("number")?.text())
+    }
+
+    @Test
     fun testAdminGetRouteUnauthorized() = testApplication {
         val client = installApp(this)
         val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
@@ -340,6 +362,28 @@ class ModelRouterTest {
         assertEquals(true, document.getElementById("admin_update")?.`is`("h6"))
         assertEquals(null, document.getElementById("id"))
         assertEquals(true, document.getElementById("string")?.`is`("input"))
+    }
+
+    @Test
+    fun testAdminGetIdRouteForbidden() = testApplication {
+        val client = installApp(this)
+        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
+        val translateUseCase = mockk<ITranslateUseCase>()
+        val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
+        val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
+        coEvery { controller.get(any(), "id") } throws ControllerException(
+            HttpStatusCode.Forbidden,
+            "error_mock"
+        )
+        coEvery { getAdminMenuForCallUseCase(any()) } returns listOf(menuItem)
+        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
+        routing {
+            router.createAdminGetIdRoute(this)
+        }
+        val response = client.get("/id")
+        assertEquals(HttpStatusCode.Forbidden, response.status)
+        val document = Jsoup.parse(response.bodyAsText())
+        assertEquals("403", document.getElementById("number")?.text())
     }
 
 }

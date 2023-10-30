@@ -57,7 +57,16 @@ open class ModelRouter<out T, in P, in Q>(
             return
         }
         call.response.status(exception.code)
-        call.respond(mapOf("error" to translateUseCase(call.locale, exception.key)))
+        call.respond(
+            FreeMarkerContent(
+                "root/error.ftl",
+                mapOf(
+                    "locale" to call.locale,
+                    "code" to exception.code.value,
+                    "error" to translateUseCase(call.locale, exception.key)
+                )
+            )
+        )
     }
 
     fun createAPIv1GetRoute(root: Route) {

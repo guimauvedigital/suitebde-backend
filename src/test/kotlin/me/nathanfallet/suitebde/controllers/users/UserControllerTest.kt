@@ -350,6 +350,33 @@ class UserControllerTest {
     }
 
     @Test
+    fun testUpdateWithNoChange() = runBlocking {
+        val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
+        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
+        val getUserUseCase = mockk<IGetUserUseCase>()
+        val updateUserUseCase = mockk<IUpdateUserUseCase>()
+        val call = mockk<ApplicationCall>()
+        coEvery { getAssociationForCallUseCase(call) } returns association
+        coEvery { getUserForCallUseCase(call) } returns user
+        coEvery { checkPermissionUseCase(user, association, Permission.USERS_UPDATE) } returns true
+        coEvery { getUserUseCase(targetUser.id) } returns targetUser
+        coEvery { updateUserUseCase(targetUser) } returns targetUser
+        val controller = UserController(
+            getAssociationForCallUseCase,
+            getUserForCallUseCase,
+            checkPermissionUseCase,
+            mockk(),
+            getUserUseCase,
+            updateUserUseCase
+        )
+        assertEquals(
+            targetUser,
+            controller.update(call, targetUser.id, UpdateUserPayload(null, null, null))
+        )
+    }
+
+    @Test
     fun testUpdateNoAssociation() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val call = mockk<ApplicationCall>()
@@ -489,6 +516,34 @@ class UserControllerTest {
                 )
             )
         )
+    }
+
+    @Test
+    fun testUpdateInternalError() = runBlocking {
+        val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
+        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
+        val getUserUseCase = mockk<IGetUserUseCase>()
+        val updateUserUseCase = mockk<IUpdateUserUseCase>()
+        val call = mockk<ApplicationCall>()
+        coEvery { getAssociationForCallUseCase(call) } returns association
+        coEvery { getUserForCallUseCase(call) } returns user
+        coEvery { checkPermissionUseCase(user, association, Permission.USERS_UPDATE) } returns true
+        coEvery { getUserUseCase(targetUser.id) } returns targetUser
+        coEvery { updateUserUseCase(targetUser) } returns null
+        val controller = UserController(
+            getAssociationForCallUseCase,
+            getUserForCallUseCase,
+            checkPermissionUseCase,
+            mockk(),
+            getUserUseCase,
+            updateUserUseCase
+        )
+        val exception = assertThrows<ControllerException> {
+            controller.update(call, targetUser.id, UpdateUserPayload(null, null, null))
+        }
+        assertEquals(HttpStatusCode.InternalServerError, exception.code)
+        assertEquals("error_internal", exception.key)
     }
 
     @Test
