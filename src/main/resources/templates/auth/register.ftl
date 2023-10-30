@@ -39,4 +39,9 @@
     </#if>
 
     <button class="w-100 btn btn-lg btn-danger" type="submit"><@t key="auth_field_join" /></button>
+
+    <p class="mt-4 mb-0">
+        <@t key="auth_hint_already_have_account" /> <a href="/auth/login"
+                                                       class="text-danger"><@t key="auth_login_title" /></a>
+    </p>
 </@template.form>
