@@ -66,7 +66,7 @@ class AuthRouter(
                     ),
                     call
                 )
-                call.respondRedirect("/")
+                call.respondRedirect(call.request.queryParameters["redirect"] ?: "/")
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
                 call.respond(
@@ -182,7 +182,7 @@ class AuthRouter(
                     Clock.System.now(),
                     call
                 )
-                call.respondRedirect("/")
+                call.respondRedirect(call.request.queryParameters["redirect"] ?: "/")
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
                 call.respond(

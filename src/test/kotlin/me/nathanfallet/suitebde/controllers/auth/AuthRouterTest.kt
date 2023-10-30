@@ -33,6 +33,7 @@ class AuthRouterTest {
             configureTemplating()
         }
         return application.createClient {
+            followRedirects = false
             install(ContentNegotiation) {
                 json(Serialization.json)
             }

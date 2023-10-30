@@ -63,12 +63,12 @@
                 <div class="card card-plain shadow-none" id="sidenavCard">
                     <div class="card-body text-center p-3 w-100">
                         <div class="docs-info">
-                            <p class="h6">Besoin d'aide ?</p>
-                            <p class="text-xs font-weight-bold">Contactez nous :</p>
+                            <p class="h6"><@t key="admin_need_help" /></p>
+                            <p class="text-xs font-weight-bold"><@t key="admin_contact_us" /></p>
                         </div>
                     </div>
                 </div>
-                <a href="mailto:contact@suitebde.com" class="btn btn-dark btn-sm w-100 mb-3">contact@suitebde.com</a>
+                <a href="mailto:contact@suitebde.com" class="btn btn-dark btn-sm w-100 mb-3">hey@suitebde.com</a>
             </div>
             <!--
             <div class="sidenav-footer mx-3 my-3">

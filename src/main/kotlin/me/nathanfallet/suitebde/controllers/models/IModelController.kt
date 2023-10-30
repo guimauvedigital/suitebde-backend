@@ -1,8 +1,11 @@
 package me.nathanfallet.suitebde.controllers.models
 
 import io.ktor.server.application.*
+import me.nathanfallet.suitebde.models.models.ModelKey
 
 interface IModelController<T, P, Q> {
+
+    val modelKeys: List<ModelKey>
 
     suspend fun getAll(call: ApplicationCall): List<T>
     suspend fun get(call: ApplicationCall): T

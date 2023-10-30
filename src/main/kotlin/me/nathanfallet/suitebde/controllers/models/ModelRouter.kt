@@ -4,6 +4,7 @@ import com.github.aymanizz.ktori18n.locale
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.freemarker.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -28,6 +29,10 @@ open class ModelRouter<out T, in P, in Q>(
                 createAPIv1Routes(this)
             }
         }
+        root.route("/admin/$route") {
+            createAdminGetRoute(this)
+            createAdminGetIdRoute(this)
+        }
     }
 
     private fun createAPIv1Routes(root: Route) {
@@ -38,13 +43,26 @@ open class ModelRouter<out T, in P, in Q>(
         createAPIv1DeleteIdRoute(root)
     }
 
+    private suspend fun handleExceptionAPI(exception: ControllerException, call: ApplicationCall) {
+        call.response.status(exception.code)
+        call.respond(mapOf("error" to translateUseCase(call.locale, exception.key)))
+    }
+
+    private suspend fun handleExceptionAdmin(exception: ControllerException, call: ApplicationCall) {
+        if (exception.code == HttpStatusCode.Unauthorized) {
+            call.respondRedirect("/auth/login?redirect=/admin/$route")
+            return
+        }
+        call.response.status(exception.code)
+        call.respond(mapOf("error" to translateUseCase(call.locale, exception.key)))
+    }
+
     fun createAPIv1GetRoute(root: Route) {
         root.get {
             try {
                 call.respond(controller.getAll(call), lTypeInfo)
             } catch (exception: ControllerException) {
-                call.response.status(exception.code)
-                call.respond(mapOf("error" to translateUseCase(call.locale, exception.key)))
+                handleExceptionAPI(exception, call)
             }
         }
     }
@@ -54,8 +72,7 @@ open class ModelRouter<out T, in P, in Q>(
             try {
                 call.respond(controller.get(call), typeInfo)
             } catch (exception: ControllerException) {
-                call.response.status(exception.code)
-                call.respond(mapOf("error" to translateUseCase(call.locale, exception.key)))
+                handleExceptionAPI(exception, call)
             }
         }
     }
@@ -67,11 +84,13 @@ open class ModelRouter<out T, in P, in Q>(
                 call.response.status(HttpStatusCode.Created)
                 call.respond(response, typeInfo)
             } catch (exception: ControllerException) {
-                call.response.status(exception.code)
-                call.respond(mapOf("error" to translateUseCase(call.locale, exception.key)))
+                handleExceptionAPI(exception, call)
             } catch (exception: ContentTransformationException) {
-                call.response.status(HttpStatusCode.BadRequest)
-                call.respond(mapOf("error" to translateUseCase(call.locale, "error_body_invalid")))
+                handleExceptionAPI(
+                    ControllerException(
+                        HttpStatusCode.BadRequest, "error_body_invalid"
+                    ), call
+                )
             }
         }
     }
@@ -81,11 +100,13 @@ open class ModelRouter<out T, in P, in Q>(
             try {
                 call.respond(controller.update(call, call.receive(qTypeInfo)), typeInfo)
             } catch (exception: ControllerException) {
-                call.response.status(exception.code)
-                call.respond(mapOf("error" to translateUseCase(call.locale, exception.key)))
+                handleExceptionAPI(exception, call)
             } catch (exception: ContentTransformationException) {
-                call.response.status(HttpStatusCode.BadRequest)
-                call.respond(mapOf("error" to translateUseCase(call.locale, "error_body_invalid")))
+                handleExceptionAPI(
+                    ControllerException(
+                        HttpStatusCode.BadRequest, "error_body_invalid"
+                    ), call
+                )
             }
         }
     }
@@ -96,8 +117,47 @@ open class ModelRouter<out T, in P, in Q>(
                 controller.delete(call)
                 call.respond(HttpStatusCode.NoContent)
             } catch (exception: ControllerException) {
-                call.response.status(exception.code)
-                call.respond(mapOf("error" to translateUseCase(call.locale, exception.key)))
+                handleExceptionAPI(exception, call)
+            }
+        }
+    }
+
+    fun createAdminGetRoute(root: Route) {
+        root.get {
+            try {
+                call.respond(
+                    FreeMarkerContent(
+                        "admin/models/list.ftl",
+                        mapOf(
+                            "locale" to call.locale,
+                            "route" to route,
+                            "items" to controller.getAll(call),
+                            "keys" to controller.modelKeys
+                        )
+                    )
+                )
+            } catch (exception: ControllerException) {
+                handleExceptionAdmin(exception, call)
+            }
+        }
+    }
+
+    fun createAdminGetIdRoute(root: Route) {
+        root.get("/{id}") {
+            try {
+                call.respond(
+                    FreeMarkerContent(
+                        "admin/models/form.ftl",
+                        mapOf(
+                            "locale" to call.locale,
+                            "route" to route,
+                            "item" to controller.get(call),
+                            "keys" to controller.modelKeys
+                        )
+                    )
+                )
+            } catch (exception: ControllerException) {
+                handleExceptionAdmin(exception, call)
             }
         }
     }

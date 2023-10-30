@@ -4,6 +4,8 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
+import me.nathanfallet.suitebde.models.models.ModelKey
+import me.nathanfallet.suitebde.models.models.ModelKeyType
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
@@ -21,6 +23,13 @@ class UserController(
     private val getUserUseCase: IGetUserUseCase,
     private val updateUserUseCase: IUpdateUserUseCase
 ) : IUserController {
+
+    override val modelKeys = listOf(
+        ModelKey("id", ModelKeyType.ID),
+        ModelKey("firstName", ModelKeyType.STRING, col = 6),
+        ModelKey("lastName", ModelKeyType.STRING, col = 6),
+        ModelKey("email", ModelKeyType.STRING, editable = false),
+    )
 
     override suspend fun getAll(call: ApplicationCall): List<User> {
         val association = getAssociationForCallUseCase(call) ?: throw ControllerException(
