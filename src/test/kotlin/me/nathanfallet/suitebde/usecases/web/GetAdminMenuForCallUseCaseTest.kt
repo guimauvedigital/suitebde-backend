@@ -113,7 +113,7 @@ class GetAdminMenuForCallUseCaseTest {
         val exception = assertThrows<ControllerException> {
             useCase(call, Locale.ENGLISH)
         }
-        assertEquals(HttpStatusCode.Unauthorized, exception.code)
+        assertEquals(HttpStatusCode.Forbidden, exception.code)
         assertEquals("admin_not_allowed", exception.key)
     }
 
@@ -132,7 +132,7 @@ class GetAdminMenuForCallUseCaseTest {
             useCase(call, Locale.ENGLISH)
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals("admin_not_allowed", exception.key)
+        assertEquals("auth_invalid_credentials", exception.key)
     }
 
     @Test

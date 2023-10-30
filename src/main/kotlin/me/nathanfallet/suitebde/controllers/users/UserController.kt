@@ -3,6 +3,7 @@ package me.nathanfallet.suitebde.controllers.users
 import io.ktor.http.*
 import io.ktor.server.application.*
 import me.nathanfallet.suitebde.extensions.invoke
+import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.models.ModelKey
 import me.nathanfallet.suitebde.models.models.ModelKeyType
@@ -31,31 +32,47 @@ class UserController(
         ModelKey("email", ModelKeyType.STRING, editable = false),
     )
 
-    override suspend fun getAll(call: ApplicationCall): List<User> {
-        val association = getAssociationForCallUseCase(call) ?: throw ControllerException(
+    private suspend fun requireAssociation(call: ApplicationCall): Association {
+        return getAssociationForCallUseCase(call) ?: throw ControllerException(
             HttpStatusCode.NotFound, "associations_not_found"
         )
-        getUserForCallUseCase(call)?.takeIf {
+    }
+
+    private suspend fun requireUser(call: ApplicationCall): User {
+        return getUserForCallUseCase(call) ?: throw ControllerException(
+            HttpStatusCode.Unauthorized, "auth_invalid_credentials"
+        )
+    }
+
+    private fun requireId(call: ApplicationCall): String {
+        return call.parameters["id"] ?: throw ControllerException(
+            HttpStatusCode.BadRequest, "error_missing_id"
+        )
+    }
+
+    override suspend fun getAll(call: ApplicationCall): List<User> {
+        val association = requireAssociation(call)
+        requireUser(call).takeIf {
             checkPermissionUseCase(it, association, Permission.USERS_VIEW)
         } ?: throw ControllerException(
-            HttpStatusCode.Unauthorized, "users_view_not_allowed"
+            HttpStatusCode.Forbidden, "users_view_not_allowed"
         )
         return getUsersInAssociationUseCase(association.id)
     }
 
     override suspend fun get(call: ApplicationCall): User {
-        val association = getAssociationForCallUseCase(call) ?: throw ControllerException(
-            HttpStatusCode.NotFound, "associations_not_found"
+        val association = requireAssociation(call)
+        val id = requireId(call)
+        requireUser(call).takeIf {
+            it.id == id || checkPermissionUseCase(it, association, Permission.USERS_VIEW)
+        } ?: throw ControllerException(
+            HttpStatusCode.Forbidden, "users_view_not_allowed"
         )
-        val id = call.parameters["id"] ?: throw ControllerException(
-            HttpStatusCode.BadRequest, "error_missing_id"
-        )
-        getUserForCallUseCase(call)?.takeIf {
-            it.id.equals(id, true) || checkPermissionUseCase(it, association, Permission.USERS_VIEW)
-        } ?: throw ControllerException(HttpStatusCode.Unauthorized, "users_view_not_allowed")
         return getUserUseCase(id)?.takeIf {
             it.associationId == association.id
-        } ?: throw ControllerException(HttpStatusCode.NotFound, "users_not_found")
+        } ?: throw ControllerException(
+            HttpStatusCode.NotFound, "users_not_found"
+        )
     }
 
     override suspend fun create(call: ApplicationCall, payload: Unit): User {
@@ -63,15 +80,13 @@ class UserController(
     }
 
     override suspend fun update(call: ApplicationCall, payload: Unit): User {
-        val association = getAssociationForCallUseCase(call) ?: throw ControllerException(
-            HttpStatusCode.NotFound, "associations_not_found"
+        val association = requireAssociation(call)
+        val id = requireId(call)
+        requireUser(call).takeIf {
+            it.id == id || checkPermissionUseCase(it, association, Permission.USERS_UPDATE)
+        } ?: throw ControllerException(
+            HttpStatusCode.Forbidden, "users_update_not_allowed"
         )
-        val id = call.parameters["id"] ?: throw ControllerException(
-            HttpStatusCode.BadRequest, "error_missing_id"
-        )
-        getUserForCallUseCase(call)?.takeIf {
-            it.id.equals(id, true) || checkPermissionUseCase(it, association, Permission.USERS_UPDATE)
-        } ?: throw ControllerException(HttpStatusCode.Unauthorized, "users_update_not_allowed")
         val targetUser = getUserUseCase(id)?.takeIf {
             it.associationId == association.id
         } ?: throw ControllerException(HttpStatusCode.NotFound, "users_not_found")

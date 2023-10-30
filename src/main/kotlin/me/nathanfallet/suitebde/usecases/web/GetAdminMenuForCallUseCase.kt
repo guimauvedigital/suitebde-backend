@@ -23,10 +23,13 @@ class GetAdminMenuForCallUseCase(
         val association = getAssociationForCallUseCase(input.first) ?: throw ControllerException(
             HttpStatusCode.NotFound, "associations_not_found"
         )
-        val user = getUserForCallUseCase(input.first)?.takeIf {
+        val user = getUserForCallUseCase(input.first) ?: throw ControllerException(
+            HttpStatusCode.Unauthorized, "auth_invalid_credentials"
+        )
+        user.takeIf {
             checkPermissionUseCase(it, association, Permission.ADMIN)
         } ?: throw ControllerException(
-            HttpStatusCode.Unauthorized, "admin_not_allowed"
+            HttpStatusCode.Forbidden, "admin_not_allowed"
         )
         return listOf("dashboard", "users")
             .filter {

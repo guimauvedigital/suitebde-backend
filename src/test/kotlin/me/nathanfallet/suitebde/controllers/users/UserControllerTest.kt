@@ -88,11 +88,11 @@ class UserControllerTest {
             controller.getAll(call)
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals("users_view_not_allowed", exception.key)
+        assertEquals("auth_invalid_credentials", exception.key)
     }
 
     @Test
-    fun testGetAllUnauthorized() = runBlocking {
+    fun testGetAllForbidden() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
@@ -111,7 +111,7 @@ class UserControllerTest {
         val exception = assertThrows<ControllerException> {
             controller.getAll(call)
         }
-        assertEquals(HttpStatusCode.Unauthorized, exception.code)
+        assertEquals(HttpStatusCode.Forbidden, exception.code)
         assertEquals("users_view_not_allowed", exception.key)
     }
 
@@ -165,7 +165,7 @@ class UserControllerTest {
             controller.get(call)
         }
         assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals("users_view_not_allowed", exception.key)
+        assertEquals("auth_invalid_credentials", exception.key)
     }
 
     @Test
@@ -237,7 +237,7 @@ class UserControllerTest {
     }
 
     @Test
-    fun testGetUnauthorized() = runBlocking {
+    fun testGetForbidden() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
@@ -257,12 +257,12 @@ class UserControllerTest {
         val exception = assertThrows<ControllerException> {
             controller.get(call)
         }
-        assertEquals(HttpStatusCode.Unauthorized, exception.code)
+        assertEquals(HttpStatusCode.Forbidden, exception.code)
         assertEquals("users_view_not_allowed", exception.key)
     }
 
     @Test
-    fun testGetUnauthorizedButMe() = runBlocking {
+    fun testGetForbiddenButMe() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
