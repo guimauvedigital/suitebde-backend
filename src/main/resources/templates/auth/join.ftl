@@ -1,6 +1,6 @@
 <#import "template.ftl" as template>
 <@template.form>
-    <h1 class="h3 mb-4 fw-normal"><@t key="auth_join_title" /></h1>
+    <h1 class="h3 mb-4 fw-normal" id="auth_join_title"><@t key="auth_join_title" /></h1>
 
     <#if success??>
         <div id="alert-success" class="alert alert-success" role="alert">${success}</div>

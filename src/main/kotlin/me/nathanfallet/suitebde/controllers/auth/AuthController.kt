@@ -12,6 +12,7 @@ import me.nathanfallet.suitebde.usecases.application.ISetSessionForCallUseCase
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.ILoginUseCase
+import me.nathanfallet.suitebde.usecases.auth.IRegisterUseCase
 import java.util.*
 
 class AuthController(
@@ -21,6 +22,7 @@ class AuthController(
     private val createCodeInEmailUseCase: ICreateCodeInEmailUseCase,
     private val getCodeInEmailUseCase: IGetCodeInEmailUseCase,
     private val deleteCodeInEmailUseCase: IDeleteCodeInEmailUseCase,
+    private val registerUseCase: IRegisterUseCase,
     private val createAssociationUseCase: ICreateAssociationUseCase,
     private val sendEmailUseCase: ISendEmailUseCase,
     private val translateUseCase: ITranslateUseCase
@@ -28,21 +30,18 @@ class AuthController(
 
     override suspend fun login(payload: LoginPayload, call: ApplicationCall) {
         val user = loginUseCase(payload) ?: throw ControllerException(
-            HttpStatusCode.Unauthorized,
-            "auth_invalid_credentials"
+            HttpStatusCode.Unauthorized, "auth_invalid_credentials"
         )
         setSessionForCallUseCase(call, SessionPayload(user.id))
     }
 
     override suspend fun register(payload: RegisterPayload, joiningAt: Instant, locale: Locale, call: ApplicationCall) {
         val association = getAssociationForCallUseCase(call) ?: throw ControllerException(
-            HttpStatusCode.NotFound,
-            "auth_register_no_association"
+            HttpStatusCode.NotFound, "auth_register_no_association"
         )
         val code =
             createCodeInEmailUseCase(payload.email, association.id, joiningAt) ?: throw ControllerException(
-                HttpStatusCode.BadRequest,
-                "auth_register_email_taken"
+                HttpStatusCode.BadRequest, "auth_register_email_taken"
             )
         sendEmailUseCase(
             payload.email,
@@ -59,11 +58,18 @@ class AuthController(
         } ?: throw ControllerException(HttpStatusCode.NotFound, "auth_code_invalid")
     }
 
+    override suspend fun register(payload: RegisterCodePayload, joiningAt: Instant, call: ApplicationCall) {
+        val user = registerUseCase(payload) ?: throw ControllerException(
+            HttpStatusCode.InternalServerError, "error_internal"
+        )
+        setSessionForCallUseCase(call, SessionPayload(user.id))
+        deleteCodeInEmailUseCase(payload.code)
+    }
+
     override suspend fun join(payload: JoinPayload, joiningAt: Instant, locale: Locale) {
         val code =
             createCodeInEmailUseCase(payload.email, null, joiningAt) ?: throw ControllerException(
-                HttpStatusCode.BadRequest,
-                "auth_join_email_taken"
+                HttpStatusCode.BadRequest, "auth_join_email_taken"
             )
         sendEmailUseCase(
             payload.email,

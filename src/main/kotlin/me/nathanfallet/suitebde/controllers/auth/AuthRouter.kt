@@ -9,10 +9,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.controllers.IRouter
-import me.nathanfallet.suitebde.models.auth.JoinCodePayload
-import me.nathanfallet.suitebde.models.auth.JoinPayload
-import me.nathanfallet.suitebde.models.auth.LoginPayload
-import me.nathanfallet.suitebde.models.auth.RegisterPayload
+import me.nathanfallet.suitebde.models.auth.*
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 
@@ -31,6 +28,7 @@ class AuthRouter(
                 createGetRegisterRoute(this)
                 createPostRegisterRoute(this)
                 createGetRegisterCodeRoute(this)
+                createPostRegisterCodeRoute(this)
             }
             route("/join") {
                 createGetJoinRoute(this)
@@ -105,7 +103,7 @@ class AuthRouter(
                 controller.register(RegisterPayload(email), Clock.System.now(), call.locale, call)
                 call.respond(
                     FreeMarkerContent(
-                        "auth/join.ftl",
+                        "auth/register.ftl",
                         mapOf(
                             "locale" to call.locale,
                             "success" to translateUseCase(call.locale, "auth_register_email_sent")
@@ -134,7 +132,7 @@ class AuthRouter(
                 val payload = controller.register(code, Clock.System.now())
                 call.respond(
                     FreeMarkerContent(
-                        "auth/join.ftl",
+                        "auth/register.ftl",
                         mapOf(
                             "locale" to call.locale,
                             "code" to payload
@@ -145,7 +143,51 @@ class AuthRouter(
                 call.response.status(exception.code)
                 call.respond(
                     FreeMarkerContent(
-                        "auth/join.ftl",
+                        "auth/register.ftl",
+                        mapOf(
+                            "locale" to call.locale,
+                            "error" to translateUseCase(call.locale, exception.key)
+                        )
+                    )
+                )
+            }
+        }
+    }
+
+    fun createPostRegisterCodeRoute(root: Route) {
+        root.post("/{code}") {
+            try {
+                val code = call.parameters["code"]!!
+                val payload = controller.register(code, Clock.System.now())
+                val parameters = call.receiveParameters()
+                val password = parameters["password"]?.takeIf { it.isNotBlank() }
+                val firstName = parameters["first_name"]?.takeIf { it.isNotBlank() }
+                val lastName = parameters["last_name"]?.takeIf { it.isNotBlank() }
+                if (
+                    password == null ||
+                    firstName == null ||
+                    lastName == null
+                ) {
+                    throw ControllerException(HttpStatusCode.BadRequest, "error_body_invalid")
+                }
+                controller.register(
+                    RegisterCodePayload(
+                        code,
+                        payload.email,
+                        payload.associationId,
+                        password,
+                        firstName,
+                        lastName
+                    ),
+                    Clock.System.now(),
+                    call
+                )
+                call.respondRedirect("/")
+            } catch (exception: ControllerException) {
+                call.response.status(exception.code)
+                call.respond(
+                    FreeMarkerContent(
+                        "auth/register.ftl",
                         mapOf(
                             "locale" to call.locale,
                             "error" to translateUseCase(call.locale, exception.key)
@@ -286,4 +328,5 @@ class AuthRouter(
             }
         }
     }
+
 }

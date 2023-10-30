@@ -1,0 +1,13 @@
+package me.nathanfallet.suitebde.models.auth
+
+import kotlinx.serialization.Serializable
+
+@Serializable
+data class RegisterCodePayload(
+    val code: String,
+    val email: String,
+    val associationId: String,
+    val password: String,
+    val firstName: String,
+    val lastName: String
+)

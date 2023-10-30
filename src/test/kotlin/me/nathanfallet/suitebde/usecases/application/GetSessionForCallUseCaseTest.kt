@@ -1,5 +1,6 @@
 package me.nathanfallet.suitebde.usecases.application
 
+import io.ktor.client.request.*
 import io.ktor.server.application.*
 import io.ktor.server.config.*
 import io.ktor.server.routing.*
@@ -28,6 +29,7 @@ class GetSessionForCallUseCaseTest {
                 assertEquals(SessionPayload("id"), useCase(call))
             }
         }
+        client.get("/")
     }
 
 }

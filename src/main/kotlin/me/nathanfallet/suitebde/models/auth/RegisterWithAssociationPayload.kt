@@ -5,5 +5,5 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class RegisterWithAssociationPayload(
     val email: String,
-    val association: String
+    val associationId: String
 )
