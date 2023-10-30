@@ -1,5 +1,5 @@
 package me.nathanfallet.suitebde.usecases.application
 
-import me.nathanfallet.suitebde.usecases.ISuspendUseCase
+import me.nathanfallet.suitebde.usecases.IUseCase
 
-interface ISendEmailUseCase : ISuspendUseCase<Triple<String, String, String>, Unit>
+interface ISendEmailUseCase : IUseCase<Triple<String, String, String>, Unit>

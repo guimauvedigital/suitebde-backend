@@ -1,10 +1,13 @@
 package me.nathanfallet.suitebde.usecases.application
 
-class SendEmailUseCase : ISendEmailUseCase {
+import me.nathanfallet.suitebde.services.email.IEmailService
 
-    override suspend fun invoke(input: Triple<String, String, String>) {
-        // TODO: Send email
-        println(input)
+class SendEmailUseCase(
+    private val emailService: IEmailService
+) : ISendEmailUseCase {
+
+    override fun invoke(input: Triple<String, String, String>) {
+        emailService.sendEmail(input.first, input.second, input.third)
     }
 
 }

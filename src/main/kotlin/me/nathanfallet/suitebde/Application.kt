@@ -10,12 +10,11 @@ fun Application.module() {
     // Initialize plugins
     configureI18n()
     configureKoin()
-    configureMonitoring()
     configureSerialization()
     configureSecurity()
     configureSessions()
     configureTemplating()
     configureRouting()
     configureTasks()
-    configureSentry()
+    configureMonitoring()
 }
