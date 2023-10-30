@@ -20,6 +20,8 @@ import me.nathanfallet.suitebde.database.associations.DatabaseAssociationReposit
 import me.nathanfallet.suitebde.database.users.DatabaseUsersRepository
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.IUsersRepository
+import me.nathanfallet.suitebde.services.email.EmailService
+import me.nathanfallet.suitebde.services.email.IEmailService
 import me.nathanfallet.suitebde.usecases.application.*
 import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.*
@@ -46,12 +48,21 @@ fun Application.configureKoin() {
                 )
             }
         }
+        val serviceModule = module {
+            single<IEmailService> {
+                EmailService(
+                    environment.config.property("email.host").getString(),
+                    environment.config.property("email.username").getString(),
+                    environment.config.property("email.password").getString()
+                )
+            }
+        }
         val repositoryModule = module {
             single<IAssociationsRepository> { DatabaseAssociationRepository(get()) }
             single<IUsersRepository> { DatabaseUsersRepository(get()) }
         }
         val useCaseModule = module {
-            single<ISendEmailUseCase> { SendEmailUseCase() }
+            single<ISendEmailUseCase> { SendEmailUseCase(get()) }
             single<IExpireUseCase> { ExpireUseCase(get(), get(), get()) }
             single<ITranslateUseCase> { TranslateUseCase(get()) }
             single<IGetSessionForCallUseCase> { GetSessionForCallUseCase() }
@@ -106,6 +117,7 @@ fun Application.configureKoin() {
         modules(
             i18nModule,
             databaseModule,
+            serviceModule,
             repositoryModule,
             useCaseModule,
             controllerModule,
