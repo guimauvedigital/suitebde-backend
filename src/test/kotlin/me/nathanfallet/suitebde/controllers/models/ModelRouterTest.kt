@@ -286,7 +286,7 @@ class ModelRouterTest {
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
         coEvery { controller.getAll(any()) } returns listOf(mock)
-        coEvery { getAdminMenuForCallUseCase(any()) } returns listOf(menuItem)
+        coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         every { controller.modelKeys } returns modelKeys
         routing {
@@ -307,7 +307,7 @@ class ModelRouterTest {
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
-        coEvery { getAdminMenuForCallUseCase(any()) } returns listOf(menuItem)
+        coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
         coEvery { controller.getAll(any()) } throws ControllerException(
             HttpStatusCode.Forbidden,
             "error_mock"
@@ -329,7 +329,7 @@ class ModelRouterTest {
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
-        coEvery { getAdminMenuForCallUseCase(any()) } returns listOf(menuItem)
+        coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
         coEvery { controller.getAll(any()) } throws ControllerException(
             HttpStatusCode.Unauthorized,
             "error_mock"
@@ -350,7 +350,7 @@ class ModelRouterTest {
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
         coEvery { controller.get(any(), "id") } returns mock
-        coEvery { getAdminMenuForCallUseCase(any()) } returns listOf(menuItem)
+        coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         every { controller.modelKeys } returns modelKeys
         routing {
@@ -375,7 +375,7 @@ class ModelRouterTest {
             HttpStatusCode.Forbidden,
             "error_mock"
         )
-        coEvery { getAdminMenuForCallUseCase(any()) } returns listOf(menuItem)
+        coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createAdminGetIdRoute(this)

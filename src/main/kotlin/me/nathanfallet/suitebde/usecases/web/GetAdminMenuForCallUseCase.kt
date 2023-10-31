@@ -2,7 +2,6 @@ package me.nathanfallet.suitebde.usecases.web
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.web.WebMenu
@@ -19,11 +18,11 @@ class GetAdminMenuForCallUseCase(
     private val translateUseCase: ITranslateUseCase
 ) : IGetAdminMenuForCallUseCase {
 
-    override suspend fun invoke(input: Pair<ApplicationCall, Locale>): List<WebMenu> {
-        val association = getAssociationForCallUseCase(input.first) ?: throw ControllerException(
+    override suspend fun invoke(input1: ApplicationCall, input2: Locale): List<WebMenu> {
+        val association = getAssociationForCallUseCase(input1) ?: throw ControllerException(
             HttpStatusCode.NotFound, "associations_not_found"
         )
-        val user = getUserForCallUseCase(input.first) ?: throw ControllerException(
+        val user = getUserForCallUseCase(input1) ?: throw ControllerException(
             HttpStatusCode.Unauthorized, "auth_invalid_credentials"
         )
         user.takeIf {
@@ -43,7 +42,7 @@ class GetAdminMenuForCallUseCase(
                 WebMenu(
                     it,
                     association.id,
-                    translateUseCase(input.second, "admin_menu_$it"),
+                    translateUseCase(input2, "admin_menu_$it"),
                     if (it == "dashboard") "/admin" else "/admin/$it"
                 )
             }

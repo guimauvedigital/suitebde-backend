@@ -16,19 +16,19 @@ class CreateCodeInEmailUseCase(
     private val usersRepository: IUsersRepository
 ) : ICreateCodeInEmailUseCase {
 
-    override suspend fun invoke(input: Triple<String, String?, Instant>): CodeInEmail? {
-        usersRepository.getUserForEmail(input.first, false)?.let {
+    override suspend fun invoke(input1: String, input2: String?, input3: Instant): CodeInEmail? {
+        usersRepository.getUserForEmail(input1, false)?.let {
             return null
         }
         val code = String.generateId()
-        val expiresAt = input.third.plus(1, DateTimeUnit.HOUR, TimeZone.currentSystemDefault())
+        val expiresAt = input3.plus(1, DateTimeUnit.HOUR, TimeZone.currentSystemDefault())
         return try {
-            associationsRepository.createCodeInEmail(input.first, code, input.second, expiresAt)
+            associationsRepository.createCodeInEmail(input1, code, input2, expiresAt)
         } catch (e: Exception) {
-            associationsRepository.updateCodeInEmail(input.first, code, input.second, expiresAt).takeIf {
+            associationsRepository.updateCodeInEmail(input1, code, input2, expiresAt).takeIf {
                 it == 1
             } ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
-            CodeInEmail(input.first, code, input.second, expiresAt)
+            CodeInEmail(input1, code, input2, expiresAt)
         }
     }
 

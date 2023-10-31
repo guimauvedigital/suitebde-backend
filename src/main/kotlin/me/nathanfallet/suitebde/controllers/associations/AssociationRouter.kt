@@ -27,11 +27,9 @@ class AssociationRouter(
 
     fun createAdminGetRoute(root: Route) {
         root.get {
-            call.respond(
-                FreeMarkerContent(
+            call.respondTemplate(
                     "admin/home.ftl",
                     null
-                )
             )
         }
     }

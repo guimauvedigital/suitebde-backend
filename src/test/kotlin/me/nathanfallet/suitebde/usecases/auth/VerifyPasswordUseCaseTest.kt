@@ -1,7 +1,6 @@
 package me.nathanfallet.suitebde.usecases.auth
 
 import at.favre.lib.crypto.bcrypt.BCrypt
-import me.nathanfallet.suitebde.extensions.invoke
 import kotlin.test.Test
 import kotlin.test.assertTrue
 

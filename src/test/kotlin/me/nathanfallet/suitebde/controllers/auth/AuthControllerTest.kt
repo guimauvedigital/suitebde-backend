@@ -5,7 +5,6 @@ import io.ktor.server.application.*
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
-import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
@@ -77,7 +76,13 @@ class AuthControllerTest {
         coEvery { createCodeInEmailUseCase("email", "id", now) } returns CodeInEmail(
             "email", "code", "id", Clock.System.now()
         )
-        coEvery { sendEmailUseCase(any()) } returns Unit
+        coEvery { sendEmailUseCase(any(), any(), any()) } returns Unit
+        every {
+            translateUseCase(
+                Locale.ENGLISH,
+                any()
+            )
+        } answers { "t:${secondArg<String>()}" }
         every {
             translateUseCase(
                 Locale.ENGLISH,
@@ -89,7 +94,7 @@ class AuthControllerTest {
         coVerify {
             sendEmailUseCase(
                 "email",
-                "t:auth_register_email_title:[]",
+                "t:auth_register_email_title",
                 "t:auth_register_email_body:[code]"
             )
         }
@@ -194,7 +199,7 @@ class AuthControllerTest {
         )
         every { setSessionForCallUseCase(call, SessionPayload("id")) } returns Unit
         val now = Clock.System.now()
-        coEvery { createUserUseCase(any()) } returns User(
+        coEvery { createUserUseCase(any(), any()) } returns User(
             "id", "associationId", "email", "password",
             "firstname", "lastname", false
         )
@@ -226,7 +231,7 @@ class AuthControllerTest {
             mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
             createUserUseCase, mockk(), mockk(), mockk()
         )
-        coEvery { createUserUseCase(any()) } returns null
+        coEvery { createUserUseCase(any(), any()) } returns null
         val exception = assertThrows<ControllerException> {
             controller.register(
                 RegisterCodePayload(
@@ -254,7 +259,13 @@ class AuthControllerTest {
         coEvery { createCodeInEmailUseCase("email", null, now) } returns CodeInEmail(
             "email", "code", null, Clock.System.now()
         )
-        coEvery { sendEmailUseCase(any()) } returns Unit
+        coEvery { sendEmailUseCase(any(), any(), any()) } returns Unit
+        every {
+            translateUseCase(
+                Locale.ENGLISH,
+                any()
+            )
+        } answers { "t:${secondArg<String>()}" }
         every {
             translateUseCase(
                 Locale.ENGLISH,
@@ -266,7 +277,7 @@ class AuthControllerTest {
         coVerify {
             sendEmailUseCase(
                 "email",
-                "t:auth_join_email_title:[]",
+                "t:auth_join_email_title",
                 "t:auth_join_email_body:[code]"
             )
         }
@@ -327,7 +338,7 @@ class AuthControllerTest {
             mockk(), createAssociationUseCase, mockk(), mockk()
         )
         val now = Clock.System.now()
-        coEvery { createAssociationUseCase(any()) } returns Association(
+        coEvery { createAssociationUseCase(any(), any()) } returns Association(
             "id", "name", "school", "city",
             false, now, now
         )
@@ -358,7 +369,7 @@ class AuthControllerTest {
             mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
             mockk(), createAssociationUseCase, mockk(), mockk()
         )
-        coEvery { createAssociationUseCase(any()) } returns null
+        coEvery { createAssociationUseCase(any(), any()) } returns null
         val exception = assertThrows<ControllerException> {
             controller.join(
                 JoinCodePayload(

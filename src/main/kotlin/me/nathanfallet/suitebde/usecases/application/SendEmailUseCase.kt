@@ -6,8 +6,8 @@ class SendEmailUseCase(
     private val emailService: IEmailService
 ) : ISendEmailUseCase {
 
-    override fun invoke(input: Triple<String, String, String>) {
-        emailService.sendEmail(input.first, input.second, input.third)
+    override fun invoke(input1: String, input2: String, input3: String) {
+        emailService.sendEmail(input1, input2, input3)
     }
 
 }

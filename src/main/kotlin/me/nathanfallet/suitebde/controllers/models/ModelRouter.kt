@@ -10,7 +10,6 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.reflect.*
 import me.nathanfallet.suitebde.controllers.IRouter
-import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
@@ -57,14 +56,12 @@ open class ModelRouter<out T, in P, in Q>(
             return
         }
         call.response.status(exception.code)
-        call.respond(
-            FreeMarkerContent(
-                "root/error.ftl",
-                mapOf(
-                    "locale" to call.locale,
-                    "code" to exception.code.value,
-                    "error" to translateUseCase(call.locale, exception.key)
-                )
+        call.respondTemplate(
+            "root/error.ftl",
+            mapOf(
+                "locale" to call.locale,
+                "code" to exception.code.value,
+                "error" to translateUseCase(call.locale, exception.key)
             )
         )
     }
@@ -140,17 +137,15 @@ open class ModelRouter<out T, in P, in Q>(
     fun createAdminGetRoute(root: Route) {
         root.get {
             try {
-                call.respond(
-                    FreeMarkerContent(
-                        "admin/models/list.ftl",
-                        mapOf(
-                            "locale" to call.locale,
-                            "title" to translateUseCase(call.locale, "admin_menu_$route"),
-                            "route" to route,
-                            "menu" to getAdminMenuForCallUseCase(call, call.locale),
-                            "items" to controller.getAll(call),
-                            "keys" to controller.modelKeys
-                        )
+                call.respondTemplate(
+                    "admin/models/list.ftl",
+                    mapOf(
+                        "locale" to call.locale,
+                        "title" to translateUseCase(call.locale, "admin_menu_$route"),
+                        "route" to route,
+                        "menu" to getAdminMenuForCallUseCase(call, call.locale),
+                        "items" to controller.getAll(call),
+                        "keys" to controller.modelKeys
                     )
                 )
             } catch (exception: ControllerException) {
@@ -163,19 +158,29 @@ open class ModelRouter<out T, in P, in Q>(
         root.get("/{id}") {
             try {
                 val id = call.parameters["id"]!!
-                call.respond(
-                    FreeMarkerContent(
-                        "admin/models/form.ftl",
-                        mapOf(
-                            "locale" to call.locale,
-                            "title" to translateUseCase(call.locale, "admin_menu_$route"),
-                            "route" to route,
-                            "menu" to getAdminMenuForCallUseCase(call, call.locale),
-                            "item" to controller.get(call, id),
-                            "keys" to controller.modelKeys
-                        )
+                call.respondTemplate(
+                    "admin/models/form.ftl",
+                    mapOf(
+                        "locale" to call.locale,
+                        "title" to translateUseCase(call.locale, "admin_menu_$route"),
+                        "route" to route,
+                        "menu" to getAdminMenuForCallUseCase(call, call.locale),
+                        "item" to controller.get(call, id),
+                        "keys" to controller.modelKeys
                     )
                 )
+            } catch (exception: ControllerException) {
+                handleExceptionAdmin(exception, call)
+            }
+        }
+    }
+
+    fun createAdminPostIdRoute(root: Route) {
+        root.post("/{id}") {
+            try {
+                val id = call.parameters["id"]!!
+                controller.update(call, id, call.receive(qTypeInfo))
+                call.respondRedirect("/admin/$route")
             } catch (exception: ControllerException) {
                 handleExceptionAdmin(exception, call)
             }
