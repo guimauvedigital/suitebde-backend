@@ -28,6 +28,8 @@ import me.nathanfallet.suitebde.usecases.auth.*
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.roles.ICheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.*
+import me.nathanfallet.suitebde.usecases.web.GetAdminMenuForCallUseCase
+import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
@@ -84,9 +86,11 @@ fun Application.configureKoin() {
             single<IGetUsersInAssociationUseCase> { GetUsersInAssociationUseCase(get()) }
             single<IGetUserUseCase> { GetUserUseCase(get()) }
             single<ICreateUserUseCase> { CreateUserUseCase(get(), get()) }
-            single<IUpdateUserUseCase> { UpdateUserUseCase(get()) }
+            single<IUpdateUserUseCase> { UpdateUserUseCase(get(), get()) }
 
             single<ICheckPermissionUseCase> { CheckPermissionUseCase() }
+
+            single<IGetAdminMenuForCallUseCase> { GetAdminMenuForCallUseCase(get(), get(), get(), get()) }
         }
         val controllerModule = module {
             single<IWebController> { WebController() }

@@ -4,7 +4,6 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.*
-import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.repositories.IAssociationsRepository
 import kotlin.test.Test

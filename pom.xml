@@ -26,6 +26,15 @@
 
     <repositories>
         <repository>
+            <id>central</id>
+            <name>Default Repository</name>
+            <layout>default</layout>
+            <url>https://repo1.maven.org/maven2</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
         </repository>
@@ -55,6 +64,11 @@
         <dependency>
             <groupId>io.ktor</groupId>
             <artifactId>ktor-serialization-kotlinx-json-jvm</artifactId>
+            <version>${ktor_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.ktor</groupId>
+            <artifactId>ktor-server-status-pages-jvm</artifactId>
             <version>${ktor_version}</version>
         </dependency>
         <dependency>
@@ -171,6 +185,11 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>2.0.7</version>
+        </dependency>
+        <dependency>
+            <groupId>me.nathanfallet.usecases</groupId>
+            <artifactId>usecases-jvm</artifactId>
+            <version>1.0.3</version>
         </dependency>
         <dependency>
             <groupId>me.nathanfallet.ktor.sentry</groupId>

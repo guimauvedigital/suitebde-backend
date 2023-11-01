@@ -41,11 +41,9 @@ class AuthRouter(
 
     fun createGetLoginRoute(root: Route) {
         root.get {
-            call.respond(
-                FreeMarkerContent(
+            call.respondTemplate(
                     "auth/login.ftl",
                     mapOf("locale" to call.locale)
-                )
             )
         }
     }
@@ -66,17 +64,15 @@ class AuthRouter(
                     ),
                     call
                 )
-                call.respondRedirect("/")
+                call.respondRedirect(call.request.queryParameters["redirect"] ?: "/")
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
-                call.respond(
-                    FreeMarkerContent(
+                call.respondTemplate(
                         "auth/login.ftl",
                         mapOf(
                             "locale" to call.locale,
                             "error" to translateUseCase(call.locale, exception.key)
                         )
-                    )
                 )
             }
         }
@@ -84,11 +80,9 @@ class AuthRouter(
 
     fun createGetRegisterRoute(root: Route) {
         root.get {
-            call.respond(
-                FreeMarkerContent(
+            call.respondTemplate(
                     "auth/register.ftl",
                     mapOf("locale" to call.locale)
-                )
             )
         }
     }
@@ -101,25 +95,21 @@ class AuthRouter(
                     HttpStatusCode.BadRequest, "error_body_invalid"
                 )
                 controller.register(RegisterPayload(email), Clock.System.now(), call.locale, call)
-                call.respond(
-                    FreeMarkerContent(
+                call.respondTemplate(
                         "auth/register.ftl",
                         mapOf(
                             "locale" to call.locale,
                             "success" to translateUseCase(call.locale, "auth_register_email_sent")
                         )
-                    )
                 )
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
-                call.respond(
-                    FreeMarkerContent(
+                call.respondTemplate(
                         "auth/register.ftl",
                         mapOf(
                             "locale" to call.locale,
                             "error" to translateUseCase(call.locale, exception.key)
                         )
-                    )
                 )
             }
         }
@@ -130,25 +120,21 @@ class AuthRouter(
             try {
                 val code = call.parameters["code"]!!
                 val payload = controller.register(code, Clock.System.now())
-                call.respond(
-                    FreeMarkerContent(
+                call.respondTemplate(
                         "auth/register.ftl",
                         mapOf(
                             "locale" to call.locale,
                             "code" to payload
                         )
-                    )
                 )
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
-                call.respond(
-                    FreeMarkerContent(
+                call.respondTemplate(
                         "auth/register.ftl",
                         mapOf(
                             "locale" to call.locale,
                             "error" to translateUseCase(call.locale, exception.key)
                         )
-                    )
                 )
             }
         }
@@ -182,17 +168,15 @@ class AuthRouter(
                     Clock.System.now(),
                     call
                 )
-                call.respondRedirect("/")
+                call.respondRedirect(call.request.queryParameters["redirect"] ?: "/")
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
-                call.respond(
-                    FreeMarkerContent(
+                call.respondTemplate(
                         "auth/register.ftl",
                         mapOf(
                             "locale" to call.locale,
                             "error" to translateUseCase(call.locale, exception.key)
                         )
-                    )
                 )
             }
         }
@@ -200,11 +184,9 @@ class AuthRouter(
 
     fun createGetJoinRoute(root: Route) {
         root.get {
-            call.respond(
-                FreeMarkerContent(
+            call.respondTemplate(
                     "auth/join.ftl",
                     mapOf("locale" to call.locale)
-                )
             )
         }
     }
@@ -217,25 +199,21 @@ class AuthRouter(
                     HttpStatusCode.BadRequest, "error_body_invalid"
                 )
                 controller.join(JoinPayload(email), Clock.System.now(), call.locale)
-                call.respond(
-                    FreeMarkerContent(
+                call.respondTemplate(
                         "auth/join.ftl",
                         mapOf(
                             "locale" to call.locale,
                             "success" to translateUseCase(call.locale, "auth_join_email_sent")
                         )
-                    )
                 )
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
-                call.respond(
-                    FreeMarkerContent(
+                call.respondTemplate(
                         "auth/join.ftl",
                         mapOf(
                             "locale" to call.locale,
                             "error" to translateUseCase(call.locale, exception.key)
                         )
-                    )
                 )
             }
         }
@@ -246,25 +224,21 @@ class AuthRouter(
             try {
                 val code = call.parameters["code"]!!
                 val payload = controller.join(code, Clock.System.now())
-                call.respond(
-                    FreeMarkerContent(
+                call.respondTemplate(
                         "auth/join.ftl",
                         mapOf(
                             "locale" to call.locale,
                             "code" to payload
                         )
-                    )
                 )
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
-                call.respond(
-                    FreeMarkerContent(
+                call.respondTemplate(
                         "auth/join.ftl",
                         mapOf(
                             "locale" to call.locale,
                             "error" to translateUseCase(call.locale, exception.key)
                         )
-                    )
                 )
             }
         }
@@ -305,25 +279,21 @@ class AuthRouter(
                     ),
                     Clock.System.now()
                 )
-                call.respond(
-                    FreeMarkerContent(
+                call.respondTemplate(
                         "auth/join.ftl",
                         mapOf(
                             "locale" to call.locale,
                             "success" to translateUseCase(call.locale, "auth_join_submitted")
                         )
-                    )
                 )
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
-                call.respond(
-                    FreeMarkerContent(
+                call.respondTemplate(
                         "auth/join.ftl",
                         mapOf(
                             "locale" to call.locale,
                             "error" to translateUseCase(call.locale, exception.key)
                         )
-                    )
                 )
             }
         }

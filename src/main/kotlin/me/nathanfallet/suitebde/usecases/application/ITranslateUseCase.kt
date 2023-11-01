@@ -1,12 +1,12 @@
 package me.nathanfallet.suitebde.usecases.application
 
-import me.nathanfallet.suitebde.usecases.IUseCase
+import me.nathanfallet.usecases.triple.ITripleUseCase
 import java.util.*
 
-interface ITranslateUseCase : IUseCase<Triple<Locale, String, List<String>>, String> {
+interface ITranslateUseCase : ITripleUseCase<Locale, String, List<String>, String> {
 
-    operator fun invoke(locale: Locale, key: String, args: List<String> = listOf()): String {
-        return invoke(Triple(locale, key, args))
+    operator fun invoke(locale: Locale, key: String): String {
+        return invoke(locale, key, listOf())
     }
 
 }

@@ -19,12 +19,10 @@ class WebRouter(
     fun createGetRoute(root: Route) {
         root.get {
             val association = getAssociationForCallUseCase(call) ?: run {
-                call.respond(
-                    FreeMarkerContent(
+                call.respondTemplate(
                         "root/home.ftl",
                         null
                     )
-                )
                 return@get
             }
             call.respond(HttpStatusCode.NotFound)

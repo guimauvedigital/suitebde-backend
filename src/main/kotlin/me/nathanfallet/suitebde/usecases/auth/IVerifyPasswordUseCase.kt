@@ -1,5 +1,5 @@
 package me.nathanfallet.suitebde.usecases.auth
 
-import me.nathanfallet.suitebde.usecases.IUseCase
+import me.nathanfallet.usecases.pair.IPairUseCase
 
-interface IVerifyPasswordUseCase : IUseCase<Pair<String, String>, Boolean>
+interface IVerifyPasswordUseCase : IPairUseCase<String, String, Boolean>

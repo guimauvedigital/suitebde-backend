@@ -5,7 +5,6 @@ import io.mockk.coVerifyOrder
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
-import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
@@ -37,7 +36,7 @@ class CreateAssociationUseCaseTest {
                 any()
             )
         } returns association
-        coEvery { createUserUseCase(any()) } returns User(
+        coEvery { createUserUseCase(any(), any()) } returns User(
             "id", "associationId", "email", null,
             "firstName", "lastName", true
         )

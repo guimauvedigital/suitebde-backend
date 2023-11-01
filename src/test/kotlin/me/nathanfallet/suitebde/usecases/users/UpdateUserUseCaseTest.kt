@@ -1,31 +1,54 @@
 package me.nathanfallet.suitebde.usecases.users
 
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.IUsersRepository
+import me.nathanfallet.suitebde.usecases.auth.IHashPasswordUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class UpdateUserUseCaseTest {
 
     @Test
-    fun invokeTrue() = runBlocking {
+    fun invoke() = runBlocking {
         val usersRepository = mockk<IUsersRepository>()
-        val useCase = UpdateUserUseCase(usersRepository)
-        val user = User("id", "name", "email", "password", "first", "last", false)
+        val useCase = UpdateUserUseCase(usersRepository, mockk())
+        val user = User(
+            "id", "name", "email", null,
+            "first", "last", false
+        )
         coEvery { usersRepository.updateUser(user) } returns 1
-        assertEquals(true, useCase(user))
+        assertEquals(user, useCase(user))
     }
 
     @Test
-    fun invokeFalse() = runBlocking {
+    fun invokeWithPassword() = runBlocking {
         val usersRepository = mockk<IUsersRepository>()
-        val useCase = UpdateUserUseCase(usersRepository)
-        val user = User("id", "name", "email", "password", "first", "last", false)
+        val hashPasswordUseCase = mockk<IHashPasswordUseCase>()
+        val useCase = UpdateUserUseCase(usersRepository, hashPasswordUseCase)
+        val user = User(
+            "id", "name", "email", "password",
+            "first", "last", false
+        )
+        val hashedUser = user.copy(password = "hash")
+        every { hashPasswordUseCase("password") } returns "hash"
+        coEvery { usersRepository.updateUser(hashedUser) } returns 1
+        assertEquals(hashedUser, useCase(user))
+    }
+
+    @Test
+    fun invokeError() = runBlocking {
+        val usersRepository = mockk<IUsersRepository>()
+        val useCase = UpdateUserUseCase(usersRepository, mockk())
+        val user = User(
+            "id", "name", "email", null,
+            "first", "last", false
+        )
         coEvery { usersRepository.updateUser(user) } returns 0
-        assertEquals(false, useCase(user))
+        assertEquals(null, useCase(user))
     }
 
 }

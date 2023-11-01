@@ -3,6 +3,7 @@ package me.nathanfallet.suitebde.controllers.models
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ModelRouterTestBody(
-    val value: String
+data class ModelRouterTestModel(
+    val id: String,
+    val string: String,
 )

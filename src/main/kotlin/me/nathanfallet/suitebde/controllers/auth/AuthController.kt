@@ -3,7 +3,6 @@ package me.nathanfallet.suitebde.controllers.auth
 import io.ktor.http.*
 import io.ktor.server.application.*
 import kotlinx.datetime.Instant
-import me.nathanfallet.suitebde.extensions.invoke
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.auth.*
 import me.nathanfallet.suitebde.models.exceptions.ControllerException

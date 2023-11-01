@@ -2,7 +2,7 @@ package me.nathanfallet.suitebde.models.exceptions
 
 import io.ktor.http.*
 
-class ControllerException(
+data class ControllerException(
     val code: HttpStatusCode,
     val key: String
 ) : Exception()

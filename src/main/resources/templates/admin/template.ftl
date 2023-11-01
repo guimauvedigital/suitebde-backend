@@ -13,7 +13,7 @@
     * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
     -->
     <!DOCTYPE html>
-    <html lang="fr">
+    <html lang="${locale}">
 
     <head>
         <meta charset="utf-8"/>
@@ -55,7 +55,25 @@
             <hr class="horizontal dark mt-0">
             <div class="collapse navbar-collapse w-auto h-auto" id="sidenav-collapse-main">
                 <ul class="navbar-nav">
-
+                    <#list menu as item>
+                        <li class="nav-item">
+                            <a class="nav-link" href="${item.url}">
+                                <span class="nav-link-text ms-1">${item.title}</span>
+                            </a>
+                            <div class="collapse show">
+                                <ul class="nav ms-4">
+                                    <#list item.children as child>
+                                        <li class="nav-item">
+                                            <a class="nav-link" href="${child.url}">
+                                                <span class="sidenav-mini-icon"> ${child.short}</span>
+                                                <span class="sidenav-normal"> ${child.title}</span>
+                                            </a>
+                                        </li>
+                                    </#list>
+                                </ul>
+                            </div>
+                        </li>
+                    </#list>
                 </ul>
             </div>
             <hr class="horizontal dark">
@@ -63,12 +81,12 @@
                 <div class="card card-plain shadow-none" id="sidenavCard">
                     <div class="card-body text-center p-3 w-100">
                         <div class="docs-info">
-                            <p class="h6">Besoin d'aide ?</p>
-                            <p class="text-xs font-weight-bold">Contactez nous :</p>
+                            <p class="h6"><@t key="admin_need_help" /></p>
+                            <p class="text-xs font-weight-bold"><@t key="admin_contact_us" /></p>
                         </div>
                     </div>
                 </div>
-                <a href="mailto:contact@suitebde.com" class="btn btn-dark btn-sm w-100 mb-3">contact@suitebde.com</a>
+                <a href="mailto:contact@suitebde.com" class="btn btn-dark btn-sm w-100 mb-3">hey@suitebde.com</a>
             </div>
             <!--
             <div class="sidenav-footer mx-3 my-3">

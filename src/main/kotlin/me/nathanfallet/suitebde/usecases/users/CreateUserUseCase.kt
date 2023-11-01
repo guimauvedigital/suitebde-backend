@@ -11,14 +11,14 @@ class CreateUserUseCase(
     private val hashPasswordUseCase: IHashPasswordUseCase
 ) : ICreateUserUseCase {
 
-    override suspend fun invoke(input: Pair<CreateUserPayload, Instant>): User? {
+    override suspend fun invoke(input1: CreateUserPayload, input2: Instant): User? {
         return repository.createUser(
-            input.first.associationId,
-            input.first.email,
-            hashPasswordUseCase(input.first.password),
-            input.first.firstName,
-            input.first.lastName,
-            input.first.superuser
+            input1.associationId,
+            input1.email,
+            hashPasswordUseCase(input1.password),
+            input1.firstName,
+            input1.lastName,
+            input1.superuser
         )
     }
 
