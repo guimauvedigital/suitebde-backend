@@ -26,7 +26,7 @@ class GetAdminMenuForCallUseCase(
             HttpStatusCode.Unauthorized, "auth_invalid_credentials"
         )
         user.takeIf {
-            checkPermissionUseCase(it, association, Permission.ADMIN)
+            checkPermissionUseCase(it, Permission.ADMIN inAssociation association)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "admin_not_allowed"
         )
@@ -34,8 +34,8 @@ class GetAdminMenuForCallUseCase(
             .filter {
                 it == "dashboard" ||
                         checkPermissionUseCase(
-                            user, association,
-                            Permission.valueOf("${it.uppercase()}_VIEW")
+                            user,
+                            Permission.valueOf("${it.uppercase()}_VIEW") inAssociation association
                         )
             }
             .map {

@@ -6,6 +6,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationsUseCase
+import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -19,9 +20,11 @@ class AssociationControllerTest {
     @Test
     fun testGetAll() = runBlocking {
         val getAssociationsUseCase = mockk<IGetAssociationsUseCase>()
+        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         coEvery { getAssociationsUseCase(true) } returns listOf(association)
-        val controller = AssociationController(getAssociationsUseCase)
-        assertEquals(listOf(association), controller.getAll())
+        coEvery { getUserForCallUseCase(any()) } returns null
+        val controller = AssociationController(getAssociationsUseCase, mockk(), getUserForCallUseCase, mockk())
+        assertEquals(listOf(association), controller.getAll(mockk()))
     }
 
 }

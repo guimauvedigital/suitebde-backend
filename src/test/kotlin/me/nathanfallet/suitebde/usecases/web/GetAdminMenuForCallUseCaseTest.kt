@@ -45,8 +45,8 @@ class GetAdminMenuForCallUseCaseTest {
         )
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(user, association, Permission.ADMIN) } returns true
-        coEvery { checkPermissionUseCase(user, association, Permission.USERS_VIEW) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.ADMIN inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns true
         every { translateUseCase(Locale.ENGLISH, any()) } answers { "t:${secondArg<String>()}" }
         assertEquals(
             listOf(
@@ -80,8 +80,8 @@ class GetAdminMenuForCallUseCaseTest {
         )
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(user, association, Permission.ADMIN) } returns true
-        coEvery { checkPermissionUseCase(user, association, Permission.USERS_VIEW) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.ADMIN inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns false
         every { translateUseCase(Locale.ENGLISH, any()) } answers { "t:${secondArg<String>()}" }
         assertEquals(
             listOf(
@@ -108,7 +108,7 @@ class GetAdminMenuForCallUseCaseTest {
         )
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(user, association, Permission.ADMIN) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.ADMIN inAssociation association) } returns false
         val exception = assertThrows<ControllerException> {
             useCase(call, Locale.ENGLISH)
         }

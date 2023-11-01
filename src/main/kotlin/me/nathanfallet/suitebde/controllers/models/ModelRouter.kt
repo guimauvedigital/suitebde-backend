@@ -14,17 +14,59 @@ import me.nathanfallet.suitebde.controllers.IRouter
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
+import kotlin.reflect.KClass
+import kotlin.reflect.KTypeProjection
+import kotlin.reflect.KVariance
+import kotlin.reflect.full.createType
+import kotlin.reflect.full.starProjectedType
 
-open class ModelRouter<out T, in P, in Q>(
+open class ModelRouter<T : Any, in P : Any, in Q : Any>(
     val route: String,
-    val typeInfo: TypeInfo,
-    val lTypeInfo: TypeInfo,
-    val pTypeInfo: TypeInfo,
-    val qTypeInfo: TypeInfo,
+    modelClass: KClass<T>,
+    createPayloadClass: KClass<P>,
+    updatePayloadClass: KClass<Q>,
     private val controller: IModelController<T, P, Q>,
     private val translateUseCase: ITranslateUseCase,
     private val getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase
 ) : IRouter {
+
+    private val modelTypeInfo = TypeInfo(
+        modelClass, modelClass.java,
+        modelClass.starProjectedType
+    )
+    private val createPayloadTypeInfo = TypeInfo(
+        createPayloadClass, createPayloadClass.java,
+        createPayloadClass.starProjectedType
+    )
+    private val updatePayloadTypeInfo = TypeInfo(
+        updatePayloadClass, updatePayloadClass.java,
+        updatePayloadClass.starProjectedType
+    )
+    private val listTypeInfo = TypeInfo(
+        List::class, List::class.java,
+        List::class.createType(
+            listOf(KTypeProjection(KVariance.INVARIANT, modelClass.starProjectedType))
+        )
+    )
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <O> constructObject(typeInfo: TypeInfo, parameters: Parameters): O? {
+        return try {
+            val constructor = typeInfo.type.constructors.firstOrNull {
+                it.parameters.all { parameter ->
+                    parameter.name in parameters.names()
+                }
+            } ?: return null
+            val params = constructor.parameters.associateWith {
+                it.name?.let { name -> parameters[name] }
+            }
+            constructor.callBy(params) as? O
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+            Sentry.captureException(exception)
+            null
+        }
+    }
 
     override fun createRoutes(root: Route) {
         root.route("/api/v1/$route") {
@@ -54,25 +96,6 @@ open class ModelRouter<out T, in P, in Q>(
         createAdminDeleteIdRoute(root)
     }
 
-    @Suppress("UNCHECKED_CAST")
-    private fun <O> constructObject(typeInfo: TypeInfo, parameters: Parameters): O? {
-        return try {
-            val constructor = typeInfo.type.constructors.firstOrNull {
-                it.parameters.all { parameter ->
-                    parameter.name in parameters.names()
-                }
-            } ?: return null
-            val params = constructor.parameters.associateWith {
-                it.name?.let { name -> parameters[name] }
-            }
-            constructor.callBy(params) as? O
-        } catch (exception: Exception) {
-            exception.printStackTrace()
-            Sentry.captureException(exception)
-            null
-        }
-    }
-
     private suspend fun handleExceptionAPI(exception: ControllerException, call: ApplicationCall) {
         call.response.status(exception.code)
         call.respond(mapOf("error" to translateUseCase(call.locale, exception.key)))
@@ -97,7 +120,7 @@ open class ModelRouter<out T, in P, in Q>(
     fun createAPIv1GetRoute(root: Route) {
         root.get {
             try {
-                call.respond(controller.getAll(call), lTypeInfo)
+                call.respond(controller.getAll(call), listTypeInfo)
             } catch (exception: ControllerException) {
                 handleExceptionAPI(exception, call)
             }
@@ -108,7 +131,7 @@ open class ModelRouter<out T, in P, in Q>(
         root.get("/{id}") {
             try {
                 val id = call.parameters["id"]!!
-                call.respond(controller.get(call, id), typeInfo)
+                call.respond(controller.get(call, id), modelTypeInfo)
             } catch (exception: ControllerException) {
                 handleExceptionAPI(exception, call)
             }
@@ -118,9 +141,9 @@ open class ModelRouter<out T, in P, in Q>(
     fun createAPIv1PostRoute(root: Route) {
         root.post {
             try {
-                val response = controller.create(call, call.receive(pTypeInfo))
+                val response = controller.create(call, call.receive(createPayloadTypeInfo))
                 call.response.status(HttpStatusCode.Created)
-                call.respond(response, typeInfo)
+                call.respond(response, modelTypeInfo)
             } catch (exception: ControllerException) {
                 handleExceptionAPI(exception, call)
             } catch (exception: ContentTransformationException) {
@@ -137,7 +160,7 @@ open class ModelRouter<out T, in P, in Q>(
         root.put("/{id}") {
             try {
                 val id = call.parameters["id"]!!
-                call.respond(controller.update(call, id, call.receive(qTypeInfo)), typeInfo)
+                call.respond(controller.update(call, id, call.receive(updatePayloadTypeInfo)), modelTypeInfo)
             } catch (exception: ControllerException) {
                 handleExceptionAPI(exception, call)
             } catch (exception: ContentTransformationException) {
@@ -204,7 +227,8 @@ open class ModelRouter<out T, in P, in Q>(
     fun createAdminPostCreateRoute(root: Route) {
         root.post("/create") {
             try {
-                val payload = constructObject<P>(qTypeInfo, call.receiveParameters()) ?: throw ControllerException(
+                val payload =
+                    constructObject<P>(updatePayloadTypeInfo, call.receiveParameters()) ?: throw ControllerException(
                     HttpStatusCode.BadRequest, "error_body_invalid"
                 )
                 controller.create(call, payload)
@@ -240,7 +264,8 @@ open class ModelRouter<out T, in P, in Q>(
         root.post("/{id}") {
             try {
                 val id = call.parameters["id"]!!
-                val payload = constructObject<Q>(qTypeInfo, call.receiveParameters()) ?: throw ControllerException(
+                val payload =
+                    constructObject<Q>(updatePayloadTypeInfo, call.receiveParameters()) ?: throw ControllerException(
                     HttpStatusCode.BadRequest, "error_body_invalid"
                 )
                 controller.update(call, id, payload)

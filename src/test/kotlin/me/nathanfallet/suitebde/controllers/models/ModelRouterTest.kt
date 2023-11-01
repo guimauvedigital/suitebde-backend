@@ -9,7 +9,6 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.config.*
 import io.ktor.server.testing.*
-import io.ktor.util.reflect.*
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -60,10 +59,9 @@ class ModelRouterTest {
     ): ModelRouter<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel> {
         return ModelRouter(
             "mock",
-            typeInfo<ModelRouterTestModel>(),
-            typeInfo<List<ModelRouterTestModel>>(),
-            typeInfo<ModelRouterTestModel>(),
-            typeInfo<ModelRouterTestModel>(),
+            ModelRouterTestModel::class,
+            ModelRouterTestModel::class,
+            ModelRouterTestModel::class,
             controller,
             translateUseCase,
             getAdminMenuForCallUseCase
