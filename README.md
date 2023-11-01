@@ -1,3 +1,3 @@
-# Suite BDE
+# suitebde-backend
 
 All in one tool for BDEs.
