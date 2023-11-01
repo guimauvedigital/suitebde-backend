@@ -2,27 +2,30 @@ package me.nathanfallet.suitebde.controllers.associations
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.exceptions.ControllerException
-import me.nathanfallet.suitebde.models.models.ModelKey
-import me.nathanfallet.suitebde.models.models.ModelKeyType
+import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import me.nathanfallet.suitebde.models.roles.AdminPermission
+import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationUseCase
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationsUseCase
+import me.nathanfallet.suitebde.usecases.associations.IUpdateAssociationUseCase
 import me.nathanfallet.suitebde.usecases.roles.ICheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
 
 class AssociationController(
     private val getAssociationsUseCase: IGetAssociationsUseCase,
-    private val getAssociationUseCase: IGetAssociationUseCase,
     private val getUserForCallUseCase: IGetUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionUseCase,
+    private val getAssociationUseCase: IGetAssociationUseCase,
+    private val updateAssociationUseCase: IUpdateAssociationUseCase
 ) : IAssociationController {
 
-    override val modelKeys = listOf(
-        ModelKey("id", ModelKeyType.ID),
-        ModelKey("name", ModelKeyType.STRING),
-    )
+    private suspend fun requireUser(call: ApplicationCall): User {
+        return getUserForCallUseCase(call) ?: throw ControllerException(
+            HttpStatusCode.Unauthorized, "auth_invalid_credentials"
+        )
+    }
 
     override suspend fun getAll(call: ApplicationCall): List<Association> {
         val showAll = getUserForCallUseCase(call)?.let {
@@ -41,8 +44,25 @@ class AssociationController(
         TODO("Not yet implemented")
     }
 
-    override suspend fun update(call: ApplicationCall, id: String, payload: Unit): Association {
-        TODO("Not yet implemented")
+    override suspend fun update(call: ApplicationCall, id: String, payload: UpdateAssociationPayload): Association {
+        requireUser(call).takeIf {
+            checkPermissionUseCase(it, AdminPermission)
+        } ?: throw ControllerException(
+            HttpStatusCode.Forbidden, "associations_update_not_allowed"
+        )
+        val association = getAssociationUseCase(id) ?: throw ControllerException(
+            HttpStatusCode.NotFound, "associations_not_found"
+        )
+        return updateAssociationUseCase(
+            association.copy(
+                name = payload.name,
+                school = payload.school,
+                city = payload.city,
+                validated = payload.validated,
+            )
+        ) ?: throw ControllerException(
+            HttpStatusCode.InternalServerError, "error_internal"
+        )
     }
 
     override suspend fun delete(call: ApplicationCall, id: String) {

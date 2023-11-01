@@ -2,10 +2,8 @@ package me.nathanfallet.suitebde.controllers.users
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.exceptions.ControllerException
-import me.nathanfallet.suitebde.models.models.ModelKey
-import me.nathanfallet.suitebde.models.models.ModelKeyType
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
@@ -24,14 +22,6 @@ class UserController(
     private val getUserUseCase: IGetUserUseCase,
     private val updateUserUseCase: IUpdateUserUseCase
 ) : IUserController {
-
-    override val modelKeys = listOf(
-        ModelKey("id", ModelKeyType.ID),
-        ModelKey("firstName", ModelKeyType.STRING, col = 6),
-        ModelKey("lastName", ModelKeyType.STRING, col = 6),
-        ModelKey("email", ModelKeyType.STRING, editable = false),
-        ModelKey("password", ModelKeyType.PASSWORD)
-    )
 
     private suspend fun requireAssociation(call: ApplicationCall): Association {
         return getAssociationForCallUseCase(call) ?: throw ControllerException(

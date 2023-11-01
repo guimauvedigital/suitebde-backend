@@ -23,7 +23,9 @@ class AssociationControllerTest {
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         coEvery { getAssociationsUseCase(true) } returns listOf(association)
         coEvery { getUserForCallUseCase(any()) } returns null
-        val controller = AssociationController(getAssociationsUseCase, mockk(), getUserForCallUseCase, mockk())
+        val controller = AssociationController(
+            getAssociationsUseCase, getUserForCallUseCase, mockk(), mockk(), mockk()
+        )
         assertEquals(listOf(association), controller.getAll(mockk()))
     }
 

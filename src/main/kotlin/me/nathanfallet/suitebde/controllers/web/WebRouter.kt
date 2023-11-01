@@ -5,7 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import me.nathanfallet.suitebde.controllers.IRouter
+import me.nathanfallet.ktor.routers.routers.IRouter
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 
 class WebRouter(

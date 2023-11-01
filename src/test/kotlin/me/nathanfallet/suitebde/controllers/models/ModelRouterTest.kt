@@ -1,7 +1,6 @@
 package me.nathanfallet.suitebde.controllers.models
 
 import io.ktor.client.*
-import io.ktor.client.call.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -12,9 +11,8 @@ import io.ktor.server.testing.*
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import me.nathanfallet.suitebde.models.exceptions.ControllerException
-import me.nathanfallet.suitebde.models.models.ModelKey
-import me.nathanfallet.suitebde.models.models.ModelKeyType
+import me.nathanfallet.ktor.routers.controllers.base.IModelController
+import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.plugins.*
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
@@ -26,11 +24,6 @@ import kotlin.test.assertEquals
 class ModelRouterTest {
 
     private val mock = ModelRouterTestModel("id", "string")
-
-    private val modelKeys = listOf(
-        ModelKey("id", ModelKeyType.ID),
-        ModelKey("string", ModelKeyType.STRING)
-    )
 
     private val menuItem = WebMenu("id", "associationId", "title", "url")
 
@@ -69,224 +62,15 @@ class ModelRouterTest {
     }
 
     @Test
-    fun testAPIv1GetRoute() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
-        val router = createRouter(controller, mockk(), mockk())
-        coEvery { controller.getAll(any()) } returns listOf(mock)
-        routing {
-            router.createAPIv1GetRoute(this)
-        }
-        val response = client.get("/")
-        assertEquals(HttpStatusCode.OK, response.status)
-        assertEquals(listOf(mock), response.body())
-    }
-
-    @Test
-    fun testAPIv1GetRouteControllerException() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = createRouter(controller, translateUseCase, mockk())
-        coEvery { controller.getAll(any()) } throws ControllerException(
-            HttpStatusCode.NotFound,
-            "error_mock"
-        )
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createAPIv1GetRoute(this)
-        }
-        val response = client.get("/")
-        assertEquals(HttpStatusCode.NotFound, response.status)
-        assertEquals(mapOf("error" to "t:error_mock"), response.body())
-    }
-
-    @Test
-    fun testAPIv1GetIdRoute() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
-        val router = createRouter(controller, mockk(), mockk())
-        coEvery { controller.get(any(), "id") } returns mock
-        routing {
-            router.createAPIv1GetIdRoute(this)
-        }
-        val response = client.get("/id")
-        assertEquals(HttpStatusCode.OK, response.status)
-        assertEquals(mock, response.body())
-    }
-
-    @Test
-    fun testAPIv1GetIdRouteControllerException() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = createRouter(controller, translateUseCase, mockk())
-        coEvery { controller.get(any(), "id") } throws ControllerException(
-            HttpStatusCode.NotFound,
-            "error_mock"
-        )
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createAPIv1GetIdRoute(this)
-        }
-        val response = client.get("/id")
-        assertEquals(HttpStatusCode.NotFound, response.status)
-        assertEquals(mapOf("error" to "t:error_mock"), response.body())
-    }
-
-    @Test
-    fun testAPIv1PostRoute() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
-        val router = createRouter(controller, mockk(), mockk())
-        coEvery { controller.create(any(), mock) } returns mock
-        routing {
-            router.createAPIv1PostRoute(this)
-        }
-        val response = client.post("/") {
-            contentType(ContentType.Application.Json)
-            setBody(mock)
-        }
-        assertEquals(HttpStatusCode.Created, response.status)
-        assertEquals(mock, response.body())
-    }
-
-    @Test
-    fun testAPIv1PostRouteControllerException() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = createRouter(controller, translateUseCase, mockk())
-        coEvery { controller.create(any(), mock) } throws ControllerException(
-            HttpStatusCode.NotFound,
-            "error_mock"
-        )
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createAPIv1PostRoute(this)
-        }
-        val response = client.post("/") {
-            contentType(ContentType.Application.Json)
-            setBody(mock)
-        }
-        assertEquals(HttpStatusCode.NotFound, response.status)
-        assertEquals(mapOf("error" to "t:error_mock"), response.body())
-    }
-
-    @Test
-    fun testAPIv1PostRouteInvalidBody() = testApplication {
-        val client = installApp(this)
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = createRouter(mockk(), translateUseCase, mockk())
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createAPIv1PostRoute(this)
-        }
-        val response = client.post("/") {
-            setBody("invalid")
-        }
-        assertEquals(HttpStatusCode.BadRequest, response.status)
-        assertEquals(mapOf("error" to "t:error_body_invalid"), response.body())
-    }
-
-    @Test
-    fun testAPIv1PutRoute() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
-        val router = createRouter(controller, mockk(), mockk())
-        coEvery { controller.update(any(), "id", mock) } returns mock
-        routing {
-            router.createAPIv1PutIdRoute(this)
-        }
-        val response = client.put("/id") {
-            contentType(ContentType.Application.Json)
-            setBody(mock)
-        }
-        assertEquals(HttpStatusCode.OK, response.status)
-        assertEquals(mock, response.body())
-    }
-
-    @Test
-    fun testAPIv1PutRouteControllerException() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = createRouter(controller, translateUseCase, mockk())
-        coEvery { controller.update(any(), "id", mock) } throws ControllerException(
-            HttpStatusCode.NotFound,
-            "error_mock"
-        )
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createAPIv1PutIdRoute(this)
-        }
-        val response = client.put("/id") {
-            contentType(ContentType.Application.Json)
-            setBody(mock)
-        }
-        assertEquals(HttpStatusCode.NotFound, response.status)
-        assertEquals(mapOf("error" to "t:error_mock"), response.body())
-    }
-
-    @Test
-    fun testAPIv1PutRouteInvalidBody() = testApplication {
-        val client = installApp(this)
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = createRouter(mockk(), translateUseCase, mockk())
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createAPIv1PutIdRoute(this)
-        }
-        val response = client.put("/id") {
-            setBody("invalid")
-        }
-        assertEquals(HttpStatusCode.BadRequest, response.status)
-        assertEquals(mapOf("error" to "t:error_body_invalid"), response.body())
-    }
-
-    @Test
-    fun testAPIv1DeleteRoute() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
-        val router = createRouter(controller, mockk(), mockk())
-        coEvery { controller.delete(any(), "id") } returns Unit
-        routing {
-            router.createAPIv1DeleteIdRoute(this)
-        }
-        val response = client.delete("/id")
-        assertEquals(HttpStatusCode.NoContent, response.status)
-    }
-
-    @Test
-    fun testAPIv1DeleteRouteControllerException() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = createRouter(controller, translateUseCase, mockk())
-        coEvery { controller.delete(any(), "id") } throws ControllerException(
-            HttpStatusCode.NotFound,
-            "error_mock"
-        )
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createAPIv1DeleteIdRoute(this)
-        }
-        val response = client.delete("/id")
-        assertEquals(HttpStatusCode.NotFound, response.status)
-        assertEquals(mapOf("error" to "t:error_mock"), response.body())
-    }
-
-    @Test
     fun testAdminGetRoute() = testApplication {
         val client = installApp(this)
         val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
-        coEvery { controller.getAll(any()) } returns listOf(mock)
+        coEvery { controller.getAll(any(), Unit) } returns listOf(mock)
         coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        every { controller.modelKeys } returns modelKeys
         routing {
             router.createAdminGetRoute(this)
         }
@@ -306,7 +90,7 @@ class ModelRouterTest {
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
         coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
-        coEvery { controller.getAll(any()) } throws ControllerException(
+        coEvery { controller.getAll(any(), Unit) } throws ControllerException(
             HttpStatusCode.Forbidden,
             "error_mock"
         )
@@ -328,7 +112,7 @@ class ModelRouterTest {
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
         coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
-        coEvery { controller.getAll(any()) } throws ControllerException(
+        coEvery { controller.getAll(any(), Unit) } throws ControllerException(
             HttpStatusCode.Unauthorized,
             "error_mock"
         )
@@ -347,10 +131,9 @@ class ModelRouterTest {
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
-        coEvery { controller.get(any(), "id") } returns mock
+        coEvery { controller.get(any(), Unit, "id") } returns mock
         coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        every { controller.modelKeys } returns modelKeys
         routing {
             router.createAdminGetIdRoute(this)
         }
@@ -369,7 +152,7 @@ class ModelRouterTest {
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
-        coEvery { controller.get(any(), "id") } throws ControllerException(
+        coEvery { controller.get(any(), Unit, "id") } throws ControllerException(
             HttpStatusCode.Forbidden,
             "error_mock"
         )
@@ -389,7 +172,7 @@ class ModelRouterTest {
         val client = installApp(this)
         val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
         val router = createRouter(controller, mockk(), mockk())
-        coEvery { controller.update(any(), "id", mock) } returns mock
+        coEvery { controller.update(any(), Unit, "id", mock) } returns mock
         routing {
             router.createAdminPostIdRoute(this)
         }

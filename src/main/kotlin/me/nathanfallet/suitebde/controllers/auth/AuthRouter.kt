@@ -8,9 +8,9 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.datetime.Clock
-import me.nathanfallet.suitebde.controllers.IRouter
+import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
+import me.nathanfallet.ktor.routers.routers.IRouter
 import me.nathanfallet.suitebde.models.auth.*
-import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 
 class AuthRouter(

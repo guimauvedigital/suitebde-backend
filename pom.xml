@@ -5,7 +5,7 @@
     <groupId>me.nathanfallet.suitebde</groupId>
     <artifactId>suitebde-backend</artifactId>
     <version>0.0.1</version>
-    <name>SuiteBDE</name>
+    <name>suitebde-backend</name>
     <description>Suite BDE</description>
 
     <properties>
@@ -190,6 +190,11 @@
             <groupId>me.nathanfallet.usecases</groupId>
             <artifactId>usecases-jvm</artifactId>
             <version>1.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>me.nathanfallet.ktor.routers</groupId>
+            <artifactId>ktor-routers</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>me.nathanfallet.ktor.sentry</groupId>
