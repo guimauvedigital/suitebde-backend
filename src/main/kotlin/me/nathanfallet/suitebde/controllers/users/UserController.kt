@@ -30,6 +30,7 @@ class UserController(
         ModelKey("firstName", ModelKeyType.STRING, col = 6),
         ModelKey("lastName", ModelKeyType.STRING, col = 6),
         ModelKey("email", ModelKeyType.STRING, editable = false),
+        ModelKey("password", ModelKeyType.PASSWORD)
     )
 
     private suspend fun requireAssociation(call: ApplicationCall): Association {

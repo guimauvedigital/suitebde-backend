@@ -47,6 +47,11 @@
             <@t key="admin_${route}_${key.name}" />
         </label>
         <#switch key.type>
+            <#case "PASSWORD">
+                <input type="password" class="form-control"
+                       name="${key.name}" id="${key.name}"
+                       <#if !key.editable>disabled</#if>>
+                <#break>
             <#default>
                 <input type="text" class="form-control"
                        name="${key.name}" id="${key.name}"

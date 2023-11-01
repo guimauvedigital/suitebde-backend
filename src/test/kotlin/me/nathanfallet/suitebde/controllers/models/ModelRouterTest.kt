@@ -386,4 +386,25 @@ class ModelRouterTest {
         assertEquals("403", document.getElementById("number")?.text())
     }
 
+    @Test
+    fun testAdminPostIdRoute() = testApplication {
+        val client = installApp(this)
+        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
+        val router = createRouter(controller, mockk(), mockk())
+        coEvery { controller.update(any(), "id", mock) } returns mock
+        routing {
+            router.createAdminPostIdRoute(this)
+        }
+        val response = client.post("/id") {
+            contentType(ContentType.Application.FormUrlEncoded)
+            setBody(
+                listOf(
+                    "id" to "id",
+                    "string" to "string"
+                ).formUrlEncode()
+            )
+        }
+        assertEquals(HttpStatusCode.Found, response.status)
+    }
+
 }

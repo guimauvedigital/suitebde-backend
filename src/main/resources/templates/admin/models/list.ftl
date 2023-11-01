@@ -53,6 +53,9 @@
                     <a href="/admin/${route}/${item[key.name]}">${item[key.name]}</a>
                 </span>
                 <#break>
+            <#case "PASSWORD">
+                <span class="my-2 text-xs">********</span>
+                <#break>
             <#default>
                 <span class="my-2 text-xs">${item[key.name]}</span>
         </#switch>

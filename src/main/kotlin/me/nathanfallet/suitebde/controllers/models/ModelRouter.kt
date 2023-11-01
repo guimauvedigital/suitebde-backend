@@ -9,6 +9,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import io.ktor.util.reflect.*
+import io.sentry.Sentry
 import me.nathanfallet.suitebde.controllers.IRouter
 import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
@@ -32,8 +33,7 @@ open class ModelRouter<out T, in P, in Q>(
             }
         }
         root.route("/admin/$route") {
-            createAdminGetRoute(this)
-            createAdminGetIdRoute(this)
+            createAdminRoutes(this)
         }
     }
 
@@ -43,6 +43,34 @@ open class ModelRouter<out T, in P, in Q>(
         createAPIv1PostRoute(root)
         createAPIv1PutIdRoute(root)
         createAPIv1DeleteIdRoute(root)
+    }
+
+    private fun createAdminRoutes(root: Route) {
+        createAdminGetRoute(root)
+        createAdminGetCreateRoute(root)
+        createAdminPostCreateRoute(root)
+        createAdminGetIdRoute(root)
+        createAdminPostIdRoute(root)
+        createAdminDeleteIdRoute(root)
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <O> constructObject(typeInfo: TypeInfo, parameters: Parameters): O? {
+        return try {
+            val constructor = typeInfo.type.constructors.firstOrNull {
+                it.parameters.all { parameter ->
+                    parameter.name in parameters.names()
+                }
+            } ?: return null
+            val params = constructor.parameters.associateWith {
+                it.name?.let { name -> parameters[name] }
+            }
+            constructor.callBy(params) as? O
+        } catch (exception: Exception) {
+            exception.printStackTrace()
+            Sentry.captureException(exception)
+            null
+        }
     }
 
     private suspend fun handleExceptionAPI(exception: ControllerException, call: ApplicationCall) {
@@ -154,6 +182,39 @@ open class ModelRouter<out T, in P, in Q>(
         }
     }
 
+    fun createAdminGetCreateRoute(root: Route) {
+        root.get("/create") {
+            try {
+                call.respondTemplate(
+                    "admin/models/form.ftl",
+                    mapOf(
+                        "locale" to call.locale,
+                        "title" to translateUseCase(call.locale, "admin_menu_$route"),
+                        "route" to route,
+                        "menu" to getAdminMenuForCallUseCase(call, call.locale),
+                        "keys" to controller.modelKeys
+                    )
+                )
+            } catch (exception: ControllerException) {
+                handleExceptionAdmin(exception, call)
+            }
+        }
+    }
+
+    fun createAdminPostCreateRoute(root: Route) {
+        root.post("/create") {
+            try {
+                val payload = constructObject<P>(qTypeInfo, call.receiveParameters()) ?: throw ControllerException(
+                    HttpStatusCode.BadRequest, "error_body_invalid"
+                )
+                controller.create(call, payload)
+                call.respondRedirect("/admin/$route")
+            } catch (exception: ControllerException) {
+                handleExceptionAdmin(exception, call)
+            }
+        }
+    }
+
     fun createAdminGetIdRoute(root: Route) {
         root.get("/{id}") {
             try {
@@ -179,7 +240,22 @@ open class ModelRouter<out T, in P, in Q>(
         root.post("/{id}") {
             try {
                 val id = call.parameters["id"]!!
-                controller.update(call, id, call.receive(qTypeInfo))
+                val payload = constructObject<Q>(qTypeInfo, call.receiveParameters()) ?: throw ControllerException(
+                    HttpStatusCode.BadRequest, "error_body_invalid"
+                )
+                controller.update(call, id, payload)
+                call.respondRedirect("/admin/$route")
+            } catch (exception: ControllerException) {
+                handleExceptionAdmin(exception, call)
+            }
+        }
+    }
+
+    fun createAdminDeleteIdRoute(root: Route) {
+        root.get("/{id}/delete") {
+            try {
+                val id = call.parameters["id"]!!
+                controller.delete(call, id)
                 call.respondRedirect("/admin/$route")
             } catch (exception: ControllerException) {
                 handleExceptionAdmin(exception, call)
