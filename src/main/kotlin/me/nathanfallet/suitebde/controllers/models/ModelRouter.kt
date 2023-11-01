@@ -8,41 +8,36 @@ import io.ktor.server.freemarker.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import io.ktor.util.reflect.*
-import io.sentry.Sentry
-import me.nathanfallet.suitebde.controllers.IRouter
-import me.nathanfallet.suitebde.models.exceptions.ControllerException
+import me.nathanfallet.ktor.routers.controllers.base.IModelController
+import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
+import me.nathanfallet.ktor.routers.routers.api.APIModelRouter
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
+import kotlin.reflect.KClass
 
-open class ModelRouter<out T, in P, in Q>(
+open class ModelRouter<T : Any, P : Any, Q : Any>(
     val route: String,
-    val typeInfo: TypeInfo,
-    val lTypeInfo: TypeInfo,
-    val pTypeInfo: TypeInfo,
-    val qTypeInfo: TypeInfo,
-    private val controller: IModelController<T, P, Q>,
+    modelClass: KClass<T>,
+    createPayloadClass: KClass<P>,
+    updatePayloadClass: KClass<Q>,
+    controller: IModelController<T, P, Q>,
     private val translateUseCase: ITranslateUseCase,
     private val getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase
-) : IRouter {
+) : APIModelRouter<T, P, Q>(
+    modelClass,
+    createPayloadClass,
+    updatePayloadClass,
+    controller,
+    "api/v1"
+) {
 
     override fun createRoutes(root: Route) {
-        root.route("/api/v1/$route") {
-            authenticate("api-v1-jwt", optional = true) {
-                createAPIv1Routes(this)
-            }
+        root.authenticate("api-v1-jwt", optional = true) {
+            super.createRoutes(this)
         }
         root.route("/admin/$route") {
             createAdminRoutes(this)
         }
-    }
-
-    private fun createAPIv1Routes(root: Route) {
-        createAPIv1GetRoute(root)
-        createAPIv1GetIdRoute(root)
-        createAPIv1PostRoute(root)
-        createAPIv1PutIdRoute(root)
-        createAPIv1DeleteIdRoute(root)
     }
 
     private fun createAdminRoutes(root: Route) {
@@ -52,30 +47,6 @@ open class ModelRouter<out T, in P, in Q>(
         createAdminGetIdRoute(root)
         createAdminPostIdRoute(root)
         createAdminDeleteIdRoute(root)
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    private fun <O> constructObject(typeInfo: TypeInfo, parameters: Parameters): O? {
-        return try {
-            val constructor = typeInfo.type.constructors.firstOrNull {
-                it.parameters.all { parameter ->
-                    parameter.name in parameters.names()
-                }
-            } ?: return null
-            val params = constructor.parameters.associateWith {
-                it.name?.let { name -> parameters[name] }
-            }
-            constructor.callBy(params) as? O
-        } catch (exception: Exception) {
-            exception.printStackTrace()
-            Sentry.captureException(exception)
-            null
-        }
-    }
-
-    private suspend fun handleExceptionAPI(exception: ControllerException, call: ApplicationCall) {
-        call.response.status(exception.code)
-        call.respond(mapOf("error" to translateUseCase(call.locale, exception.key)))
     }
 
     private suspend fun handleExceptionAdmin(exception: ControllerException, call: ApplicationCall) {
@@ -94,77 +65,10 @@ open class ModelRouter<out T, in P, in Q>(
         )
     }
 
-    fun createAPIv1GetRoute(root: Route) {
-        root.get {
-            try {
-                call.respond(controller.getAll(call), lTypeInfo)
-            } catch (exception: ControllerException) {
-                handleExceptionAPI(exception, call)
-            }
-        }
-    }
-
-    fun createAPIv1GetIdRoute(root: Route) {
-        root.get("/{id}") {
-            try {
-                val id = call.parameters["id"]!!
-                call.respond(controller.get(call, id), typeInfo)
-            } catch (exception: ControllerException) {
-                handleExceptionAPI(exception, call)
-            }
-        }
-    }
-
-    fun createAPIv1PostRoute(root: Route) {
-        root.post {
-            try {
-                val response = controller.create(call, call.receive(pTypeInfo))
-                call.response.status(HttpStatusCode.Created)
-                call.respond(response, typeInfo)
-            } catch (exception: ControllerException) {
-                handleExceptionAPI(exception, call)
-            } catch (exception: ContentTransformationException) {
-                handleExceptionAPI(
-                    ControllerException(
-                        HttpStatusCode.BadRequest, "error_body_invalid"
-                    ), call
-                )
-            }
-        }
-    }
-
-    fun createAPIv1PutIdRoute(root: Route) {
-        root.put("/{id}") {
-            try {
-                val id = call.parameters["id"]!!
-                call.respond(controller.update(call, id, call.receive(qTypeInfo)), typeInfo)
-            } catch (exception: ControllerException) {
-                handleExceptionAPI(exception, call)
-            } catch (exception: ContentTransformationException) {
-                handleExceptionAPI(
-                    ControllerException(
-                        HttpStatusCode.BadRequest, "error_body_invalid"
-                    ), call
-                )
-            }
-        }
-    }
-
-    fun createAPIv1DeleteIdRoute(root: Route) {
-        root.delete("/{id}") {
-            try {
-                val id = call.parameters["id"]!!
-                controller.delete(call, id)
-                call.respond(HttpStatusCode.NoContent)
-            } catch (exception: ControllerException) {
-                handleExceptionAPI(exception, call)
-            }
-        }
-    }
-
     fun createAdminGetRoute(root: Route) {
         root.get {
             try {
+                println(modelKeys)
                 call.respondTemplate(
                     "admin/models/list.ftl",
                     mapOf(
@@ -172,8 +76,8 @@ open class ModelRouter<out T, in P, in Q>(
                         "title" to translateUseCase(call.locale, "admin_menu_$route"),
                         "route" to route,
                         "menu" to getAdminMenuForCallUseCase(call, call.locale),
-                        "items" to controller.getAll(call),
-                        "keys" to controller.modelKeys
+                        "items" to controller.getAll(call, Unit),
+                        "keys" to modelKeys
                     )
                 )
             } catch (exception: ControllerException) {
@@ -192,7 +96,7 @@ open class ModelRouter<out T, in P, in Q>(
                         "title" to translateUseCase(call.locale, "admin_menu_$route"),
                         "route" to route,
                         "menu" to getAdminMenuForCallUseCase(call, call.locale),
-                        "keys" to controller.modelKeys
+                        "keys" to createPayloadKeys
                     )
                 )
             } catch (exception: ControllerException) {
@@ -204,10 +108,10 @@ open class ModelRouter<out T, in P, in Q>(
     fun createAdminPostCreateRoute(root: Route) {
         root.post("/create") {
             try {
-                val payload = constructObject<P>(qTypeInfo, call.receiveParameters()) ?: throw ControllerException(
-                    HttpStatusCode.BadRequest, "error_body_invalid"
-                )
-                controller.create(call, payload)
+                val payload = constructPayload(
+                    createPayloadClass, call.receiveParameters()
+                ) ?: throw ControllerException(HttpStatusCode.BadRequest, "error_body_invalid")
+                controller.create(call, Unit, payload)
                 call.respondRedirect("/admin/$route")
             } catch (exception: ControllerException) {
                 handleExceptionAdmin(exception, call)
@@ -226,8 +130,8 @@ open class ModelRouter<out T, in P, in Q>(
                         "title" to translateUseCase(call.locale, "admin_menu_$route"),
                         "route" to route,
                         "menu" to getAdminMenuForCallUseCase(call, call.locale),
-                        "item" to controller.get(call, id),
-                        "keys" to controller.modelKeys
+                        "item" to controller.get(call, Unit, id),
+                        "keys" to updatePayloadKeys
                     )
                 )
             } catch (exception: ControllerException) {
@@ -240,10 +144,10 @@ open class ModelRouter<out T, in P, in Q>(
         root.post("/{id}") {
             try {
                 val id = call.parameters["id"]!!
-                val payload = constructObject<Q>(qTypeInfo, call.receiveParameters()) ?: throw ControllerException(
-                    HttpStatusCode.BadRequest, "error_body_invalid"
-                )
-                controller.update(call, id, payload)
+                val payload = constructPayload(
+                    updatePayloadClass, call.receiveParameters()
+                ) ?: throw ControllerException(HttpStatusCode.BadRequest, "error_body_invalid")
+                controller.update(call, Unit, id, payload)
                 call.respondRedirect("/admin/$route")
             } catch (exception: ControllerException) {
                 handleExceptionAdmin(exception, call)
@@ -255,7 +159,7 @@ open class ModelRouter<out T, in P, in Q>(
         root.get("/{id}/delete") {
             try {
                 val id = call.parameters["id"]!!
-                controller.delete(call, id)
+                controller.delete(call, Unit, id)
                 call.respondRedirect("/admin/$route")
             } catch (exception: ControllerException) {
                 handleExceptionAdmin(exception, call)

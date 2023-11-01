@@ -72,7 +72,9 @@ fun Application.configureKoin() {
 
             single<ICreateAssociationUseCase> { CreateAssociationUseCase(get(), get()) }
             single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
+            single<IGetAssociationUseCase> { GetAssociationUseCase(get()) }
             single<IGetAssociationForCallUseCase> { GetAssociationForCallUseCase(get()) }
+            single<IUpdateAssociationUseCase> { UpdateAssociationUseCase(get()) }
             single<IDeleteAssociationUseCase> { DeleteAssociationUseCase(get()) }
             single<ICreateCodeInEmailUseCase> { CreateCodeInEmailUseCase(get(), get()) }
             single<IGetCodeInEmailUseCase> { GetCodeInEmailUseCase(get()) }
@@ -94,7 +96,7 @@ fun Application.configureKoin() {
         }
         val controllerModule = module {
             single<IWebController> { WebController() }
-            single<IAssociationController> { AssociationController(get()) }
+            single<IAssociationController> { AssociationController(get(), get(), get(), get(), get()) }
             single<IAuthController> {
                 AuthController(
                     get(),

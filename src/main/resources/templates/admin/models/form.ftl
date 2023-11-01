@@ -39,23 +39,31 @@
 </@template.page>
 
 <#macro field key>
-    <#if key.type == "ID">
+    <#if key.type == "id">
         <#return />
     </#if>
-    <div class="col-md-${key.col} mb-3">
-        <label for="${key.name}" class="form-label">
-            <@t key="admin_${route}_${key.name}" />
+    <div class="col-md-${key.style} mb-3">
+        <label for="${key.key}" class="form-label">
+            <@t key="admin_${route}_${key.key}" />
         </label>
         <#switch key.type>
-            <#case "PASSWORD">
+            <#case "password">
                 <input type="password" class="form-control"
-                       name="${key.name}" id="${key.name}"
+                       name="${key.key}" id="${key.key}"
                        <#if !key.editable>disabled</#if>>
+                <#break>
+            <#case "boolean">
+                <div class="form-check form-switch ms-1">
+                    <input class="form-check-input" type="checkbox"
+                           name="${key.key}" id="${key.key}"
+                           <#if item?? && item[key.key]>checked</#if>>
+                    <label class="form-check-label" for="${key.key}"></label>
+                </div>
                 <#break>
             <#default>
                 <input type="text" class="form-control"
-                       name="${key.name}" id="${key.name}"
-                       <#if item??>value="${item[key.name]}"</#if>
+                       name="${key.key}" id="${key.key}"
+                       <#if item??>value="${item[key.key]}"</#if>
                         <#if !key.editable>disabled</#if>>
         </#switch>
     </div>

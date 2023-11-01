@@ -1,37 +1,21 @@
 package me.nathanfallet.suitebde.controllers.associations
 
-import io.ktor.server.application.*
-import io.ktor.server.freemarker.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
-import me.nathanfallet.suitebde.controllers.IRouter
+import me.nathanfallet.suitebde.controllers.models.ModelRouter
+import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
+import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
+import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 
 class AssociationRouter(
-    private val controller: IAssociationController
-) : IRouter {
-
-    override fun createRoutes(root: Route) {
-        root.route("/api/v1/associations") {
-            createAPIv1GetRoute(this)
-        }
-        root.route("/admin") {
-            createAdminGetRoute(this)
-        }
-    }
-
-    fun createAPIv1GetRoute(root: Route) {
-        root.get {
-            call.respond(controller.getAll())
-        }
-    }
-
-    fun createAdminGetRoute(root: Route) {
-        root.get {
-            call.respondTemplate(
-                    "admin/home.ftl",
-                    null
-            )
-        }
-    }
-
-}
+    associationController: IAssociationController,
+    translateUseCase: ITranslateUseCase,
+    getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase
+) : ModelRouter<Association, Unit, UpdateAssociationPayload>(
+    "associations",
+    Association::class,
+    Unit::class,
+    UpdateAssociationPayload::class,
+    associationController,
+    translateUseCase,
+    getAdminMenuForCallUseCase
+)

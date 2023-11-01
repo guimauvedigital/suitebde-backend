@@ -3,9 +3,9 @@ package me.nathanfallet.suitebde.controllers.auth
 import io.ktor.http.*
 import io.ktor.server.application.*
 import kotlinx.datetime.Instant
+import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.auth.*
-import me.nathanfallet.suitebde.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.usecases.application.ISendEmailUseCase
 import me.nathanfallet.suitebde.usecases.application.ISetSessionForCallUseCase
