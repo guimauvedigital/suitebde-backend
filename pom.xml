@@ -19,6 +19,8 @@
         <jacoco_version>0.8.10</jacoco_version>
         <junit_version>4.13.2</junit_version>
 
+        <maven.compiler.source>19</maven.compiler.source>
+        <maven.compiler.target>19</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <kotlin.compiler.incremental>true</kotlin.compiler.incremental>
         <main.class>me.nathanfallet.suitebde.ApplicationKt</main.class>
@@ -266,7 +268,7 @@
                     <compilerPlugins>
                         <plugin>kotlinx-serialization</plugin>
                     </compilerPlugins>
-                    <jvmTarget>17</jvmTarget>
+                    <jvmTarget>${maven.compiler.target}</jvmTarget>
                 </configuration>
                 <executions>
                     <execution>
@@ -330,14 +332,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>17</source>
-                    <target>17</target>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jacoco</groupId>
