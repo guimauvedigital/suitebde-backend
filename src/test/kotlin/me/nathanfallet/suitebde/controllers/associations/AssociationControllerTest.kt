@@ -208,12 +208,6 @@ class AssociationControllerTest {
         val payload = UpdateAssociationPayload(
             "new name", "new school", "new city", false
         )
-        val updatedAssociation = association.copy(
-            name = "new name",
-            school = "new school",
-            city = "new city",
-            validated = false
-        )
         coEvery { getUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, AdminPermission) } returns true
         coEvery { getAssociationUseCase(association.id) } returns association

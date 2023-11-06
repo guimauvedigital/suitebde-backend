@@ -198,7 +198,6 @@ class AuthControllerTest {
             deleteCodeInEmailUseCase, createUserUseCase, mockk(), mockk(), mockk()
         )
         every { setSessionForCallUseCase(call, SessionPayload("id")) } returns Unit
-        val now = Clock.System.now()
         coEvery { createUserUseCase(any()) } returns User(
             "id", "associationId", "email", "password",
             "firstname", "lastname", false
@@ -209,7 +208,6 @@ class AuthControllerTest {
                 "code", "email", "associationId",
                 "password", "firstname", "lastname"
             ),
-            now,
             call
         )
         coVerify {
@@ -238,7 +236,6 @@ class AuthControllerTest {
                     "code", "email", "associationId",
                     "password", "firstname", "lastname"
                 ),
-                Clock.System.now(),
                 mockk()
             )
         }
@@ -347,8 +344,7 @@ class AuthControllerTest {
             JoinCodePayload(
                 "code", "email", "name", "school", "city",
                 "password", "firstname", "lastname"
-            ),
-            now
+            )
         )
         coVerify {
             createAssociationUseCase(
@@ -374,8 +370,7 @@ class AuthControllerTest {
                 JoinCodePayload(
                     "code", "email", "name", "school", "city",
                     "password", "firstname", "lastname"
-                ),
-                Clock.System.now()
+                )
             )
         }
         assertEquals(HttpStatusCode.InternalServerError, exception.code)

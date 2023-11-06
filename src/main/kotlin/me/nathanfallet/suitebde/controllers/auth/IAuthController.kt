@@ -12,10 +12,10 @@ interface IAuthController : IController {
 
     suspend fun register(payload: RegisterPayload, joiningAt: Instant, locale: Locale, call: ApplicationCall)
     suspend fun register(code: String, joiningAt: Instant): RegisterWithAssociationPayload
-    suspend fun register(payload: RegisterCodePayload, joiningAt: Instant, call: ApplicationCall)
+    suspend fun register(payload: RegisterCodePayload, call: ApplicationCall)
 
     suspend fun join(payload: JoinPayload, joiningAt: Instant, locale: Locale)
     suspend fun join(code: String, joiningAt: Instant): JoinPayload
-    suspend fun join(payload: JoinCodePayload, joiningAt: Instant)
+    suspend fun join(payload: JoinCodePayload)
 
 }

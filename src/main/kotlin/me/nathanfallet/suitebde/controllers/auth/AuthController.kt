@@ -58,7 +58,7 @@ class AuthController(
         } ?: throw ControllerException(HttpStatusCode.NotFound, "auth_code_invalid")
     }
 
-    override suspend fun register(payload: RegisterCodePayload, joiningAt: Instant, call: ApplicationCall) {
+    override suspend fun register(payload: RegisterCodePayload, call: ApplicationCall) {
         val user = createUserUseCase(
             CreateUserPayload(
                 associationId = payload.associationId,
@@ -91,7 +91,7 @@ class AuthController(
         } ?: throw ControllerException(HttpStatusCode.NotFound, "auth_code_invalid")
     }
 
-    override suspend fun join(payload: JoinCodePayload, joiningAt: Instant) {
+    override suspend fun join(payload: JoinCodePayload) {
         createAssociationUseCase(
             CreateAssociationPayload(
                 name = payload.name,

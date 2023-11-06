@@ -165,7 +165,6 @@ class AuthRouter(
                         firstName,
                         lastName
                     ),
-                    Clock.System.now(),
                     call
                 )
                 call.respondRedirect(call.request.queryParameters["redirect"] ?: "/")
@@ -276,8 +275,7 @@ class AuthRouter(
                         password,
                         firstName,
                         lastName
-                    ),
-                    Clock.System.now()
+                    )
                 )
                 call.respondTemplate(
                         "auth/join.ftl",
