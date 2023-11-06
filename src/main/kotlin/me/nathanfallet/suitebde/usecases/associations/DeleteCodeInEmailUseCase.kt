@@ -1,6 +1,6 @@
 package me.nathanfallet.suitebde.usecases.associations
 
-import me.nathanfallet.suitebde.repositories.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 
 class DeleteCodeInEmailUseCase(
     private val repository: IAssociationsRepository

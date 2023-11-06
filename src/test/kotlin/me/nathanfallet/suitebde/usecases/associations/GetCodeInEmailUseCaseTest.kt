@@ -5,7 +5,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.*
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
-import me.nathanfallet.suitebde.repositories.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

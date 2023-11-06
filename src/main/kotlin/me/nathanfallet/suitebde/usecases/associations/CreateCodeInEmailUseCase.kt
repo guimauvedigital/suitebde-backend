@@ -8,8 +8,8 @@ import kotlinx.datetime.plus
 import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.extensions.generateId
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
-import me.nathanfallet.suitebde.repositories.IAssociationsRepository
-import me.nathanfallet.suitebde.repositories.IUsersRepository
+import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.users.IUsersRepository
 
 class CreateCodeInEmailUseCase(
     private val associationsRepository: IAssociationsRepository,
@@ -17,7 +17,7 @@ class CreateCodeInEmailUseCase(
 ) : ICreateCodeInEmailUseCase {
 
     override suspend fun invoke(input1: String, input2: String?, input3: Instant): CodeInEmail? {
-        usersRepository.getUserForEmail(input1, false)?.let {
+        usersRepository.getForEmail(input1, false)?.let {
             return null
         }
         val code = String.generateId()

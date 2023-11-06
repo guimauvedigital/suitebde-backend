@@ -46,12 +46,11 @@ class ModelRouterTest {
     }
 
     private fun createRouter(
-        controller: IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>,
+        controller: IModelController<ModelRouterTestModel, String, ModelRouterTestModel, ModelRouterTestModel>,
         translateUseCase: ITranslateUseCase,
         getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase
-    ): ModelRouter<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel> {
+    ): ModelRouter<ModelRouterTestModel, String, ModelRouterTestModel, ModelRouterTestModel> {
         return ModelRouter(
-            "mock",
             ModelRouterTestModel::class,
             ModelRouterTestModel::class,
             ModelRouterTestModel::class,
@@ -64,17 +63,18 @@ class ModelRouterTest {
     @Test
     fun testAdminGetRoute() = testApplication {
         val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
+        val controller =
+            mockk<IModelController<ModelRouterTestModel, String, ModelRouterTestModel, ModelRouterTestModel>>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
-        coEvery { controller.getAll(any(), Unit) } returns listOf(mock)
+        coEvery { controller.getAll(any()) } returns listOf(mock)
         coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createAdminGetRoute(this)
         }
-        val response = client.get("/")
+        val response = client.get("/admin/modelroutertestmodels")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_create")?.`is`("a"))
@@ -85,12 +85,13 @@ class ModelRouterTest {
     @Test
     fun testAdminGetRouteForbidden() = testApplication {
         val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
+        val controller =
+            mockk<IModelController<ModelRouterTestModel, String, ModelRouterTestModel, ModelRouterTestModel>>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
         coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
-        coEvery { controller.getAll(any(), Unit) } throws ControllerException(
+        coEvery { controller.getAll(any()) } throws ControllerException(
             HttpStatusCode.Forbidden,
             "error_mock"
         )
@@ -98,7 +99,7 @@ class ModelRouterTest {
         routing {
             router.createAdminGetRoute(this)
         }
-        val response = client.get("/")
+        val response = client.get("/admin/modelroutertestmodels")
         assertEquals(HttpStatusCode.Forbidden, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals("403", document.getElementById("number")?.text())
@@ -107,12 +108,13 @@ class ModelRouterTest {
     @Test
     fun testAdminGetRouteUnauthorized() = testApplication {
         val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
+        val controller =
+            mockk<IModelController<ModelRouterTestModel, String, ModelRouterTestModel, ModelRouterTestModel>>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
         coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
-        coEvery { controller.getAll(any(), Unit) } throws ControllerException(
+        coEvery { controller.getAll(any()) } throws ControllerException(
             HttpStatusCode.Unauthorized,
             "error_mock"
         )
@@ -120,24 +122,25 @@ class ModelRouterTest {
         routing {
             router.createAdminGetRoute(this)
         }
-        val response = client.get("/")
+        val response = client.get("/admin/modelroutertestmodels")
         assertEquals(HttpStatusCode.Found, response.status)
     }
 
     @Test
     fun testAdminGetIdRoute() = testApplication {
         val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
+        val controller =
+            mockk<IModelController<ModelRouterTestModel, String, ModelRouterTestModel, ModelRouterTestModel>>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
-        coEvery { controller.get(any(), Unit, "id") } returns mock
+        coEvery { controller.get(any(), "id") } returns mock
         coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createAdminGetIdRoute(this)
         }
-        val response = client.get("/id")
+        val response = client.get("/admin/modelroutertestmodels/id")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_update")?.`is`("h6"))
@@ -148,11 +151,12 @@ class ModelRouterTest {
     @Test
     fun testAdminGetIdRouteForbidden() = testApplication {
         val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
+        val controller =
+            mockk<IModelController<ModelRouterTestModel, String, ModelRouterTestModel, ModelRouterTestModel>>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
-        coEvery { controller.get(any(), Unit, "id") } throws ControllerException(
+        coEvery { controller.get(any(), "id") } throws ControllerException(
             HttpStatusCode.Forbidden,
             "error_mock"
         )
@@ -161,7 +165,7 @@ class ModelRouterTest {
         routing {
             router.createAdminGetIdRoute(this)
         }
-        val response = client.get("/id")
+        val response = client.get("/admin/modelroutertestmodels/id")
         assertEquals(HttpStatusCode.Forbidden, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals("403", document.getElementById("number")?.text())
@@ -170,13 +174,14 @@ class ModelRouterTest {
     @Test
     fun testAdminPostIdRoute() = testApplication {
         val client = installApp(this)
-        val controller = mockk<IModelController<ModelRouterTestModel, ModelRouterTestModel, ModelRouterTestModel>>()
+        val controller =
+            mockk<IModelController<ModelRouterTestModel, String, ModelRouterTestModel, ModelRouterTestModel>>()
         val router = createRouter(controller, mockk(), mockk())
-        coEvery { controller.update(any(), Unit, "id", mock) } returns mock
+        coEvery { controller.update(any(), "id", mock) } returns mock
         routing {
             router.createAdminPostIdRoute(this)
         }
-        val response = client.post("/id") {
+        val response = client.post("/admin/modelroutertestmodels/id") {
             contentType(ContentType.Application.FormUrlEncoded)
             setBody(
                 listOf(

@@ -1,38 +1,31 @@
 package me.nathanfallet.suitebde.database.users
 
 import me.nathanfallet.suitebde.database.Database
+import me.nathanfallet.suitebde.models.users.CreateUserPayload
+import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.repositories.IUsersRepository
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.update
+import me.nathanfallet.suitebde.repositories.users.IUsersRepository
+import org.jetbrains.exposed.sql.*
 
 class DatabaseUsersRepository(
     private val database: Database
 ) : IUsersRepository {
 
-    override suspend fun createUser(
-        associationId: String,
-        email: String,
-        password: String,
-        firstName: String,
-        lastName: String,
-        superuser: Boolean
-    ): User? {
+    override suspend fun create(payload: CreateUserPayload): User? {
         return database.dbQuery {
             Users.insert {
                 it[id] = generateId()
-                it[this.associationId] = associationId
-                it[this.email] = email
-                it[this.password] = password
-                it[this.firstName] = firstName
-                it[this.lastName] = lastName
-                it[this.superuser] = superuser
+                it[associationId] = payload.associationId
+                it[email] = payload.email
+                it[password] = payload.password
+                it[firstName] = payload.firstName
+                it[lastName] = payload.lastName
+                it[superuser] = payload.superuser
             }
         }.resultedValues?.map(Users::toUser)?.singleOrNull()
     }
 
-    override suspend fun getUser(id: String): User? {
+    override suspend fun get(id: String): User? {
         return database.dbQuery {
             Users
                 .select { Users.id eq id }
@@ -41,7 +34,7 @@ class DatabaseUsersRepository(
         }
     }
 
-    override suspend fun getUserForEmail(
+    override suspend fun getForEmail(
         email: String,
         includePassword: Boolean
     ): User? {
@@ -55,7 +48,7 @@ class DatabaseUsersRepository(
         }
     }
 
-    override suspend fun getUsersInAssociation(associationId: String): List<User> {
+    override suspend fun getInAssociation(associationId: String): List<User> {
         return database.dbQuery {
             Users
                 .select { Users.associationId eq associationId }
@@ -63,17 +56,28 @@ class DatabaseUsersRepository(
         }
     }
 
-    override suspend fun updateUser(user: User): Int {
+    override suspend fun update(id: String, payload: UpdateUserPayload): Boolean {
         return database.dbQuery {
-            Users.update({ Users.id eq user.id }) {
-                it[this.email] = user.email
-                it[this.firstName] = user.firstName
-                it[this.lastName] = user.lastName
-                user.password?.let { password ->
-                    it[this.password] = password
+            Users.update({ Users.id eq id }) {
+                payload.firstName?.let { firstName ->
+                    it[Users.firstName] = firstName
+                }
+                payload.lastName?.let { lastName ->
+                    it[Users.lastName] = lastName
+                }
+                payload.password?.let { password ->
+                    it[Users.password] = password
                 }
             }
-        }
+        } == 1
+    }
+
+    override suspend fun delete(id: String): Boolean {
+        return database.dbQuery {
+            Users.deleteWhere {
+                Op.build { Users.id eq id }
+            }
+        } == 1
     }
 
 }

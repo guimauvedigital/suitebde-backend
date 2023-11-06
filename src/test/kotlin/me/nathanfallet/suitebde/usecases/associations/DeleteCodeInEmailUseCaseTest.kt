@@ -4,7 +4,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import me.nathanfallet.suitebde.repositories.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import kotlin.test.Test
 
 class DeleteCodeInEmailUseCaseTest {

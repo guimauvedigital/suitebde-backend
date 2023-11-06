@@ -2,6 +2,8 @@ package me.nathanfallet.suitebde.database.users
 
 import kotlinx.coroutines.runBlocking
 import me.nathanfallet.suitebde.database.Database
+import me.nathanfallet.suitebde.models.users.CreateUserPayload
+import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import org.jetbrains.exposed.sql.selectAll
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -13,7 +15,12 @@ class DatabaseUsersRepositoryTest {
     fun createUser() = runBlocking {
         val database = Database(protocol = "h2", name = "createUser")
         val repository = DatabaseUsersRepository(database)
-        val user = repository.createUser("associationId", "email", "password", "firstName", "lastName", false)
+        val user = repository.create(
+            CreateUserPayload(
+                "associationId", "email", "password",
+                "firstName", "lastName", false
+            )
+        )
         val userFromDatabase = database.dbQuery {
             Users
                 .selectAll()
@@ -33,9 +40,13 @@ class DatabaseUsersRepositoryTest {
     fun getUser() = runBlocking {
         val database = Database(protocol = "h2", name = "getUser")
         val repository = DatabaseUsersRepository(database)
-        val user = repository.createUser("associationId", "email", "password", "firstName", "lastName", false)
-            ?: fail("Unable to create user")
-        val result = repository.getUser(user.id)
+        val user = repository.create(
+            CreateUserPayload(
+                "associationId", "email", "password",
+                "firstName", "lastName", false
+            )
+        ) ?: fail("Unable to create user")
+        val result = repository.get(user.id)
         assertEquals(user.id, result?.id)
         assertEquals(user.associationId, result?.associationId)
         assertEquals(user.email, result?.email)
@@ -49,9 +60,13 @@ class DatabaseUsersRepositoryTest {
     fun getUserForEmail() = runBlocking {
         val database = Database(protocol = "h2", name = "getUserForEmail")
         val repository = DatabaseUsersRepository(database)
-        val user = repository.createUser("associationId", "email", "password", "firstName", "lastName", false)
-            ?: fail("Unable to create user")
-        val result = repository.getUserForEmail(user.email, false)
+        val user = repository.create(
+            CreateUserPayload(
+                "associationId", "email", "password",
+                "firstName", "lastName", false
+            )
+        ) ?: fail("Unable to create user")
+        val result = repository.getForEmail(user.email, false)
         assertEquals(user.id, result?.id)
         assertEquals(user.associationId, result?.associationId)
         assertEquals(user.email, result?.email)
@@ -65,9 +80,13 @@ class DatabaseUsersRepositoryTest {
     fun getUserForEmailWithPassword() = runBlocking {
         val database = Database(protocol = "h2", name = "getUserForEmailWithPassword")
         val repository = DatabaseUsersRepository(database)
-        val user = repository.createUser("associationId", "email", "password", "firstName", "lastName", false)
-            ?: fail("Unable to create user")
-        val result = repository.getUserForEmail(user.email, true)
+        val user = repository.create(
+            CreateUserPayload(
+                "associationId", "email", "password",
+                "firstName", "lastName", false
+            )
+        ) ?: fail("Unable to create user")
+        val result = repository.getForEmail(user.email, true)
         assertEquals(user.id, result?.id)
         assertEquals(user.associationId, result?.associationId)
         assertEquals(user.email, result?.email)
@@ -81,9 +100,13 @@ class DatabaseUsersRepositoryTest {
     fun getUsersInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getUsersInAssociation")
         val repository = DatabaseUsersRepository(database)
-        val user = repository.createUser("associationId", "email", "password", "firstName", "lastName", false)
-            ?: fail("Unable to create user")
-        val result = repository.getUsersInAssociation(user.associationId)
+        val user = repository.create(
+            CreateUserPayload(
+                "associationId", "email", "password",
+                "firstName", "lastName", false
+            )
+        ) ?: fail("Unable to create user")
+        val result = repository.getInAssociation(user.associationId)
         assertEquals(1, result.size)
         assertEquals(user.id, result.first().id)
         assertEquals(user.associationId, result.first().associationId)
@@ -98,15 +121,19 @@ class DatabaseUsersRepositoryTest {
     fun updateUser() = runBlocking {
         val database = Database(protocol = "h2", name = "updateUser")
         val repository = DatabaseUsersRepository(database)
-        val user = repository.createUser("associationId", "email", "password", "firstName", "lastName", false)
-            ?: fail("Unable to create user")
+        val user = repository.create(
+            CreateUserPayload(
+                "associationId", "email", "password",
+                "firstName", "lastName", false
+            )
+        ) ?: fail("Unable to create user")
         val updatedUser = user.copy(
-            email = "email2",
             password = "password2",
             firstName = "firstName2",
             lastName = "lastName2"
         )
-        assertEquals(1, repository.updateUser(updatedUser))
+        val payload = UpdateUserPayload("firstName2", "lastName2", "password2")
+        assertEquals(true, repository.update(user.id, payload))
         val userFromDatabase = database.dbQuery {
             Users
                 .selectAll()

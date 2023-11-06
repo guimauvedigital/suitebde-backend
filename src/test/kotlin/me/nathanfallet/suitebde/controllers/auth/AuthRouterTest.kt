@@ -263,7 +263,6 @@ class AuthRouterTest {
                     "code", "email", "associationId",
                     "password", "firstname", "lastname"
                 ),
-                any(),
                 any()
             )
         } returns Unit
@@ -288,7 +287,6 @@ class AuthRouterTest {
                     "code", "email", "associationId",
                     "password", "firstname", "lastname"
                 ),
-                any(),
                 any()
             )
         }
@@ -474,8 +472,7 @@ class AuthRouterTest {
                 JoinCodePayload(
                     "code", "email", "name", "school", "city",
                     "password", "firstname", "lastname"
-                ),
-                any()
+                )
             )
         } returns Unit
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }

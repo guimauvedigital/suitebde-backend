@@ -58,7 +58,7 @@ class AuthController(
         } ?: throw ControllerException(HttpStatusCode.NotFound, "auth_code_invalid")
     }
 
-    override suspend fun register(payload: RegisterCodePayload, joiningAt: Instant, call: ApplicationCall) {
+    override suspend fun register(payload: RegisterCodePayload, call: ApplicationCall) {
         val user = createUserUseCase(
             CreateUserPayload(
                 associationId = payload.associationId,
@@ -67,7 +67,7 @@ class AuthController(
                 firstName = payload.firstName,
                 lastName = payload.lastName,
                 superuser = false,
-            ), joiningAt
+            )
         ) ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
         setSessionForCallUseCase(call, SessionPayload(user.id))
         deleteCodeInEmailUseCase(payload.code)
@@ -91,7 +91,7 @@ class AuthController(
         } ?: throw ControllerException(HttpStatusCode.NotFound, "auth_code_invalid")
     }
 
-    override suspend fun join(payload: JoinCodePayload, joiningAt: Instant) {
+    override suspend fun join(payload: JoinCodePayload) {
         createAssociationUseCase(
             CreateAssociationPayload(
                 name = payload.name,
@@ -101,8 +101,7 @@ class AuthController(
                 password = payload.password,
                 firstName = payload.firstName,
                 lastName = payload.lastName
-            ),
-            joiningAt
+            )
         ) ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
         deleteCodeInEmailUseCase(payload.code)
     }

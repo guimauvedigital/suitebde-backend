@@ -8,7 +8,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.repositories.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

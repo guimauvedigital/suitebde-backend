@@ -7,7 +7,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
-import me.nathanfallet.suitebde.repositories.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.suitebde.usecases.associations.IDeleteAssociationUseCase
 import me.nathanfallet.suitebde.usecases.associations.IDeleteCodeInEmailUseCase
 import kotlin.test.Test
@@ -27,7 +27,7 @@ class ExpireUseCaseTest {
         coEvery { associationsRepository.getAssociationsExpiringBefore(now) } returns listOf(association)
         useCase(now)
         coVerify { deleteCodeInEmailUseCase(code.code) }
-        coVerify { deleteAssociationUseCase(association) }
+        coVerify { deleteAssociationUseCase(association.id) }
     }
 
 }

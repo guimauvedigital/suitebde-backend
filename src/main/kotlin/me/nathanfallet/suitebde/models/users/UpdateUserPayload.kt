@@ -1,7 +1,7 @@
 package me.nathanfallet.suitebde.models.users
 
 import kotlinx.serialization.Serializable
-import me.nathanfallet.ktor.routers.models.base.PayloadProperty
+import me.nathanfallet.usecases.models.annotations.PayloadProperty
 
 @Serializable
 data class UpdateUserPayload(

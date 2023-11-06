@@ -4,21 +4,22 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import me.nathanfallet.suitebde.models.roles.AdminPermission
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.usecases.associations.IGetAssociationUseCase
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationsUseCase
-import me.nathanfallet.suitebde.usecases.associations.IUpdateAssociationUseCase
 import me.nathanfallet.suitebde.usecases.roles.ICheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
+import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
+import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
 
 class AssociationController(
     private val getAssociationsUseCase: IGetAssociationsUseCase,
     private val getUserForCallUseCase: IGetUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionUseCase,
-    private val getAssociationUseCase: IGetAssociationUseCase,
-    private val updateAssociationUseCase: IUpdateAssociationUseCase
+    private val getAssociationUseCase: IGetModelSuspendUseCase<Association, String>,
+    private val updateAssociationUseCase: IUpdateModelSuspendUseCase<Association, String, UpdateAssociationPayload>
 ) : IAssociationController {
 
     private suspend fun requireUser(call: ApplicationCall): User {
@@ -40,8 +41,8 @@ class AssociationController(
         )
     }
 
-    override suspend fun create(call: ApplicationCall, payload: Unit): Association {
-        TODO("Not yet implemented")
+    override suspend fun create(call: ApplicationCall, payload: CreateAssociationPayload): Association {
+        throw ControllerException(HttpStatusCode.MethodNotAllowed, "associations_create_not_allowed")
     }
 
     override suspend fun update(call: ApplicationCall, id: String, payload: UpdateAssociationPayload): Association {
@@ -54,12 +55,7 @@ class AssociationController(
             HttpStatusCode.NotFound, "associations_not_found"
         )
         return updateAssociationUseCase(
-            association.copy(
-                name = payload.name,
-                school = payload.school,
-                city = payload.city,
-                validated = payload.validated,
-            )
+            association.id, payload
         ) ?: throw ControllerException(
             HttpStatusCode.InternalServerError, "error_internal"
         )

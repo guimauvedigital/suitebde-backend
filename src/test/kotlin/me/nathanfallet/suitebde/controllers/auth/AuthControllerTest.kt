@@ -198,8 +198,7 @@ class AuthControllerTest {
             deleteCodeInEmailUseCase, createUserUseCase, mockk(), mockk(), mockk()
         )
         every { setSessionForCallUseCase(call, SessionPayload("id")) } returns Unit
-        val now = Clock.System.now()
-        coEvery { createUserUseCase(any(), any()) } returns User(
+        coEvery { createUserUseCase(any()) } returns User(
             "id", "associationId", "email", "password",
             "firstname", "lastname", false
         )
@@ -209,7 +208,6 @@ class AuthControllerTest {
                 "code", "email", "associationId",
                 "password", "firstname", "lastname"
             ),
-            now,
             call
         )
         coVerify {
@@ -217,7 +215,7 @@ class AuthControllerTest {
                 CreateUserPayload(
                     "associationId", "email", "password",
                     "firstname", "lastname", false
-                ), now
+                )
             )
             deleteCodeInEmailUseCase("code")
         }
@@ -231,14 +229,13 @@ class AuthControllerTest {
             mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
             createUserUseCase, mockk(), mockk(), mockk()
         )
-        coEvery { createUserUseCase(any(), any()) } returns null
+        coEvery { createUserUseCase(any()) } returns null
         val exception = assertThrows<ControllerException> {
             controller.register(
                 RegisterCodePayload(
                     "code", "email", "associationId",
                     "password", "firstname", "lastname"
                 ),
-                Clock.System.now(),
                 mockk()
             )
         }
@@ -338,7 +335,7 @@ class AuthControllerTest {
             mockk(), createAssociationUseCase, mockk(), mockk()
         )
         val now = Clock.System.now()
-        coEvery { createAssociationUseCase(any(), any()) } returns Association(
+        coEvery { createAssociationUseCase(any()) } returns Association(
             "id", "name", "school", "city",
             false, now, now
         )
@@ -347,16 +344,14 @@ class AuthControllerTest {
             JoinCodePayload(
                 "code", "email", "name", "school", "city",
                 "password", "firstname", "lastname"
-            ),
-            now
+            )
         )
         coVerify {
             createAssociationUseCase(
                 CreateAssociationPayload(
                     "name", "school", "city", "email",
                     "password", "firstname", "lastname"
-                ),
-                now
+                )
             )
             deleteCodeInEmailUseCase("code")
         }
@@ -369,14 +364,13 @@ class AuthControllerTest {
             mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
             mockk(), createAssociationUseCase, mockk(), mockk()
         )
-        coEvery { createAssociationUseCase(any(), any()) } returns null
+        coEvery { createAssociationUseCase(any()) } returns null
         val exception = assertThrows<ControllerException> {
             controller.join(
                 JoinCodePayload(
                     "code", "email", "name", "school", "city",
                     "password", "firstname", "lastname"
-                ),
-                Clock.System.now()
+                )
             )
         }
         assertEquals(HttpStatusCode.InternalServerError, exception.code)

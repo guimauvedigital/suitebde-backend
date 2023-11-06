@@ -1,24 +1,13 @@
-package me.nathanfallet.suitebde.repositories
+package me.nathanfallet.suitebde.repositories.associations
 
 import kotlinx.datetime.Instant
-import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.associations.CodeInEmail
-import me.nathanfallet.suitebde.models.associations.DomainInAssociation
+import me.nathanfallet.suitebde.models.associations.*
+import me.nathanfallet.usecases.models.repositories.IModelSuspendRepository
 
-interface IAssociationsRepository {
+interface IAssociationsRepository :
+    IModelSuspendRepository<Association, String, CreateAssociationPayload, UpdateAssociationPayload> {
 
-    suspend fun createAssociation(
-        name: String,
-        school: String,
-        city: String,
-        validated: Boolean,
-        createdAt: Instant,
-        expiresAt: Instant
-    ): Association?
-
-    suspend fun updateAssociation(association: Association): Int
-    suspend fun deleteAssociation(association: Association)
-    suspend fun getAssociation(id: String): Association?
+    suspend fun updateExpiresAt(id: String, expiresAt: Instant): Boolean
     suspend fun getAssociations(): List<Association>
     suspend fun getValidatedAssociations(): List<Association>
     suspend fun getAssociationsExpiringBefore(date: Instant): List<Association>

@@ -2,12 +2,13 @@ package me.nathanfallet.suitebde.models.associations
 
 import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
-import me.nathanfallet.ktor.routers.models.base.ModelProperty
+import me.nathanfallet.usecases.models.IModel
+import me.nathanfallet.usecases.models.annotations.ModelProperty
 
 @Serializable
 data class Association(
     @ModelProperty("id")
-    val id: String,
+    override val id: String,
     @ModelProperty("string")
     val name: String,
     @ModelProperty("string")
@@ -18,4 +19,4 @@ data class Association(
     val validated: Boolean,
     val createdAt: Instant,
     val expiresAt: Instant
-)
+) : IModel<String, CreateAssociationPayload, UpdateAssociationPayload>

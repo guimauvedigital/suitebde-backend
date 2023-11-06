@@ -11,8 +11,8 @@ import kotlinx.datetime.plus
 import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.repositories.IAssociationsRepository
-import me.nathanfallet.suitebde.repositories.IUsersRepository
+import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.users.IUsersRepository
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -28,7 +28,7 @@ class CreateCodeInEmailUseCaseTest {
         val code = CodeInEmail(
             "email", "code", "associationId", now.plus(1, DateTimeUnit.HOUR, TimeZone.currentSystemDefault())
         )
-        coEvery { usersRepository.getUserForEmail("email", false) } returns null
+        coEvery { usersRepository.getForEmail("email", false) } returns null
         coEvery { associationsRepository.createCodeInEmail("email", any(), "associationId", any()) } returns code
         val result = useCase("email", "associationId", now)
         assertEquals("email", result?.email)
@@ -40,7 +40,7 @@ class CreateCodeInEmailUseCaseTest {
         val associationsRepository = mockk<IAssociationsRepository>()
         val usersRepository = mockk<IUsersRepository>()
         val useCase = CreateCodeInEmailUseCase(associationsRepository, usersRepository)
-        coEvery { usersRepository.getUserForEmail("email", false) } returns null
+        coEvery { usersRepository.getForEmail("email", false) } returns null
         coEvery { associationsRepository.createCodeInEmail("email", any(), "associationId", any()) } throws Exception()
         coEvery { associationsRepository.updateCodeInEmail("email", any(), "associationId", any()) } returns 1
         val result = useCase("email", "associationId", Clock.System.now())
@@ -53,7 +53,7 @@ class CreateCodeInEmailUseCaseTest {
         val associationsRepository = mockk<IAssociationsRepository>()
         val usersRepository = mockk<IUsersRepository>()
         val useCase = CreateCodeInEmailUseCase(associationsRepository, usersRepository)
-        coEvery { usersRepository.getUserForEmail("email", false) } returns null
+        coEvery { usersRepository.getForEmail("email", false) } returns null
         coEvery { associationsRepository.createCodeInEmail("email", any(), "associationId", any()) } throws Exception()
         coEvery { associationsRepository.updateCodeInEmail("email", any(), "associationId", any()) } returns 0
         val exception = assertThrows<ControllerException> {
@@ -68,7 +68,7 @@ class CreateCodeInEmailUseCaseTest {
         val associationsRepository = mockk<IAssociationsRepository>()
         val usersRepository = mockk<IUsersRepository>()
         val useCase = CreateCodeInEmailUseCase(associationsRepository, usersRepository)
-        coEvery { usersRepository.getUserForEmail("email", false) } returns User(
+        coEvery { usersRepository.getForEmail("email", false) } returns User(
             "id", "associationId", "email", "password", "firstname", "lastname", false
         )
         assertEquals(null, useCase("email", "associationId", Clock.System.now()))

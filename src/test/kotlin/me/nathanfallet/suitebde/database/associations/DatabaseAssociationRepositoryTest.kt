@@ -3,6 +3,8 @@ package me.nathanfallet.suitebde.database.associations
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.*
 import me.nathanfallet.suitebde.database.Database
+import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
+import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.selectAll
 import org.junit.jupiter.api.assertThrows
@@ -20,9 +22,11 @@ class DatabaseAssociationRepositoryTest {
     fun createAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "createAssociation")
         val repository = DatabaseAssociationRepository(database)
-        val association = repository.createAssociation(
-            "name", "school", "city",
-            true, now, tomorrow
+        val association = repository.create(
+            CreateAssociationPayload(
+                "name", "school", "city",
+                "email", "password", "firstname", "lastname"
+            )
         )
         val associationFromDatabase = database.dbQuery {
             Associations
@@ -43,17 +47,55 @@ class DatabaseAssociationRepositoryTest {
     fun updateAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "updateAssociation")
         val repository = DatabaseAssociationRepository(database)
-        val association = repository.createAssociation(
-            "name", "school", "city",
-            true, now, tomorrow
+        val association = repository.create(
+            CreateAssociationPayload(
+                "name", "school", "city",
+                "email", "password", "firstname", "lastname"
+            )
         )?.copy(
             name = "newName",
             school = "newSchool",
             city = "newCity",
-            validated = true,
+            validated = true
+        ) ?: fail("Unable to create association")
+        assertEquals(
+            true, repository.update(
+                association.id, UpdateAssociationPayload(
+                    name = "newName",
+                    school = "newSchool",
+                    city = "newCity",
+                    validated = true
+                )
+            )
+        )
+        val associationFromDatabase = database.dbQuery {
+            Associations
+                .selectAll()
+                .map(Associations::toAssociation)
+                .singleOrNull()
+        }
+        assertEquals(associationFromDatabase?.id, association.id)
+        assertEquals(associationFromDatabase?.name, association.name)
+        assertEquals(associationFromDatabase?.school, association.school)
+        assertEquals(associationFromDatabase?.city, association.city)
+        assertEquals(associationFromDatabase?.validated, association.validated)
+        assertEquals(associationFromDatabase?.createdAt, association.createdAt)
+        assertEquals(associationFromDatabase?.expiresAt, association.expiresAt)
+    }
+
+    @Test
+    fun updateAssociationExpiresAt() = runBlocking {
+        val database = Database(protocol = "h2", name = "updateAssociationExpiresAt")
+        val repository = DatabaseAssociationRepository(database)
+        val association = repository.create(
+            CreateAssociationPayload(
+                "name", "school", "city",
+                "email", "password", "firstname", "lastname"
+            )
+        )?.copy(
             expiresAt = tomorrow
         ) ?: fail("Unable to create association")
-        assertEquals(1, repository.updateAssociation(association))
+        assertEquals(true, repository.updateExpiresAt(association.id, tomorrow))
         val associationFromDatabase = database.dbQuery {
             Associations
                 .selectAll()
@@ -73,11 +115,13 @@ class DatabaseAssociationRepositoryTest {
     fun deleteAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteAssociation")
         val repository = DatabaseAssociationRepository(database)
-        val association = repository.createAssociation(
-            "name", "school", "city",
-            true, now, tomorrow
+        val association = repository.create(
+            CreateAssociationPayload(
+                "name", "school", "city",
+                "email", "password", "firstname", "lastname"
+            )
         ) ?: fail("Unable to create association")
-        repository.deleteAssociation(association)
+        repository.delete(association.id)
         val count = database.dbQuery {
             Associations
                 .selectAll()
@@ -90,11 +134,13 @@ class DatabaseAssociationRepositoryTest {
     fun getAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getAssociation")
         val repository = DatabaseAssociationRepository(database)
-        val association = repository.createAssociation(
-            "name", "school", "city",
-            true, now, tomorrow
+        val association = repository.create(
+            CreateAssociationPayload(
+                "name", "school", "city",
+                "email", "password", "firstname", "lastname"
+            )
         ) ?: fail("Unable to create association")
-        val associationFromDatabase = repository.getAssociation(association.id)
+        val associationFromDatabase = repository.get(association.id)
         assertEquals(associationFromDatabase?.id, association.id)
         assertEquals(associationFromDatabase?.name, association.name)
         assertEquals(associationFromDatabase?.school, association.school)
@@ -108,9 +154,11 @@ class DatabaseAssociationRepositoryTest {
     fun getAssociations() = runBlocking {
         val database = Database(protocol = "h2", name = "getAssociations")
         val repository = DatabaseAssociationRepository(database)
-        val association = repository.createAssociation(
-            "name", "school", "city",
-            true, now, tomorrow
+        val association = repository.create(
+            CreateAssociationPayload(
+                "name", "school", "city",
+                "email", "password", "firstname", "lastname"
+            )
         ) ?: fail("Unable to create association")
         val associations = repository.getAssociations()
         assertEquals(associations.size, 1)
@@ -127,13 +175,18 @@ class DatabaseAssociationRepositoryTest {
     fun getValidatedAssociations() = runBlocking {
         val database = Database(protocol = "h2", name = "getValidatedAssociations")
         val repository = DatabaseAssociationRepository(database)
-        val association = repository.createAssociation(
-            "name", "school", "city",
-            true, now, tomorrow
-        ) ?: fail("Unable to create association")
-        repository.createAssociation(
-            "name 2", "school", "city",
-            false, now, tomorrow
+        val association = repository.create(
+            CreateAssociationPayload(
+                "name", "school", "city",
+                "email", "password", "firstname", "lastname"
+            )
+        )?.copy(validated = true) ?: fail("Unable to create association")
+        repository.update(association.id, UpdateAssociationPayload("name", "school", "city", true))
+        repository.create(
+            CreateAssociationPayload(
+                "name 2", "school", "city",
+                "email", "password", "firstname", "lastname"
+            )
         ) ?: fail("Unable to create association")
         val associations = repository.getValidatedAssociations()
         assertEquals(associations.size, 1)
@@ -150,14 +203,19 @@ class DatabaseAssociationRepositoryTest {
     fun getAssociationsExpiringBefore() = runBlocking {
         val database = Database(protocol = "h2", name = "getAssociationsExpiringBefore")
         val repository = DatabaseAssociationRepository(database)
-        val association = repository.createAssociation(
-            "name", "school", "city",
-            true, now, yesterday
+        val association = repository.create(
+            CreateAssociationPayload(
+                "name", "school", "city",
+                "email", "password", "firstname", "lastname"
+            )
+        )?.copy(expiresAt = yesterday) ?: fail("Unable to create association")
+        repository.create(
+            CreateAssociationPayload(
+                "name 2", "school", "city",
+                "email", "password", "firstname", "lastname"
+            )
         ) ?: fail("Unable to create association")
-        repository.createAssociation(
-            "name 2", "school", "city",
-            true, now, tomorrow
-        ) ?: fail("Unable to create association")
+        repository.updateExpiresAt(association.id, yesterday)
         val associations = repository.getAssociationsExpiringBefore(now)
         assertEquals(associations.size, 1)
         assertEquals(associations.first().id, association.id)
@@ -173,9 +231,11 @@ class DatabaseAssociationRepositoryTest {
     fun getAssociationForDomain() = runBlocking {
         val database = Database(protocol = "h2", name = "getAssociationForDomain")
         val repository = DatabaseAssociationRepository(database)
-        val association = repository.createAssociation(
-            "name", "school", "city",
-            true, now, tomorrow
+        val association = repository.create(
+            CreateAssociationPayload(
+                "name", "school", "city",
+                "email", "password", "firstname", "lastname"
+            )
         ) ?: fail("Unable to create association")
         val domain = repository.createDomain("domain", association.id) ?: fail("Unable to create domain")
         val associationFromDatabase = repository.getAssociationForDomain(domain.domain)
