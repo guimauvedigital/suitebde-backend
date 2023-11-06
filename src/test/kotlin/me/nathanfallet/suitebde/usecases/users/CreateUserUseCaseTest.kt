@@ -8,7 +8,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.repositories.IUsersRepository
+import me.nathanfallet.suitebde.repositories.users.IUsersRepository
 import me.nathanfallet.suitebde.usecases.auth.IHashPasswordUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -26,19 +26,21 @@ class CreateUserUseCaseTest {
             "firstName", "lastName", true
         )
         every { hashPasswordUseCase(any()) } returns "hash"
-        coEvery { usersRepository.createUser(any(), any(), any(), any(), any(), any()) } returns user
+        coEvery { usersRepository.create(any()) } returns user
         assertEquals(
             user, useCase(
                 CreateUserPayload(
                     "associationId", "email", "password",
                     "firstName", "lastName", true
-                ), now
+                )
             )
         )
         coVerifyOrder {
-            usersRepository.createUser(
+            usersRepository.create(
+                CreateUserPayload(
                 "associationId", "email", "hash",
                 "firstName", "lastName", true
+                )
             )
         }
     }
@@ -49,13 +51,13 @@ class CreateUserUseCaseTest {
         val hashPasswordUseCase = mockk<IHashPasswordUseCase>()
         val useCase = CreateUserUseCase(usersRepository, hashPasswordUseCase)
         every { hashPasswordUseCase(any()) } returns "hash"
-        coEvery { usersRepository.createUser(any(), any(), any(), any(), any(), any()) } returns null
+        coEvery { usersRepository.create(any()) } returns null
         assertEquals(
             null, useCase(
                 CreateUserPayload(
                     "associationId", "email", "password",
                     "firstName", "lastName", true
-                ), Clock.System.now()
+                )
             )
         )
     }

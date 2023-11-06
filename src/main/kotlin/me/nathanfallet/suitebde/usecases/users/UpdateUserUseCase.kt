@@ -1,7 +1,8 @@
 package me.nathanfallet.suitebde.usecases.users
 
+import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.repositories.IUsersRepository
+import me.nathanfallet.suitebde.repositories.users.IUsersRepository
 import me.nathanfallet.suitebde.usecases.auth.IHashPasswordUseCase
 
 class UpdateUserUseCase(
@@ -9,11 +10,11 @@ class UpdateUserUseCase(
     private val hashPasswordUseCase: IHashPasswordUseCase
 ) : IUpdateUserUseCase {
 
-    override suspend fun invoke(input: User): User? {
-        val updatedUser = input.password?.let {
-            input.copy(password = hashPasswordUseCase(it))
-        } ?: input
-        return if (repository.updateUser(updatedUser) == 1) updatedUser
+    override suspend fun invoke(input1: String, input2: UpdateUserPayload): User? {
+        val updatedUser = input2.password?.let {
+            input2.copy(password = hashPasswordUseCase(it))
+        } ?: input2
+        return if (repository.update(input1, updatedUser)) repository.get(input1)
         else null
     }
 

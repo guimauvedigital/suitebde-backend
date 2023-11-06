@@ -9,7 +9,7 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.repositories.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.suitebde.usecases.users.ICreateUserUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -26,17 +26,8 @@ class CreateAssociationUseCaseTest {
             false, now, now
         )
         val useCase = CreateAssociationUseCase(associationRepository, createUserUseCase)
-        coEvery {
-            associationRepository.createAssociation(
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        } returns association
-        coEvery { createUserUseCase(any(), any()) } returns User(
+        coEvery { associationRepository.create(any()) } returns association
+        coEvery { createUserUseCase(any()) } returns User(
             "id", "associationId", "email", null,
             "firstName", "lastName", true
         )
@@ -45,18 +36,20 @@ class CreateAssociationUseCaseTest {
                 CreateAssociationPayload(
                     "name", "school", "city", "email",
                     "password", "firstName", "lastName"
-                ), now
+                )
             )
         )
         coVerifyOrder {
-            associationRepository.createAssociation(
-                "name", "school", "city", false, any(), any()
+            associationRepository.create(
+                CreateAssociationPayload(
+                    "name", "school", "city", "email", "password", "firstName", "lastName"
+                )
             )
             createUserUseCase(
                 CreateUserPayload(
                     "associationId", "email", "password",
                     "firstName", "lastName", true
-                ), now
+                )
             )
         }
     }
@@ -65,22 +58,13 @@ class CreateAssociationUseCaseTest {
     fun invokeWithNull() = runBlocking {
         val associationRepository = mockk<IAssociationsRepository>()
         val useCase = CreateAssociationUseCase(associationRepository, mockk())
-        coEvery {
-            associationRepository.createAssociation(
-                any(),
-                any(),
-                any(),
-                any(),
-                any(),
-                any()
-            )
-        } returns null
+        coEvery { associationRepository.create(any()) } returns null
         assertEquals(
             null, useCase(
                 CreateAssociationPayload(
                     "name", "school", "city", "email",
                     "password", "firstName", "lastName"
-                ), Clock.System.now()
+                )
             )
         )
     }

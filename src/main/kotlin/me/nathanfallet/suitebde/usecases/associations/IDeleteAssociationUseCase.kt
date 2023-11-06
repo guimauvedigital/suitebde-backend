@@ -1,6 +1,5 @@
 package me.nathanfallet.suitebde.usecases.associations
 
-import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.usecases.ISuspendUseCase
+import me.nathanfallet.usecases.base.ISuspendUseCase
 
-interface IDeleteAssociationUseCase : ISuspendUseCase<Association, Unit>
+interface IDeleteAssociationUseCase : ISuspendUseCase<String, Unit>

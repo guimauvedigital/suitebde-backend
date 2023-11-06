@@ -5,21 +5,22 @@ import io.ktor.server.application.*
 import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.roles.Permission
+import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.roles.ICheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
-import me.nathanfallet.suitebde.usecases.users.IGetUserUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUsersInAssociationUseCase
 import me.nathanfallet.suitebde.usecases.users.IUpdateUserUseCase
+import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
 
 class UserController(
     private val getAssociationForCallUseCase: IGetAssociationForCallUseCase,
     private val getUserForCallUseCase: IGetUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionUseCase,
     private val getUsersInAssociationUseCase: IGetUsersInAssociationUseCase,
-    private val getUserUseCase: IGetUserUseCase,
+    private val getUserUseCase: IGetModelSuspendUseCase<User, String>,
     private val updateUserUseCase: IUpdateUserUseCase
 ) : IUserController {
 
@@ -59,7 +60,7 @@ class UserController(
         )
     }
 
-    override suspend fun create(call: ApplicationCall, payload: Unit): User {
+    override suspend fun create(call: ApplicationCall, payload: CreateUserPayload): User {
         throw ControllerException(HttpStatusCode.MethodNotAllowed, "users_create_not_allowed")
     }
 
@@ -74,11 +75,7 @@ class UserController(
             it.associationId == association.id
         } ?: throw ControllerException(HttpStatusCode.NotFound, "users_not_found")
         return updateUserUseCase(
-            targetUser.copy(
-                firstName = payload.firstName ?: targetUser.firstName,
-                lastName = payload.lastName ?: targetUser.lastName,
-                password = payload.password
-            )
+            targetUser.id, payload
         ) ?: throw ControllerException(
             HttpStatusCode.InternalServerError, "error_internal"
         )

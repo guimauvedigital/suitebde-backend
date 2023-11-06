@@ -10,6 +10,7 @@ import kotlinx.coroutines.runBlocking
 import me.nathanfallet.suitebde.models.auth.SessionPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.application.IGetSessionForCallUseCase
+import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -37,7 +38,7 @@ class GetUserForCallUseCaseTest {
 
     @Test
     fun invokeWithJWT() = runBlocking {
-        val getUserUseCase = mockk<IGetUserUseCase>()
+        val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val useCase = GetUserForCallUseCase(mockk(), getUserUseCase)
         val call = mockk<ApplicationCall>()
         val user = User("id", "name", "email", "password", "first", "last", false)
@@ -48,7 +49,7 @@ class GetUserForCallUseCaseTest {
 
     @Test
     fun invokeWithSession() = runBlocking {
-        val getUserUseCase = mockk<IGetUserUseCase>()
+        val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val getSessionForCallUseCase = mockk<IGetSessionForCallUseCase>()
         val useCase = GetUserForCallUseCase(getSessionForCallUseCase, getUserUseCase)
         val call = mockk<ApplicationCall>()
@@ -61,7 +62,7 @@ class GetUserForCallUseCaseTest {
 
     @Test
     fun invokeWithNoUser() = runBlocking {
-        val getUserUseCase = mockk<IGetUserUseCase>()
+        val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val useCase = GetUserForCallUseCase(mockk(), getUserUseCase)
         val call = mockk<ApplicationCall>()
         every { call.principal<JWTPrincipal>()?.subject } returns "id"

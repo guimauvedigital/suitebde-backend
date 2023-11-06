@@ -18,8 +18,11 @@ import me.nathanfallet.suitebde.controllers.web.WebRouter
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.database.associations.DatabaseAssociationRepository
 import me.nathanfallet.suitebde.database.users.DatabaseUsersRepository
-import me.nathanfallet.suitebde.repositories.IAssociationsRepository
-import me.nathanfallet.suitebde.repositories.IUsersRepository
+import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
+import me.nathanfallet.suitebde.models.users.User
+import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.users.IUsersRepository
 import me.nathanfallet.suitebde.services.email.EmailService
 import me.nathanfallet.suitebde.services.email.IEmailService
 import me.nathanfallet.suitebde.usecases.application.*
@@ -30,6 +33,10 @@ import me.nathanfallet.suitebde.usecases.roles.ICheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.*
 import me.nathanfallet.suitebde.usecases.web.GetAdminMenuForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
+import me.nathanfallet.usecases.models.get.GetModelFromRepositorySuspendUseCase
+import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
+import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
+import me.nathanfallet.usecases.models.update.UpdateModelFromRepositorySuspendUseCase
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.module
 import org.koin.ktor.plugin.Koin
@@ -72,9 +79,13 @@ fun Application.configureKoin() {
 
             single<ICreateAssociationUseCase> { CreateAssociationUseCase(get(), get()) }
             single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
-            single<IGetAssociationUseCase> { GetAssociationUseCase(get()) }
+            single<IGetModelSuspendUseCase<Association, String>> {
+                GetModelFromRepositorySuspendUseCase(get<IAssociationsRepository>())
+            }
             single<IGetAssociationForCallUseCase> { GetAssociationForCallUseCase(get()) }
-            single<IUpdateAssociationUseCase> { UpdateAssociationUseCase(get()) }
+            single<IUpdateModelSuspendUseCase<Association, String, UpdateAssociationPayload>> {
+                UpdateModelFromRepositorySuspendUseCase(get<IAssociationsRepository>())
+            }
             single<IDeleteAssociationUseCase> { DeleteAssociationUseCase(get()) }
             single<ICreateCodeInEmailUseCase> { CreateCodeInEmailUseCase(get(), get()) }
             single<IGetCodeInEmailUseCase> { GetCodeInEmailUseCase(get()) }
@@ -86,7 +97,9 @@ fun Application.configureKoin() {
 
             single<IGetUserForCallUseCase> { GetUserForCallUseCase(get(), get()) }
             single<IGetUsersInAssociationUseCase> { GetUsersInAssociationUseCase(get()) }
-            single<IGetUserUseCase> { GetUserUseCase(get()) }
+            single<IGetModelSuspendUseCase<User, String>> {
+                GetModelFromRepositorySuspendUseCase(get<IUsersRepository>())
+            }
             single<ICreateUserUseCase> { CreateUserUseCase(get(), get()) }
             single<IUpdateUserUseCase> { UpdateUserUseCase(get(), get()) }
 

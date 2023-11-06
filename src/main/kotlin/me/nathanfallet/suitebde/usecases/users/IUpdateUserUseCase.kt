@@ -1,6 +1,7 @@
 package me.nathanfallet.suitebde.usecases.users
 
+import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.usecases.ISuspendUseCase
+import me.nathanfallet.usecases.base.pair.IPairSuspendUseCase
 
-interface IUpdateUserUseCase : ISuspendUseCase<User, User?>
+interface IUpdateUserUseCase : IPairSuspendUseCase<String, UpdateUserPayload, User?>

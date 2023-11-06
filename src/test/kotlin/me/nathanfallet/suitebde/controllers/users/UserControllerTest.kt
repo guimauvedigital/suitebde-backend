@@ -9,14 +9,15 @@ import kotlinx.datetime.Clock
 import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.roles.Permission
+import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.roles.ICheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
-import me.nathanfallet.suitebde.usecases.users.IGetUserUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUsersInAssociationUseCase
 import me.nathanfallet.suitebde.usecases.users.IUpdateUserUseCase
+import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -120,7 +121,7 @@ class UserControllerTest {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
-        val getUserUseCase = mockk<IGetUserUseCase>()
+        val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
@@ -173,7 +174,7 @@ class UserControllerTest {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
-        val getUserUseCase = mockk<IGetUserUseCase>()
+        val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
@@ -199,7 +200,7 @@ class UserControllerTest {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
-        val getUserUseCase = mockk<IGetUserUseCase>()
+        val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
@@ -249,7 +250,7 @@ class UserControllerTest {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
-        val getUserUseCase = mockk<IGetUserUseCase>()
+        val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns targetUser
@@ -271,7 +272,10 @@ class UserControllerTest {
         val call = mockk<ApplicationCall>()
         val controller = UserController(mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
         val exception = assertThrows<ControllerException> {
-            controller.create(call, Unit)
+            controller.create(
+                call,
+                CreateUserPayload("associationId", "email", "password", "firstname", "lastname", false)
+            )
         }
         assertEquals(HttpStatusCode.MethodNotAllowed, exception.code)
         assertEquals("users_create_not_allowed", exception.key)
@@ -282,18 +286,21 @@ class UserControllerTest {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
-        val getUserUseCase = mockk<IGetUserUseCase>()
+        val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val updateUserUseCase = mockk<IUpdateUserUseCase>()
         val call = mockk<ApplicationCall>()
         val updatedUser = targetUser.copy(
             firstName = "new firstname",
             lastName = "new lastname"
         )
+        val payload = UpdateUserPayload(
+            "new firstname", "new lastname", null
+        )
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_UPDATE inAssociation association) } returns true
         coEvery { getUserUseCase(targetUser.id) } returns targetUser
-        coEvery { updateUserUseCase(updatedUser) } returns updatedUser
+        coEvery { updateUserUseCase(targetUser.id, payload) } returns updatedUser
         val controller = UserController(
             getAssociationForCallUseCase,
             getUserForCallUseCase,
@@ -302,14 +309,7 @@ class UserControllerTest {
             getUserUseCase,
             updateUserUseCase
         )
-        assertEquals(
-            updatedUser,
-            controller.update(
-                call, targetUser.id, UpdateUserPayload(
-                    "new firstname", "new lastname", null
-                )
-            )
-        )
+        assertEquals(updatedUser, controller.update(call, targetUser.id, payload))
     }
 
     @Test
@@ -317,7 +317,7 @@ class UserControllerTest {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
-        val getUserUseCase = mockk<IGetUserUseCase>()
+        val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val updateUserUseCase = mockk<IUpdateUserUseCase>()
         val call = mockk<ApplicationCall>()
         val updatedUser = targetUser.copy(
@@ -325,11 +325,14 @@ class UserControllerTest {
             lastName = "new lastname",
             password = "new password"
         )
+        val payload = UpdateUserPayload(
+            "new firstname", "new lastname", "new password"
+        )
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_UPDATE inAssociation association) } returns true
         coEvery { getUserUseCase(targetUser.id) } returns targetUser
-        coEvery { updateUserUseCase(updatedUser) } returns updatedUser
+        coEvery { updateUserUseCase(targetUser.id, payload) } returns updatedUser
         val controller = UserController(
             getAssociationForCallUseCase,
             getUserForCallUseCase,
@@ -338,14 +341,7 @@ class UserControllerTest {
             getUserUseCase,
             updateUserUseCase
         )
-        assertEquals(
-            updatedUser,
-            controller.update(
-                call, targetUser.id, UpdateUserPayload(
-                    "new firstname", "new lastname", "new password"
-                )
-            )
-        )
+        assertEquals(updatedUser, controller.update(call, targetUser.id, payload))
     }
 
     @Test
@@ -353,14 +349,15 @@ class UserControllerTest {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
-        val getUserUseCase = mockk<IGetUserUseCase>()
+        val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val updateUserUseCase = mockk<IUpdateUserUseCase>()
         val call = mockk<ApplicationCall>()
+        val payload = UpdateUserPayload(null, null, null)
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_UPDATE inAssociation association) } returns true
         coEvery { getUserUseCase(targetUser.id) } returns targetUser
-        coEvery { updateUserUseCase(targetUser) } returns targetUser
+        coEvery { updateUserUseCase(targetUser.id, payload) } returns targetUser
         val controller = UserController(
             getAssociationForCallUseCase,
             getUserForCallUseCase,
@@ -369,10 +366,7 @@ class UserControllerTest {
             getUserUseCase,
             updateUserUseCase
         )
-        assertEquals(
-            targetUser,
-            controller.update(call, targetUser.id, UpdateUserPayload(null, null, null))
-        )
+        assertEquals(targetUser, controller.update(call, targetUser.id, payload))
     }
 
     @Test
@@ -411,7 +405,7 @@ class UserControllerTest {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
-        val getUserUseCase = mockk<IGetUserUseCase>()
+        val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
@@ -437,7 +431,7 @@ class UserControllerTest {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
-        val getUserUseCase = mockk<IGetUserUseCase>()
+        val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
@@ -487,18 +481,21 @@ class UserControllerTest {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
-        val getUserUseCase = mockk<IGetUserUseCase>()
+        val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val updateUserUseCase = mockk<IUpdateUserUseCase>()
         val call = mockk<ApplicationCall>()
         val updatedUser = targetUser.copy(
             firstName = "new firstname",
             lastName = "new lastname"
         )
+        val payload = UpdateUserPayload(
+            "new firstname", "new lastname", null
+        )
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns targetUser
         coEvery { checkPermissionUseCase(targetUser, Permission.USERS_UPDATE inAssociation association) } returns false
         coEvery { getUserUseCase(targetUser.id) } returns targetUser
-        coEvery { updateUserUseCase(updatedUser) } returns updatedUser
+        coEvery { updateUserUseCase(targetUser.id, payload) } returns updatedUser
         val controller = UserController(
             getAssociationForCallUseCase,
             getUserForCallUseCase,
@@ -507,14 +504,7 @@ class UserControllerTest {
             getUserUseCase,
             updateUserUseCase
         )
-        assertEquals(
-            updatedUser,
-            controller.update(
-                call, targetUser.id, UpdateUserPayload(
-                    "new firstname", "new lastname", null
-                )
-            )
-        )
+        assertEquals(updatedUser, controller.update(call, targetUser.id, payload))
     }
 
     @Test
@@ -522,14 +512,15 @@ class UserControllerTest {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
-        val getUserUseCase = mockk<IGetUserUseCase>()
+        val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val updateUserUseCase = mockk<IUpdateUserUseCase>()
         val call = mockk<ApplicationCall>()
+        val payload = UpdateUserPayload(null, null, null)
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { getUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_UPDATE inAssociation association) } returns true
         coEvery { getUserUseCase(targetUser.id) } returns targetUser
-        coEvery { updateUserUseCase(targetUser) } returns null
+        coEvery { updateUserUseCase(targetUser.id, payload) } returns null
         val controller = UserController(
             getAssociationForCallUseCase,
             getUserForCallUseCase,
@@ -539,7 +530,7 @@ class UserControllerTest {
             updateUserUseCase
         )
         val exception = assertThrows<ControllerException> {
-            controller.update(call, targetUser.id, UpdateUserPayload(null, null, null))
+            controller.update(call, targetUser.id, payload)
         }
         assertEquals(HttpStatusCode.InternalServerError, exception.code)
         assertEquals("error_internal", exception.key)

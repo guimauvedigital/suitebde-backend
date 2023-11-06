@@ -1,7 +1,7 @@
 package me.nathanfallet.suitebde.usecases.application
 
 import kotlinx.datetime.Instant
-import me.nathanfallet.suitebde.repositories.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.suitebde.usecases.associations.IDeleteAssociationUseCase
 import me.nathanfallet.suitebde.usecases.associations.IDeleteCodeInEmailUseCase
 
@@ -16,7 +16,7 @@ class ExpireUseCase(
             deleteCodeInEmailUseCase(it.code)
         }
         associationsRepository.getAssociationsExpiringBefore(input).forEach {
-            deleteAssociationUseCase(it)
+            deleteAssociationUseCase(it.id)
         }
     }
 

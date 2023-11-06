@@ -11,11 +11,11 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import me.nathanfallet.suitebde.models.roles.AdminPermission
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.usecases.associations.IGetAssociationUseCase
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationsUseCase
-import me.nathanfallet.suitebde.usecases.associations.IUpdateAssociationUseCase
 import me.nathanfallet.suitebde.usecases.roles.ICheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
+import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
+import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -59,7 +59,7 @@ class AssociationControllerTest {
 
     @Test
     fun testGet() = runBlocking {
-        val getAssociationUseCase = mockk<IGetAssociationUseCase>()
+        val getAssociationUseCase = mockk<IGetModelSuspendUseCase<Association, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationUseCase(association.id) } returns association
         val controller = AssociationController(
@@ -74,7 +74,7 @@ class AssociationControllerTest {
 
     @Test
     fun testGetNotFound() = runBlocking {
-        val getAssociationUseCase = mockk<IGetAssociationUseCase>()
+        val getAssociationUseCase = mockk<IGetModelSuspendUseCase<Association, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationUseCase(association.id) } returns null
         val controller = AssociationController(
@@ -95,9 +95,13 @@ class AssociationControllerTest {
     fun testUpdate() = runBlocking {
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
-        val getAssociationUseCase = mockk<IGetAssociationUseCase>()
-        val updateAssociationUseCase = mockk<IUpdateAssociationUseCase>()
+        val getAssociationUseCase = mockk<IGetModelSuspendUseCase<Association, String>>()
+        val updateAssociationUseCase =
+            mockk<IUpdateModelSuspendUseCase<Association, String, UpdateAssociationPayload>>()
         val call = mockk<ApplicationCall>()
+        val payload = UpdateAssociationPayload(
+            "new name", "new school", "new city", false
+        )
         val updatedAssociation = association.copy(
             name = "new name",
             school = "new school",
@@ -107,7 +111,7 @@ class AssociationControllerTest {
         coEvery { getUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, AdminPermission) } returns true
         coEvery { getAssociationUseCase(association.id) } returns association
-        coEvery { updateAssociationUseCase(updatedAssociation) } returns updatedAssociation
+        coEvery { updateAssociationUseCase(association.id, payload) } returns updatedAssociation
         val controller = AssociationController(
             mockk(),
             getUserForCallUseCase,
@@ -115,21 +119,14 @@ class AssociationControllerTest {
             getAssociationUseCase,
             updateAssociationUseCase
         )
-        assertEquals(
-            updatedAssociation,
-            controller.update(
-                call, association.id, UpdateAssociationPayload(
-                    "new name", "new school", "new city", false
-                )
-            )
-        )
+        assertEquals(updatedAssociation, controller.update(call, association.id, payload))
     }
 
     @Test
     fun testUpdateNotFound() = runBlocking {
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
-        val getAssociationUseCase = mockk<IGetAssociationUseCase>()
+        val getAssociationUseCase = mockk<IGetModelSuspendUseCase<Association, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, AdminPermission) } returns true
@@ -204,9 +201,13 @@ class AssociationControllerTest {
     fun testUpdateInternalError() = runBlocking {
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
-        val getAssociationUseCase = mockk<IGetAssociationUseCase>()
-        val updateAssociationUseCase = mockk<IUpdateAssociationUseCase>()
+        val getAssociationUseCase = mockk<IGetModelSuspendUseCase<Association, String>>()
+        val updateAssociationUseCase =
+            mockk<IUpdateModelSuspendUseCase<Association, String, UpdateAssociationPayload>>()
         val call = mockk<ApplicationCall>()
+        val payload = UpdateAssociationPayload(
+            "new name", "new school", "new city", false
+        )
         val updatedAssociation = association.copy(
             name = "new name",
             school = "new school",
@@ -216,7 +217,7 @@ class AssociationControllerTest {
         coEvery { getUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, AdminPermission) } returns true
         coEvery { getAssociationUseCase(association.id) } returns association
-        coEvery { updateAssociationUseCase(updatedAssociation) } returns null
+        coEvery { updateAssociationUseCase(association.id, payload) } returns null
         val controller = AssociationController(
             mockk(),
             getUserForCallUseCase,
@@ -225,11 +226,7 @@ class AssociationControllerTest {
             updateAssociationUseCase
         )
         val exception = assertThrows<ControllerException> {
-            controller.update(
-                call, association.id, UpdateAssociationPayload(
-                    "new name", "new school", "new city", false
-                )
-            )
+            controller.update(call, association.id, payload)
         }
         assertEquals(HttpStatusCode.InternalServerError, exception.code)
         assertEquals("error_internal", exception.key)

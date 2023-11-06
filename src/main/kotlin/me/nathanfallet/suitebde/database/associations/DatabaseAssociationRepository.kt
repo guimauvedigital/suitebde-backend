@@ -1,59 +1,59 @@
 package me.nathanfallet.suitebde.database.associations
 
-import kotlinx.datetime.Instant
+import kotlinx.datetime.*
 import me.nathanfallet.suitebde.database.Database
-import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.associations.CodeInEmail
-import me.nathanfallet.suitebde.models.associations.DomainInAssociation
-import me.nathanfallet.suitebde.repositories.IAssociationsRepository
+import me.nathanfallet.suitebde.models.associations.*
+import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import org.jetbrains.exposed.sql.*
 
 class DatabaseAssociationRepository(
     private val database: Database
 ) : IAssociationsRepository {
 
-    override suspend fun createAssociation(
-        name: String,
-        school: String,
-        city: String,
-        validated: Boolean,
-        createdAt: Instant,
-        expiresAt: Instant
-    ): Association? {
+    override suspend fun create(payload: CreateAssociationPayload): Association? {
+        val createdAt = Clock.System.now()
+        val expiresAt = createdAt.plus(1, DateTimeUnit.MONTH, TimeZone.currentSystemDefault())
         return database.dbQuery {
             Associations.insert {
                 it[id] = generateId()
-                it[this.name] = name
-                it[this.school] = school
-                it[this.city] = city
-                it[this.validated] = validated
-                it[this.createdAt] = createdAt.toString()
-                it[this.expiresAt] = expiresAt.toString()
+                it[name] = payload.name
+                it[school] = payload.school
+                it[city] = payload.city
+                it[validated] = false
+                it[Associations.createdAt] = createdAt.toString()
+                it[Associations.expiresAt] = expiresAt.toString()
             }.resultedValues?.map(Associations::toAssociation)?.singleOrNull()
         }
     }
 
-    override suspend fun updateAssociation(association: Association): Int {
+    override suspend fun update(id: String, payload: UpdateAssociationPayload): Boolean {
         return database.dbQuery {
-            Associations.update({ Associations.id eq association.id }) {
-                it[name] = association.name
-                it[school] = association.school
-                it[city] = association.city
-                it[validated] = association.validated
-                it[expiresAt] = association.expiresAt.toString()
+            Associations.update({ Associations.id eq id }) {
+                it[name] = payload.name
+                it[school] = payload.school
+                it[city] = payload.city
+                it[validated] = payload.validated
             }
-        }
+        } == 1
     }
 
-    override suspend fun deleteAssociation(association: Association) {
-        database.dbQuery {
+    override suspend fun updateExpiresAt(id: String, expiresAt: Instant): Boolean {
+        return database.dbQuery {
+            Associations.update({ Associations.id eq id }) {
+                it[Associations.expiresAt] = expiresAt.toString()
+            }
+        } == 1
+    }
+
+    override suspend fun delete(id: String): Boolean {
+        return database.dbQuery {
             Associations.deleteWhere {
-                Op.build { id eq association.id }
+                Op.build { Associations.id eq id }
             }
-        }
+        } == 1
     }
 
-    override suspend fun getAssociation(id: String): Association? {
+    override suspend fun get(id: String): Association? {
         return database.dbQuery {
             Associations
                 .select { Associations.id eq id }

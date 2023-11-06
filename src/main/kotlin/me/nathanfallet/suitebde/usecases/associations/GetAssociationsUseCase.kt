@@ -1,7 +1,7 @@
 package me.nathanfallet.suitebde.usecases.associations
 
 import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.repositories.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 
 class GetAssociationsUseCase(
     private val repository: IAssociationsRepository

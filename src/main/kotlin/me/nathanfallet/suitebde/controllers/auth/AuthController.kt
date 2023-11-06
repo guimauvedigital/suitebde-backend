@@ -67,7 +67,7 @@ class AuthController(
                 firstName = payload.firstName,
                 lastName = payload.lastName,
                 superuser = false,
-            ), joiningAt
+            )
         ) ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
         setSessionForCallUseCase(call, SessionPayload(user.id))
         deleteCodeInEmailUseCase(payload.code)
@@ -101,8 +101,7 @@ class AuthController(
                 password = payload.password,
                 firstName = payload.firstName,
                 lastName = payload.lastName
-            ),
-            joiningAt
+            )
         ) ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
         deleteCodeInEmailUseCase(payload.code)
     }

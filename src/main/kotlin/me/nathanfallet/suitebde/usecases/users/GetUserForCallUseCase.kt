@@ -5,10 +5,11 @@ import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.application.IGetSessionForCallUseCase
+import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
 
 class GetUserForCallUseCase(
     private val getSessionForCallUseCase: IGetSessionForCallUseCase,
-    private val getUserUseCase: IGetUserUseCase
+    private val getUserUseCase: IGetModelSuspendUseCase<User, String>
 ) : IGetUserForCallUseCase {
 
     override suspend fun invoke(input: ApplicationCall): User? {

@@ -4,8 +4,9 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.repositories.IUsersRepository
+import me.nathanfallet.suitebde.repositories.users.IUsersRepository
 import me.nathanfallet.suitebde.usecases.auth.IHashPasswordUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -20,8 +21,10 @@ class UpdateUserUseCaseTest {
             "id", "name", "email", null,
             "first", "last", false
         )
-        coEvery { usersRepository.updateUser(user) } returns 1
-        assertEquals(user, useCase(user))
+        val payload = UpdateUserPayload("first", "last", null)
+        coEvery { usersRepository.update(user.id, payload) } returns true
+        coEvery { usersRepository.get(user.id) } returns user
+        assertEquals(user, useCase(user.id, payload))
     }
 
     @Test
@@ -33,10 +36,13 @@ class UpdateUserUseCaseTest {
             "id", "name", "email", "password",
             "first", "last", false
         )
+        val payload = UpdateUserPayload("first", "last", "password")
         val hashedUser = user.copy(password = "hash")
+        val hashedPayload = payload.copy(password = "hash")
         every { hashPasswordUseCase("password") } returns "hash"
-        coEvery { usersRepository.updateUser(hashedUser) } returns 1
-        assertEquals(hashedUser, useCase(user))
+        coEvery { usersRepository.update(user.id, hashedPayload) } returns true
+        coEvery { usersRepository.get(user.id) } returns hashedUser
+        assertEquals(hashedUser, useCase(user.id, payload))
     }
 
     @Test
@@ -47,8 +53,9 @@ class UpdateUserUseCaseTest {
             "id", "name", "email", null,
             "first", "last", false
         )
-        coEvery { usersRepository.updateUser(user) } returns 0
-        assertEquals(null, useCase(user))
+        val payload = UpdateUserPayload("first", "last", null)
+        coEvery { usersRepository.update(user.id, payload) } returns false
+        assertEquals(null, useCase(user.id, payload))
     }
 
 }
