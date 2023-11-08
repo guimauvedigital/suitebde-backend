@@ -191,17 +191,17 @@
         <dependency>
             <groupId>me.nathanfallet.usecases</groupId>
             <artifactId>usecases-jvm</artifactId>
-            <version>1.1.1</version>
+            <version>1.2.0</version>
         </dependency>
         <dependency>
             <groupId>me.nathanfallet.ktor.routers</groupId>
             <artifactId>ktor-routers</artifactId>
-            <version>1.1.0</version>
+            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>me.nathanfallet.ktor.sentry</groupId>
             <artifactId>ktor-sentry</artifactId>
-            <version>1.0.0</version>
+            <version>1.0.2</version>
         </dependency>
         <dependency>
             <groupId>me.nathanfallet.ktor.freemarker.i18n</groupId>

@@ -1,6 +1,6 @@
 package me.nathanfallet.suitebde.usecases.application
 
-import me.nathanfallet.usecases.base.triple.ITripleUseCase
+import me.nathanfallet.usecases.base.ITripleUseCase
 import java.util.*
 
 interface ITranslateUseCase : ITripleUseCase<Locale, String, List<String>, String> {
