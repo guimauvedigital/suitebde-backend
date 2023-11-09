@@ -3,38 +3,37 @@ package me.nathanfallet.suitebde.controllers.models
 import com.github.aymanizz.ktori18n.locale
 import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.auth.*
 import io.ktor.server.freemarker.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import me.nathanfallet.ktor.routers.controllers.base.IModelController
+import me.nathanfallet.ktor.routers.controllers.base.IChildModelController
 import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
-import me.nathanfallet.ktor.routers.routers.api.APIModelRouter
+import me.nathanfallet.ktor.routers.routers.base.AbstractChildModelRouter
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
-import me.nathanfallet.usecases.models.IModel
+import me.nathanfallet.usecases.models.IChildModel
 import kotlin.reflect.KClass
 
-open class ModelRouter<Model : IModel<Id, CreatePayload, UpdatePayload>, Id, CreatePayload : Any, UpdatePayload : Any>(
+open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePayload, ParentId>, Id, CreatePayload : Any, UpdatePayload : Any, ParentModel : IChildModel<ParentId, *, *, *>, ParentId>(
     modelClass: KClass<Model>,
     createPayloadClass: KClass<CreatePayload>,
     updatePayloadClass: KClass<UpdatePayload>,
-    controller: IModelController<Model, Id, CreatePayload, UpdatePayload>,
+    controller: IChildModelController<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>,
+    parentRouter: AdminChildModelRouter<ParentModel, ParentId, *, *, *, *>?,
     private val translateUseCase: ITranslateUseCase,
-    private val getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase
-) : APIModelRouter<Model, Id, CreatePayload, UpdatePayload>(
+    private val getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
+    prefix: String = "/admin"
+) : AbstractChildModelRouter<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>(
     modelClass,
     createPayloadClass,
     updatePayloadClass,
     controller,
-    "api/v1"
+    parentRouter,
+    prefix
 ) {
 
     override fun createRoutes(root: Route) {
-        root.authenticate("api-v1-jwt", optional = true) {
-            super.createRoutes(this)
-        }
         createAdminGetRoute(root)
         createAdminGetCreateRoute(root)
         createAdminPostCreateRoute(root)
@@ -60,8 +59,9 @@ open class ModelRouter<Model : IModel<Id, CreatePayload, UpdatePayload>, Id, Cre
     }
 
     fun createAdminGetRoute(root: Route) {
-        root.get("admin/$route") {
+        root.get("$prefix/$route") {
             try {
+                println(getAll(call))
                 println(modelKeys)
                 call.respondTemplate(
                     "admin/models/list.ftl",
@@ -81,7 +81,7 @@ open class ModelRouter<Model : IModel<Id, CreatePayload, UpdatePayload>, Id, Cre
     }
 
     fun createAdminGetCreateRoute(root: Route) {
-        root.get("admin/$route/create") {
+        root.get("$prefix/$route/create") {
             try {
                 call.respondTemplate(
                     "admin/models/form.ftl",
@@ -100,7 +100,7 @@ open class ModelRouter<Model : IModel<Id, CreatePayload, UpdatePayload>, Id, Cre
     }
 
     fun createAdminPostCreateRoute(root: Route) {
-        root.post("admin/$route/create") {
+        root.post("$prefix/$route/create") {
             try {
                 val payload = constructPayload(
                     createPayloadClass, call.receiveParameters()
@@ -114,7 +114,7 @@ open class ModelRouter<Model : IModel<Id, CreatePayload, UpdatePayload>, Id, Cre
     }
 
     fun createAdminGetIdRoute(root: Route) {
-        root.get("admin/$route/{$id}") {
+        root.get("$prefix/$route/{$id}") {
             try {
                 call.respondTemplate(
                     "admin/models/form.ftl",
@@ -134,7 +134,7 @@ open class ModelRouter<Model : IModel<Id, CreatePayload, UpdatePayload>, Id, Cre
     }
 
     fun createAdminPostIdRoute(root: Route) {
-        root.post("admin/$route/{$id}") {
+        root.post("$prefix/$route/{$id}") {
             try {
                 val payload = constructPayload(
                     updatePayloadClass, call.receiveParameters()
@@ -148,7 +148,7 @@ open class ModelRouter<Model : IModel<Id, CreatePayload, UpdatePayload>, Id, Cre
     }
 
     fun createAdminDeleteIdRoute(root: Route) {
-        root.get("admin/$route/{$id}/delete") {
+        root.get("$prefix/$route/{$id}/delete") {
             try {
                 delete(call)
                 call.respondRedirect("/admin/$route")

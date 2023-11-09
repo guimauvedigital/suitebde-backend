@@ -5,9 +5,7 @@ import kotlinx.datetime.*
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
-import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.selectAll
-import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
@@ -231,13 +229,14 @@ class DatabaseAssociationRepositoryTest {
     fun getAssociationForDomain() = runBlocking {
         val database = Database(protocol = "h2", name = "getAssociationForDomain")
         val repository = DatabaseAssociationRepository(database)
+        val domainsRepository = DatabaseDomainsInAssociationsRepository(database)
         val association = repository.create(
             CreateAssociationPayload(
                 "name", "school", "city",
                 "email", "password", "firstname", "lastname"
             )
         ) ?: fail("Unable to create association")
-        val domain = repository.createDomain("domain", association.id) ?: fail("Unable to create domain")
+        val domain = domainsRepository.create("domain", association.id) ?: fail("Unable to create domain")
         val associationFromDatabase = repository.getAssociationForDomain(domain.domain)
         assertEquals(associationFromDatabase?.id, association.id)
         assertEquals(associationFromDatabase?.name, association.name)
@@ -246,55 +245,6 @@ class DatabaseAssociationRepositoryTest {
         assertEquals(associationFromDatabase?.validated, association.validated)
         assertEquals(associationFromDatabase?.createdAt, association.createdAt)
         assertEquals(associationFromDatabase?.expiresAt, association.expiresAt)
-    }
-
-    @Test
-    fun createDomain() = runBlocking {
-        val database = Database(protocol = "h2", name = "createDomain")
-        val repository = DatabaseAssociationRepository(database)
-        val domain = repository.createDomain("domain", "associationId")
-        val domainFromDatabase = database.dbQuery {
-            DomainsInAssociations
-                .selectAll()
-                .map(DomainsInAssociations::toDomainInAssociation)
-                .singleOrNull()
-        }
-        assertEquals(domainFromDatabase?.domain, domain?.domain)
-        assertEquals(domainFromDatabase?.associationId, domain?.associationId)
-    }
-
-    @Test
-    fun createDomainAlreadyExists(): Unit = runBlocking {
-        val database = Database(protocol = "h2", name = "createDomainAlreadyExists")
-        val repository = DatabaseAssociationRepository(database)
-        repository.createDomain("domain", "associationId")
-        assertThrows<ExposedSQLException> {
-            repository.createDomain("domain", "associationId")
-        }
-    }
-
-    @Test
-    fun deleteDomain() = runBlocking {
-        val database = Database(protocol = "h2", name = "deleteDomain")
-        val repository = DatabaseAssociationRepository(database)
-        val domain = repository.createDomain("domain", "associationId") ?: fail("Unable to create domain")
-        repository.deleteDomain(domain.domain)
-        val count = database.dbQuery {
-            DomainsInAssociations
-                .selectAll()
-                .count()
-        }
-        assertEquals(0, count)
-    }
-
-    @Test
-    fun getDomains() = runBlocking {
-        val database = Database(protocol = "h2", name = "getDomains")
-        val repository = DatabaseAssociationRepository(database)
-        val domain = repository.createDomain("domain", "associationId") ?: fail("Unable to create domain")
-        val domains = repository.getDomains("associationId")
-        assertEquals(domains.size, 1)
-        assertEquals(domains.first().domain, domain.domain)
     }
 
     @Test

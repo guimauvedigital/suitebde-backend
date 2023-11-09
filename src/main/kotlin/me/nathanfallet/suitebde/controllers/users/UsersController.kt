@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.controllers.users
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import me.nathanfallet.ktor.routers.controllers.base.IModelController
 import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.roles.Permission
@@ -9,20 +10,20 @@ import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
-import me.nathanfallet.suitebde.usecases.roles.ICheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUsersInAssociationUseCase
-import me.nathanfallet.suitebde.usecases.users.IUpdateUserUseCase
 import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
+import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
+import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
-class UserController(
+class UsersController(
     private val getAssociationForCallUseCase: IGetAssociationForCallUseCase,
     private val getUserForCallUseCase: IGetUserForCallUseCase,
-    private val checkPermissionUseCase: ICheckPermissionUseCase,
+    private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
     private val getUsersInAssociationUseCase: IGetUsersInAssociationUseCase,
     private val getUserUseCase: IGetModelSuspendUseCase<User, String>,
-    private val updateUserUseCase: IUpdateUserUseCase
-) : IUserController {
+    private val updateUserUseCase: IUpdateModelSuspendUseCase<User, String, UpdateUserPayload>
+) : IModelController<User, String, CreateUserPayload, UpdateUserPayload> {
 
     private suspend fun requireAssociation(call: ApplicationCall): Association {
         return getAssociationForCallUseCase(call) ?: throw ControllerException(

@@ -15,9 +15,12 @@ import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.application.ISendEmailUseCase
 import me.nathanfallet.suitebde.usecases.application.ISetSessionForCallUseCase
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
-import me.nathanfallet.suitebde.usecases.associations.*
+import me.nathanfallet.suitebde.usecases.associations.ICreateCodeInEmailUseCase
+import me.nathanfallet.suitebde.usecases.associations.IDeleteCodeInEmailUseCase
+import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
+import me.nathanfallet.suitebde.usecases.associations.IGetCodeInEmailUseCase
 import me.nathanfallet.suitebde.usecases.auth.ILoginUseCase
-import me.nathanfallet.suitebde.usecases.users.ICreateUserUseCase
+import me.nathanfallet.usecases.models.create.ICreateModelSuspendUseCase
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 import kotlin.test.Test
@@ -192,7 +195,7 @@ class AuthControllerTest {
         val deleteCodeInEmailUseCase = mockk<IDeleteCodeInEmailUseCase>()
         val setSessionForCallUseCase = mockk<ISetSessionForCallUseCase>()
         val call = mockk<ApplicationCall>()
-        val createUserUseCase = mockk<ICreateUserUseCase>()
+        val createUserUseCase = mockk<ICreateModelSuspendUseCase<User, CreateUserPayload>>()
         val controller = AuthController(
             mockk(), setSessionForCallUseCase, mockk(), mockk(), mockk(),
             deleteCodeInEmailUseCase, createUserUseCase, mockk(), mockk(), mockk()
@@ -224,7 +227,7 @@ class AuthControllerTest {
 
     @Test
     fun testRegisterCodePayloadError() = runBlocking {
-        val createUserUseCase = mockk<ICreateUserUseCase>()
+        val createUserUseCase = mockk<ICreateModelSuspendUseCase<User, CreateUserPayload>>()
         val controller = AuthController(
             mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
             createUserUseCase, mockk(), mockk(), mockk()
@@ -328,7 +331,7 @@ class AuthControllerTest {
 
     @Test
     fun testJoinCodePayload() = runBlocking {
-        val createAssociationUseCase = mockk<ICreateAssociationUseCase>()
+        val createAssociationUseCase = mockk<ICreateModelSuspendUseCase<Association, CreateAssociationPayload>>()
         val deleteCodeInEmailUseCase = mockk<IDeleteCodeInEmailUseCase>()
         val controller = AuthController(
             mockk(), mockk(), mockk(), mockk(), mockk(), deleteCodeInEmailUseCase,
@@ -359,7 +362,7 @@ class AuthControllerTest {
 
     @Test
     fun testJoinCodePayloadError() = runBlocking {
-        val createAssociationUseCase = mockk<ICreateAssociationUseCase>()
+        val createAssociationUseCase = mockk<ICreateModelSuspendUseCase<Association, CreateAssociationPayload>>()
         val controller = AuthController(
             mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
             mockk(), createAssociationUseCase, mockk(), mockk()

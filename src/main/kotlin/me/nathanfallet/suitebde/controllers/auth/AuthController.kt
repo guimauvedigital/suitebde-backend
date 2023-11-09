@@ -4,15 +4,20 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import kotlinx.datetime.Instant
 import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
+import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.auth.*
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
+import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.application.ISendEmailUseCase
 import me.nathanfallet.suitebde.usecases.application.ISetSessionForCallUseCase
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
-import me.nathanfallet.suitebde.usecases.associations.*
+import me.nathanfallet.suitebde.usecases.associations.ICreateCodeInEmailUseCase
+import me.nathanfallet.suitebde.usecases.associations.IDeleteCodeInEmailUseCase
+import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
+import me.nathanfallet.suitebde.usecases.associations.IGetCodeInEmailUseCase
 import me.nathanfallet.suitebde.usecases.auth.ILoginUseCase
-import me.nathanfallet.suitebde.usecases.users.ICreateUserUseCase
+import me.nathanfallet.usecases.models.create.ICreateModelSuspendUseCase
 import java.util.*
 
 class AuthController(
@@ -22,8 +27,8 @@ class AuthController(
     private val createCodeInEmailUseCase: ICreateCodeInEmailUseCase,
     private val getCodeInEmailUseCase: IGetCodeInEmailUseCase,
     private val deleteCodeInEmailUseCase: IDeleteCodeInEmailUseCase,
-    private val createUserUseCase: ICreateUserUseCase,
-    private val createAssociationUseCase: ICreateAssociationUseCase,
+    private val createUserUseCase: ICreateModelSuspendUseCase<User, CreateUserPayload>,
+    private val createAssociationUseCase: ICreateModelSuspendUseCase<Association, CreateAssociationPayload>,
     private val sendEmailUseCase: ISendEmailUseCase,
     private val translateUseCase: ITranslateUseCase
 ) : IAuthController {
