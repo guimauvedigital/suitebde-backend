@@ -21,7 +21,7 @@ class AssociationsRouter(
             CreateAssociationPayload::class,
             UpdateAssociationPayload::class,
             associationsController,
-            "/api/v1"
+            prefix = "/api/v1"
         ),
         AdminModelRouter(
             Association::class,

@@ -23,14 +23,18 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
     parentRouter: AdminChildModelRouter<ParentModel, ParentId, *, *, *, *>?,
     private val translateUseCase: ITranslateUseCase,
     private val getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
-    prefix: String = "/admin"
+    route: String? = null,
+    id: String? = null,
+    prefix: String? = null
 ) : AbstractChildModelRouter<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>(
     modelClass,
     createPayloadClass,
     updatePayloadClass,
     controller,
     parentRouter,
-    prefix
+    route,
+    id,
+    prefix ?: "/admin"
 ) {
 
     override fun createRoutes(root: Route) {
@@ -44,7 +48,7 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
 
     private suspend fun handleExceptionAdmin(exception: ControllerException, call: ApplicationCall) {
         if (exception.code == HttpStatusCode.Unauthorized) {
-            call.respondRedirect("/auth/login?redirect=/admin/$route")
+            call.respondRedirect("/auth/login?redirect=$fullRoute")
             return
         }
         call.response.status(exception.code)
@@ -59,7 +63,7 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
     }
 
     fun createAdminGetRoute(root: Route) {
-        root.get("$prefix/$route") {
+        root.get(fullRoute) {
             try {
                 println(getAll(call))
                 println(modelKeys)
@@ -81,7 +85,7 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
     }
 
     fun createAdminGetCreateRoute(root: Route) {
-        root.get("$prefix/$route/create") {
+        root.get("$fullRoute/create") {
             try {
                 call.respondTemplate(
                     "admin/models/form.ftl",
@@ -100,7 +104,7 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
     }
 
     fun createAdminPostCreateRoute(root: Route) {
-        root.post("$prefix/$route/create") {
+        root.post("$fullRoute/create") {
             try {
                 val payload = constructPayload(
                     createPayloadClass, call.receiveParameters()
@@ -114,7 +118,7 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
     }
 
     fun createAdminGetIdRoute(root: Route) {
-        root.get("$prefix/$route/{$id}") {
+        root.get("$fullRoute/{$id}") {
             try {
                 call.respondTemplate(
                     "admin/models/form.ftl",
@@ -134,7 +138,7 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
     }
 
     fun createAdminPostIdRoute(root: Route) {
-        root.post("$prefix/$route/{$id}") {
+        root.post("$fullRoute/{$id}") {
             try {
                 val payload = constructPayload(
                     updatePayloadClass, call.receiveParameters()
@@ -148,7 +152,7 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
     }
 
     fun createAdminDeleteIdRoute(root: Route) {
-        root.get("$prefix/$route/{$id}/delete") {
+        root.get("$fullRoute/{$id}/delete") {
             try {
                 delete(call)
                 call.respondRedirect("/admin/$route")

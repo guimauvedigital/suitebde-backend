@@ -21,7 +21,7 @@ class UsersRouter(
             CreateUserPayload::class,
             UpdateUserPayload::class,
             usersController,
-            "/api/v1"
+            prefix = "/api/v1"
         ),
         AdminModelRouter(
             User::class,

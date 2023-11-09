@@ -21,7 +21,9 @@ class DomainsInAssociationsRouter(
             String::class,
             Unit::class,
             domainsInAssociationsController,
-            associationsRouter.routerOf()
+            associationsRouter.routerOf(),
+            route = "domains",
+            prefix = "/api/v1"
         ),
         AdminChildModelRouter(
             DomainInAssociation::class,
@@ -30,7 +32,8 @@ class DomainsInAssociationsRouter(
             domainsInAssociationsController,
             associationsRouter.routerOf(),
             translateUseCase,
-            getAdminMenuForCallUseCase
+            getAdminMenuForCallUseCase,
+            route = "domains"
         )
     ),
     associationsRouter

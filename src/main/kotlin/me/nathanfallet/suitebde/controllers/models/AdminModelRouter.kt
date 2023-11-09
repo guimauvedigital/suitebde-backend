@@ -14,7 +14,9 @@ open class AdminModelRouter<Model : IModel<Id, CreatePayload, UpdatePayload>, Id
     controller: IModelController<Model, Id, CreatePayload, UpdatePayload>,
     translateUseCase: ITranslateUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
-    prefix: String = "/admin"
+    route: String? = null,
+    id: String? = null,
+    prefix: String? = null
 ) : AdminChildModelRouter<Model, Id, CreatePayload, UpdatePayload, UnitModel, Unit>(
     modelClass,
     createPayloadClass,
@@ -23,5 +25,7 @@ open class AdminModelRouter<Model : IModel<Id, CreatePayload, UpdatePayload>, Id
     null,
     translateUseCase,
     getAdminMenuForCallUseCase,
+    route,
+    id,
     prefix
 )
