@@ -8,6 +8,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import me.nathanfallet.suitebde.models.roles.AdminPermission
 import me.nathanfallet.suitebde.models.users.User
@@ -89,6 +90,23 @@ class AssociationsControllerTest {
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
         assertEquals("associations_not_found", exception.key)
+    }
+
+    @Test
+    fun testCreate() = runBlocking {
+        val call = mockk<ApplicationCall>()
+        val controller = AssociationsController(mockk(), mockk(), mockk(), mockk(), mockk())
+        val exception = assertThrows<ControllerException> {
+            controller.create(
+                call,
+                CreateAssociationPayload(
+                    "name", "school", "city", "email",
+                    "password", "firstname", "lastname"
+                )
+            )
+        }
+        assertEquals(HttpStatusCode.MethodNotAllowed, exception.code)
+        assertEquals("associations_create_not_allowed", exception.key)
     }
 
     @Test

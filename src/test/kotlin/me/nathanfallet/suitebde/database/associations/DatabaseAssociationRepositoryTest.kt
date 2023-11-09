@@ -83,6 +83,22 @@ class DatabaseAssociationRepositoryTest {
     }
 
     @Test
+    fun updateAssociationNotExists() = runBlocking {
+        val database = Database(protocol = "h2", name = "updateAssociationNotExists")
+        val repository = DatabaseAssociationRepository(database)
+        assertEquals(
+            false, repository.update(
+                "associationId", UpdateAssociationPayload(
+                    name = "newName",
+                    school = "newSchool",
+                    city = "newCity",
+                    validated = true
+                )
+            )
+        )
+    }
+
+    @Test
     fun updateAssociationExpiresAt() = runBlocking {
         val database = Database(protocol = "h2", name = "updateAssociationExpiresAt")
         val repository = DatabaseAssociationRepository(database)
@@ -111,6 +127,13 @@ class DatabaseAssociationRepositoryTest {
     }
 
     @Test
+    fun updateAssociationExpiresAtNotExists() = runBlocking {
+        val database = Database(protocol = "h2", name = "updateAssociationExpiresAtNotExists")
+        val repository = DatabaseAssociationRepository(database)
+        assertEquals(false, repository.updateExpiresAt("associationId", tomorrow))
+    }
+
+    @Test
     fun deleteAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteAssociation")
         val repository = DatabaseAssociationRepository(database)
@@ -120,13 +143,20 @@ class DatabaseAssociationRepositoryTest {
                 "email", "password", "firstname", "lastname"
             )
         ) ?: fail("Unable to create association")
-        repository.delete(association.id)
+        assertEquals(true, repository.delete(association.id))
         val count = database.dbQuery {
             Associations
                 .selectAll()
                 .count()
         }
         assertEquals(0, count)
+    }
+
+    @Test
+    fun deleteAssociationNotExists() = runBlocking {
+        val database = Database(protocol = "h2", name = "deleteAssociationNotExists")
+        val repository = DatabaseAssociationRepository(database)
+        assertEquals(false, repository.delete("associationId"))
     }
 
     @Test
