@@ -48,7 +48,7 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
 
     private suspend fun handleExceptionAdmin(exception: ControllerException, call: ApplicationCall) {
         if (exception.code == HttpStatusCode.Unauthorized) {
-            call.respondRedirect("/auth/login?redirect=$fullRoute")
+            call.respondRedirect("/auth/login?redirect=$prefix")
             return
         }
         call.response.status(exception.code)
@@ -110,7 +110,7 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
                     createPayloadClass, call.receiveParameters()
                 ) ?: throw ControllerException(HttpStatusCode.BadRequest, "error_body_invalid")
                 create(call, payload)
-                call.respondRedirect("/admin/$route")
+                call.respondRedirect("../$route")
             } catch (exception: ControllerException) {
                 handleExceptionAdmin(exception, call)
             }
@@ -144,7 +144,7 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
                     updatePayloadClass, call.receiveParameters()
                 ) ?: throw ControllerException(HttpStatusCode.BadRequest, "error_body_invalid")
                 update(call, payload)
-                call.respondRedirect("/admin/$route")
+                call.respondRedirect("../$route")
             } catch (exception: ControllerException) {
                 handleExceptionAdmin(exception, call)
             }
@@ -155,7 +155,7 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
         root.get("$fullRoute/{$id}/delete") {
             try {
                 delete(call)
-                call.respondRedirect("/admin/$route")
+                call.respondRedirect("../../$route")
             } catch (exception: ControllerException) {
                 handleExceptionAdmin(exception, call)
             }

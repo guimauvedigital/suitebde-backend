@@ -21,10 +21,7 @@ import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.database.associations.DatabaseAssociationRepository
 import me.nathanfallet.suitebde.database.associations.DatabaseDomainsInAssociationsRepository
 import me.nathanfallet.suitebde.database.users.DatabaseUsersRepository
-import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
-import me.nathanfallet.suitebde.models.associations.DomainInAssociation
-import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
+import me.nathanfallet.suitebde.models.associations.*
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
@@ -40,11 +37,19 @@ import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.*
 import me.nathanfallet.suitebde.usecases.web.GetAdminMenuForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
+import me.nathanfallet.usecases.models.create.CreateChildModelFromRepositorySuspendUseCase
+import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateModelSuspendUseCase
+import me.nathanfallet.usecases.models.delete.DeleteChildModelFromRepositorySuspendUseCase
+import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteModelSuspendUseCase
+import me.nathanfallet.usecases.models.get.GetChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.get.GetModelFromRepositorySuspendUseCase
+import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
+import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
+import me.nathanfallet.usecases.models.update.UpdateChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.update.UpdateModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import org.koin.core.qualifier.named
@@ -82,35 +87,56 @@ fun Application.configureKoin() {
             single<IUsersRepository> { DatabaseUsersRepository(get()) }
         }
         val useCaseModule = module {
+            // Application
             single<ISendEmailUseCase> { SendEmailUseCase(get()) }
             single<IExpireUseCase> { ExpireUseCase(get(), get(), get(named<Association>())) }
             single<ITranslateUseCase> { TranslateUseCase(get()) }
             single<IGetSessionForCallUseCase> { GetSessionForCallUseCase() }
             single<ISetSessionForCallUseCase> { SetSessionForCallUseCase() }
 
+            // Associations
+            single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
+            single<IGetAssociationForCallUseCase> { GetAssociationForCallUseCase(get()) }
+            single<IGetModelSuspendUseCase<Association, String>>(named<Association>()) {
+                GetModelFromRepositorySuspendUseCase(get<IAssociationsRepository>())
+            }
             single<ICreateModelSuspendUseCase<Association, CreateAssociationPayload>>(named<Association>()) {
                 CreateAssociationUseCase(
                     get(),
                     get(named<User>())
                 )
             }
-            single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
-            single<IGetModelSuspendUseCase<Association, String>>(named<Association>()) {
-                GetModelFromRepositorySuspendUseCase(get<IAssociationsRepository>())
-            }
-            single<IGetAssociationForCallUseCase> { GetAssociationForCallUseCase(get()) }
             single<IUpdateModelSuspendUseCase<Association, String, UpdateAssociationPayload>>(named<Association>()) {
                 UpdateModelFromRepositorySuspendUseCase(get<IAssociationsRepository>())
             }
             single<IDeleteModelSuspendUseCase<Association, String>>(named<Association>()) { DeleteAssociationUseCase(get()) }
-            single<ICreateCodeInEmailUseCase> { CreateCodeInEmailUseCase(get(), get()) }
+
+            // Codes in emails
             single<IGetCodeInEmailUseCase> { GetCodeInEmailUseCase(get()) }
+            single<ICreateCodeInEmailUseCase> { CreateCodeInEmailUseCase(get(), get()) }
             single<IDeleteCodeInEmailUseCase> { DeleteCodeInEmailUseCase(get()) }
 
+            // Domains in associations
+            single<IGetDomainsInAssociationsUseCase> { GetDomainsInAssociationsUseCase(get()) }
+            single<IGetChildModelSuspendUseCase<DomainInAssociation, String, String>>(named<DomainInAssociation>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<IDomainsInAssociationsRepository>())
+            }
+            single<ICreateChildModelSuspendUseCase<DomainInAssociation, CreateDomainInAssociationPayload, String>>(named<DomainInAssociation>()) {
+                CreateChildModelFromRepositorySuspendUseCase(get<IDomainsInAssociationsRepository>())
+            }
+            single<IUpdateChildModelSuspendUseCase<DomainInAssociation, String, Unit, String>>(named<DomainInAssociation>()) {
+                UpdateChildModelFromRepositorySuspendUseCase(get<IDomainsInAssociationsRepository>())
+            }
+            single<IDeleteChildModelSuspendUseCase<DomainInAssociation, String, String>>(named<DomainInAssociation>()) {
+                DeleteChildModelFromRepositorySuspendUseCase(get<IDomainsInAssociationsRepository>())
+            }
+
+            // Auth
             single<IHashPasswordUseCase> { HashPasswordUseCase() }
             single<IVerifyPasswordUseCase> { VerifyPasswordUseCase() }
             single<ILoginUseCase> { LoginUseCase(get(), get()) }
 
+            // Users
             single<IGetUserForCallUseCase> { GetUserForCallUseCase(get(), get(named<User>())) }
             single<IGetUsersInAssociationUseCase> { GetUsersInAssociationUseCase(get()) }
             single<IGetModelSuspendUseCase<User, String>>(named<User>()) {
@@ -129,8 +155,10 @@ fun Application.configureKoin() {
                 )
             }
 
+            // Roles
             single<ICheckPermissionSuspendUseCase> { CheckPermissionUseCase() }
 
+            // Web
             single<IGetAdminMenuForCallUseCase> { GetAdminMenuForCallUseCase(get(), get(), get(), get()) }
         }
         val controllerModule = module {
@@ -144,7 +172,19 @@ fun Application.configureKoin() {
                     get(named<Association>())
                 )
             }
-            single<IChildModelController<DomainInAssociation, String, String, Unit, Association, String>>(named<DomainInAssociation>()) { DomainsInAssociationsController() }
+            single<IChildModelController<DomainInAssociation, String, CreateDomainInAssociationPayload, Unit, Association, String>>(
+                named<DomainInAssociation>()
+            ) {
+                DomainsInAssociationsController(
+                    get(),
+                    get(),
+                    get(),
+                    get(named<DomainInAssociation>()),
+                    get(named<DomainInAssociation>()),
+                    get(named<DomainInAssociation>()),
+                    get(named<DomainInAssociation>())
+                )
+            }
             single<IAuthController> {
                 AuthController(
                     get(),

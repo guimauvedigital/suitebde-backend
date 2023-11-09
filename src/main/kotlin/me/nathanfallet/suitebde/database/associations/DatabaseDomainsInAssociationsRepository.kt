@@ -1,6 +1,7 @@
 package me.nathanfallet.suitebde.database.associations
 
 import me.nathanfallet.suitebde.database.Database
+import me.nathanfallet.suitebde.models.associations.CreateDomainInAssociationPayload
 import me.nathanfallet.suitebde.models.associations.DomainInAssociation
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
 import org.jetbrains.exposed.sql.*
@@ -17,10 +18,10 @@ class DatabaseDomainsInAssociationsRepository(
         }
     }
 
-    override suspend fun create(payload: String, parentId: String): DomainInAssociation? {
+    override suspend fun create(payload: CreateDomainInAssociationPayload, parentId: String): DomainInAssociation? {
         return database.dbQuery {
             DomainsInAssociations.insert {
-                it[domain] = payload
+                it[domain] = payload.domain
                 it[associationId] = parentId
             }.resultedValues?.map(DomainsInAssociations::toDomainInAssociation)?.singleOrNull()
         }
@@ -35,7 +36,12 @@ class DatabaseDomainsInAssociationsRepository(
     }
 
     override suspend fun get(id: String, parentId: String): DomainInAssociation? {
-        TODO("Not yet implemented")
+        return database.dbQuery {
+            DomainsInAssociations
+                .select { DomainsInAssociations.domain eq id and (DomainsInAssociations.associationId eq parentId) }
+                .map(DomainsInAssociations::toDomainInAssociation)
+                .firstOrNull()
+        }
     }
 
     override suspend fun update(id: String, payload: Unit, parentId: String): Boolean {

@@ -19,11 +19,11 @@
                         </div>
 
                         <div class="d-flex justify-content-end mt-3">
-                            <a class="btn btn-light m-0" href="/admin/${route}">
+                            <a class="btn btn-light m-0" href="../${route}">
                                 <@t key="admin_cancel" />
                             </a>
                             <#if item??>
-                                <a class="btn btn-danger m-0 ms-2" href="/admin/${route}/${item.id}/delete">
+                                <a class="btn btn-danger m-0 ms-2" href="${item.id}/delete">
                                     <@t key="admin_delete" />
                                 </a>
                             </#if>

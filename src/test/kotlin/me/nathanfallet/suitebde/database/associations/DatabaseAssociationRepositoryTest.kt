@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.*
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
+import me.nathanfallet.suitebde.models.associations.CreateDomainInAssociationPayload
 import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import org.jetbrains.exposed.sql.selectAll
 import kotlin.test.Test
@@ -236,7 +237,8 @@ class DatabaseAssociationRepositoryTest {
                 "email", "password", "firstname", "lastname"
             )
         ) ?: fail("Unable to create association")
-        val domain = domainsRepository.create("domain", association.id) ?: fail("Unable to create domain")
+        val domain = domainsRepository.create(CreateDomainInAssociationPayload("domain"), association.id)
+            ?: fail("Unable to create domain")
         val associationFromDatabase = repository.getAssociationForDomain(domain.domain)
         assertEquals(associationFromDatabase?.id, association.id)
         assertEquals(associationFromDatabase?.name, association.name)

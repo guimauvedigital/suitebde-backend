@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.database.associations
 
 import kotlinx.coroutines.runBlocking
 import me.nathanfallet.suitebde.database.Database
+import me.nathanfallet.suitebde.models.associations.CreateDomainInAssociationPayload
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.selectAll
 import org.junit.jupiter.api.assertThrows
@@ -15,7 +16,7 @@ class DatabaseDomainsInAssociationsRepositoryTest {
     fun createDomain() = runBlocking {
         val database = Database(protocol = "h2", name = "createDomain")
         val repository = DatabaseDomainsInAssociationsRepository(database)
-        val domain = repository.create("domain", "associationId")
+        val domain = repository.create(CreateDomainInAssociationPayload("domain"), "associationId")
         val domainFromDatabase = database.dbQuery {
             DomainsInAssociations
                 .selectAll()
@@ -30,9 +31,9 @@ class DatabaseDomainsInAssociationsRepositoryTest {
     fun createDomainAlreadyExists(): Unit = runBlocking {
         val database = Database(protocol = "h2", name = "createDomainAlreadyExists")
         val repository = DatabaseDomainsInAssociationsRepository(database)
-        repository.create("domain", "associationId")
+        repository.create(CreateDomainInAssociationPayload("domain"), "associationId")
         assertThrows<ExposedSQLException> {
-            repository.create("domain", "associationId")
+            repository.create(CreateDomainInAssociationPayload("domain"), "associationId")
         }
     }
 
@@ -40,7 +41,8 @@ class DatabaseDomainsInAssociationsRepositoryTest {
     fun deleteDomain() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteDomain")
         val repository = DatabaseDomainsInAssociationsRepository(database)
-        val domain = repository.create("domain", "associationId") ?: fail("Unable to create domain")
+        val domain = repository.create(CreateDomainInAssociationPayload("domain"), "associationId")
+            ?: fail("Unable to create domain")
         repository.delete(domain.domain, domain.associationId)
         val count = database.dbQuery {
             DomainsInAssociations
@@ -54,7 +56,8 @@ class DatabaseDomainsInAssociationsRepositoryTest {
     fun getDomains() = runBlocking {
         val database = Database(protocol = "h2", name = "getDomains")
         val repository = DatabaseDomainsInAssociationsRepository(database)
-        val domain = repository.create("domain", "associationId") ?: fail("Unable to create domain")
+        val domain = repository.create(CreateDomainInAssociationPayload("domain"), "associationId")
+            ?: fail("Unable to create domain")
         val domains = repository.getDomains("associationId")
         assertEquals(domains.size, 1)
         assertEquals(domains.first().domain, domain.domain)

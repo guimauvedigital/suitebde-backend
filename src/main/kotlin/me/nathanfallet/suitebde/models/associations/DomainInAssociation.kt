@@ -2,12 +2,14 @@ package me.nathanfallet.suitebde.models.associations
 
 import kotlinx.serialization.Serializable
 import me.nathanfallet.usecases.models.IChildModel
+import me.nathanfallet.usecases.models.annotations.ModelProperty
 
 @Serializable
 data class DomainInAssociation(
+    @ModelProperty("id")
     val domain: String,
     val associationId: String
-) : IChildModel<String, String, Unit, String> {
+) : IChildModel<String, CreateDomainInAssociationPayload, Unit, String> {
 
     override val id: String
         get() = domain
