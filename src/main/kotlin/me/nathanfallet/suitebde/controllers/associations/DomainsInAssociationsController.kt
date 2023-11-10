@@ -14,7 +14,6 @@ import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
-import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class DomainsInAssociationsController(
@@ -23,7 +22,6 @@ class DomainsInAssociationsController(
     private val getDomainsInAssociationsUseCase: IGetDomainsInAssociationsUseCase,
     private val getDomainUseCase: IGetChildModelSuspendUseCase<DomainInAssociation, String, String>,
     private val createDomainUseCase: ICreateChildModelSuspendUseCase<DomainInAssociation, CreateDomainInAssociationPayload, String>,
-    private val updateDomainUseCase: IUpdateChildModelSuspendUseCase<DomainInAssociation, String, Unit, String>,
     private val deleteDomainUseCase: IDeleteChildModelSuspendUseCase<DomainInAssociation, String, String>,
 ) : IChildModelController<DomainInAssociation, String, CreateDomainInAssociationPayload, Unit, Association, String> {
 
@@ -64,21 +62,14 @@ class DomainsInAssociationsController(
         id: String,
         payload: Unit
     ): DomainInAssociation {
-        requireUser(call).takeIf {
-            checkPermissionUseCase(it, Permission.DOMAINS_UPDATE inAssociation parent)
-        } ?: throw ControllerException(
-            HttpStatusCode.Forbidden, "domains_update_not_allowed"
-        )
-        return updateDomainUseCase(id, payload, parent.id) ?: throw ControllerException(
-            HttpStatusCode.InternalServerError, "error_internal"
-        )
+        throw ControllerException(HttpStatusCode.MethodNotAllowed, "domains_update_not_allowed")
     }
 
     override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {
         requireUser(call).takeIf {
             checkPermissionUseCase(it, Permission.DOMAINS_DELETE inAssociation parent)
         } ?: throw ControllerException(
-            HttpStatusCode.Forbidden, "domains_update_not_allowed"
+            HttpStatusCode.Forbidden, "domains_delete_not_allowed"
         )
         if (!deleteDomainUseCase(id, parent.id)) throw ControllerException(
             HttpStatusCode.InternalServerError, "error_internal"

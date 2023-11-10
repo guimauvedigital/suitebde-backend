@@ -47,9 +47,7 @@ import me.nathanfallet.usecases.models.get.GetChildModelFromRepositorySuspendUse
 import me.nathanfallet.usecases.models.get.GetModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
-import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
-import me.nathanfallet.usecases.models.update.UpdateChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.update.UpdateModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import org.koin.core.qualifier.named
@@ -124,9 +122,6 @@ fun Application.configureKoin() {
             single<ICreateChildModelSuspendUseCase<DomainInAssociation, CreateDomainInAssociationPayload, String>>(named<DomainInAssociation>()) {
                 CreateChildModelFromRepositorySuspendUseCase(get<IDomainsInAssociationsRepository>())
             }
-            single<IUpdateChildModelSuspendUseCase<DomainInAssociation, String, Unit, String>>(named<DomainInAssociation>()) {
-                UpdateChildModelFromRepositorySuspendUseCase(get<IDomainsInAssociationsRepository>())
-            }
             single<IDeleteChildModelSuspendUseCase<DomainInAssociation, String, String>>(named<DomainInAssociation>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get<IDomainsInAssociationsRepository>())
             }
@@ -179,7 +174,6 @@ fun Application.configureKoin() {
                     get(),
                     get(),
                     get(),
-                    get(named<DomainInAssociation>()),
                     get(named<DomainInAssociation>()),
                     get(named<DomainInAssociation>()),
                     get(named<DomainInAssociation>())
