@@ -65,8 +65,6 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
     fun createAdminGetRoute(root: Route) {
         root.get(fullRoute) {
             try {
-                println(getAll(call))
-                println(modelKeys)
                 call.respondTemplate(
                     "admin/models/list.ftl",
                     mapOf(

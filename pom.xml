@@ -199,6 +199,11 @@
             <version>1.2.0</version>
         </dependency>
         <dependency>
+            <groupId>me.nathanfallet.cloudflare</groupId>
+            <artifactId>cloudflare-api-client-jvm</artifactId>
+            <version>4.0.1</version>
+        </dependency>
+        <dependency>
             <groupId>me.nathanfallet.ktor.sentry</groupId>
             <artifactId>ktor-sentry</artifactId>
             <version>1.0.2</version>

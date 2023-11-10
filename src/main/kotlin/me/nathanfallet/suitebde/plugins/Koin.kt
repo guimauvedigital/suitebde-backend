@@ -3,6 +3,8 @@ package me.nathanfallet.suitebde.plugins
 import com.github.aymanizz.ktori18n.MessageResolver
 import com.github.aymanizz.ktori18n.i18n
 import io.ktor.server.application.*
+import me.nathanfallet.cloudflare.client.CloudflareClient
+import me.nathanfallet.cloudflare.client.ICloudflareClient
 import me.nathanfallet.ktor.routers.controllers.base.IChildModelController
 import me.nathanfallet.ktor.routers.controllers.base.IModelController
 import me.nathanfallet.suitebde.controllers.associations.AssociationsController
@@ -28,8 +30,8 @@ import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
-import me.nathanfallet.suitebde.services.email.EmailService
-import me.nathanfallet.suitebde.services.email.IEmailService
+import me.nathanfallet.suitebde.services.emails.EmailsService
+import me.nathanfallet.suitebde.services.emails.IEmailsService
 import me.nathanfallet.suitebde.usecases.application.*
 import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.*
@@ -37,10 +39,8 @@ import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.*
 import me.nathanfallet.suitebde.usecases.web.GetAdminMenuForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
-import me.nathanfallet.usecases.models.create.CreateChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateModelSuspendUseCase
-import me.nathanfallet.usecases.models.delete.DeleteChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.GetChildModelFromRepositorySuspendUseCase
@@ -71,11 +71,16 @@ fun Application.configureKoin() {
             }
         }
         val serviceModule = module {
-            single<IEmailService> {
-                EmailService(
+            single<IEmailsService> {
+                EmailsService(
                     environment.config.property("email.host").getString(),
                     environment.config.property("email.username").getString(),
                     environment.config.property("email.password").getString()
+                )
+            }
+            single<ICloudflareClient> {
+                CloudflareClient(
+                    environment.config.property("cloudflare.token").getString()
                 )
             }
         }
@@ -91,6 +96,20 @@ fun Application.configureKoin() {
             single<ITranslateUseCase> { TranslateUseCase(get()) }
             single<IGetSessionForCallUseCase> { GetSessionForCallUseCase() }
             single<ISetSessionForCallUseCase> { SetSessionForCallUseCase() }
+            single<IGetZoneForDomainUseCase> {
+                GetZoneForDomainUseCase(
+                    get(),
+                    environment.config.property("cloudflare.account").getString()
+                )
+            }
+            single<ISetupDomainUseCase> {
+                SetupDomainUseCase(
+                    get(),
+                    get(),
+                    environment.config.property("ktor.environment").getString()
+                )
+            }
+            single<IShutdownDomainUseCase> { ShutdownDomainUseCase(get(), get()) }
 
             // Associations
             single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
@@ -120,10 +139,10 @@ fun Application.configureKoin() {
                 GetChildModelFromRepositorySuspendUseCase(get<IDomainsInAssociationsRepository>())
             }
             single<ICreateChildModelSuspendUseCase<DomainInAssociation, CreateDomainInAssociationPayload, String>>(named<DomainInAssociation>()) {
-                CreateChildModelFromRepositorySuspendUseCase(get<IDomainsInAssociationsRepository>())
+                CreateDomainInAssociationUseCase(get(), get())
             }
             single<IDeleteChildModelSuspendUseCase<DomainInAssociation, String, String>>(named<DomainInAssociation>()) {
-                DeleteChildModelFromRepositorySuspendUseCase(get<IDomainsInAssociationsRepository>())
+                DeleteDomainInAssociationUseCase(get(), get())
             }
 
             // Auth

@@ -1,15 +1,15 @@
-package me.nathanfallet.suitebde.services.email
+package me.nathanfallet.suitebde.services.emails
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import org.apache.commons.mail.HtmlEmail
 
-class EmailService(
+class EmailsService(
     private val host: String,
     private val username: String,
     private val password: String
-) : IEmailService {
+) : IEmailsService {
 
     override fun sendEmail(destination: String, subject: String, content: String) {
         CoroutineScope(Job()).launch {
