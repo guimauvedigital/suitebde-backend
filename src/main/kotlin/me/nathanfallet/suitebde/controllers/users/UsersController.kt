@@ -10,15 +10,15 @@ import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
-import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUsersInAssociationUseCase
+import me.nathanfallet.suitebde.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class UsersController(
     private val getAssociationForCallUseCase: IGetAssociationForCallUseCase,
-    private val getUserForCallUseCase: IGetUserForCallUseCase,
+    private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
     private val getUsersInAssociationUseCase: IGetUsersInAssociationUseCase,
     private val getUserUseCase: IGetModelSuspendUseCase<User, String>,
@@ -31,15 +31,9 @@ class UsersController(
         )
     }
 
-    private suspend fun requireUser(call: ApplicationCall): User {
-        return getUserForCallUseCase(call) ?: throw ControllerException(
-            HttpStatusCode.Unauthorized, "auth_invalid_credentials"
-        )
-    }
-
     override suspend fun getAll(call: ApplicationCall): List<User> {
         val association = requireAssociation(call)
-        requireUser(call).takeIf {
+        requireUserForCallUseCase(call).takeIf {
             checkPermissionUseCase(it, Permission.USERS_VIEW inAssociation association)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "users_view_not_allowed"
@@ -49,7 +43,7 @@ class UsersController(
 
     override suspend fun get(call: ApplicationCall, id: String): User {
         val association = requireAssociation(call)
-        requireUser(call).takeIf {
+        requireUserForCallUseCase(call).takeIf {
             it.id == id || checkPermissionUseCase(it, Permission.USERS_VIEW inAssociation association)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "users_view_not_allowed"
@@ -67,7 +61,7 @@ class UsersController(
 
     override suspend fun update(call: ApplicationCall, id: String, payload: UpdateUserPayload): User {
         val association = requireAssociation(call)
-        requireUser(call).takeIf {
+        requireUserForCallUseCase(call).takeIf {
             it.id == id || checkPermissionUseCase(it, Permission.USERS_UPDATE inAssociation association)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "users_update_not_allowed"

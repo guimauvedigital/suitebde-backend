@@ -13,8 +13,8 @@ import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
-import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUsersInAssociationUseCase
+import me.nathanfallet.suitebde.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
@@ -44,17 +44,17 @@ class UsersControllerTest {
     @Test
     fun testGetAll() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getUsersInAssociationUseCase = mockk<IGetUsersInAssociationUseCase>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns true
         coEvery { getUsersInAssociationUseCase(association.id) } returns listOf(targetUser)
         val controller = UsersController(
             getAssociationForCallUseCase,
-            getUserForCallUseCase,
+            requireUserForCallUseCase,
             checkPermissionUseCase,
             getUsersInAssociationUseCase,
             mockk(),
@@ -77,33 +77,17 @@ class UsersControllerTest {
     }
 
     @Test
-    fun testGetAllNoUser() = runBlocking {
-        val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
-        val call = mockk<ApplicationCall>()
-        coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns null
-        val controller =
-            UsersController(getAssociationForCallUseCase, getUserForCallUseCase, mockk(), mockk(), mockk(), mockk())
-        val exception = assertThrows<ControllerException> {
-            controller.getAll(call)
-        }
-        assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals("auth_invalid_credentials", exception.key)
-    }
-
-    @Test
     fun testGetAllForbidden() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns false
         val controller = UsersController(
             getAssociationForCallUseCase,
-            getUserForCallUseCase,
+            requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
             mockk(),
@@ -119,17 +103,17 @@ class UsersControllerTest {
     @Test
     fun testGet() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns true
         coEvery { getUserUseCase(targetUser.id) } returns targetUser
         val controller = UsersController(
             getAssociationForCallUseCase,
-            getUserForCallUseCase,
+            requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
             getUserUseCase,
@@ -152,37 +136,19 @@ class UsersControllerTest {
     }
 
     @Test
-    fun testGetNoUser() = runBlocking {
-        val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
-        val call = mockk<ApplicationCall>()
-        coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns null
-        val controller = UsersController(
-            getAssociationForCallUseCase, getUserForCallUseCase,
-            mockk(), mockk(), mockk(), mockk()
-        )
-        val exception = assertThrows<ControllerException> {
-            controller.get(call, targetUser.id)
-        }
-        assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals("auth_invalid_credentials", exception.key)
-    }
-
-    @Test
     fun testGetNotFound() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns true
         coEvery { getUserUseCase(targetUser.id) } returns null
         val controller = UsersController(
             getAssociationForCallUseCase,
-            getUserForCallUseCase,
+            requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
             getUserUseCase,
@@ -198,17 +164,17 @@ class UsersControllerTest {
     @Test
     fun testGetNotInAssociation() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns true
         coEvery { getUserUseCase(targetUser2.id) } returns targetUser2
         val controller = UsersController(
             getAssociationForCallUseCase,
-            getUserForCallUseCase,
+            requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
             getUserUseCase,
@@ -224,15 +190,15 @@ class UsersControllerTest {
     @Test
     fun testGetForbidden() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns false
         val controller = UsersController(
             getAssociationForCallUseCase,
-            getUserForCallUseCase,
+            requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
             mockk(),
@@ -248,17 +214,17 @@ class UsersControllerTest {
     @Test
     fun testGetForbiddenButMe() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns targetUser
+        coEvery { requireUserForCallUseCase(call) } returns targetUser
         coEvery { checkPermissionUseCase(targetUser, Permission.USERS_VIEW inAssociation association) } returns false
         coEvery { getUserUseCase(targetUser.id) } returns targetUser
         val controller = UsersController(
             getAssociationForCallUseCase,
-            getUserForCallUseCase,
+            requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
             getUserUseCase,
@@ -284,7 +250,7 @@ class UsersControllerTest {
     @Test
     fun testUpdate() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val updateUserUseCase = mockk<IUpdateModelSuspendUseCase<User, String, UpdateUserPayload>>()
@@ -297,13 +263,13 @@ class UsersControllerTest {
             "new firstname", "new lastname", null
         )
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_UPDATE inAssociation association) } returns true
         coEvery { getUserUseCase(targetUser.id) } returns targetUser
         coEvery { updateUserUseCase(targetUser.id, payload) } returns updatedUser
         val controller = UsersController(
             getAssociationForCallUseCase,
-            getUserForCallUseCase,
+            requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
             getUserUseCase,
@@ -315,7 +281,7 @@ class UsersControllerTest {
     @Test
     fun testUpdateWithPassword() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val updateUserUseCase = mockk<IUpdateModelSuspendUseCase<User, String, UpdateUserPayload>>()
@@ -329,13 +295,13 @@ class UsersControllerTest {
             "new firstname", "new lastname", "new password"
         )
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_UPDATE inAssociation association) } returns true
         coEvery { getUserUseCase(targetUser.id) } returns targetUser
         coEvery { updateUserUseCase(targetUser.id, payload) } returns updatedUser
         val controller = UsersController(
             getAssociationForCallUseCase,
-            getUserForCallUseCase,
+            requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
             getUserUseCase,
@@ -347,20 +313,20 @@ class UsersControllerTest {
     @Test
     fun testUpdateWithNoChange() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val updateUserUseCase = mockk<IUpdateModelSuspendUseCase<User, String, UpdateUserPayload>>()
         val call = mockk<ApplicationCall>()
         val payload = UpdateUserPayload(null, null, null)
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_UPDATE inAssociation association) } returns true
         coEvery { getUserUseCase(targetUser.id) } returns targetUser
         coEvery { updateUserUseCase(targetUser.id, payload) } returns targetUser
         val controller = UsersController(
             getAssociationForCallUseCase,
-            getUserForCallUseCase,
+            requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
             getUserUseCase,
@@ -383,37 +349,19 @@ class UsersControllerTest {
     }
 
     @Test
-    fun testUpdateNoUser() = runBlocking {
-        val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
-        val call = mockk<ApplicationCall>()
-        coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns null
-        val controller = UsersController(
-            getAssociationForCallUseCase, getUserForCallUseCase,
-            mockk(), mockk(), mockk(), mockk()
-        )
-        val exception = assertThrows<ControllerException> {
-            controller.update(call, targetUser.id, UpdateUserPayload(null, null, null))
-        }
-        assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals("auth_invalid_credentials", exception.key)
-    }
-
-    @Test
     fun testUpdateNotFound() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_UPDATE inAssociation association) } returns true
         coEvery { getUserUseCase(targetUser.id) } returns null
         val controller = UsersController(
             getAssociationForCallUseCase,
-            getUserForCallUseCase,
+            requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
             getUserUseCase,
@@ -429,17 +377,17 @@ class UsersControllerTest {
     @Test
     fun testUpdateNotInAssociation() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_UPDATE inAssociation association) } returns true
         coEvery { getUserUseCase(targetUser2.id) } returns targetUser2
         val controller = UsersController(
             getAssociationForCallUseCase,
-            getUserForCallUseCase,
+            requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
             getUserUseCase,
@@ -455,15 +403,15 @@ class UsersControllerTest {
     @Test
     fun testUpdateForbidden() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val call = mockk<ApplicationCall>()
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_UPDATE inAssociation association) } returns false
         val controller = UsersController(
             getAssociationForCallUseCase,
-            getUserForCallUseCase,
+            requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
             mockk(),
@@ -479,7 +427,7 @@ class UsersControllerTest {
     @Test
     fun testUpdateForbiddenButMe() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val updateUserUseCase = mockk<IUpdateModelSuspendUseCase<User, String, UpdateUserPayload>>()
@@ -492,13 +440,13 @@ class UsersControllerTest {
             "new firstname", "new lastname", null
         )
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns targetUser
+        coEvery { requireUserForCallUseCase(call) } returns targetUser
         coEvery { checkPermissionUseCase(targetUser, Permission.USERS_UPDATE inAssociation association) } returns false
         coEvery { getUserUseCase(targetUser.id) } returns targetUser
         coEvery { updateUserUseCase(targetUser.id, payload) } returns updatedUser
         val controller = UsersController(
             getAssociationForCallUseCase,
-            getUserForCallUseCase,
+            requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
             getUserUseCase,
@@ -510,20 +458,20 @@ class UsersControllerTest {
     @Test
     fun testUpdateInternalError() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getUserUseCase = mockk<IGetModelSuspendUseCase<User, String>>()
         val updateUserUseCase = mockk<IUpdateModelSuspendUseCase<User, String, UpdateUserPayload>>()
         val call = mockk<ApplicationCall>()
         val payload = UpdateUserPayload(null, null, null)
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_UPDATE inAssociation association) } returns true
         coEvery { getUserUseCase(targetUser.id) } returns targetUser
         coEvery { updateUserUseCase(targetUser.id, payload) } returns null
         val controller = UsersController(
             getAssociationForCallUseCase,
-            getUserForCallUseCase,
+            requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
             getUserUseCase,

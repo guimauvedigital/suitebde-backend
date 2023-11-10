@@ -8,28 +8,21 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateDomainInAssociationPayload
 import me.nathanfallet.suitebde.models.associations.DomainInAssociation
 import me.nathanfallet.suitebde.models.roles.Permission
-import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.associations.IGetDomainsInAssociationsUseCase
-import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
+import me.nathanfallet.suitebde.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class DomainsInAssociationsController(
-    private val getUserForCallUseCase: IGetUserForCallUseCase,
+    private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
     private val getDomainsInAssociationsUseCase: IGetDomainsInAssociationsUseCase,
     private val getDomainUseCase: IGetChildModelSuspendUseCase<DomainInAssociation, String, String>,
     private val createDomainUseCase: ICreateChildModelSuspendUseCase<DomainInAssociation, CreateDomainInAssociationPayload, String>,
     private val deleteDomainUseCase: IDeleteChildModelSuspendUseCase<DomainInAssociation, String, String>,
 ) : IChildModelController<DomainInAssociation, String, CreateDomainInAssociationPayload, Unit, Association, String> {
-
-    private suspend fun requireUser(call: ApplicationCall): User {
-        return getUserForCallUseCase(call) ?: throw ControllerException(
-            HttpStatusCode.Unauthorized, "auth_invalid_credentials"
-        )
-    }
 
     override suspend fun getAll(call: ApplicationCall, parent: Association): List<DomainInAssociation> {
         return getDomainsInAssociationsUseCase(parent.id)
@@ -46,7 +39,7 @@ class DomainsInAssociationsController(
         parent: Association,
         payload: CreateDomainInAssociationPayload
     ): DomainInAssociation {
-        requireUser(call).takeIf {
+        requireUserForCallUseCase(call).takeIf {
             checkPermissionUseCase(it, Permission.DOMAINS_CREATE inAssociation parent)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "domains_update_not_allowed"
@@ -66,7 +59,7 @@ class DomainsInAssociationsController(
     }
 
     override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {
-        requireUser(call).takeIf {
+        requireUserForCallUseCase(call).takeIf {
             checkPermissionUseCase(it, Permission.DOMAINS_DELETE inAssociation parent)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "domains_delete_not_allowed"

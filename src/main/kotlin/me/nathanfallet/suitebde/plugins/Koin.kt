@@ -133,6 +133,7 @@ fun Application.configureKoin() {
 
             // Users
             single<IGetUserForCallUseCase> { GetUserForCallUseCase(get(), get(named<User>())) }
+            single<IRequireUserForCallUseCase> { RequireUserForCallUseCase(get()) }
             single<IGetUsersInAssociationUseCase> { GetUsersInAssociationUseCase(get()) }
             single<IGetModelSuspendUseCase<User, String>>(named<User>()) {
                 GetModelFromRepositorySuspendUseCase(get<IUsersRepository>())
