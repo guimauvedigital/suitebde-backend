@@ -2,7 +2,10 @@ package me.nathanfallet.suitebde.database.associations
 
 import kotlinx.datetime.*
 import me.nathanfallet.suitebde.database.Database
-import me.nathanfallet.suitebde.models.associations.*
+import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.associations.CodeInEmail
+import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
+import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import org.jetbrains.exposed.sql.*
 
@@ -93,31 +96,6 @@ class DatabaseAssociationRepository(
                 .select { DomainsInAssociations.domain eq domain }
                 .map(Associations::toAssociation)
                 .singleOrNull()
-        }
-    }
-
-    override suspend fun createDomain(domain: String, associationId: String): DomainInAssociation? {
-        return database.dbQuery {
-            DomainsInAssociations.insert {
-                it[this.domain] = domain
-                it[this.associationId] = associationId
-            }.resultedValues?.map(DomainsInAssociations::toDomainInAssociation)?.singleOrNull()
-        }
-    }
-
-    override suspend fun deleteDomain(domain: String) {
-        database.dbQuery {
-            DomainsInAssociations.deleteWhere {
-                Op.build { DomainsInAssociations.domain eq domain }
-            }
-        }
-    }
-
-    override suspend fun getDomains(associationId: String): List<DomainInAssociation> {
-        return database.dbQuery {
-            DomainsInAssociations
-                .select { DomainsInAssociations.associationId eq associationId }
-                .map(DomainsInAssociations::toDomainInAssociation)
         }
     }
 

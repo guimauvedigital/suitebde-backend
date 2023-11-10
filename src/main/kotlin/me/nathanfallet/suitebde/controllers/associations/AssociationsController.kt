@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.controllers.associations
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import me.nathanfallet.ktor.routers.controllers.base.IModelController
 import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
@@ -9,18 +10,18 @@ import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import me.nathanfallet.suitebde.models.roles.AdminPermission
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationsUseCase
-import me.nathanfallet.suitebde.usecases.roles.ICheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
+import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
-class AssociationController(
+class AssociationsController(
     private val getAssociationsUseCase: IGetAssociationsUseCase,
     private val getUserForCallUseCase: IGetUserForCallUseCase,
-    private val checkPermissionUseCase: ICheckPermissionUseCase,
+    private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
     private val getAssociationUseCase: IGetModelSuspendUseCase<Association, String>,
     private val updateAssociationUseCase: IUpdateModelSuspendUseCase<Association, String, UpdateAssociationPayload>
-) : IAssociationController {
+) : IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload> {
 
     private suspend fun requireUser(call: ApplicationCall): User {
         return getUserForCallUseCase(call) ?: throw ControllerException(

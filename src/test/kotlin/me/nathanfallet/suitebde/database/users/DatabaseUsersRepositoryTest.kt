@@ -118,6 +118,19 @@ class DatabaseUsersRepositoryTest {
     }
 
     @Test
+    fun getUsersInAssociationNotInAssociation() = runBlocking {
+        val database = Database(protocol = "h2", name = "getUsersInAssociationNotInAssociation")
+        val repository = DatabaseUsersRepository(database)
+        repository.create(
+            CreateUserPayload(
+                "associationId", "email", "password",
+                "firstName", "lastName", false
+            )
+        ) ?: fail("Unable to create user")
+        assertEquals(listOf(), repository.getInAssociation("otherAssociationId"))
+    }
+
+    @Test
     fun updateUser() = runBlocking {
         val database = Database(protocol = "h2", name = "updateUser")
         val repository = DatabaseUsersRepository(database)
@@ -149,6 +162,40 @@ class DatabaseUsersRepositoryTest {
         assertEquals(userFromDatabase?.firstName, updatedUser.firstName)
         assertEquals(userFromDatabase?.lastName, updatedUser.lastName)
         assertEquals(userFromDatabase?.superuser, updatedUser.superuser)
+    }
+
+    @Test
+    fun updateUserNotExists() = runBlocking {
+        val database = Database(protocol = "h2", name = "updateUserNotExists")
+        val repository = DatabaseUsersRepository(database)
+        val payload = UpdateUserPayload("firstName2", "lastName2", "password2")
+        assertEquals(false, repository.update("userId", payload))
+    }
+
+    @Test
+    fun deleteUser() = runBlocking {
+        val database = Database(protocol = "h2", name = "deleteUser")
+        val repository = DatabaseUsersRepository(database)
+        val user = repository.create(
+            CreateUserPayload(
+                "associationId", "email", "password",
+                "firstName", "lastName", false
+            )
+        ) ?: fail("Unable to create user")
+        assertEquals(true, repository.delete(user.id))
+        val count = database.dbQuery {
+            Users
+                .selectAll()
+                .count()
+        }
+        assertEquals(0, count)
+    }
+
+    @Test
+    fun deleteUserNotExists() = runBlocking {
+        val database = Database(protocol = "h2", name = "deleteUserNotExists")
+        val repository = DatabaseUsersRepository(database)
+        assertEquals(false, repository.delete("userId"))
     }
 
 }

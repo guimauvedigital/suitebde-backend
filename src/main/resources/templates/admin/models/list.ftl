@@ -3,7 +3,7 @@
     <div class="container-fluid py-4">
         <div class="d-sm-flex justify-content-between">
             <div>
-                <a href="/admin/${route}/create" class="btn btn-icon btn-outline-primary" id="admin_create">
+                <a href="${route}/create" class="btn btn-icon btn-outline-primary" id="admin_create">
                     <@t key="admin_" + route + "_create" />
                 </a>
             </div>
@@ -50,7 +50,7 @@
         <#switch key.type>
             <#case "id">
                 <span class="my-2 text-xs">
-                    <a href="/admin/${route}/${item[key.key]}">${item[key.key]}</a>
+                    <a href="${route}/${item[key.key]}">${item[key.key]}</a>
                 </span>
                 <#break>
             <#case "password">

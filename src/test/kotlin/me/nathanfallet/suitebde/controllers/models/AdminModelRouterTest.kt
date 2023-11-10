@@ -17,11 +17,12 @@ import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.plugins.*
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
+import me.nathanfallet.usecases.models.UnitModel
 import org.jsoup.Jsoup
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class ModelRouterTest {
+class AdminModelRouterTest {
 
     private val mock = ModelRouterTestModel("id", "string")
 
@@ -49,8 +50,8 @@ class ModelRouterTest {
         controller: IModelController<ModelRouterTestModel, String, ModelRouterTestModel, ModelRouterTestModel>,
         translateUseCase: ITranslateUseCase,
         getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase
-    ): ModelRouter<ModelRouterTestModel, String, ModelRouterTestModel, ModelRouterTestModel> {
-        return ModelRouter(
+    ): AdminModelRouter<ModelRouterTestModel, String, ModelRouterTestModel, ModelRouterTestModel> {
+        return AdminModelRouter(
             ModelRouterTestModel::class,
             ModelRouterTestModel::class,
             ModelRouterTestModel::class,
@@ -68,11 +69,11 @@ class ModelRouterTest {
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
-        coEvery { controller.getAll(any()) } returns listOf(mock)
+        coEvery { controller.getAll(any(), UnitModel) } returns listOf(mock)
         coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
-            router.createAdminGetRoute(this)
+            router.createRoutes(this)
         }
         val response = client.get("/admin/modelroutertestmodels")
         assertEquals(HttpStatusCode.OK, response.status)
@@ -91,13 +92,13 @@ class ModelRouterTest {
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
         coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
-        coEvery { controller.getAll(any()) } throws ControllerException(
+        coEvery { controller.getAll(any(), UnitModel) } throws ControllerException(
             HttpStatusCode.Forbidden,
             "error_mock"
         )
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
-            router.createAdminGetRoute(this)
+            router.createRoutes(this)
         }
         val response = client.get("/admin/modelroutertestmodels")
         assertEquals(HttpStatusCode.Forbidden, response.status)
@@ -114,13 +115,13 @@ class ModelRouterTest {
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
         coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
-        coEvery { controller.getAll(any()) } throws ControllerException(
+        coEvery { controller.getAll(any(), UnitModel) } throws ControllerException(
             HttpStatusCode.Unauthorized,
             "error_mock"
         )
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
-            router.createAdminGetRoute(this)
+            router.createRoutes(this)
         }
         val response = client.get("/admin/modelroutertestmodels")
         assertEquals(HttpStatusCode.Found, response.status)
@@ -134,11 +135,11 @@ class ModelRouterTest {
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
-        coEvery { controller.get(any(), "id") } returns mock
+        coEvery { controller.get(any(), UnitModel, "id") } returns mock
         coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
-            router.createAdminGetIdRoute(this)
+            router.createRoutes(this)
         }
         val response = client.get("/admin/modelroutertestmodels/id")
         assertEquals(HttpStatusCode.OK, response.status)
@@ -156,14 +157,14 @@ class ModelRouterTest {
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = createRouter(controller, translateUseCase, getAdminMenuForCallUseCase)
-        coEvery { controller.get(any(), "id") } throws ControllerException(
+        coEvery { controller.get(any(), UnitModel, "id") } throws ControllerException(
             HttpStatusCode.Forbidden,
             "error_mock"
         )
         coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf(menuItem)
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
-            router.createAdminGetIdRoute(this)
+            router.createRoutes(this)
         }
         val response = client.get("/admin/modelroutertestmodels/id")
         assertEquals(HttpStatusCode.Forbidden, response.status)
@@ -177,9 +178,9 @@ class ModelRouterTest {
         val controller =
             mockk<IModelController<ModelRouterTestModel, String, ModelRouterTestModel, ModelRouterTestModel>>()
         val router = createRouter(controller, mockk(), mockk())
-        coEvery { controller.update(any(), "id", mock) } returns mock
+        coEvery { controller.update(any(), UnitModel, "id", mock) } returns mock
         routing {
-            router.createAdminPostIdRoute(this)
+            router.createRoutes(this)
         }
         val response = client.post("/admin/modelroutertestmodels/id") {
             contentType(ContentType.Application.FormUrlEncoded)

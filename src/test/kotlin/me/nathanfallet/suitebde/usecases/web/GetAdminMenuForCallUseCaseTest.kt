@@ -14,8 +14,8 @@ import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
-import me.nathanfallet.suitebde.usecases.roles.ICheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
+import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import org.junit.jupiter.api.assertThrows
 import java.util.*
 import kotlin.test.Test
@@ -36,7 +36,7 @@ class GetAdminMenuForCallUseCaseTest {
     fun invoke() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
-        val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
+        val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val call = mockk<ApplicationCall>()
         val useCase = GetAdminMenuForCallUseCase(
@@ -71,7 +71,7 @@ class GetAdminMenuForCallUseCaseTest {
     fun invokeOnlyDashboard() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
-        val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
+        val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val call = mockk<ApplicationCall>()
         val useCase = GetAdminMenuForCallUseCase(
@@ -100,7 +100,7 @@ class GetAdminMenuForCallUseCaseTest {
     fun invokeNotAdmin() = runBlocking {
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
-        val checkPermissionUseCase = mockk<ICheckPermissionUseCase>()
+        val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val call = mockk<ApplicationCall>()
         val useCase = GetAdminMenuForCallUseCase(
             getAssociationForCallUseCase, getUserForCallUseCase,

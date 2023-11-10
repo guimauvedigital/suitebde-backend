@@ -114,6 +114,29 @@ class AuthRouterTest {
     }
 
     @Test
+    fun testPostLoginRouteInvalidBody() = testApplication {
+        val client = installApp(this)
+        val translateUseCase = mockk<ITranslateUseCase>()
+        val router = AuthRouter(mockk(), translateUseCase)
+        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
+        routing {
+            router.createPostLoginRoute(this)
+        }
+        val response = client.post("/") {
+            contentType(ContentType.Application.FormUrlEncoded)
+            setBody(
+                listOf(
+                    "email" to "email"
+                ).formUrlEncode()
+            )
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        val document = Jsoup.parse(response.bodyAsText())
+        assertEquals(true, document.getElementById("auth_login_title")?.`is`("h1"))
+        assertEquals("t:error_body_invalid", document.getElementById("alert-error")?.text())
+    }
+
+    @Test
     fun testGetRegisterRoute() = testApplication {
         val client = installApp(this)
         val router = AuthRouter(mockk<IAuthController>(), mockk())
@@ -311,6 +334,33 @@ class AuthRouterTest {
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("auth_register_title")?.`is`("h1"))
         assertEquals("t:auth_code_invalid", document.getElementById("alert-error")?.text())
+    }
+
+    @Test
+    fun testPostRegisterCodeRouteInvalidBody() = testApplication {
+        val client = installApp(this)
+        val controller = mockk<IAuthController>()
+        val translateUseCase = mockk<ITranslateUseCase>()
+        val router = AuthRouter(controller, translateUseCase)
+        coEvery { controller.register("code", any()) } returns RegisterWithAssociationPayload(
+            "email", "associationId"
+        )
+        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
+        routing {
+            router.createPostRegisterCodeRoute(this)
+        }
+        val response = client.post("/code") {
+            contentType(ContentType.Application.FormUrlEncoded)
+            setBody(
+                listOf(
+                    "password" to "password",
+                ).formUrlEncode()
+            )
+        }
+        assertEquals(HttpStatusCode.BadRequest, response.status)
+        val document = Jsoup.parse(response.bodyAsText())
+        assertEquals(true, document.getElementById("auth_register_title")?.`is`("h1"))
+        assertEquals("t:error_body_invalid", document.getElementById("alert-error")?.text())
     }
 
     @Test

@@ -7,14 +7,14 @@ import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
-import me.nathanfallet.suitebde.usecases.roles.ICheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
+import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import java.util.*
 
 class GetAdminMenuForCallUseCase(
     private val getAssociationForCallUseCase: IGetAssociationForCallUseCase,
     private val getUserForCallUseCase: IGetUserForCallUseCase,
-    private val checkPermissionUseCase: ICheckPermissionUseCase,
+    private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
     private val translateUseCase: ITranslateUseCase
 ) : IGetAdminMenuForCallUseCase {
 

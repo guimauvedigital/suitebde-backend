@@ -4,11 +4,12 @@ import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
 import me.nathanfallet.suitebde.usecases.auth.IHashPasswordUseCase
+import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
 
 class UpdateUserUseCase(
     private val repository: IUsersRepository,
     private val hashPasswordUseCase: IHashPasswordUseCase
-) : IUpdateUserUseCase {
+) : IUpdateModelSuspendUseCase<User, String, UpdateUserPayload> {
 
     override suspend fun invoke(input1: String, input2: UpdateUserPayload): User? {
         val updatedUser = input2.password?.let {

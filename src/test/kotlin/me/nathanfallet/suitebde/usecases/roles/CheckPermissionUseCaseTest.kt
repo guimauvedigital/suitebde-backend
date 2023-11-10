@@ -3,6 +3,7 @@ package me.nathanfallet.suitebde.usecases.roles
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.roles.AdminPermission
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.User
 import kotlin.test.Test
@@ -41,6 +42,20 @@ class CheckPermissionUseCaseTest {
         val useCase = CheckPermissionUseCase()
         val user = User("id", "associationId", "email", "password", "firstName", "lastName", false)
         assertEquals(false, useCase(user, Permission.USERS_VIEW inAssociation association))
+    }
+
+    @Test
+    fun invokeAdmin() = runBlocking {
+        val useCase = CheckPermissionUseCase()
+        val user = User("id", "admin", "email", "password", "firstName", "lastName", false)
+        assertEquals(true, useCase(user, AdminPermission))
+    }
+
+    @Test
+    fun invokeAdminNotInAssociation() = runBlocking {
+        val useCase = CheckPermissionUseCase()
+        val user = User("id", "associationId", "email", "password", "firstName", "lastName", false)
+        assertEquals(false, useCase(user, AdminPermission))
     }
 
 }

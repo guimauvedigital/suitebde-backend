@@ -1,7 +1,8 @@
 package me.nathanfallet.suitebde.usecases.users
 
-import me.nathanfallet.suitebde.models.users.CreateUserPayload
+import io.ktor.server.application.*
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.usecases.base.ISuspendUseCase
 
-interface ICreateUserUseCase : ISuspendUseCase<CreateUserPayload, User?>
+interface IRequireUserForCallUseCase : ISuspendUseCase<ApplicationCall, User>
+

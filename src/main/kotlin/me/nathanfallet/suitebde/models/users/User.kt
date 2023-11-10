@@ -3,6 +3,7 @@ package me.nathanfallet.suitebde.models.users
 import kotlinx.serialization.Serializable
 import me.nathanfallet.usecases.models.IModel
 import me.nathanfallet.usecases.models.annotations.ModelProperty
+import me.nathanfallet.usecases.permissions.IPermittee
 
 @Serializable
 data class User(
@@ -17,4 +18,4 @@ data class User(
     @ModelProperty("string", "6")
     val lastName: String,
     val superuser: Boolean
-) : IModel<String, CreateUserPayload, UpdateUserPayload>
+) : IModel<String, CreateUserPayload, UpdateUserPayload>, IPermittee
