@@ -191,27 +191,27 @@
         <dependency>
             <groupId>me.nathanfallet.usecases</groupId>
             <artifactId>usecases-jvm</artifactId>
-            <version>1.2.0</version>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
-            <groupId>me.nathanfallet.ktor.routers</groupId>
-            <artifactId>ktor-routers</artifactId>
-            <version>1.2.0</version>
+            <groupId>me.nathanfallet.ktorx</groupId>
+            <artifactId>ktor-routers-jvm</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>me.nathanfallet.ktorx</groupId>
+            <artifactId>ktor-sentry-jvm</artifactId>
+            <version>1.2.1</version>
+        </dependency>
+        <dependency>
+            <groupId>me.nathanfallet.ktorx</groupId>
+            <artifactId>ktor-i18n-freemarker-jvm</artifactId>
+            <version>1.2.1</version>
         </dependency>
         <dependency>
             <groupId>me.nathanfallet.cloudflare</groupId>
             <artifactId>cloudflare-api-client-jvm</artifactId>
             <version>4.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>me.nathanfallet.ktor.sentry</groupId>
-            <artifactId>ktor-sentry</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-        <dependency>
-            <groupId>me.nathanfallet.ktor.freemarker.i18n</groupId>
-            <artifactId>ktor-freemarker-i18n</artifactId>
-            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>io.sentry</groupId>
