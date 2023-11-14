@@ -5,6 +5,8 @@ import me.nathanfallet.suitebde.database.associations.Associations
 import me.nathanfallet.suitebde.database.associations.CodesInEmails
 import me.nathanfallet.suitebde.database.associations.DomainsInAssociations
 import me.nathanfallet.suitebde.database.users.Users
+import me.nathanfallet.suitebde.database.web.WebMenus
+import me.nathanfallet.suitebde.database.web.WebPages
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -40,6 +42,8 @@ class Database(
             SchemaUtils.create(DomainsInAssociations)
             SchemaUtils.create(CodesInEmails)
             SchemaUtils.create(Users)
+            SchemaUtils.create(WebPages)
+            SchemaUtils.create(WebMenus)
         }
     }
 
