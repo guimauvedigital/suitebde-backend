@@ -17,6 +17,7 @@ import me.nathanfallet.suitebde.usecases.associations.IDeleteCodeInEmailUseCase
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.associations.IGetCodeInEmailUseCase
 import me.nathanfallet.suitebde.usecases.auth.ILoginUseCase
+import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateModelSuspendUseCase
 import java.util.*
 
@@ -27,7 +28,7 @@ class AuthController(
     private val createCodeInEmailUseCase: ICreateCodeInEmailUseCase,
     private val getCodeInEmailUseCase: IGetCodeInEmailUseCase,
     private val deleteCodeInEmailUseCase: IDeleteCodeInEmailUseCase,
-    private val createUserUseCase: ICreateModelSuspendUseCase<User, CreateUserPayload>,
+    private val createUserUseCase: ICreateChildModelSuspendUseCase<User, CreateUserPayload, String>,
     private val createAssociationUseCase: ICreateModelSuspendUseCase<Association, CreateAssociationPayload>,
     private val sendEmailUseCase: ISendEmailUseCase,
     private val translateUseCase: ITranslateUseCase
@@ -66,13 +67,13 @@ class AuthController(
     override suspend fun register(payload: RegisterCodePayload, call: ApplicationCall) {
         val user = createUserUseCase(
             CreateUserPayload(
-                associationId = payload.associationId,
                 email = payload.email,
                 password = payload.password,
                 firstName = payload.firstName,
                 lastName = payload.lastName,
                 superuser = false,
-            )
+            ),
+            payload.associationId
         ) ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
         setSessionForCallUseCase(call, SessionPayload(user.id))
         deleteCodeInEmailUseCase(payload.code)

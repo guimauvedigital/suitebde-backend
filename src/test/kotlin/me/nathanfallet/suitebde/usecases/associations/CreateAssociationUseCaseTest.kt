@@ -10,7 +10,7 @@ import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
-import me.nathanfallet.usecases.models.create.ICreateModelSuspendUseCase
+import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -19,7 +19,7 @@ class CreateAssociationUseCaseTest {
     @Test
     fun invoke() = runBlocking {
         val associationRepository = mockk<IAssociationsRepository>()
-        val createUserUseCase = mockk<ICreateModelSuspendUseCase<User, CreateUserPayload>>()
+        val createUserUseCase = mockk<ICreateChildModelSuspendUseCase<User, CreateUserPayload, String>>()
         val now = Clock.System.now()
         val association = Association(
             "associationId", "name", "school", "city",
@@ -27,7 +27,7 @@ class CreateAssociationUseCaseTest {
         )
         val useCase = CreateAssociationUseCase(associationRepository, createUserUseCase)
         coEvery { associationRepository.create(any()) } returns association
-        coEvery { createUserUseCase(any()) } returns User(
+        coEvery { createUserUseCase(any(), "associationId") } returns User(
             "id", "associationId", "email", null,
             "firstName", "lastName", true
         )
@@ -47,9 +47,10 @@ class CreateAssociationUseCaseTest {
             )
             createUserUseCase(
                 CreateUserPayload(
-                    "associationId", "email", "password",
+                    "email", "password",
                     "firstName", "lastName", true
-                )
+                ),
+                "associationId"
             )
         }
     }

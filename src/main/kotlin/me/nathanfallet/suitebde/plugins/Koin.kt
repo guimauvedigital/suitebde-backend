@@ -48,6 +48,7 @@ import me.nathanfallet.usecases.models.get.GetChildModelFromRepositorySuspendUse
 import me.nathanfallet.usecases.models.get.GetModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
+import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.UpdateModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
@@ -154,19 +155,20 @@ fun Application.configureKoin() {
             single<ILoginUseCase> { LoginUseCase(get(), get()) }
 
             // Users
-            single<IGetUserForCallUseCase> { GetUserForCallUseCase(get(), get(named<User>())) }
+            single<IGetUserUseCase> { GetUserUseCase(get()) }
+            single<IGetUserForCallUseCase> { GetUserForCallUseCase(get(), get()) }
             single<IRequireUserForCallUseCase> { RequireUserForCallUseCase(get()) }
             single<IGetUsersInAssociationUseCase> { GetUsersInAssociationUseCase(get()) }
-            single<IGetModelSuspendUseCase<User, String>>(named<User>()) {
-                GetModelFromRepositorySuspendUseCase(get<IUsersRepository>())
+            single<IGetChildModelSuspendUseCase<User, String, String>>(named<User>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<IUsersRepository>())
             }
-            single<ICreateModelSuspendUseCase<User, CreateUserPayload>>(named<User>()) {
+            single<ICreateChildModelSuspendUseCase<User, CreateUserPayload, String>>(named<User>()) {
                 CreateUserUseCase(
                     get(),
                     get()
                 )
             }
-            single<IUpdateModelSuspendUseCase<User, String, UpdateUserPayload>>(named<User>()) {
+            single<IUpdateChildModelSuspendUseCase<User, String, UpdateUserPayload, String>>(named<User>()) {
                 UpdateUserUseCase(
                     get(),
                     get()
@@ -226,9 +228,8 @@ fun Application.configureKoin() {
             }
 
             // Users
-            single<IModelController<User, String, CreateUserPayload, UpdateUserPayload>>(named<User>()) {
+            single<IChildModelController<User, String, CreateUserPayload, UpdateUserPayload, Association, String>>(named<User>()) {
                 UsersController(
-                    get(),
                     get(),
                     get(),
                     get(),
@@ -251,7 +252,7 @@ fun Application.configureKoin() {
             single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get(named<Association>())) }
             single { AssociationsRouter(get(named<Association>()), get(), get()) }
             single { DomainsInAssociationsRouter(get(named<DomainInAssociation>()), get(), get(), get()) }
-            single { UsersRouter(get(named<User>()), get(), get()) }
+            single { UsersRouter(get(named<User>()), get(), get(), get()) }
             single { AuthRouter(get(), get()) }
             single { WebRouter(get()) }
             single { WebPagesRouter(get(named<WebPage>()), get(), get(), get()) }

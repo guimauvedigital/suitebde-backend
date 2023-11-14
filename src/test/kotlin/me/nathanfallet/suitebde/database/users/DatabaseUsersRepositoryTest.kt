@@ -17,9 +17,10 @@ class DatabaseUsersRepositoryTest {
         val repository = DatabaseUsersRepository(database)
         val user = repository.create(
             CreateUserPayload(
-                "associationId", "email", "password",
+                "email", "password",
                 "firstName", "lastName", false
-            )
+            ),
+            "associationId"
         )
         val userFromDatabase = database.dbQuery {
             Users
@@ -42,9 +43,45 @@ class DatabaseUsersRepositoryTest {
         val repository = DatabaseUsersRepository(database)
         val user = repository.create(
             CreateUserPayload(
-                "associationId", "email", "password",
+                "email", "password",
                 "firstName", "lastName", false
-            )
+            ),
+            "associationId"
+        ) ?: fail("Unable to create user")
+        val result = repository.get(user.id, "associationId")
+        assertEquals(user.id, result?.id)
+        assertEquals(user.associationId, result?.associationId)
+        assertEquals(user.email, result?.email)
+        assertEquals(null, result?.password)
+        assertEquals(user.firstName, result?.firstName)
+        assertEquals(user.lastName, result?.lastName)
+        assertEquals(user.superuser, result?.superuser)
+    }
+
+    @Test
+    fun getUserNotInAssociation() = runBlocking {
+        val database = Database(protocol = "h2", name = "getUserNotInAssociation")
+        val repository = DatabaseUsersRepository(database)
+        val user = repository.create(
+            CreateUserPayload(
+                "email", "password",
+                "firstName", "lastName", false
+            ),
+            "associationId"
+        ) ?: fail("Unable to create user")
+        assertEquals(null, repository.get(user.id, "otherAssociationId"))
+    }
+
+    @Test
+    fun getUserWithoutAssociation() = runBlocking {
+        val database = Database(protocol = "h2", name = "getUserWithoutAssociation")
+        val repository = DatabaseUsersRepository(database)
+        val user = repository.create(
+            CreateUserPayload(
+                "email", "password",
+                "firstName", "lastName", false
+            ),
+            "associationId"
         ) ?: fail("Unable to create user")
         val result = repository.get(user.id)
         assertEquals(user.id, result?.id)
@@ -62,9 +99,10 @@ class DatabaseUsersRepositoryTest {
         val repository = DatabaseUsersRepository(database)
         val user = repository.create(
             CreateUserPayload(
-                "associationId", "email", "password",
+                "email", "password",
                 "firstName", "lastName", false
-            )
+            ),
+            "associationId"
         ) ?: fail("Unable to create user")
         val result = repository.getForEmail(user.email, false)
         assertEquals(user.id, result?.id)
@@ -82,9 +120,10 @@ class DatabaseUsersRepositoryTest {
         val repository = DatabaseUsersRepository(database)
         val user = repository.create(
             CreateUserPayload(
-                "associationId", "email", "password",
+                "email", "password",
                 "firstName", "lastName", false
-            )
+            ),
+            "associationId"
         ) ?: fail("Unable to create user")
         val result = repository.getForEmail(user.email, true)
         assertEquals(user.id, result?.id)
@@ -102,9 +141,10 @@ class DatabaseUsersRepositoryTest {
         val repository = DatabaseUsersRepository(database)
         val user = repository.create(
             CreateUserPayload(
-                "associationId", "email", "password",
+                "email", "password",
                 "firstName", "lastName", false
-            )
+            ),
+            "associationId"
         ) ?: fail("Unable to create user")
         val result = repository.getInAssociation(user.associationId)
         assertEquals(1, result.size)
@@ -123,9 +163,10 @@ class DatabaseUsersRepositoryTest {
         val repository = DatabaseUsersRepository(database)
         repository.create(
             CreateUserPayload(
-                "associationId", "email", "password",
+                "email", "password",
                 "firstName", "lastName", false
-            )
+            ),
+            "associationId"
         ) ?: fail("Unable to create user")
         assertEquals(listOf(), repository.getInAssociation("otherAssociationId"))
     }
@@ -136,9 +177,10 @@ class DatabaseUsersRepositoryTest {
         val repository = DatabaseUsersRepository(database)
         val user = repository.create(
             CreateUserPayload(
-                "associationId", "email", "password",
+                "email", "password",
                 "firstName", "lastName", false
-            )
+            ),
+            "associationId"
         ) ?: fail("Unable to create user")
         val updatedUser = user.copy(
             password = "password2",
@@ -146,7 +188,7 @@ class DatabaseUsersRepositoryTest {
             lastName = "lastName2"
         )
         val payload = UpdateUserPayload("firstName2", "lastName2", "password2")
-        assertEquals(true, repository.update(user.id, payload))
+        assertEquals(true, repository.update(user.id, payload, "associationId"))
         val userFromDatabase = database.dbQuery {
             Users
                 .selectAll()
@@ -169,7 +211,7 @@ class DatabaseUsersRepositoryTest {
         val database = Database(protocol = "h2", name = "updateUserNotExists")
         val repository = DatabaseUsersRepository(database)
         val payload = UpdateUserPayload("firstName2", "lastName2", "password2")
-        assertEquals(false, repository.update("userId", payload))
+        assertEquals(false, repository.update("userId", payload, "associationId"))
     }
 
     @Test
@@ -178,11 +220,12 @@ class DatabaseUsersRepositoryTest {
         val repository = DatabaseUsersRepository(database)
         val user = repository.create(
             CreateUserPayload(
-                "associationId", "email", "password",
+                "email", "password",
                 "firstName", "lastName", false
-            )
+            ),
+            "associationId"
         ) ?: fail("Unable to create user")
-        assertEquals(true, repository.delete(user.id))
+        assertEquals(true, repository.delete(user.id, "associationId"))
         val count = database.dbQuery {
             Users
                 .selectAll()
@@ -195,7 +238,7 @@ class DatabaseUsersRepositoryTest {
     fun deleteUserNotExists() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteUserNotExists")
         val repository = DatabaseUsersRepository(database)
-        assertEquals(false, repository.delete("userId"))
+        assertEquals(false, repository.delete("userId", "associationId"))
     }
 
 }
