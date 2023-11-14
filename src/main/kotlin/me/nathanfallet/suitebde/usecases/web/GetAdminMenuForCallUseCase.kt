@@ -2,7 +2,7 @@ package me.nathanfallet.suitebde.usecases.web
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase

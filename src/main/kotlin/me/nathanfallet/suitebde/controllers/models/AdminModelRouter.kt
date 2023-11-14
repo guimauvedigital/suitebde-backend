@@ -1,6 +1,6 @@
 package me.nathanfallet.suitebde.controllers.models
 
-import me.nathanfallet.ktor.routers.controllers.base.IModelController
+import me.nathanfallet.ktorx.controllers.base.IModelController
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.models.IModel

@@ -2,8 +2,8 @@ package me.nathanfallet.suitebde.controllers.users
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import me.nathanfallet.ktor.routers.controllers.base.IModelController
-import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.controllers.base.IModelController
+import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.CreateUserPayload

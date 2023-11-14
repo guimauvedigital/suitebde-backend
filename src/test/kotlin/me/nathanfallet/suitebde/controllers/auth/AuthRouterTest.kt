@@ -12,7 +12,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.auth.*
 import me.nathanfallet.suitebde.plugins.*
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase

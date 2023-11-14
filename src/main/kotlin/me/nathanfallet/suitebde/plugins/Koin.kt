@@ -5,12 +5,9 @@ import com.github.aymanizz.ktori18n.i18n
 import io.ktor.server.application.*
 import me.nathanfallet.cloudflare.client.CloudflareClient
 import me.nathanfallet.cloudflare.client.ICloudflareClient
-import me.nathanfallet.ktor.routers.controllers.base.IChildModelController
-import me.nathanfallet.ktor.routers.controllers.base.IModelController
-import me.nathanfallet.suitebde.controllers.associations.AssociationsController
-import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
-import me.nathanfallet.suitebde.controllers.associations.DomainsInAssociationsController
-import me.nathanfallet.suitebde.controllers.associations.DomainsInAssociationsRouter
+import me.nathanfallet.ktorx.controllers.base.IChildModelController
+import me.nathanfallet.ktorx.controllers.base.IModelController
+import me.nathanfallet.suitebde.controllers.associations.*
 import me.nathanfallet.suitebde.controllers.auth.AuthController
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
 import me.nathanfallet.suitebde.controllers.auth.IAuthController
@@ -119,6 +116,7 @@ fun Application.configureKoin() {
             // Associations
             single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
             single<IGetAssociationForCallUseCase> { GetAssociationForCallUseCase(get()) }
+            single<IRequireAssociationForCallUseCase> { RequireAssociationForCallUseCase(get()) }
             single<IGetModelSuspendUseCase<Association, String>>(named<Association>()) {
                 GetModelFromRepositorySuspendUseCase(get<IAssociationsRepository>())
             }
@@ -250,6 +248,7 @@ fun Application.configureKoin() {
             }
         }
         val routerModule = module {
+            single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get(named<Association>())) }
             single { AssociationsRouter(get(named<Association>()), get(), get()) }
             single { DomainsInAssociationsRouter(get(named<DomainInAssociation>()), get(), get(), get()) }
             single { UsersRouter(get(named<User>()), get(), get()) }

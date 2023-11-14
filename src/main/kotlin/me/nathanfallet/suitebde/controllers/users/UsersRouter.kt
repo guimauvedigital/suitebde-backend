@@ -1,8 +1,8 @@
 package me.nathanfallet.suitebde.controllers.users
 
-import me.nathanfallet.ktor.routers.controllers.base.IModelController
-import me.nathanfallet.ktor.routers.routers.api.APIModelRouter
-import me.nathanfallet.ktor.routers.routers.base.ConcatModelRouter
+import me.nathanfallet.ktorx.controllers.base.IModelController
+import me.nathanfallet.ktorx.routers.api.APIModelRouter
+import me.nathanfallet.ktorx.routers.concat.ConcatModelRouter
 import me.nathanfallet.suitebde.controllers.models.AdminModelRouter
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload

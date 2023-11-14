@@ -8,7 +8,7 @@ import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
-import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository

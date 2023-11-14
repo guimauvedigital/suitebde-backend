@@ -1,8 +1,8 @@
 package me.nathanfallet.suitebde.controllers.associations
 
-import me.nathanfallet.ktor.routers.controllers.base.IModelController
-import me.nathanfallet.ktor.routers.routers.api.APIModelRouter
-import me.nathanfallet.ktor.routers.routers.base.ConcatModelRouter
+import me.nathanfallet.ktorx.controllers.base.IModelController
+import me.nathanfallet.ktorx.routers.api.APIModelRouter
+import me.nathanfallet.ktorx.routers.concat.ConcatModelRouter
 import me.nathanfallet.suitebde.controllers.models.AdminModelRouter
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload

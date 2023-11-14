@@ -11,8 +11,8 @@ import io.ktor.server.testing.*
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import me.nathanfallet.ktor.routers.controllers.base.IModelController
-import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.controllers.base.IModelController
+import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.plugins.*
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase

@@ -2,7 +2,7 @@ package me.nathanfallet.suitebde.controllers.auth
 
 import io.ktor.server.application.*
 import kotlinx.datetime.Instant
-import me.nathanfallet.ktor.routers.controllers.IController
+import me.nathanfallet.ktorx.controllers.IController
 import me.nathanfallet.suitebde.models.auth.*
 import java.util.*
 

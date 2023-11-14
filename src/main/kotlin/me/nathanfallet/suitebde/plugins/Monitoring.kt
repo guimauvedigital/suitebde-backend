@@ -4,7 +4,7 @@ import io.ktor.server.application.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.request.*
 import io.sentry.Sentry
-import me.nathanfallet.ktor.sentry.KtorSentry
+import me.nathanfallet.ktorx.plugins.KtorSentry
 import org.slf4j.event.Level
 
 fun Application.configureMonitoring() {

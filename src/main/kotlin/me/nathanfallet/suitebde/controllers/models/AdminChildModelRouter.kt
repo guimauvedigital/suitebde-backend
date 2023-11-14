@@ -7,9 +7,10 @@ import io.ktor.server.freemarker.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import me.nathanfallet.ktor.routers.controllers.base.IChildModelController
-import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
-import me.nathanfallet.ktor.routers.routers.base.AbstractChildModelRouter
+import me.nathanfallet.ktorx.controllers.base.IChildModelController
+import me.nathanfallet.ktorx.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.routers.IChildModelRouter
+import me.nathanfallet.ktorx.routers.base.AbstractChildModelRouter
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.models.IChildModel
@@ -20,7 +21,7 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
     createPayloadClass: KClass<CreatePayload>,
     updatePayloadClass: KClass<UpdatePayload>,
     controller: IChildModelController<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>,
-    parentRouter: AdminChildModelRouter<ParentModel, ParentId, *, *, *, *>?,
+    parentRouter: IChildModelRouter<ParentModel, ParentId, *, *, *, *>?,
     private val translateUseCase: ITranslateUseCase,
     private val getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     route: String? = null,

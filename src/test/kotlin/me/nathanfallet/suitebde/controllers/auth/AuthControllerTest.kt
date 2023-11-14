@@ -5,7 +5,7 @@ import io.ktor.server.application.*
 import io.mockk.*
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
-import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload

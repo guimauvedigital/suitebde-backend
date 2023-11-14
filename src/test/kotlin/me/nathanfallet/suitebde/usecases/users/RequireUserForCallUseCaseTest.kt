@@ -5,7 +5,7 @@ import io.ktor.server.application.*
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.users.User
 import kotlin.test.Test
 import kotlin.test.assertEquals

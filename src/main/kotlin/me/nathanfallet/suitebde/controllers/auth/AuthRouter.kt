@@ -8,8 +8,8 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import kotlinx.datetime.Clock
-import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
-import me.nathanfallet.ktor.routers.routers.IRouter
+import me.nathanfallet.ktorx.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.routers.IRouter
 import me.nathanfallet.suitebde.models.auth.*
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 
@@ -42,8 +42,8 @@ class AuthRouter(
     fun createGetLoginRoute(root: Route) {
         root.get {
             call.respondTemplate(
-                    "auth/login.ftl",
-                    mapOf("locale" to call.locale)
+                "auth/login.ftl",
+                mapOf("locale" to call.locale)
             )
         }
     }
@@ -68,11 +68,11 @@ class AuthRouter(
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
                 call.respondTemplate(
-                        "auth/login.ftl",
-                        mapOf(
-                            "locale" to call.locale,
-                            "error" to translateUseCase(call.locale, exception.key)
-                        )
+                    "auth/login.ftl",
+                    mapOf(
+                        "locale" to call.locale,
+                        "error" to translateUseCase(call.locale, exception.key)
+                    )
                 )
             }
         }
@@ -81,8 +81,8 @@ class AuthRouter(
     fun createGetRegisterRoute(root: Route) {
         root.get {
             call.respondTemplate(
-                    "auth/register.ftl",
-                    mapOf("locale" to call.locale)
+                "auth/register.ftl",
+                mapOf("locale" to call.locale)
             )
         }
     }
@@ -96,20 +96,20 @@ class AuthRouter(
                 )
                 controller.register(RegisterPayload(email), Clock.System.now(), call.locale, call)
                 call.respondTemplate(
-                        "auth/register.ftl",
-                        mapOf(
-                            "locale" to call.locale,
-                            "success" to translateUseCase(call.locale, "auth_register_email_sent")
-                        )
+                    "auth/register.ftl",
+                    mapOf(
+                        "locale" to call.locale,
+                        "success" to translateUseCase(call.locale, "auth_register_email_sent")
+                    )
                 )
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
                 call.respondTemplate(
-                        "auth/register.ftl",
-                        mapOf(
-                            "locale" to call.locale,
-                            "error" to translateUseCase(call.locale, exception.key)
-                        )
+                    "auth/register.ftl",
+                    mapOf(
+                        "locale" to call.locale,
+                        "error" to translateUseCase(call.locale, exception.key)
+                    )
                 )
             }
         }
@@ -121,20 +121,20 @@ class AuthRouter(
                 val code = call.parameters["code"]!!
                 val payload = controller.register(code, Clock.System.now())
                 call.respondTemplate(
-                        "auth/register.ftl",
-                        mapOf(
-                            "locale" to call.locale,
-                            "code" to payload
-                        )
+                    "auth/register.ftl",
+                    mapOf(
+                        "locale" to call.locale,
+                        "code" to payload
+                    )
                 )
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
                 call.respondTemplate(
-                        "auth/register.ftl",
-                        mapOf(
-                            "locale" to call.locale,
-                            "error" to translateUseCase(call.locale, exception.key)
-                        )
+                    "auth/register.ftl",
+                    mapOf(
+                        "locale" to call.locale,
+                        "error" to translateUseCase(call.locale, exception.key)
+                    )
                 )
             }
         }
@@ -171,11 +171,11 @@ class AuthRouter(
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
                 call.respondTemplate(
-                        "auth/register.ftl",
-                        mapOf(
-                            "locale" to call.locale,
-                            "error" to translateUseCase(call.locale, exception.key)
-                        )
+                    "auth/register.ftl",
+                    mapOf(
+                        "locale" to call.locale,
+                        "error" to translateUseCase(call.locale, exception.key)
+                    )
                 )
             }
         }
@@ -184,8 +184,8 @@ class AuthRouter(
     fun createGetJoinRoute(root: Route) {
         root.get {
             call.respondTemplate(
-                    "auth/join.ftl",
-                    mapOf("locale" to call.locale)
+                "auth/join.ftl",
+                mapOf("locale" to call.locale)
             )
         }
     }
@@ -199,20 +199,20 @@ class AuthRouter(
                 )
                 controller.join(JoinPayload(email), Clock.System.now(), call.locale)
                 call.respondTemplate(
-                        "auth/join.ftl",
-                        mapOf(
-                            "locale" to call.locale,
-                            "success" to translateUseCase(call.locale, "auth_join_email_sent")
-                        )
+                    "auth/join.ftl",
+                    mapOf(
+                        "locale" to call.locale,
+                        "success" to translateUseCase(call.locale, "auth_join_email_sent")
+                    )
                 )
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
                 call.respondTemplate(
-                        "auth/join.ftl",
-                        mapOf(
-                            "locale" to call.locale,
-                            "error" to translateUseCase(call.locale, exception.key)
-                        )
+                    "auth/join.ftl",
+                    mapOf(
+                        "locale" to call.locale,
+                        "error" to translateUseCase(call.locale, exception.key)
+                    )
                 )
             }
         }
@@ -224,20 +224,20 @@ class AuthRouter(
                 val code = call.parameters["code"]!!
                 val payload = controller.join(code, Clock.System.now())
                 call.respondTemplate(
-                        "auth/join.ftl",
-                        mapOf(
-                            "locale" to call.locale,
-                            "code" to payload
-                        )
+                    "auth/join.ftl",
+                    mapOf(
+                        "locale" to call.locale,
+                        "code" to payload
+                    )
                 )
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
                 call.respondTemplate(
-                        "auth/join.ftl",
-                        mapOf(
-                            "locale" to call.locale,
-                            "error" to translateUseCase(call.locale, exception.key)
-                        )
+                    "auth/join.ftl",
+                    mapOf(
+                        "locale" to call.locale,
+                        "error" to translateUseCase(call.locale, exception.key)
+                    )
                 )
             }
         }
@@ -278,20 +278,20 @@ class AuthRouter(
                     )
                 )
                 call.respondTemplate(
-                        "auth/join.ftl",
-                        mapOf(
-                            "locale" to call.locale,
-                            "success" to translateUseCase(call.locale, "auth_join_submitted")
-                        )
+                    "auth/join.ftl",
+                    mapOf(
+                        "locale" to call.locale,
+                        "success" to translateUseCase(call.locale, "auth_join_submitted")
+                    )
                 )
             } catch (exception: ControllerException) {
                 call.response.status(exception.code)
                 call.respondTemplate(
-                        "auth/join.ftl",
-                        mapOf(
-                            "locale" to call.locale,
-                            "error" to translateUseCase(call.locale, exception.key)
-                        )
+                    "auth/join.ftl",
+                    mapOf(
+                        "locale" to call.locale,
+                        "error" to translateUseCase(call.locale, exception.key)
+                    )
                 )
             }
         }

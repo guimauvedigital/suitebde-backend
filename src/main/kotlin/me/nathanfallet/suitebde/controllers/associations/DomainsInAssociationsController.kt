@@ -2,8 +2,8 @@ package me.nathanfallet.suitebde.controllers.associations
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import me.nathanfallet.ktor.routers.controllers.base.IChildModelController
-import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.controllers.base.IChildModelController
+import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateDomainInAssociationPayload
 import me.nathanfallet.suitebde.models.associations.DomainInAssociation

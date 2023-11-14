@@ -1,9 +1,9 @@
 package me.nathanfallet.suitebde.controllers.web
 
-import me.nathanfallet.ktor.routers.controllers.base.IChildModelController
-import me.nathanfallet.ktor.routers.routers.api.APIChildModelRouter
-import me.nathanfallet.ktor.routers.routers.base.ConcatChildModelRouter
-import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
+import me.nathanfallet.ktorx.controllers.base.IChildModelController
+import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
+import me.nathanfallet.ktorx.routers.concat.ConcatChildModelRouter
+import me.nathanfallet.suitebde.controllers.associations.IAssociationForCallRouter
 import me.nathanfallet.suitebde.controllers.models.AdminChildModelRouter
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.web.CreateWebPagePayload
@@ -16,7 +16,7 @@ class WebPagesRouter(
     webPagesController: IChildModelController<WebPage, String, CreateWebPagePayload, UpdateWebPagePayload, Association, String>,
     translateUseCase: ITranslateUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
-    associationsRouter: AssociationsRouter
+    associationsRouter: IAssociationForCallRouter
 ) : ConcatChildModelRouter<WebPage, String, CreateWebPagePayload, UpdateWebPagePayload, Association, String>(
     listOf(
         APIChildModelRouter(
@@ -24,7 +24,7 @@ class WebPagesRouter(
             CreateWebPagePayload::class,
             UpdateWebPagePayload::class,
             webPagesController,
-            associationsRouter.routerOf(),
+            associationsRouter,
             prefix = "/api/v1"
         ),
         AdminChildModelRouter(
@@ -32,7 +32,7 @@ class WebPagesRouter(
             CreateWebPagePayload::class,
             UpdateWebPagePayload::class,
             webPagesController,
-            associationsRouter.routerOf(),
+            associationsRouter,
             translateUseCase,
             getAdminMenuForCallUseCase
         )
