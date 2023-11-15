@@ -5,7 +5,7 @@ import me.nathanfallet.usecases.models.annotations.PayloadProperty
 
 @Serializable
 data class UpdateWebPagePayload(
-    @PayloadProperty("string")
+    @PayloadProperty("url_webpages")
     val url: String,
     @PayloadProperty("string")
     val title: String,

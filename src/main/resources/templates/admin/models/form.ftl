@@ -60,6 +60,15 @@
                     <label class="form-check-label" for="${key.key}"></label>
                 </div>
                 <#break>
+            <#case "url_webpages">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="${key.key}-prefix">/pages/</span>
+                    <input type="text" class="form-control"
+                           name="${key.key}" id="${key.key}"
+                           aria-describedby="${key.key}-prefix" <#if item??>value="${item[key.key]}"</#if>
+                            <#if !key.editable>disabled</#if>>
+                </div>
+                <#break>
             <#default>
                 <input type="text" class="form-control"
                        name="${key.key}" id="${key.key}"

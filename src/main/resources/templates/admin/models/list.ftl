@@ -70,6 +70,11 @@
                     </span>
                 </div>
                 <#break>
+            <#case "url_webpages">
+                <span class="my-2 text-xs">
+                    <a href="/pages/${item[key.key]}">/pages/${item[key.key]}</a>
+                </span>
+                <#break>
             <#default>
                 <span class="my-2 text-xs">${item[key.key]}</span>
         </#switch>

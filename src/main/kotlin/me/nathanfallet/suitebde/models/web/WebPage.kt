@@ -9,7 +9,7 @@ data class WebPage(
     @ModelProperty("id")
     override val id: String,
     val associationId: String,
-    @ModelProperty("string")
+    @ModelProperty("url_webpages")
     val url: String,
     @ModelProperty("string")
     val title: String,
