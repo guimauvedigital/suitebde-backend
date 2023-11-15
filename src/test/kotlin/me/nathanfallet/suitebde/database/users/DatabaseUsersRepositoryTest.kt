@@ -25,7 +25,9 @@ class DatabaseUsersRepositoryTest {
         val userFromDatabase = database.dbQuery {
             Users
                 .selectAll()
-                .map(Users::toUser)
+                .map {
+                    Users.toUser(it, true)
+                }
                 .singleOrNull()
         }
         assertEquals(userFromDatabase?.id, user?.id)
@@ -35,6 +37,12 @@ class DatabaseUsersRepositoryTest {
         assertEquals(userFromDatabase?.firstName, user?.firstName)
         assertEquals(userFromDatabase?.lastName, user?.lastName)
         assertEquals(userFromDatabase?.superuser, user?.superuser)
+        assertEquals(userFromDatabase?.associationId, "associationId")
+        assertEquals(userFromDatabase?.email, "email")
+        assertEquals(userFromDatabase?.password, "password")
+        assertEquals(userFromDatabase?.firstName, "firstName")
+        assertEquals(userFromDatabase?.lastName, "lastName")
+        assertEquals(userFromDatabase?.superuser, false)
     }
 
     @Test
@@ -207,6 +215,21 @@ class DatabaseUsersRepositoryTest {
     }
 
     @Test
+    fun updateUserNotInAssociation() = runBlocking {
+        val database = Database(protocol = "h2", name = "updateUserNotInAssociation")
+        val repository = DatabaseUsersRepository(database)
+        val user = repository.create(
+            CreateUserPayload(
+                "email", "password",
+                "firstName", "lastName", false
+            ),
+            "associationId"
+        ) ?: fail("Unable to create user")
+        val payload = UpdateUserPayload("firstName2", "lastName2", "password2")
+        assertEquals(false, repository.update(user.id, payload, "otherAssociationId"))
+    }
+
+    @Test
     fun updateUserNotExists() = runBlocking {
         val database = Database(protocol = "h2", name = "updateUserNotExists")
         val repository = DatabaseUsersRepository(database)
@@ -232,6 +255,26 @@ class DatabaseUsersRepositoryTest {
                 .count()
         }
         assertEquals(0, count)
+    }
+
+    @Test
+    fun deleteUserNotInAssociation() = runBlocking {
+        val database = Database(protocol = "h2", name = "deleteUserNotInAssociation")
+        val repository = DatabaseUsersRepository(database)
+        val user = repository.create(
+            CreateUserPayload(
+                "email", "password",
+                "firstName", "lastName", false
+            ),
+            "associationId"
+        ) ?: fail("Unable to create user")
+        assertEquals(false, repository.delete(user.id, "otherAssociationId"))
+        val count = database.dbQuery {
+            Users
+                .selectAll()
+                .count()
+        }
+        assertEquals(1, count)
     }
 
     @Test

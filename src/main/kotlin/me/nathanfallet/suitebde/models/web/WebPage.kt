@@ -10,10 +10,12 @@ data class WebPage(
     override val id: String,
     val associationId: String,
     @ModelProperty("string")
+    val url: String,
+    @ModelProperty("string")
     val title: String,
     val content: String,
     @ModelProperty("boolean")
-    val isHome: Boolean = false,
+    val home: Boolean = false,
 ) : IChildModel<String, CreateWebPagePayload, UpdateWebPagePayload, String> {
 
     override val parentId: String

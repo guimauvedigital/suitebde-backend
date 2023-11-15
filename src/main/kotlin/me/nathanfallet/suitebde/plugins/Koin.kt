@@ -38,10 +38,13 @@ import me.nathanfallet.suitebde.usecases.auth.*
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.*
 import me.nathanfallet.suitebde.usecases.web.GetAdminMenuForCallUseCase
+import me.nathanfallet.suitebde.usecases.web.GetWebPagesUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
+import me.nathanfallet.suitebde.usecases.web.IGetWebPagesUseCase
 import me.nathanfallet.usecases.models.create.CreateChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateModelSuspendUseCase
+import me.nathanfallet.usecases.models.delete.DeleteChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.GetChildModelFromRepositorySuspendUseCase
@@ -50,6 +53,7 @@ import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
+import me.nathanfallet.usecases.models.update.UpdateChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.update.UpdateModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import org.koin.core.qualifier.named
@@ -179,11 +183,18 @@ fun Application.configureKoin() {
             single<ICheckPermissionSuspendUseCase> { CheckPermissionUseCase() }
 
             // Web
+            single<IGetWebPagesUseCase> { GetWebPagesUseCase(get()) }
             single<IGetChildModelSuspendUseCase<WebPage, String, String>>(named<WebPage>()) {
                 GetChildModelFromRepositorySuspendUseCase(get<IWebPagesRepository>())
             }
             single<ICreateChildModelSuspendUseCase<WebPage, CreateWebPagePayload, String>>(named<WebPage>()) {
                 CreateChildModelFromRepositorySuspendUseCase(get<IWebPagesRepository>())
+            }
+            single<IUpdateChildModelSuspendUseCase<WebPage, String, UpdateWebPagePayload, String>>(named<WebPage>()) {
+                UpdateChildModelFromRepositorySuspendUseCase(get<IWebPagesRepository>())
+            }
+            single<IDeleteChildModelSuspendUseCase<WebPage, String, String>>(named<WebPage>()) {
+                DeleteChildModelFromRepositorySuspendUseCase(get<IWebPagesRepository>())
             }
             single<IGetAdminMenuForCallUseCase> { GetAdminMenuForCallUseCase(get(), get(), get(), get()) }
         }
@@ -244,6 +255,12 @@ fun Application.configureKoin() {
                 named<WebPage>()
             ) {
                 WebPagesController(
+                    get(),
+                    get(),
+                    get(),
+                    get(named<WebPage>()),
+                    get(named<WebPage>()),
+                    get(named<WebPage>()),
                     get(named<WebPage>())
                 )
             }

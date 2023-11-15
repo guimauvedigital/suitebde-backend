@@ -10,9 +10,10 @@ object WebPages : Table() {
 
     val id = varchar("id", 32)
     val associationId = varchar("association_id", 32).index()
+    val url = varchar("url", 255)
     val title = varchar("title", 255)
     val content = text("content")
-    val isHome = bool("is_home")
+    val home = bool("home")
 
     override val primaryKey = PrimaryKey(id)
 
@@ -26,9 +27,10 @@ object WebPages : Table() {
     ) = WebPage(
         row[id],
         row[associationId],
+        row[url],
         row[title],
         row[content],
-        row[isHome]
+        row[home]
     )
 
 }

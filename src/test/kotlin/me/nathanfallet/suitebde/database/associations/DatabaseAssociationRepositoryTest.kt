@@ -40,6 +40,10 @@ class DatabaseAssociationRepositoryTest {
         assertEquals(associationFromDatabase?.validated, association?.validated)
         assertEquals(associationFromDatabase?.createdAt, association?.createdAt)
         assertEquals(associationFromDatabase?.expiresAt, association?.expiresAt)
+        assertEquals(associationFromDatabase?.name, "name")
+        assertEquals(associationFromDatabase?.school, "school")
+        assertEquals(associationFromDatabase?.city, "city")
+        assertEquals(associationFromDatabase?.validated, false)
     }
 
     @Test

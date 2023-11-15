@@ -7,4 +7,7 @@ import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 
 interface IWebPagesRepository :
     IChildModelSuspendRepository<WebPage, String, CreateWebPagePayload, UpdateWebPagePayload, String> {
+
+    suspend fun getWebPages(associationId: String): List<WebPage>
+
 }

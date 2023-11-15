@@ -25,6 +25,8 @@ class DatabaseDomainsInAssociationsRepositoryTest {
         }
         assertEquals(domainFromDatabase?.domain, domain?.domain)
         assertEquals(domainFromDatabase?.associationId, domain?.associationId)
+        assertEquals(domainFromDatabase?.domain, "domain")
+        assertEquals(domainFromDatabase?.associationId, "associationId")
     }
 
     @Test

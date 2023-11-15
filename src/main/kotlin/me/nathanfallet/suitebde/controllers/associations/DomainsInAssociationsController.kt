@@ -64,7 +64,10 @@ class DomainsInAssociationsController(
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "domains_delete_not_allowed"
         )
-        if (!deleteDomainUseCase(id, parent.id)) throw ControllerException(
+        val domain = getDomainUseCase(id, parent.id) ?: throw ControllerException(
+            HttpStatusCode.NotFound, "domains_not_found"
+        )
+        if (!deleteDomainUseCase(domain.id, parent.id)) throw ControllerException(
             HttpStatusCode.InternalServerError, "error_internal"
         )
     }
