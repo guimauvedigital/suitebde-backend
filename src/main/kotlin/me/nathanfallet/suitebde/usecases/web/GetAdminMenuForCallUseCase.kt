@@ -30,13 +30,13 @@ class GetAdminMenuForCallUseCase(
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "admin_not_allowed"
         )
-        return listOf("dashboard", "users")
+        return listOf("dashboard", "users", "webpages", "webmenus")
             .filter {
-                it == "dashboard" ||
-                        checkPermissionUseCase(
-                            user,
-                            Permission.valueOf("${it.uppercase()}_VIEW") inAssociation association
-                        )
+                it == "dashboard" || Permission.entries.firstOrNull { p -> p.name == "${it.uppercase()}_VIEW" }
+                    ?.let { permission ->
+                        checkPermissionUseCase(user, permission inAssociation association)
+                    } ?: true
+
             }
             .map {
                 WebMenu(

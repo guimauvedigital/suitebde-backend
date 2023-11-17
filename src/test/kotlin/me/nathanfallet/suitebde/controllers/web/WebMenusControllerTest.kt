@@ -87,7 +87,7 @@ class WebMenusControllerTest {
         )
         val payload = CreateWebMenuPayload("url", "title", 0)
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEB_MENUS_CREATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_CREATE inAssociation association) } returns true
         coEvery { createWebMenuUseCase(payload, menu.associationId) } returns menu
         assertEquals(menu, controller.create(mockk(), association, payload))
     }
@@ -102,7 +102,7 @@ class WebMenusControllerTest {
         )
         val payload = CreateWebMenuPayload("url", "title", 0)
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEB_MENUS_CREATE inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_CREATE inAssociation association) } returns false
         val exception = assertFailsWith(ControllerException::class) {
             controller.create(mockk(), association, payload)
         }
@@ -121,7 +121,7 @@ class WebMenusControllerTest {
         )
         val payload = CreateWebMenuPayload("url", "title", 0)
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEB_MENUS_CREATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_CREATE inAssociation association) } returns true
         coEvery { createWebMenuUseCase(payload, menu.associationId) } returns null
         val exception = assertFailsWith(ControllerException::class) {
             controller.create(mockk(), association, payload)
@@ -143,7 +143,7 @@ class WebMenusControllerTest {
         )
         val payload = UpdateWebMenuPayload("url", "title", 0)
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEB_MENUS_UPDATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_UPDATE inAssociation association) } returns true
         coEvery { getWebMenuUseCase(menu.id, menu.associationId) } returns menu
         coEvery { updateWebMenuUseCase(menu.id, payload, menu.associationId) } returns menu
         assertEquals(menu, controller.update(mockk(), association, menu.id, payload))
@@ -162,7 +162,7 @@ class WebMenusControllerTest {
         )
         val payload = UpdateWebMenuPayload("url", "title", 0)
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEB_MENUS_UPDATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_UPDATE inAssociation association) } returns true
         coEvery { getWebMenuUseCase(menu.id, menu.associationId) } returns menu
         coEvery { updateWebMenuUseCase(menu.id, payload, menu.associationId) } returns null
         val exception = assertFailsWith(ControllerException::class) {
@@ -183,7 +183,7 @@ class WebMenusControllerTest {
         )
         val payload = UpdateWebMenuPayload("url", "title", 0)
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEB_MENUS_UPDATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_UPDATE inAssociation association) } returns true
         coEvery { getWebMenuUseCase(menu.id, menu.associationId) } returns null
         val exception = assertFailsWith(ControllerException::class) {
             controller.update(mockk(), association, menu.id, payload)
@@ -202,7 +202,7 @@ class WebMenusControllerTest {
         )
         val payload = UpdateWebMenuPayload("url", "title", 0)
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEB_MENUS_UPDATE inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_UPDATE inAssociation association) } returns false
         val exception = assertFailsWith(ControllerException::class) {
             controller.update(mockk(), association, menu.id, payload)
         }
@@ -221,7 +221,7 @@ class WebMenusControllerTest {
             getWebMenuUseCase, mockk(), mockk(), deleteWebMenuUseCase
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEB_MENUS_DELETE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_DELETE inAssociation association) } returns true
         coEvery { getWebMenuUseCase(menu.id, menu.associationId) } returns menu
         coEvery { deleteWebMenuUseCase(menu.id, menu.associationId) } returns true
         controller.delete(mockk(), association, menu.id)
@@ -241,7 +241,7 @@ class WebMenusControllerTest {
             getWebMenuUseCase, mockk(), mockk(), deleteWebMenuUseCase
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEB_MENUS_DELETE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_DELETE inAssociation association) } returns true
         coEvery { getWebMenuUseCase(menu.id, menu.associationId) } returns menu
         coEvery { deleteWebMenuUseCase(menu.id, menu.associationId) } returns false
         val exception = assertFailsWith(ControllerException::class) {
@@ -261,7 +261,7 @@ class WebMenusControllerTest {
             getWebMenuUseCase, mockk(), mockk(), mockk()
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEB_MENUS_DELETE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_DELETE inAssociation association) } returns true
         coEvery { getWebMenuUseCase(menu.id, menu.associationId) } returns null
         val exception = assertFailsWith(ControllerException::class) {
             controller.delete(mockk(), association, menu.id)
@@ -279,7 +279,7 @@ class WebMenusControllerTest {
             mockk(), mockk(), mockk(), mockk()
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEB_MENUS_DELETE inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_DELETE inAssociation association) } returns false
         val exception = assertFailsWith(ControllerException::class) {
             controller.delete(mockk(), association, menu.id)
         }

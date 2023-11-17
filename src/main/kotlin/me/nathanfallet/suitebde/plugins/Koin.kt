@@ -13,10 +13,7 @@ import me.nathanfallet.suitebde.controllers.auth.AuthRouter
 import me.nathanfallet.suitebde.controllers.auth.IAuthController
 import me.nathanfallet.suitebde.controllers.users.UsersController
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
-import me.nathanfallet.suitebde.controllers.web.IWebPagesController
-import me.nathanfallet.suitebde.controllers.web.WebMenusController
-import me.nathanfallet.suitebde.controllers.web.WebPagesController
-import me.nathanfallet.suitebde.controllers.web.WebPagesRouter
+import me.nathanfallet.suitebde.controllers.web.*
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.database.associations.DatabaseAssociationRepository
 import me.nathanfallet.suitebde.database.associations.DatabaseDomainsInAssociationsRepository
@@ -201,6 +198,18 @@ fun Application.configureKoin() {
             }
             single<IGetWebMenusUseCase> { GetWebMenusUseCase(get()) }
             single<IGetAdminMenuForCallUseCase> { GetAdminMenuForCallUseCase(get(), get(), get(), get()) }
+            single<IGetChildModelSuspendUseCase<WebMenu, String, String>>(named<WebMenu>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<IWebMenusRepository>())
+            }
+            single<ICreateChildModelSuspendUseCase<WebMenu, CreateWebMenuPayload, String>>(named<WebMenu>()) {
+                CreateChildModelFromRepositorySuspendUseCase(get<IWebMenusRepository>())
+            }
+            single<IUpdateChildModelSuspendUseCase<WebMenu, String, UpdateWebMenuPayload, String>>(named<WebMenu>()) {
+                UpdateChildModelFromRepositorySuspendUseCase(get<IWebMenusRepository>())
+            }
+            single<IDeleteChildModelSuspendUseCase<WebMenu, String, String>>(named<WebMenu>()) {
+                DeleteChildModelFromRepositorySuspendUseCase(get<IWebMenusRepository>())
+            }
         }
         val controllerModule = module {
             // Associations
@@ -288,6 +297,7 @@ fun Application.configureKoin() {
             single { UsersRouter(get(named<User>()), get(), get(), get()) }
             single { AuthRouter(get(), get()) }
             single { WebPagesRouter(get(), get(), get(), get()) }
+            single { WebMenusRouter(get(named<WebMenu>()), get(), get(), get()) }
         }
 
         modules(

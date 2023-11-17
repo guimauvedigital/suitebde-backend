@@ -31,6 +31,19 @@ class DatabaseWebPagesRepositoryTest {
     }
 
     @Test
+    fun getWebPagesInAssociationNotInAssociation() = runBlocking {
+        val database = Database(protocol = "h2", name = "getWebPagesInAssociationNotInAssociation")
+        val repository = DatabaseWebPagesRepository(database)
+        repository.create(
+            CreateWebPagePayload(
+                "url", "title", "content", false
+            ), "associationId"
+        ) ?: fail("Unable to create page")
+        val pageFromDatabase = repository.getWebPages("otherAssociationId")
+        assertEquals(0, pageFromDatabase.size)
+    }
+
+    @Test
     fun createWebPage() = runBlocking {
         val database = Database(protocol = "h2", name = "createWebPage")
         val repository = DatabaseWebPagesRepository(database)

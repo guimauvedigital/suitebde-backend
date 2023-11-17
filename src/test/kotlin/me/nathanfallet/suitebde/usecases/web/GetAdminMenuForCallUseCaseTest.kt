@@ -47,6 +47,8 @@ class GetAdminMenuForCallUseCaseTest {
         coEvery { getUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.ADMIN inAssociation association) } returns true
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_VIEW inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_VIEW inAssociation association) } returns true
         every { translateUseCase(Locale.ENGLISH, any()) } answers { "t:${secondArg<String>()}" }
         assertEquals(
             listOf(
@@ -61,6 +63,18 @@ class GetAdminMenuForCallUseCaseTest {
                     "associationId",
                     "t:admin_menu_users",
                     "/admin/users"
+                ),
+                WebMenu(
+                    "webpages",
+                    "associationId",
+                    "t:admin_menu_webpages",
+                    "/admin/webpages"
+                ),
+                WebMenu(
+                    "webmenus",
+                    "associationId",
+                    "t:admin_menu_webmenus",
+                    "/admin/webmenus"
                 )
             ),
             useCase(call, Locale.ENGLISH)
@@ -82,6 +96,8 @@ class GetAdminMenuForCallUseCaseTest {
         coEvery { getUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.ADMIN inAssociation association) } returns true
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_VIEW inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_VIEW inAssociation association) } returns false
         every { translateUseCase(Locale.ENGLISH, any()) } answers { "t:${secondArg<String>()}" }
         assertEquals(
             listOf(

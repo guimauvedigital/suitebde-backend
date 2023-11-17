@@ -54,7 +54,7 @@ class WebPagesController(
 
     override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateWebPagePayload): WebPage {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.WEB_PAGES_CREATE inAssociation parent)
+            checkPermissionUseCase(it, Permission.WEBPAGES_CREATE inAssociation parent)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "webpages_create_not_allowed"
         )
@@ -70,7 +70,7 @@ class WebPagesController(
         payload: UpdateWebPagePayload
     ): WebPage {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.WEB_PAGES_UPDATE inAssociation parent)
+            checkPermissionUseCase(it, Permission.WEBPAGES_UPDATE inAssociation parent)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "webpages_update_not_allowed"
         )
@@ -84,7 +84,7 @@ class WebPagesController(
 
     override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.WEB_PAGES_DELETE inAssociation parent)
+            checkPermissionUseCase(it, Permission.WEBPAGES_DELETE inAssociation parent)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "webpages_delete_not_allowed"
         )

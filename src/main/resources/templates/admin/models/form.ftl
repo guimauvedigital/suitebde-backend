@@ -60,6 +60,12 @@
                     <label class="form-check-label" for="${key.key}"></label>
                 </div>
                 <#break>
+            <#case "integer">
+                <input type="number" class="form-control"
+                       name="${key.key}" id="${key.key}"
+                       <#if item??>value="${item[key.key]}"</#if>
+                        <#if !key.editable>disabled</#if>>
+                <#break>
             <#case "url_webpages">
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="${key.key}-prefix">/pages/</span>

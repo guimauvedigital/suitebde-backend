@@ -39,7 +39,7 @@ class WebMenusController(
 
     override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateWebMenuPayload): WebMenu {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.WEB_MENUS_CREATE inAssociation parent)
+            checkPermissionUseCase(it, Permission.WEBMENUS_CREATE inAssociation parent)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "webmenus_create_not_allowed"
         )
@@ -55,7 +55,7 @@ class WebMenusController(
         payload: UpdateWebMenuPayload
     ): WebMenu {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.WEB_MENUS_UPDATE inAssociation parent)
+            checkPermissionUseCase(it, Permission.WEBMENUS_UPDATE inAssociation parent)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "webmenus_update_not_allowed"
         )
@@ -69,7 +69,7 @@ class WebMenusController(
 
     override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.WEB_MENUS_DELETE inAssociation parent)
+            checkPermissionUseCase(it, Permission.WEBMENUS_DELETE inAssociation parent)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "webmenus_delete_not_allowed"
         )

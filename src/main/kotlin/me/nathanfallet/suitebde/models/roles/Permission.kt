@@ -10,12 +10,14 @@ enum class Permission {
     DOMAINS_DELETE,
     USERS_VIEW,
     USERS_UPDATE,
-    WEB_PAGES_CREATE,
-    WEB_PAGES_UPDATE,
-    WEB_PAGES_DELETE,
-    WEB_MENUS_CREATE,
-    WEB_MENUS_UPDATE,
-    WEB_MENUS_DELETE,
+    WEBPAGES_VIEW,
+    WEBPAGES_CREATE,
+    WEBPAGES_UPDATE,
+    WEBPAGES_DELETE,
+    WEBMENUS_VIEW,
+    WEBMENUS_CREATE,
+    WEBMENUS_UPDATE,
+    WEBMENUS_DELETE,
     ;
 
     infix fun inAssociation(association: Association) = PermissionInAssociation(this, association)
