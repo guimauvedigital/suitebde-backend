@@ -197,6 +197,7 @@ fun Application.configureKoin() {
                 DeleteChildModelFromRepositorySuspendUseCase(get<IWebPagesRepository>())
             }
             single<IGetWebMenusUseCase> { GetWebMenusUseCase(get()) }
+            single<IGetPublicMenuForCallUseCase> { GetPublicMenuForCallUseCase(get(), get()) }
             single<IGetAdminMenuForCallUseCase> { GetAdminMenuForCallUseCase(get(), get(), get(), get()) }
             single<IGetChildModelSuspendUseCase<WebMenu, String, String>>(named<WebMenu>()) {
                 GetChildModelFromRepositorySuspendUseCase(get<IWebMenusRepository>())
@@ -296,7 +297,7 @@ fun Application.configureKoin() {
             single { DomainsInAssociationsRouter(get(named<DomainInAssociation>()), get(), get(), get()) }
             single { UsersRouter(get(named<User>()), get(), get(), get()) }
             single { AuthRouter(get(), get()) }
-            single { WebPagesRouter(get(), get(), get(), get()) }
+            single { WebPagesRouter(get(), get(), get(), get(), get()) }
             single { WebMenusRouter(get(named<WebMenu>()), get(), get(), get()) }
         }
 

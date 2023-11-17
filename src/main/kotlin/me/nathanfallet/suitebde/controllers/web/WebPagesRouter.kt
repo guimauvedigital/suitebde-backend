@@ -1,6 +1,5 @@
 package me.nathanfallet.suitebde.controllers.web
 
-import com.github.aymanizz.ktori18n.locale
 import io.ktor.server.freemarker.*
 import me.nathanfallet.ktorx.models.templates.TemplateMapping
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
@@ -13,10 +12,12 @@ import me.nathanfallet.suitebde.models.web.UpdateWebPagePayload
 import me.nathanfallet.suitebde.models.web.WebPage
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
+import me.nathanfallet.suitebde.usecases.web.IGetPublicMenuForCallUseCase
 
 class WebPagesRouter(
     webPagesController: IWebPagesController,
     translateUseCase: ITranslateUseCase,
+    getPublicMenuForCallUseCase: IGetPublicMenuForCallUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     associationsRouter: IAssociationForCallRouter
 ) : ConcatChildModelRouter<WebPage, String, CreateWebPagePayload, UpdateWebPagePayload, Association, String>(
@@ -41,6 +42,7 @@ class WebPagesRouter(
         WebPagesPublicRouter(
             webPagesController,
             associationsRouter,
+            getPublicMenuForCallUseCase,
             TemplateMapping(
                 errorTemplate = "root/error.ftl",
                 getTemplate = "public/web/page.ftl",
@@ -48,7 +50,6 @@ class WebPagesRouter(
             { template, model ->
                 respondTemplate(
                     template, model + mapOf(
-                        "locale" to locale,
                         "title" to (model["item"] as? WebPage)?.title
                     )
                 )
