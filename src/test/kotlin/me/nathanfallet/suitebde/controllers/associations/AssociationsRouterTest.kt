@@ -97,7 +97,7 @@ class AssociationsRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/admin/associations/id")
+        val response = client.get("/admin/associations/id/update")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_update")?.`is`("h6"))

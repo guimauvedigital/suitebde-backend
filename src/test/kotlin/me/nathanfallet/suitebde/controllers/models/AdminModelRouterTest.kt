@@ -141,7 +141,7 @@ class AdminModelRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/admin/modelroutertestmodels/id")
+        val response = client.get("/admin/modelroutertestmodels/id/update")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_update")?.`is`("h6"))
@@ -166,7 +166,7 @@ class AdminModelRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/admin/modelroutertestmodels/id")
+        val response = client.get("/admin/modelroutertestmodels/id/update")
         assertEquals(HttpStatusCode.Forbidden, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals("403", document.getElementById("number")?.text())
@@ -182,7 +182,7 @@ class AdminModelRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.post("/admin/modelroutertestmodels/id") {
+        val response = client.post("/admin/modelroutertestmodels/id/update") {
             contentType(ContentType.Application.FormUrlEncoded)
             setBody(
                 listOf(

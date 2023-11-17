@@ -50,7 +50,7 @@
         <#switch key.type>
             <#case "id">
                 <span class="my-2 text-xs">
-                    <a href="${route}/${item[key.key]}">${item[key.key]}</a>
+                    <a href="${route}/${item[key.key]}/update">${item[key.key]}</a>
                 </span>
                 <#break>
             <#case "password">

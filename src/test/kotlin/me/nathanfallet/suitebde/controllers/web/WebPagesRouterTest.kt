@@ -123,7 +123,7 @@ class WebPagesRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/admin/webpages/id")
+        val response = client.get("/admin/webpages/id/update")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_update")?.`is`("h6"))
