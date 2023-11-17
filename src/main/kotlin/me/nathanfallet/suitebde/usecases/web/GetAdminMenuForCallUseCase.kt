@@ -2,7 +2,7 @@ package me.nathanfallet.suitebde.usecases.web
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
@@ -30,13 +30,13 @@ class GetAdminMenuForCallUseCase(
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "admin_not_allowed"
         )
-        return listOf("dashboard", "users")
+        return listOf("dashboard", "users", "webpages", "webmenus")
             .filter {
-                it == "dashboard" ||
-                        checkPermissionUseCase(
-                            user,
-                            Permission.valueOf("${it.uppercase()}_VIEW") inAssociation association
-                        )
+                it == "dashboard" || Permission.entries.firstOrNull { p -> p.name == "${it.uppercase()}_VIEW" }
+                    ?.let { permission ->
+                        checkPermissionUseCase(user, permission inAssociation association)
+                    } ?: true
+
             }
             .map {
                 WebMenu(

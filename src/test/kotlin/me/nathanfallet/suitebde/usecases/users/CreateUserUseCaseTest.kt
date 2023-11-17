@@ -24,21 +24,23 @@ class CreateUserUseCaseTest {
             "firstName", "lastName", true
         )
         every { hashPasswordUseCase(any()) } returns "hash"
-        coEvery { usersRepository.create(any()) } returns user
+        coEvery { usersRepository.create(any(), "associationId") } returns user
         assertEquals(
             user, useCase(
                 CreateUserPayload(
-                    "associationId", "email", "password",
+                    "email", "password",
                     "firstName", "lastName", true
-                )
+                ),
+                "associationId"
             )
         )
         coVerifyOrder {
             usersRepository.create(
                 CreateUserPayload(
-                "associationId", "email", "hash",
-                "firstName", "lastName", true
-                )
+                    "email", "hash",
+                    "firstName", "lastName", true
+                ),
+                "associationId"
             )
         }
     }
@@ -49,13 +51,14 @@ class CreateUserUseCaseTest {
         val hashPasswordUseCase = mockk<IHashPasswordUseCase>()
         val useCase = CreateUserUseCase(usersRepository, hashPasswordUseCase)
         every { hashPasswordUseCase(any()) } returns "hash"
-        coEvery { usersRepository.create(any()) } returns null
+        coEvery { usersRepository.create(any(), "associationId") } returns null
         assertEquals(
             null, useCase(
                 CreateUserPayload(
-                    "associationId", "email", "password",
+                    "email", "password",
                     "firstName", "lastName", true
-                )
+                ),
+                "associationId"
             )
         )
     }

@@ -7,7 +7,7 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
-import me.nathanfallet.ktor.routers.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateDomainInAssociationPayload
 import me.nathanfallet.suitebde.models.associations.DomainInAssociation
@@ -182,16 +182,18 @@ class DomainsInAssociationsControllerTest {
     fun testDelete() = runBlocking {
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
+        val getDomainUseCase = mockk<IGetChildModelSuspendUseCase<DomainInAssociation, String, String>>()
         val deleteDomainUseCase = mockk<IDeleteChildModelSuspendUseCase<DomainInAssociation, String, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.DOMAINS_DELETE inAssociation association) } returns true
+        coEvery { getDomainUseCase(domain.domain, association.id) } returns domain
         coEvery { deleteDomainUseCase(domain.domain, association.id) } returns true
         val controller = DomainsInAssociationsController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
-            mockk(),
+            getDomainUseCase,
             mockk(),
             deleteDomainUseCase
         )
@@ -227,16 +229,18 @@ class DomainsInAssociationsControllerTest {
     fun testDeleteNotFound() = runBlocking {
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
+        val getDomainUseCase = mockk<IGetChildModelSuspendUseCase<DomainInAssociation, String, String>>()
         val deleteDomainUseCase = mockk<IDeleteChildModelSuspendUseCase<DomainInAssociation, String, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.DOMAINS_DELETE inAssociation association) } returns true
+        coEvery { getDomainUseCase(domain.domain, association.id) } returns domain
         coEvery { deleteDomainUseCase(domain.domain, association.id) } returns false
         val controller = DomainsInAssociationsController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
-            mockk(),
+            getDomainUseCase,
             mockk(),
             deleteDomainUseCase
         )

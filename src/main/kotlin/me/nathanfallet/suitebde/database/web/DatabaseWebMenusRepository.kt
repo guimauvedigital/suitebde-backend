@@ -1,0 +1,60 @@
+package me.nathanfallet.suitebde.database.web
+
+import me.nathanfallet.suitebde.database.Database
+import me.nathanfallet.suitebde.models.web.CreateWebMenuPayload
+import me.nathanfallet.suitebde.models.web.UpdateWebMenuPayload
+import me.nathanfallet.suitebde.models.web.WebMenu
+import me.nathanfallet.suitebde.repositories.web.IWebMenusRepository
+import org.jetbrains.exposed.sql.*
+
+class DatabaseWebMenusRepository(
+    private val database: Database
+) : IWebMenusRepository {
+
+    override suspend fun getMenus(associationId: String): List<WebMenu> {
+        return database.dbQuery {
+            WebMenus
+                .select { WebMenus.associationId eq associationId }
+                .map(WebMenus::toWebMenu)
+        }
+    }
+
+    override suspend fun get(id: String, parentId: String): WebMenu? {
+        return database.dbQuery {
+            WebMenus
+                .select { WebMenus.id eq id and (WebMenus.associationId eq parentId) }
+                .map(WebMenus::toWebMenu)
+                .singleOrNull()
+        }
+    }
+
+    override suspend fun create(payload: CreateWebMenuPayload, parentId: String): WebMenu? {
+        return database.dbQuery {
+            WebMenus.insert {
+                it[id] = generateId()
+                it[associationId] = parentId
+                it[title] = payload.title
+                it[url] = payload.url
+                it[position] = payload.position ?: (WebMenus.selectAll().count().toInt() + 1)
+            }.resultedValues?.map(WebMenus::toWebMenu)?.singleOrNull()
+        }
+    }
+
+    override suspend fun update(id: String, payload: UpdateWebMenuPayload, parentId: String): Boolean {
+        return database.dbQuery {
+            WebMenus.update({ WebMenus.id eq id and (WebMenus.associationId eq parentId) }) {
+                it[title] = payload.title
+                it[url] = payload.url
+                it[position] = payload.position
+            }
+        } == 1
+    }
+
+    override suspend fun delete(id: String, parentId: String): Boolean {
+        return database.dbQuery {
+            WebMenus.deleteWhere {
+                Op.build { WebMenus.id eq id and (associationId eq parentId) }
+            }
+        } == 1
+    }
+}

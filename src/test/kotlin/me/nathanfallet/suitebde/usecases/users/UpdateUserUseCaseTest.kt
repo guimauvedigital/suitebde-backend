@@ -18,13 +18,13 @@ class UpdateUserUseCaseTest {
         val usersRepository = mockk<IUsersRepository>()
         val useCase = UpdateUserUseCase(usersRepository, mockk())
         val user = User(
-            "id", "name", "email", null,
+            "id", "associationId", "email", null,
             "first", "last", false
         )
         val payload = UpdateUserPayload("first", "last", null)
-        coEvery { usersRepository.update(user.id, payload) } returns true
-        coEvery { usersRepository.get(user.id) } returns user
-        assertEquals(user, useCase(user.id, payload))
+        coEvery { usersRepository.update(user.id, payload, "associationId") } returns true
+        coEvery { usersRepository.get(user.id, "associationId") } returns user
+        assertEquals(user, useCase(user.id, payload, "associationId"))
     }
 
     @Test
@@ -33,16 +33,16 @@ class UpdateUserUseCaseTest {
         val hashPasswordUseCase = mockk<IHashPasswordUseCase>()
         val useCase = UpdateUserUseCase(usersRepository, hashPasswordUseCase)
         val user = User(
-            "id", "name", "email", "password",
+            "id", "associationId", "email", "password",
             "first", "last", false
         )
         val payload = UpdateUserPayload("first", "last", "password")
         val hashedUser = user.copy(password = "hash")
         val hashedPayload = payload.copy(password = "hash")
         every { hashPasswordUseCase("password") } returns "hash"
-        coEvery { usersRepository.update(user.id, hashedPayload) } returns true
-        coEvery { usersRepository.get(user.id) } returns hashedUser
-        assertEquals(hashedUser, useCase(user.id, payload))
+        coEvery { usersRepository.update(user.id, hashedPayload, "associationId") } returns true
+        coEvery { usersRepository.get(user.id, "associationId") } returns hashedUser
+        assertEquals(hashedUser, useCase(user.id, payload, "associationId"))
     }
 
     @Test
@@ -50,12 +50,12 @@ class UpdateUserUseCaseTest {
         val usersRepository = mockk<IUsersRepository>()
         val useCase = UpdateUserUseCase(usersRepository, mockk())
         val user = User(
-            "id", "name", "email", null,
+            "id", "associationId", "email", null,
             "first", "last", false
         )
         val payload = UpdateUserPayload("first", "last", null)
-        coEvery { usersRepository.update(user.id, payload) } returns false
-        assertEquals(null, useCase(user.id, payload))
+        coEvery { usersRepository.update(user.id, payload, "associationId") } returns false
+        assertEquals(null, useCase(user.id, payload, "associationId"))
     }
 
 }

@@ -13,8 +13,8 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.datetime.Clock
-import me.nathanfallet.ktor.routers.controllers.base.IChildModelController
-import me.nathanfallet.ktor.routers.controllers.base.IModelController
+import me.nathanfallet.ktorx.controllers.base.IChildModelController
+import me.nathanfallet.ktorx.controllers.base.IModelController
 import me.nathanfallet.suitebde.models.associations.*
 import me.nathanfallet.suitebde.plugins.*
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase

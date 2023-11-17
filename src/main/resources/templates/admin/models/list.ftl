@@ -50,7 +50,7 @@
         <#switch key.type>
             <#case "id">
                 <span class="my-2 text-xs">
-                    <a href="${route}/${item[key.key]}">${item[key.key]}</a>
+                    <a href="${route}/${item[key.key]}/update">${item[key.key]}</a>
                 </span>
                 <#break>
             <#case "password">
@@ -69,6 +69,11 @@
                         </#if>
                     </span>
                 </div>
+                <#break>
+            <#case "url_webpages">
+                <span class="my-2 text-xs">
+                    <a href="/pages/${item[key.key]}">/pages/${item[key.key]}</a>
+                </span>
                 <#break>
             <#default>
                 <span class="my-2 text-xs">${item[key.key]}</span>

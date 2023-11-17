@@ -17,7 +17,7 @@ class ApplicationTest {
         application {
             module()
         }
-        val response = client.get("/")
+        val response = client.get("/api/v1/associations")
         assertEquals(HttpStatusCode.OK, response.status)
     }
 

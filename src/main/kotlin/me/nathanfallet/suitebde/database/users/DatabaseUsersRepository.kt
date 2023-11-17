@@ -11,11 +11,11 @@ class DatabaseUsersRepository(
     private val database: Database
 ) : IUsersRepository {
 
-    override suspend fun create(payload: CreateUserPayload): User? {
+    override suspend fun create(payload: CreateUserPayload, parentId: String): User? {
         return database.dbQuery {
             Users.insert {
                 it[id] = generateId()
-                it[associationId] = payload.associationId
+                it[associationId] = parentId
                 it[email] = payload.email
                 it[password] = payload.password
                 it[firstName] = payload.firstName
@@ -29,6 +29,15 @@ class DatabaseUsersRepository(
         return database.dbQuery {
             Users
                 .select { Users.id eq id }
+                .map(Users::toUser)
+                .singleOrNull()
+        }
+    }
+
+    override suspend fun get(id: String, parentId: String): User? {
+        return database.dbQuery {
+            Users
+                .select { Users.id eq id and (Users.associationId eq parentId) }
                 .map(Users::toUser)
                 .singleOrNull()
         }
@@ -56,9 +65,9 @@ class DatabaseUsersRepository(
         }
     }
 
-    override suspend fun update(id: String, payload: UpdateUserPayload): Boolean {
+    override suspend fun update(id: String, payload: UpdateUserPayload, parentId: String): Boolean {
         return database.dbQuery {
-            Users.update({ Users.id eq id }) {
+            Users.update({ Users.id eq id and (Users.associationId eq parentId) }) {
                 payload.firstName?.let { firstName ->
                     it[Users.firstName] = firstName
                 }
@@ -72,10 +81,10 @@ class DatabaseUsersRepository(
         } == 1
     }
 
-    override suspend fun delete(id: String): Boolean {
+    override suspend fun delete(id: String, parentId: String): Boolean {
         return database.dbQuery {
             Users.deleteWhere {
-                Op.build { Users.id eq id }
+                Op.build { Users.id eq id and (associationId eq parentId) }
             }
         } == 1
     }

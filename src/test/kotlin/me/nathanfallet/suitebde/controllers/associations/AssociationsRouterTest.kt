@@ -13,7 +13,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.datetime.Clock
-import me.nathanfallet.ktor.routers.controllers.base.IModelController
+import me.nathanfallet.ktorx.controllers.base.IModelController
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
@@ -97,7 +97,7 @@ class AssociationsRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/admin/associations/id")
+        val response = client.get("/admin/associations/id/update")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_update")?.`is`("h6"))

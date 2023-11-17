@@ -19,11 +19,11 @@
                         </div>
 
                         <div class="d-flex justify-content-end mt-3">
-                            <a class="btn btn-light m-0" href="../${route}">
+                            <a class="btn btn-light m-0" href="../<#if item??>../</#if>${route}">
                                 <@t key="admin_cancel" />
                             </a>
                             <#if item??>
-                                <a class="btn btn-danger m-0 ms-2" href="${item.id}/delete">
+                                <a class="btn btn-danger m-0 ms-2" href="delete">
                                     <@t key="admin_delete" />
                                 </a>
                             </#if>
@@ -58,6 +58,21 @@
                            name="${key.key}" id="${key.key}"
                            <#if item?? && item[key.key]>checked</#if>>
                     <label class="form-check-label" for="${key.key}"></label>
+                </div>
+                <#break>
+            <#case "integer">
+                <input type="number" class="form-control"
+                       name="${key.key}" id="${key.key}"
+                       <#if item??>value="${item[key.key]}"</#if>
+                        <#if !key.editable>disabled</#if>>
+                <#break>
+            <#case "url_webpages">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="${key.key}-prefix">/pages/</span>
+                    <input type="text" class="form-control"
+                           name="${key.key}" id="${key.key}"
+                           aria-describedby="${key.key}-prefix" <#if item??>value="${item[key.key]}"</#if>
+                            <#if !key.editable>disabled</#if>>
                 </div>
                 <#break>
             <#default>
