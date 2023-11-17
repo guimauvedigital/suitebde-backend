@@ -9,7 +9,6 @@ import me.nathanfallet.suitebde.controllers.associations.DomainsInAssociationsRo
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
 import me.nathanfallet.suitebde.controllers.web.WebPagesRouter
-import me.nathanfallet.suitebde.controllers.web.WebRouter
 import org.koin.ktor.ext.inject
 
 fun Application.configureRouting() {
@@ -18,7 +17,6 @@ fun Application.configureRouting() {
         val domainsInAssociationsRouter by inject<DomainsInAssociationsRouter>()
         val authRouter by inject<AuthRouter>()
         val usersRouter by inject<UsersRouter>()
-        val webRouter by inject<WebRouter>()
         val webPagesRouter by inject<WebPagesRouter>()
 
         authenticate("api-v1-jwt", optional = true) {
@@ -26,7 +24,6 @@ fun Application.configureRouting() {
             domainsInAssociationsRouter.createRoutes(this)
             authRouter.createRoutes(this)
             usersRouter.createRoutes(this)
-            webRouter.createRoutes(this)
             webPagesRouter.createRoutes(this)
         }
 

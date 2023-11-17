@@ -49,6 +49,24 @@ class DatabaseWebPagesRepository(
         }
     }
 
+    override suspend fun getByUrl(url: String, associationId: String): WebPage? {
+        return database.dbQuery {
+            WebPages
+                .select { WebPages.associationId eq associationId and (WebPages.url eq url) }
+                .map(WebPages::toWebPage)
+                .singleOrNull()
+        }
+    }
+
+    override suspend fun getHome(associationId: String): WebPage? {
+        return database.dbQuery {
+            WebPages
+                .select { WebPages.associationId eq associationId and (WebPages.home eq true) }
+                .map(WebPages::toWebPage)
+                .singleOrNull()
+        }
+    }
+
     override suspend fun update(id: String, payload: UpdateWebPagePayload, parentId: String): Boolean {
         return database.dbQuery {
             WebPages.update({ WebPages.id eq id and (WebPages.associationId eq parentId) }) {

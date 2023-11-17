@@ -13,12 +13,9 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.datetime.Clock
-import me.nathanfallet.ktorx.controllers.base.IChildModelController
+import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.controllers.associations.AssociationForCallRouter
 import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.models.web.CreateWebPagePayload
-import me.nathanfallet.suitebde.models.web.UpdateWebPagePayload
 import me.nathanfallet.suitebde.models.web.WebPage
 import me.nathanfallet.suitebde.plugins.*
 import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
@@ -30,9 +27,6 @@ import kotlin.test.assertEquals
 
 class WebPagesRouterTest {
 
-    private val user = User(
-        "id", "associationId", "email", null, "firstname", "lastname", false
-    )
     private val association = Association(
         "associationId", "name", "school", "city", true, Clock.System.now(), Clock.System.now()
     )
@@ -62,8 +56,7 @@ class WebPagesRouterTest {
     fun testGetAllAPIv1() = testApplication {
         val client = installApp(this)
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
-        val controller =
-            mockk<IChildModelController<WebPage, String, CreateWebPagePayload, UpdateWebPagePayload, Association, String>>()
+        val controller = mockk<IWebPagesController>()
         val router = WebPagesRouter(
             controller, mockk(), mockk(), AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
         )
@@ -79,8 +72,7 @@ class WebPagesRouterTest {
     fun testGetAllAdmin() = testApplication {
         val client = installApp(this)
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
-        val controller =
-            mockk<IChildModelController<WebPage, String, CreateWebPagePayload, UpdateWebPagePayload, Association, String>>()
+        val controller = mockk<IWebPagesController>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = WebPagesRouter(
@@ -106,8 +98,7 @@ class WebPagesRouterTest {
     fun testGetByIdAdmin() = testApplication {
         val client = installApp(this)
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
-        val controller =
-            mockk<IChildModelController<WebPage, String, CreateWebPagePayload, UpdateWebPagePayload, Association, String>>()
+        val controller = mockk<IWebPagesController>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = WebPagesRouter(
@@ -127,6 +118,79 @@ class WebPagesRouterTest {
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_update")?.`is`("h6"))
+    }
+
+    @Test
+    fun testGetHomePublic() = testApplication {
+        val client = installApp(this)
+        val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
+        val controller = mockk<IWebPagesController>()
+        val translateUseCase = mockk<ITranslateUseCase>()
+        val router = WebPagesRouter(
+            controller,
+            translateUseCase,
+            mockk(),
+            AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
+        )
+        coEvery { requireAssociationForCallUseCase(any()) } returns association
+        coEvery { controller.getHome(any(), association) } returns page
+        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
+        routing {
+            router.createRoutes(this)
+        }
+        val response = client.get("/")
+        assertEquals(HttpStatusCode.OK, response.status)
+        val document = Jsoup.parse(response.bodyAsText())
+        assertEquals(page.title, document.getElementById("webpages_title")?.text())
+    }
+
+    @Test
+    fun testGetByUrlPublic() = testApplication {
+        val client = installApp(this)
+        val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
+        val controller = mockk<IWebPagesController>()
+        val translateUseCase = mockk<ITranslateUseCase>()
+        val router = WebPagesRouter(
+            controller,
+            translateUseCase,
+            mockk(),
+            AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
+        )
+        coEvery { requireAssociationForCallUseCase(any()) } returns association
+        coEvery { controller.getByUrl(any(), association, page.url) } returns page
+        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
+        routing {
+            router.createRoutes(this)
+        }
+        val response = client.get("/pages/url")
+        assertEquals(HttpStatusCode.OK, response.status)
+        val document = Jsoup.parse(response.bodyAsText())
+        assertEquals(page.title, document.getElementById("webpages_title")?.text())
+    }
+
+    @Test
+    fun testGetByUrlPublicNotFound() = testApplication {
+        val client = installApp(this)
+        val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
+        val controller = mockk<IWebPagesController>()
+        val translateUseCase = mockk<ITranslateUseCase>()
+        val router = WebPagesRouter(
+            controller,
+            translateUseCase,
+            mockk(),
+            AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
+        )
+        coEvery { requireAssociationForCallUseCase(any()) } returns association
+        coEvery { controller.getByUrl(any(), association, "bad") } throws ControllerException(
+            HttpStatusCode.NotFound,
+            "webpages_not_found"
+        )
+        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
+        routing {
+            router.createRoutes(this)
+        }
+        val response = client.get("/pages/bad")
+        assertEquals(HttpStatusCode.NotFound, response.status)
     }
 
 }

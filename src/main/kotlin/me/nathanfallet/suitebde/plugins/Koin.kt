@@ -13,7 +13,9 @@ import me.nathanfallet.suitebde.controllers.auth.AuthRouter
 import me.nathanfallet.suitebde.controllers.auth.IAuthController
 import me.nathanfallet.suitebde.controllers.users.UsersController
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
-import me.nathanfallet.suitebde.controllers.web.*
+import me.nathanfallet.suitebde.controllers.web.IWebPagesController
+import me.nathanfallet.suitebde.controllers.web.WebPagesController
+import me.nathanfallet.suitebde.controllers.web.WebPagesRouter
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.database.associations.DatabaseAssociationRepository
 import me.nathanfallet.suitebde.database.associations.DatabaseDomainsInAssociationsRepository
@@ -37,10 +39,7 @@ import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.*
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.*
-import me.nathanfallet.suitebde.usecases.web.GetAdminMenuForCallUseCase
-import me.nathanfallet.suitebde.usecases.web.GetWebPagesUseCase
-import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
-import me.nathanfallet.suitebde.usecases.web.IGetWebPagesUseCase
+import me.nathanfallet.suitebde.usecases.web.*
 import me.nathanfallet.usecases.models.create.CreateChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateModelSuspendUseCase
@@ -184,6 +183,8 @@ fun Application.configureKoin() {
 
             // Web
             single<IGetWebPagesUseCase> { GetWebPagesUseCase(get()) }
+            single<IGetWebPageByUrlUseCase> { GetWebPageByUrlUseCase(get()) }
+            single<IGetHomeWebPageUseCase> { GetHomeWebPageUseCase(get()) }
             single<IGetChildModelSuspendUseCase<WebPage, String, String>>(named<WebPage>()) {
                 GetChildModelFromRepositorySuspendUseCase(get<IWebPagesRepository>())
             }
@@ -250,11 +251,10 @@ fun Application.configureKoin() {
             }
 
             // Web
-            single<IWebController> { WebController() }
-            single<IChildModelController<WebPage, String, CreateWebPagePayload, UpdateWebPagePayload, Association, String>>(
-                named<WebPage>()
-            ) {
+            single<IWebPagesController> {
                 WebPagesController(
+                    get(),
+                    get(),
                     get(),
                     get(),
                     get(),
@@ -271,8 +271,7 @@ fun Application.configureKoin() {
             single { DomainsInAssociationsRouter(get(named<DomainInAssociation>()), get(), get(), get()) }
             single { UsersRouter(get(named<User>()), get(), get(), get()) }
             single { AuthRouter(get(), get()) }
-            single { WebRouter(get()) }
-            single { WebPagesRouter(get(named<WebPage>()), get(), get(), get()) }
+            single { WebPagesRouter(get(), get(), get(), get()) }
         }
 
         modules(

@@ -96,6 +96,80 @@ class DatabaseWebPagesRepositoryTest {
     }
 
     @Test
+    fun getWebPageByUrl() = runBlocking {
+        val database = Database(protocol = "h2", name = "getWebPageByUrl")
+        val repository = DatabaseWebPagesRepository(database)
+        val page = repository.create(
+            CreateWebPagePayload(
+                "url", "title", "content", false
+            ), "associationId"
+        ) ?: fail("Unable to create page")
+        val pageFromDatabase = repository.getByUrl(page.url, "associationId")
+        assertEquals(pageFromDatabase?.id, page.id)
+        assertEquals(pageFromDatabase?.associationId, page.associationId)
+        assertEquals(pageFromDatabase?.url, page.url)
+        assertEquals(pageFromDatabase?.title, page.title)
+        assertEquals(pageFromDatabase?.content, page.content)
+        assertEquals(pageFromDatabase?.home, page.home)
+    }
+
+    @Test
+    fun getWebPageByUrlNotInAssociation() = runBlocking {
+        val database = Database(protocol = "h2", name = "getWebPageByUrlNotInAssociation")
+        val repository = DatabaseWebPagesRepository(database)
+        val page = repository.create(
+            CreateWebPagePayload(
+                "url", "title", "content", false
+            ), "associationId"
+        ) ?: fail("Unable to create page")
+        assertEquals(null, repository.getByUrl(page.url, "otherAssociationId"))
+    }
+
+    @Test
+    fun getWebPageByUrlNotExists() = runBlocking {
+        val database = Database(protocol = "h2", name = "getWebPageByUrlNotExists")
+        val repository = DatabaseWebPagesRepository(database)
+        assertEquals(null, repository.getByUrl("url", "associationId"))
+    }
+
+    @Test
+    fun getWebPageHome() = runBlocking {
+        val database = Database(protocol = "h2", name = "getWebPageHome")
+        val repository = DatabaseWebPagesRepository(database)
+        val page = repository.create(
+            CreateWebPagePayload(
+                "url", "title", "content", true
+            ), "associationId"
+        ) ?: fail("Unable to create page")
+        val pageFromDatabase = repository.getHome("associationId")
+        assertEquals(pageFromDatabase?.id, page.id)
+        assertEquals(pageFromDatabase?.associationId, page.associationId)
+        assertEquals(pageFromDatabase?.url, page.url)
+        assertEquals(pageFromDatabase?.title, page.title)
+        assertEquals(pageFromDatabase?.content, page.content)
+        assertEquals(pageFromDatabase?.home, page.home)
+    }
+
+    @Test
+    fun getWebPageHomeNotInAssociation() = runBlocking {
+        val database = Database(protocol = "h2", name = "getWebPageHomeNotInAssociation")
+        val repository = DatabaseWebPagesRepository(database)
+        repository.create(
+            CreateWebPagePayload(
+                "url", "title", "content", true
+            ), "associationId"
+        ) ?: fail("Unable to create page")
+        assertEquals(null, repository.getHome("otherAssociationId"))
+    }
+
+    @Test
+    fun getWebPageHomeNotExists() = runBlocking {
+        val database = Database(protocol = "h2", name = "getWebPageHomeNotExists")
+        val repository = DatabaseWebPagesRepository(database)
+        assertEquals(null, repository.getHome("associationId"))
+    }
+
+    @Test
     fun updateWebPage() = runBlocking {
         val database = Database(protocol = "h2", name = "updateWebPage")
         val repository = DatabaseWebPagesRepository(database)

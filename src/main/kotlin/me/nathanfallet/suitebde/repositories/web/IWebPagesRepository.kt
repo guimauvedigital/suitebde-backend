@@ -9,5 +9,7 @@ interface IWebPagesRepository :
     IChildModelSuspendRepository<WebPage, String, CreateWebPagePayload, UpdateWebPagePayload, String> {
 
     suspend fun getWebPages(associationId: String): List<WebPage>
+    suspend fun getByUrl(url: String, associationId: String): WebPage?
+    suspend fun getHome(associationId: String): WebPage?
 
 }
