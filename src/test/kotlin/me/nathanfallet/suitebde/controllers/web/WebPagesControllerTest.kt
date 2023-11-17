@@ -182,6 +182,34 @@ class WebPagesControllerTest {
     }
 
     @Test
+    fun testCreateInternalError() = runBlocking {
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
+        val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
+        val createWebPageUseCase =
+            mockk<ICreateChildModelSuspendUseCase<WebPage, CreateWebPagePayload, String>>()
+        val controller = WebPagesController(
+            requireUserForCallUseCase,
+            checkPermissionUseCase,
+            mockk(),
+            mockk(),
+            mockk(),
+            mockk(),
+            createWebPageUseCase,
+            mockk(),
+            mockk()
+        )
+        val payload = CreateWebPagePayload("url", "title", "content", true)
+        coEvery { requireUserForCallUseCase(any()) } returns user
+        coEvery { checkPermissionUseCase(user, Permission.WEB_PAGES_CREATE inAssociation association) } returns true
+        coEvery { createWebPageUseCase(payload, page.associationId) } returns null
+        val exception = assertFailsWith(ControllerException::class) {
+            controller.create(mockk(), association, payload)
+        }
+        assertEquals(HttpStatusCode.InternalServerError, exception.code)
+        assertEquals("error_internal", exception.key)
+    }
+
+    @Test
     fun testUpdate() = runBlocking {
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()

@@ -18,7 +18,7 @@ class GetHomeWebPageUseCaseTest {
             "id", "associationId", "url", "title", "content", true
         )
         coEvery { repository.getHome("associationId") } returns page
-        assertEquals(page, useCase.invoke("associationId"))
+        assertEquals(page, useCase("associationId"))
     }
 
 }

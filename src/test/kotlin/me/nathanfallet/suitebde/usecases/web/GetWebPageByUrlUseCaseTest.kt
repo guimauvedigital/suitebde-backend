@@ -18,7 +18,7 @@ class GetWebPageByUrlUseCaseTest {
             "id", "associationId", "url", "title", "content", true
         )
         coEvery { repository.getByUrl(page.url, "associationId") } returns page
-        assertEquals(page, useCase.invoke(page.url, "associationId"))
+        assertEquals(page, useCase(page.url, "associationId"))
     }
 
 }

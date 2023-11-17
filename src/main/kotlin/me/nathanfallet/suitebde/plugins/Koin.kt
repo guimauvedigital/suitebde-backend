@@ -14,23 +14,24 @@ import me.nathanfallet.suitebde.controllers.auth.IAuthController
 import me.nathanfallet.suitebde.controllers.users.UsersController
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
 import me.nathanfallet.suitebde.controllers.web.IWebPagesController
+import me.nathanfallet.suitebde.controllers.web.WebMenusController
 import me.nathanfallet.suitebde.controllers.web.WebPagesController
 import me.nathanfallet.suitebde.controllers.web.WebPagesRouter
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.database.associations.DatabaseAssociationRepository
 import me.nathanfallet.suitebde.database.associations.DatabaseDomainsInAssociationsRepository
 import me.nathanfallet.suitebde.database.users.DatabaseUsersRepository
+import me.nathanfallet.suitebde.database.web.DatabaseWebMenusRepository
 import me.nathanfallet.suitebde.database.web.DatabaseWebPagesRepository
 import me.nathanfallet.suitebde.models.associations.*
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.models.web.CreateWebPagePayload
-import me.nathanfallet.suitebde.models.web.UpdateWebPagePayload
-import me.nathanfallet.suitebde.models.web.WebPage
+import me.nathanfallet.suitebde.models.web.*
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
+import me.nathanfallet.suitebde.repositories.web.IWebMenusRepository
 import me.nathanfallet.suitebde.repositories.web.IWebPagesRepository
 import me.nathanfallet.suitebde.services.emails.EmailsService
 import me.nathanfallet.suitebde.services.emails.IEmailsService
@@ -94,6 +95,7 @@ fun Application.configureKoin() {
             single<IDomainsInAssociationsRepository> { DatabaseDomainsInAssociationsRepository(get()) }
             single<IUsersRepository> { DatabaseUsersRepository(get()) }
             single<IWebPagesRepository> { DatabaseWebPagesRepository(get()) }
+            single<IWebMenusRepository> { DatabaseWebMenusRepository(get()) }
         }
         val useCaseModule = module {
             // Application
@@ -197,6 +199,7 @@ fun Application.configureKoin() {
             single<IDeleteChildModelSuspendUseCase<WebPage, String, String>>(named<WebPage>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get<IWebPagesRepository>())
             }
+            single<IGetWebMenusUseCase> { GetWebMenusUseCase(get()) }
             single<IGetAdminMenuForCallUseCase> { GetAdminMenuForCallUseCase(get(), get(), get(), get()) }
         }
         val controllerModule = module {
@@ -262,6 +265,19 @@ fun Application.configureKoin() {
                     get(named<WebPage>()),
                     get(named<WebPage>()),
                     get(named<WebPage>())
+                )
+            }
+            single<IChildModelController<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String>>(
+                named<WebMenu>()
+            ) {
+                WebMenusController(
+                    get(),
+                    get(),
+                    get(),
+                    get(named<WebMenu>()),
+                    get(named<WebMenu>()),
+                    get(named<WebMenu>()),
+                    get(named<WebMenu>())
                 )
             }
         }

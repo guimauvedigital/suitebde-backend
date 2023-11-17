@@ -18,7 +18,7 @@ class GetWebPagesUseCaseTest {
             "id", "associationId", "url", "title", "content", false
         )
         coEvery { repository.getWebPages("associationId") } returns listOf(page)
-        assertEquals(listOf(page), useCase.invoke("associationId"))
+        assertEquals(listOf(page), useCase("associationId"))
     }
 
 }
