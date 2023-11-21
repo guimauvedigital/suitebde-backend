@@ -11,7 +11,6 @@ interface IAssociationsRepository :
     IModelSuspendRepository<Association, String, CreateAssociationPayload, UpdateAssociationPayload> {
 
     suspend fun updateExpiresAt(id: String, expiresAt: Instant): Boolean
-    suspend fun getAssociations(): List<Association>
     suspend fun getValidatedAssociations(): List<Association>
     suspend fun getAssociationsExpiringBefore(date: Instant): List<Association>
     suspend fun getAssociationForDomain(domain: String): Association?

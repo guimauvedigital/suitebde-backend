@@ -9,7 +9,7 @@ class GetAssociationsUseCase(
 
     override suspend fun invoke(input: Boolean): List<Association> {
         return if (input) repository.getValidatedAssociations()
-        else repository.getAssociations()
+        else repository.list()
     }
 
 }

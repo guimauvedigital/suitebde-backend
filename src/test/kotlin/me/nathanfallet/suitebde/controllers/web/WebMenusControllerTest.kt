@@ -14,10 +14,10 @@ import me.nathanfallet.suitebde.models.web.CreateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.UpdateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.usecases.users.IRequireUserForCallUseCase
-import me.nathanfallet.suitebde.usecases.web.IGetWebMenusUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import kotlin.test.Test
@@ -41,7 +41,7 @@ class WebMenusControllerTest {
 
     @Test
     fun testGetAll() = runBlocking {
-        val getWebMenusUseCase = mockk<IGetWebMenusUseCase>()
+        val getWebMenusUseCase = mockk<IListChildModelSuspendUseCase<WebMenu, String>>()
         val controller = WebMenusController(
             mockk(), mockk(), getWebMenusUseCase, mockk(),
             mockk(), mockk(), mockk()

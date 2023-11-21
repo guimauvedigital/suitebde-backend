@@ -20,7 +20,7 @@ class DatabaseWebPagesRepositoryTest {
                 "url", "title", "content", false
             ), "associationId"
         ) ?: fail("Unable to create page")
-        val pageFromDatabase = repository.getWebPages("associationId")
+        val pageFromDatabase = repository.list("associationId")
         assertEquals(1, pageFromDatabase.size)
         assertEquals(pageFromDatabase.first().id, page.id)
         assertEquals(pageFromDatabase.first().associationId, page.associationId)
@@ -28,6 +28,19 @@ class DatabaseWebPagesRepositoryTest {
         assertEquals(pageFromDatabase.first().title, page.title)
         assertEquals(pageFromDatabase.first().content, page.content)
         assertEquals(pageFromDatabase.first().home, page.home)
+    }
+
+    @Test
+    fun getWebPagesInAssociationLimitOffset() = runBlocking {
+        val database = Database(protocol = "h2", name = "getWebPagesInAssociationLimitOffset")
+        val repository = DatabaseWebPagesRepository(database)
+        for (i in 1..4) repository.create(
+            CreateWebPagePayload(
+                "url", "title $i", "content", false
+            ), "associationId"
+        )
+        val pageFromDatabase = repository.list(1, 2, "associationId")
+        assertEquals(1, pageFromDatabase.size)
     }
 
     @Test
@@ -39,7 +52,7 @@ class DatabaseWebPagesRepositoryTest {
                 "url", "title", "content", false
             ), "associationId"
         ) ?: fail("Unable to create page")
-        val pageFromDatabase = repository.getWebPages("otherAssociationId")
+        val pageFromDatabase = repository.list("otherAssociationId")
         assertEquals(0, pageFromDatabase.size)
     }
 

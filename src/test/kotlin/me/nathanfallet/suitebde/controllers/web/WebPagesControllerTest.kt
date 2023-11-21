@@ -16,10 +16,10 @@ import me.nathanfallet.suitebde.models.web.WebPage
 import me.nathanfallet.suitebde.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetHomeWebPageUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetWebPageByUrlUseCase
-import me.nathanfallet.suitebde.usecases.web.IGetWebPagesUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import kotlin.test.Test
@@ -45,7 +45,7 @@ class WebPagesControllerTest {
 
     @Test
     fun testGetAll() = runBlocking {
-        val getWebPagesUseCase = mockk<IGetWebPagesUseCase>()
+        val getWebPagesUseCase = mockk<IListChildModelSuspendUseCase<WebPage, String>>()
         val controller = WebPagesController(
             mockk(), mockk(), getWebPagesUseCase, mockk(),
             mockk(), mockk(), mockk(), mockk(), mockk()

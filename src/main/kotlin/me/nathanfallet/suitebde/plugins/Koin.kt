@@ -48,6 +48,8 @@ import me.nathanfallet.usecases.models.get.GetChildModelFromRepositorySuspendUse
 import me.nathanfallet.usecases.models.get.GetModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.ListChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.UpdateChildModelFromRepositorySuspendUseCase
@@ -140,7 +142,9 @@ fun Application.configureKoin() {
             single<IDeleteCodeInEmailUseCase> { DeleteCodeInEmailUseCase(get()) }
 
             // Domains in associations
-            single<IGetDomainsInAssociationsUseCase> { GetDomainsInAssociationsUseCase(get()) }
+            single<IListChildModelSuspendUseCase<DomainInAssociation, String>>(named<DomainInAssociation>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<IDomainsInAssociationsRepository>())
+            }
             single<IGetChildModelSuspendUseCase<DomainInAssociation, String, String>>(named<DomainInAssociation>()) {
                 GetChildModelFromRepositorySuspendUseCase(get<IDomainsInAssociationsRepository>())
             }
@@ -160,7 +164,9 @@ fun Application.configureKoin() {
             single<IGetUserUseCase> { GetUserUseCase(get()) }
             single<IGetUserForCallUseCase> { GetUserForCallUseCase(get(), get()) }
             single<IRequireUserForCallUseCase> { RequireUserForCallUseCase(get()) }
-            single<IGetUsersInAssociationUseCase> { GetUsersInAssociationUseCase(get()) }
+            single<IListChildModelSuspendUseCase<User, String>>(named<User>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<IUsersRepository>())
+            }
             single<IGetChildModelSuspendUseCase<User, String, String>>(named<User>()) {
                 GetChildModelFromRepositorySuspendUseCase(get<IUsersRepository>())
             }
@@ -181,7 +187,9 @@ fun Application.configureKoin() {
             single<ICheckPermissionSuspendUseCase> { CheckPermissionUseCase() }
 
             // Web
-            single<IGetWebPagesUseCase> { GetWebPagesUseCase(get()) }
+            single<IListChildModelSuspendUseCase<WebPage, String>>(named<WebPage>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<IWebPagesRepository>())
+            }
             single<IGetWebPageByUrlUseCase> { GetWebPageByUrlUseCase(get()) }
             single<IGetHomeWebPageUseCase> { GetHomeWebPageUseCase(get()) }
             single<IGetChildModelSuspendUseCase<WebPage, String, String>>(named<WebPage>()) {
@@ -196,8 +204,10 @@ fun Application.configureKoin() {
             single<IDeleteChildModelSuspendUseCase<WebPage, String, String>>(named<WebPage>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get<IWebPagesRepository>())
             }
-            single<IGetWebMenusUseCase> { GetWebMenusUseCase(get()) }
-            single<IGetPublicMenuForCallUseCase> { GetPublicMenuForCallUseCase(get(), get()) }
+            single<IListChildModelSuspendUseCase<WebMenu, String>>(named<WebMenu>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<IWebMenusRepository>())
+            }
+            single<IGetPublicMenuForCallUseCase> { GetPublicMenuForCallUseCase(get(), get(named<WebMenu>())) }
             single<IGetAdminMenuForCallUseCase> { GetAdminMenuForCallUseCase(get(), get(), get(), get()) }
             single<IGetChildModelSuspendUseCase<WebMenu, String, String>>(named<WebMenu>()) {
                 GetChildModelFromRepositorySuspendUseCase(get<IWebMenusRepository>())
@@ -229,7 +239,7 @@ fun Application.configureKoin() {
                 DomainsInAssociationsController(
                     get(),
                     get(),
-                    get(),
+                    get(named<DomainInAssociation>()),
                     get(named<DomainInAssociation>()),
                     get(named<DomainInAssociation>()),
                     get(named<DomainInAssociation>())
@@ -257,7 +267,7 @@ fun Application.configureKoin() {
                 UsersController(
                     get(),
                     get(),
-                    get(),
+                    get(named<User>()),
                     get(named<User>()),
                     get(named<User>())
                 )
@@ -268,7 +278,7 @@ fun Application.configureKoin() {
                 WebPagesController(
                     get(),
                     get(),
-                    get(),
+                    get(named<WebPage>()),
                     get(),
                     get(),
                     get(named<WebPage>()),
@@ -283,7 +293,7 @@ fun Application.configureKoin() {
                 WebMenusController(
                     get(),
                     get(),
-                    get(),
+                    get(named<WebMenu>()),
                     get(named<WebMenu>()),
                     get(named<WebMenu>()),
                     get(named<WebMenu>()),

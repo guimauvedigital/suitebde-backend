@@ -193,7 +193,7 @@ class DatabaseAssociationRepositoryTest {
                 "email", "password", "firstname", "lastname"
             )
         ) ?: fail("Unable to create association")
-        val associations = repository.getAssociations()
+        val associations = repository.list()
         assertEquals(associations.size, 1)
         assertEquals(associations.first().id, association.id)
         assertEquals(associations.first().name, association.name)
@@ -202,6 +202,20 @@ class DatabaseAssociationRepositoryTest {
         assertEquals(associations.first().validated, association.validated)
         assertEquals(associations.first().createdAt, association.createdAt)
         assertEquals(associations.first().expiresAt, association.expiresAt)
+    }
+
+    @Test
+    fun getAssociationsLimitOffset() = runBlocking {
+        val database = Database(protocol = "h2", name = "getAssociationsLimitOffset")
+        val repository = DatabaseAssociationRepository(database)
+        for (i in 1..4) repository.create(
+            CreateAssociationPayload(
+                "name $i", "school", "city",
+                "email", "password", "firstname", "lastname"
+            )
+        )
+        val associations = repository.list(1, 2)
+        assertEquals(associations.size, 1)
     }
 
     @Test

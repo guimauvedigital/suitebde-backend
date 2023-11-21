@@ -13,11 +13,11 @@ import me.nathanfallet.suitebde.models.associations.CreateDomainInAssociationPay
 import me.nathanfallet.suitebde.models.associations.DomainInAssociation
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.usecases.associations.IGetDomainsInAssociationsUseCase
 import me.nathanfallet.suitebde.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -39,7 +39,7 @@ class DomainsInAssociationsControllerTest {
 
     @Test
     fun testGetAll() = runBlocking {
-        val getDomainsInAssociationsUseCase = mockk<IGetDomainsInAssociationsUseCase>()
+        val getDomainsInAssociationsUseCase = mockk<IListChildModelSuspendUseCase<DomainInAssociation, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { getDomainsInAssociationsUseCase(association.id) } returns listOf(domain)
         val controller = DomainsInAssociationsController(

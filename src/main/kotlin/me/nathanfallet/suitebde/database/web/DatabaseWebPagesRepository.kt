@@ -11,10 +11,19 @@ class DatabaseWebPagesRepository(
     private val database: Database
 ) : IWebPagesRepository {
 
-    override suspend fun getWebPages(associationId: String): List<WebPage> {
+    override suspend fun list(parentId: String): List<WebPage> {
         return database.dbQuery {
             WebPages
-                .select { WebPages.associationId eq associationId }
+                .select { WebPages.associationId eq parentId }
+                .map(WebPages::toWebPage)
+        }
+    }
+
+    override suspend fun list(limit: Long, offset: Long, parentId: String): List<WebPage> {
+        return database.dbQuery {
+            WebPages
+                .select { WebPages.associationId eq parentId }
+                .limit(limit.toInt(), offset)
                 .map(WebPages::toWebPage)
         }
     }

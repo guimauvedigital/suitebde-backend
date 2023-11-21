@@ -7,6 +7,7 @@ import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.usecases.associations.IRequireAssociationForCallUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -24,7 +25,7 @@ class GetPublicMenuForCallUseCaseTest {
     @Test
     fun invoke() = runBlocking {
         val requireAssociationForCallUseCaseTest = mockk<IRequireAssociationForCallUseCase>()
-        val getWebMenusUseCase = mockk<IGetWebMenusUseCase>()
+        val getWebMenusUseCase = mockk<IListChildModelSuspendUseCase<WebMenu, String>>()
         val useCase = GetPublicMenuForCallUseCase(requireAssociationForCallUseCaseTest, getWebMenusUseCase)
         coEvery { requireAssociationForCallUseCaseTest.invoke(any()) } returns association
         coEvery { getWebMenusUseCase.invoke(association.id) } returns listOf(menu)

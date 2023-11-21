@@ -65,10 +65,19 @@ class DatabaseAssociationRepository(
         }
     }
 
-    override suspend fun getAssociations(): List<Association> {
+    override suspend fun list(): List<Association> {
         return database.dbQuery {
             Associations
                 .selectAll()
+                .map(Associations::toAssociation)
+        }
+    }
+
+    override suspend fun list(limit: Long, offset: Long): List<Association> {
+        return database.dbQuery {
+            Associations
+                .selectAll()
+                .limit(limit.toInt(), offset)
                 .map(Associations::toAssociation)
         }
     }

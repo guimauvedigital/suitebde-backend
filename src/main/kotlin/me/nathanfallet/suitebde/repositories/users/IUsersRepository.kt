@@ -10,6 +10,4 @@ interface IUsersRepository : IChildModelSuspendRepository<User, String, CreateUs
     suspend fun get(id: String): User?
     suspend fun getForEmail(email: String, includePassword: Boolean): User?
 
-    suspend fun getInAssociation(associationId: String): List<User>
-
 }

@@ -11,10 +11,19 @@ class DatabaseWebMenusRepository(
     private val database: Database
 ) : IWebMenusRepository {
 
-    override suspend fun getMenus(associationId: String): List<WebMenu> {
+    override suspend fun list(parentId: String): List<WebMenu> {
         return database.dbQuery {
             WebMenus
-                .select { WebMenus.associationId eq associationId }
+                .select { WebMenus.associationId eq parentId }
+                .map(WebMenus::toWebMenu)
+        }
+    }
+
+    override suspend fun list(limit: Long, offset: Long, parentId: String): List<WebMenu> {
+        return database.dbQuery {
+            WebMenus
+                .select { WebMenus.associationId eq parentId }
+                .limit(limit.toInt(), offset)
                 .map(WebMenus::toWebMenu)
         }
     }

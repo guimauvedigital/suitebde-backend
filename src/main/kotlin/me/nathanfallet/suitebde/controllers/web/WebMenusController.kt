@@ -10,17 +10,17 @@ import me.nathanfallet.suitebde.models.web.CreateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.UpdateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.usecases.users.IRequireUserForCallUseCase
-import me.nathanfallet.suitebde.usecases.web.IGetWebMenusUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class WebMenusController(
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
-    private val getWebMenusUseCase: IGetWebMenusUseCase,
+    private val getWebMenusUseCase: IListChildModelSuspendUseCase<WebMenu, String>,
     private val getWebMenuUseCase: IGetChildModelSuspendUseCase<WebMenu, String, String>,
     private val createWebMenuUseCase: ICreateChildModelSuspendUseCase<WebMenu, CreateWebMenuPayload, String>,
     private val updateWebMenuUseCase: IUpdateChildModelSuspendUseCase<WebMenu, String, UpdateWebMenuPayload, String>,

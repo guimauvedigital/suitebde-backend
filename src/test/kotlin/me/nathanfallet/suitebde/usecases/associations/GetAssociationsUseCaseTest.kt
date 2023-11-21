@@ -31,7 +31,7 @@ class GetAssociationsUseCaseTest {
             "id", "name", "school", "city",
             true, Clock.System.now(), Clock.System.now()
         )
-        coEvery { associationRepository.getAssociations() } returns listOf(association)
+        coEvery { associationRepository.list() } returns listOf(association)
         assertEquals(listOf(association), useCase(false))
     }
 

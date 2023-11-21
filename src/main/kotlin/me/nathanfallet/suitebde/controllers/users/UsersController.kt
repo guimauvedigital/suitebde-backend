@@ -9,16 +9,16 @@ import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.usecases.users.IGetUsersInAssociationUseCase
 import me.nathanfallet.suitebde.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class UsersController(
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
-    private val getUsersInAssociationUseCase: IGetUsersInAssociationUseCase,
+    private val getUsersInAssociationUseCase: IListChildModelSuspendUseCase<User, String>,
     private val getUserUseCase: IGetChildModelSuspendUseCase<User, String, String>,
     private val updateUserUseCase: IUpdateChildModelSuspendUseCase<User, String, UpdateUserPayload, String>
 ) : IChildModelController<User, String, CreateUserPayload, UpdateUserPayload, Association, String> {

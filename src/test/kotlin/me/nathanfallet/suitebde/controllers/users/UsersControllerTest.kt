@@ -12,9 +12,9 @@ import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.usecases.users.IGetUsersInAssociationUseCase
 import me.nathanfallet.suitebde.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import org.junit.jupiter.api.assertThrows
@@ -44,7 +44,7 @@ class UsersControllerTest {
     fun testGetAll() = runBlocking {
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
-        val getUsersInAssociationUseCase = mockk<IGetUsersInAssociationUseCase>()
+        val getUsersInAssociationUseCase = mockk<IListChildModelSuspendUseCase<User, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns true

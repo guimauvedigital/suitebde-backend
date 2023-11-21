@@ -11,17 +11,17 @@ import me.nathanfallet.suitebde.models.web.WebPage
 import me.nathanfallet.suitebde.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetHomeWebPageUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetWebPageByUrlUseCase
-import me.nathanfallet.suitebde.usecases.web.IGetWebPagesUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class WebPagesController(
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
-    private val getWebPagesUseCase: IGetWebPagesUseCase,
+    private val getWebPagesUseCase: IListChildModelSuspendUseCase<WebPage, String>,
     private val getWebPageByUrlUseCase: IGetWebPageByUrlUseCase,
     private val getHomeWebPageUseCase: IGetHomeWebPageUseCase,
     private val getWebPageUseCase: IGetChildModelSuspendUseCase<WebPage, String, String>,

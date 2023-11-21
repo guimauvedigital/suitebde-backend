@@ -76,9 +76,19 @@ class DatabaseDomainsInAssociationsRepositoryTest {
         val repository = DatabaseDomainsInAssociationsRepository(database)
         val domain = repository.create(CreateDomainInAssociationPayload("domain"), "associationId")
             ?: fail("Unable to create domain")
-        val domains = repository.getDomains("associationId")
+        val domains = repository.list("associationId")
         assertEquals(domains.size, 1)
         assertEquals(domains.first().domain, domain.domain)
+    }
+
+    @Test
+    fun getDomainsLimitOffset() = runBlocking {
+        val database = Database(protocol = "h2", name = "getDomainsLimitOffset")
+        val repository = DatabaseDomainsInAssociationsRepository(database)
+        for (i in 1..4) repository.create(CreateDomainInAssociationPayload("domain $i"), "associationId")
+        val domains = repository.list(1, 2, "associationId")
+        assertEquals(domains.size, 1)
+        assertEquals(domains.first().domain, "domain 3")
     }
 
     @Test
@@ -87,7 +97,7 @@ class DatabaseDomainsInAssociationsRepositoryTest {
         val repository = DatabaseDomainsInAssociationsRepository(database)
         repository.create(CreateDomainInAssociationPayload("domain"), "associationId")
             ?: fail("Unable to create domain")
-        val domains = repository.getDomains("otherAssociationId")
+        val domains = repository.list("otherAssociationId")
         assertEquals(domains.size, 0)
     }
 

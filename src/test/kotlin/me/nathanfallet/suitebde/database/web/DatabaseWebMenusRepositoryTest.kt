@@ -20,13 +20,26 @@ class DatabaseWebMenusRepositoryTest {
                 "title", "url", 42
             ), "associationId"
         ) ?: fail("Unable to create menu")
-        val menuFromDatabase = repository.getMenus("associationId")
+        val menuFromDatabase = repository.list("associationId")
         assertEquals(1, menuFromDatabase.size)
         assertEquals(menuFromDatabase.first().id, menu.id)
         assertEquals(menuFromDatabase.first().associationId, menu.associationId)
         assertEquals(menuFromDatabase.first().title, menu.title)
         assertEquals(menuFromDatabase.first().url, menu.url)
         assertEquals(menuFromDatabase.first().position, menu.position)
+    }
+
+    @Test
+    fun getWebMenusInAssociationLimitOffset() = runBlocking {
+        val database = Database(protocol = "h2", name = "getWebMenusInAssociationLimitOffset")
+        val repository = DatabaseWebMenusRepository(database)
+        for (i in 1..4) repository.create(
+            CreateWebMenuPayload(
+                "title $i", "url", 42
+            ), "associationId"
+        )
+        val menuFromDatabase = repository.list(1, 2, "associationId")
+        assertEquals(1, menuFromDatabase.size)
     }
 
     @Test
@@ -38,7 +51,7 @@ class DatabaseWebMenusRepositoryTest {
                 "title", "url", 42
             ), "associationId"
         ) ?: fail("Unable to create menu")
-        val menuFromDatabase = repository.getMenus("otherAssociationId")
+        val menuFromDatabase = repository.list("otherAssociationId")
         assertEquals(0, menuFromDatabase.size)
     }
 

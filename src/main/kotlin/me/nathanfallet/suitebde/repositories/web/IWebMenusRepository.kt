@@ -6,8 +6,4 @@ import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 
 interface IWebMenusRepository :
-    IChildModelSuspendRepository<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, String> {
-
-    suspend fun getMenus(associationId: String): List<WebMenu>
-
-}
+    IChildModelSuspendRepository<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, String>

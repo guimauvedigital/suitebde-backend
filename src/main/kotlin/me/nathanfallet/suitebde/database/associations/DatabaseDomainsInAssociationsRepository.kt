@@ -10,10 +10,19 @@ class DatabaseDomainsInAssociationsRepository(
     private val database: Database
 ) : IDomainsInAssociationsRepository {
 
-    override suspend fun getDomains(associationId: String): List<DomainInAssociation> {
+    override suspend fun list(parentId: String): List<DomainInAssociation> {
         return database.dbQuery {
             DomainsInAssociations
-                .select { DomainsInAssociations.associationId eq associationId }
+                .select { DomainsInAssociations.associationId eq parentId }
+                .map(DomainsInAssociations::toDomainInAssociation)
+        }
+    }
+
+    override suspend fun list(limit: Long, offset: Long, parentId: String): List<DomainInAssociation> {
+        return database.dbQuery {
+            DomainsInAssociations
+                .select { DomainsInAssociations.associationId eq parentId }
+                .limit(limit.toInt(), offset)
                 .map(DomainsInAssociations::toDomainInAssociation)
         }
     }

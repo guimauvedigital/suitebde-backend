@@ -154,7 +154,7 @@ class DatabaseUsersRepositoryTest {
             ),
             "associationId"
         ) ?: fail("Unable to create user")
-        val result = repository.getInAssociation(user.associationId)
+        val result = repository.list(user.associationId)
         assertEquals(1, result.size)
         assertEquals(user.id, result.first().id)
         assertEquals(user.associationId, result.first().associationId)
@@ -163,6 +163,21 @@ class DatabaseUsersRepositoryTest {
         assertEquals(user.firstName, result.first().firstName)
         assertEquals(user.lastName, result.first().lastName)
         assertEquals(user.superuser, result.first().superuser)
+    }
+
+    @Test
+    fun getUsersInAssociationLimitOffset() = runBlocking {
+        val database = Database(protocol = "h2", name = "getUsersInAssociationLimitOffset")
+        val repository = DatabaseUsersRepository(database)
+        for (i in 1..4) repository.create(
+            CreateUserPayload(
+                "email $i", "password",
+                "firstName", "lastName", false
+            ),
+            "associationId"
+        ) ?: fail("Unable to create user")
+        val result = repository.list(1, 2, "associationId")
+        assertEquals(1, result.size)
     }
 
     @Test
@@ -176,7 +191,7 @@ class DatabaseUsersRepositoryTest {
             ),
             "associationId"
         ) ?: fail("Unable to create user")
-        assertEquals(listOf(), repository.getInAssociation("otherAssociationId"))
+        assertEquals(listOf(), repository.list("otherAssociationId"))
     }
 
     @Test
