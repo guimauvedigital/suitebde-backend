@@ -97,7 +97,7 @@ class UsersRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/admin/users")
+        val response = client.get("/en/admin/users")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_create")?.`is`("a"))
@@ -127,7 +127,7 @@ class UsersRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/admin/users/id/update")
+        val response = client.get("/en/admin/users/id/update")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_update")?.`is`("h6"))

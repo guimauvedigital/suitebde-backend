@@ -96,7 +96,7 @@ class DomainsInAssociationsRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/admin/associations/id/domains")
+        val response = client.get("/en/admin/associations/id/domains")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_create")?.`is`("a"))
@@ -126,7 +126,7 @@ class DomainsInAssociationsRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/admin/associations/id/domains/create")
+        val response = client.get("/en/admin/associations/id/domains/create")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_create")?.`is`("h6"))

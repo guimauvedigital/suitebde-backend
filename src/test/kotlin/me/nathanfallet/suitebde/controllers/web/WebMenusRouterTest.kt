@@ -97,7 +97,7 @@ class WebMenusRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/admin/webmenus")
+        val response = client.get("/en/admin/webmenus")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_create")?.`is`("a"))
@@ -127,7 +127,7 @@ class WebMenusRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/admin/webmenus/id/update")
+        val response = client.get("/en/admin/webmenus/id/update")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_update")?.`is`("h6"))

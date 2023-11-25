@@ -100,7 +100,7 @@ class WebPagesRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/admin/webpages")
+        val response = client.get("/en/admin/webpages")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_create")?.`is`("a"))
@@ -130,7 +130,7 @@ class WebPagesRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/admin/webpages/id/update")
+        val response = client.get("/en/admin/webpages/id/update")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_update")?.`is`("h6"))
@@ -160,7 +160,7 @@ class WebPagesRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/")
+        val response = client.get("/en")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(page.title, document.getElementById("webpages_title")?.text())
@@ -190,7 +190,7 @@ class WebPagesRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/pages/url")
+        val response = client.get("/en/pages/url")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(page.title, document.getElementById("webpages_title")?.text())
@@ -223,7 +223,7 @@ class WebPagesRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/pages/bad")
+        val response = client.get("/en/pages/bad")
         assertEquals(HttpStatusCode.NotFound, response.status)
     }
 

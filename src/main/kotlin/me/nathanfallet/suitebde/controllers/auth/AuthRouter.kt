@@ -20,6 +20,13 @@ class AuthRouter(
 ) : IRouter {
 
     override fun createRoutes(root: Route) {
+        createWebRoutes(root)
+        root.route("/{locale}") {
+            createWebRoutes(this)
+        }
+    }
+
+    private fun createWebRoutes(root: Route) {
         root.route("/auth") {
             route("/login") {
                 createGetLoginRoute(this)
