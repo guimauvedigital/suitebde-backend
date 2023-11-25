@@ -14,16 +14,18 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.datetime.Clock
 import me.nathanfallet.ktorx.controllers.base.IChildModelController
+import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.AssociationForCallRouter
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.web.CreateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.UpdateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.plugins.*
-import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.associations.IRequireAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
+import me.nathanfallet.usecases.localization.ITranslateUseCase
 import org.jsoup.Jsoup
+import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -61,7 +63,7 @@ class WebMenusRouterTest {
         val controller =
             mockk<IChildModelController<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String>>()
         val router = WebMenusRouter(
-            controller, mockk(), mockk(), AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
+            controller, mockk(), mockk(), mockk(), AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.getAll(any(), association) } returns listOf(menu)
@@ -77,17 +79,20 @@ class WebMenusRouterTest {
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
         val controller =
             mockk<IChildModelController<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String>>()
+        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = WebMenusRouter(
             controller,
+            getLocaleForCallUseCase,
             translateUseCase,
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.getAll(any(), association) } returns listOf(menu)
-        coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf()
+        coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
+        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)
@@ -104,17 +109,20 @@ class WebMenusRouterTest {
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
         val controller =
             mockk<IChildModelController<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String>>()
+        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = WebMenusRouter(
             controller,
+            getLocaleForCallUseCase,
             translateUseCase,
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.get(any(), association, "id") } returns menu
-        coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf()
+        coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
+        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)

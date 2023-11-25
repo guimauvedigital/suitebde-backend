@@ -10,7 +10,7 @@
 
     <properties>
         <kotlin.code.style>official</kotlin.code.style>
-        <kotlin_version>1.9.10</kotlin_version>
+        <kotlin_version>1.9.20</kotlin_version>
         <ktor_version>2.3.5</ktor_version>
         <koin_version>3.5.0</koin_version>
         <kotlinx_datetime_version>0.4.0</kotlinx_datetime_version>
@@ -169,11 +169,6 @@
             <version>1.5</version>
         </dependency>
         <dependency>
-            <groupId>com.github.aymanizz</groupId>
-            <artifactId>ktor-i18n</artifactId>
-            <version>2.0.0</version>
-        </dependency>
-        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
             <version>${logback_version}</version>
@@ -191,27 +186,42 @@
         <dependency>
             <groupId>me.nathanfallet.usecases</groupId>
             <artifactId>usecases-jvm</artifactId>
-            <version>1.3.0</version>
+            <version>1.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>me.nathanfallet.i18n</groupId>
+            <artifactId>i18n-jvm</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>me.nathanfallet.ktorx</groupId>
+            <artifactId>ktor-i18n-jvm</artifactId>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>me.nathanfallet.ktorx</groupId>
             <artifactId>ktor-routers-jvm</artifactId>
-            <version>1.4.1</version>
+            <version>1.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>me.nathanfallet.ktorx</groupId>
+            <artifactId>ktor-routers-locale-jvm</artifactId>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>me.nathanfallet.ktorx</groupId>
             <artifactId>ktor-sentry-jvm</artifactId>
-            <version>1.4.1</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>me.nathanfallet.ktorx</groupId>
             <artifactId>ktor-i18n-freemarker-jvm</artifactId>
-            <version>1.4.1</version>
+            <version>1.5.0</version>
         </dependency>
         <dependency>
             <groupId>me.nathanfallet.cloudflare</groupId>
             <artifactId>cloudflare-api-client-jvm</artifactId>
-            <version>4.0.3</version>
+            <version>4.0.4</version>
         </dependency>
         <dependency>
             <groupId>io.sentry</groupId>

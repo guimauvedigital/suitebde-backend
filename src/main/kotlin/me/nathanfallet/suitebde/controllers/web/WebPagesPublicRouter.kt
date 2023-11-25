@@ -5,6 +5,7 @@ import io.ktor.server.routing.*
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.models.templates.TemplateMapping
 import me.nathanfallet.ktorx.routers.IChildModelRouter
+import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.controllers.models.PublicChildModelRouter
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.web.CreateWebPagePayload
@@ -17,6 +18,7 @@ class WebPagesPublicRouter(
     webPagesController: IWebPagesController,
     associationsRouter: IChildModelRouter<Association, String, *, *, *, *>,
     getPublicMenuForCallUseCase: IGetPublicMenuForCallUseCase,
+    getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     mapping: TemplateMapping,
     respondTemplate: suspend ApplicationCall.(String, Map<String, Any>) -> Unit,
     route: String
@@ -27,6 +29,7 @@ class WebPagesPublicRouter(
     webPagesController,
     associationsRouter,
     getPublicMenuForCallUseCase,
+    getLocaleForCallUseCase,
     mapping,
     respondTemplate,
     route

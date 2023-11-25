@@ -1,12 +1,13 @@
 package me.nathanfallet.suitebde.plugins
 
-import com.github.aymanizz.ktori18n.MessageResolver
-import com.github.aymanizz.ktori18n.i18n
 import io.ktor.server.application.*
 import me.nathanfallet.cloudflare.client.CloudflareClient
 import me.nathanfallet.cloudflare.client.ICloudflareClient
+import me.nathanfallet.i18n.usecases.localization.TranslateUseCase
 import me.nathanfallet.ktorx.controllers.base.IChildModelController
 import me.nathanfallet.ktorx.controllers.base.IModelController
+import me.nathanfallet.ktorx.usecases.localization.GetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.*
 import me.nathanfallet.suitebde.controllers.auth.AuthController
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
@@ -38,6 +39,7 @@ import me.nathanfallet.suitebde.usecases.auth.*
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.*
 import me.nathanfallet.suitebde.usecases.web.*
+import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.create.CreateChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateModelSuspendUseCase
@@ -61,9 +63,6 @@ import org.koin.ktor.plugin.Koin
 
 fun Application.configureKoin() {
     install(Koin) {
-        val i18nModule = module {
-            single<MessageResolver> { this@configureKoin.i18n }
-        }
         val databaseModule = module {
             single {
                 Database(
@@ -100,7 +99,8 @@ fun Application.configureKoin() {
             // Application
             single<ISendEmailUseCase> { SendEmailUseCase(get()) }
             single<IExpireUseCase> { ExpireUseCase(get(), get(), get(named<Association>())) }
-            single<ITranslateUseCase> { TranslateUseCase(get()) }
+            single<ITranslateUseCase> { TranslateUseCase() }
+            single<IGetLocaleForCallUseCase> { GetLocaleForCallUseCase() }
             single<IGetSessionForCallUseCase> { GetSessionForCallUseCase() }
             single<ISetSessionForCallUseCase> { SetSessionForCallUseCase() }
             single<IGetZoneForDomainUseCase> {
@@ -208,7 +208,7 @@ fun Application.configureKoin() {
                 ListChildModelFromRepositorySuspendUseCase(get<IWebMenusRepository>())
             }
             single<IGetPublicMenuForCallUseCase> { GetPublicMenuForCallUseCase(get(), get(named<WebMenu>())) }
-            single<IGetAdminMenuForCallUseCase> { GetAdminMenuForCallUseCase(get(), get(), get(), get()) }
+            single<IGetAdminMenuForCallUseCase> { GetAdminMenuForCallUseCase(get(), get(), get(), get(), get()) }
             single<IGetChildModelSuspendUseCase<WebMenu, String, String>>(named<WebMenu>()) {
                 GetChildModelFromRepositorySuspendUseCase(get<IWebMenusRepository>())
             }
@@ -303,16 +303,15 @@ fun Application.configureKoin() {
         }
         val routerModule = module {
             single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get(named<Association>())) }
-            single { AssociationsRouter(get(named<Association>()), get(), get()) }
-            single { DomainsInAssociationsRouter(get(named<DomainInAssociation>()), get(), get(), get()) }
-            single { UsersRouter(get(named<User>()), get(), get(), get()) }
-            single { AuthRouter(get(), get()) }
-            single { WebPagesRouter(get(), get(), get(), get(), get()) }
-            single { WebMenusRouter(get(named<WebMenu>()), get(), get(), get()) }
+            single { AssociationsRouter(get(named<Association>()), get(), get(), get()) }
+            single { DomainsInAssociationsRouter(get(named<DomainInAssociation>()), get(), get(), get(), get()) }
+            single { UsersRouter(get(named<User>()), get(), get(), get(), get()) }
+            single { AuthRouter(get(), get(), get()) }
+            single { WebPagesRouter(get(), get(), get(), get(), get(), get()) }
+            single { WebMenusRouter(get(named<WebMenu>()), get(), get(), get(), get()) }
         }
 
         modules(
-            i18nModule,
             databaseModule,
             serviceModule,
             repositoryModule,

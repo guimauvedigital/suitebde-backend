@@ -1,12 +1,12 @@
 package me.nathanfallet.suitebde.controllers.models
 
-import com.github.aymanizz.ktori18n.locale
 import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
 import me.nathanfallet.ktorx.controllers.base.IChildModelController
 import me.nathanfallet.ktorx.models.templates.TemplateMapping
 import me.nathanfallet.ktorx.routers.IChildModelRouter
-import me.nathanfallet.ktorx.routers.templates.TemplateChildModelRouter
+import me.nathanfallet.ktorx.routers.localization.LocalizedTemplateChildModelRouter
+import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetPublicMenuForCallUseCase
 import me.nathanfallet.usecases.models.IChildModel
 import kotlin.reflect.KClass
@@ -18,12 +18,13 @@ open class PublicChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdateP
     controller: IChildModelController<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>,
     parentRouter: IChildModelRouter<ParentModel, ParentId, *, *, *, *>?,
     private val getPublicMenuForCallUseCase: IGetPublicMenuForCallUseCase,
+    getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     mapping: TemplateMapping,
     respondTemplate: (suspend ApplicationCall.(String, Map<String, Any>) -> Unit)? = null,
     route: String? = null,
     id: String? = null,
     prefix: String? = null
-) : TemplateChildModelRouter<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>(
+) : LocalizedTemplateChildModelRouter<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>(
     modelClass,
     createPayloadClass,
     updatePayloadClass,
@@ -32,11 +33,11 @@ open class PublicChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdateP
     mapping,
     { template, model ->
         val newModel = model + mapOf(
-            "locale" to locale,
             "menu" to getPublicMenuForCallUseCase(this),
         )
         respondTemplate?.invoke(this, template, newModel) ?: respondTemplate(template, newModel)
     },
+    getLocaleForCallUseCase,
     route,
     id,
     prefix

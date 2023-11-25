@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.usecases.associations
 
 import io.ktor.server.application.*
 import io.ktor.server.request.*
+import io.ktor.util.*
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -22,9 +23,14 @@ class GetAssociationForCallUseCaseTest {
             "id", "name", "school", "city",
             true, Clock.System.now(), Clock.System.now()
         )
+        val attributes = Attributes()
         val call = mockk<ApplicationCall>()
         coEvery { associationRepository.getAssociationForDomain("domain") } returns association
         every { call.request.host() } returns "domain"
+        every { call.attributes } returns attributes
+        // Fetch from repository
+        assertEquals(association, useCase(call))
+        // Fetch from attributes
         assertEquals(association, useCase(call))
     }
 

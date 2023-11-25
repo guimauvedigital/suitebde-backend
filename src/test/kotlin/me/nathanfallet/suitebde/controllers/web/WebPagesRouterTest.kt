@@ -14,15 +14,17 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.datetime.Clock
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.AssociationForCallRouter
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.web.WebPage
 import me.nathanfallet.suitebde.plugins.*
-import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.associations.IRequireAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetPublicMenuForCallUseCase
+import me.nathanfallet.usecases.localization.ITranslateUseCase
 import org.jsoup.Jsoup
+import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -59,7 +61,12 @@ class WebPagesRouterTest {
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
         val controller = mockk<IWebPagesController>()
         val router = WebPagesRouter(
-            controller, mockk(), mockk(), mockk(), AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
+            controller,
+            mockk(),
+            mockk(),
+            mockk(),
+            mockk(),
+            AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.getAll(any(), association) } returns listOf(page)
@@ -74,17 +81,21 @@ class WebPagesRouterTest {
         val client = installApp(this)
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
         val controller = mockk<IWebPagesController>()
+        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = WebPagesRouter(
             controller,
-            translateUseCase, mockk(),
+            getLocaleForCallUseCase,
+            translateUseCase,
+            mockk(),
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.getAll(any(), association) } returns listOf(page)
-        coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf()
+        coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
+        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)
@@ -100,17 +111,21 @@ class WebPagesRouterTest {
         val client = installApp(this)
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
         val controller = mockk<IWebPagesController>()
+        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = WebPagesRouter(
             controller,
-            translateUseCase, mockk(),
+            getLocaleForCallUseCase,
+            translateUseCase,
+            mockk(),
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.get(any(), association, "id") } returns page
-        coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf()
+        coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
+        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)
@@ -126,10 +141,12 @@ class WebPagesRouterTest {
         val client = installApp(this)
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
         val controller = mockk<IWebPagesController>()
+        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getPublicMenuForCallUseCase = mockk<IGetPublicMenuForCallUseCase>()
         val router = WebPagesRouter(
             controller,
+            getLocaleForCallUseCase,
             translateUseCase,
             getPublicMenuForCallUseCase,
             mockk(),
@@ -138,6 +155,7 @@ class WebPagesRouterTest {
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.getHome(any(), association) } returns page
         coEvery { getPublicMenuForCallUseCase(any()) } returns listOf()
+        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)
@@ -153,10 +171,12 @@ class WebPagesRouterTest {
         val client = installApp(this)
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
         val controller = mockk<IWebPagesController>()
+        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getPublicMenuForCallUseCase = mockk<IGetPublicMenuForCallUseCase>()
         val router = WebPagesRouter(
             controller,
+            getLocaleForCallUseCase,
             translateUseCase,
             getPublicMenuForCallUseCase,
             mockk(),
@@ -165,6 +185,7 @@ class WebPagesRouterTest {
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.getByUrl(any(), association, page.url) } returns page
         coEvery { getPublicMenuForCallUseCase(any()) } returns listOf()
+        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)
@@ -180,10 +201,12 @@ class WebPagesRouterTest {
         val client = installApp(this)
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
         val controller = mockk<IWebPagesController>()
+        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getPublicMenuForCallUseCase = mockk<IGetPublicMenuForCallUseCase>()
         val router = WebPagesRouter(
             controller,
+            getLocaleForCallUseCase,
             translateUseCase,
             getPublicMenuForCallUseCase,
             mockk(),
@@ -195,6 +218,7 @@ class WebPagesRouterTest {
             "webpages_not_found"
         )
         coEvery { getPublicMenuForCallUseCase(any()) } returns listOf()
+        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)

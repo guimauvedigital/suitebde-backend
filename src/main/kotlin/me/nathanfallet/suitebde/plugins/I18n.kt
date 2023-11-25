@@ -1,7 +1,7 @@
 package me.nathanfallet.suitebde.plugins
 
-import com.github.aymanizz.ktori18n.I18n
 import io.ktor.server.application.*
+import me.nathanfallet.ktorx.plugins.I18n
 import java.util.*
 
 fun Application.configureI18n() {

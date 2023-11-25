@@ -15,12 +15,14 @@ import io.mockk.mockk
 import kotlinx.datetime.Clock
 import me.nathanfallet.ktorx.controllers.base.IChildModelController
 import me.nathanfallet.ktorx.controllers.base.IModelController
+import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.models.associations.*
 import me.nathanfallet.suitebde.plugins.*
-import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
+import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.UnitModel
 import org.jsoup.Jsoup
+import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -55,10 +57,10 @@ class DomainsInAssociationsRouterTest {
         val client = installApp(this)
         val associationController =
             mockk<IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload>>()
-        val associationRouter = AssociationsRouter(associationController, mockk(), mockk())
+        val associationRouter = AssociationsRouter(associationController, mockk(), mockk(), mockk())
         val controller =
             mockk<IChildModelController<DomainInAssociation, String, CreateDomainInAssociationPayload, Unit, Association, String>>()
-        val router = DomainsInAssociationsRouter(controller, mockk(), mockk(), associationRouter)
+        val router = DomainsInAssociationsRouter(controller, mockk(), mockk(), mockk(), associationRouter)
         coEvery { associationController.get(any(), UnitModel, "id") } returns association
         coEvery { controller.getAll(any(), association) } returns listOf(domain)
         routing {
@@ -72,16 +74,24 @@ class DomainsInAssociationsRouterTest {
         val client = installApp(this)
         val associationController =
             mockk<IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload>>()
-        val associationRouter = AssociationsRouter(associationController, mockk(), mockk())
+        val associationRouter = AssociationsRouter(associationController, mockk(), mockk(), mockk())
         val controller =
             mockk<IChildModelController<DomainInAssociation, String, CreateDomainInAssociationPayload, Unit, Association, String>>()
+        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router =
-            DomainsInAssociationsRouter(controller, translateUseCase, getAdminMenuForCallUseCase, associationRouter)
+            DomainsInAssociationsRouter(
+                controller,
+                getLocaleForCallUseCase,
+                translateUseCase,
+                getAdminMenuForCallUseCase,
+                associationRouter
+            )
         coEvery { associationController.get(any(), UnitModel, "id") } returns association
         coEvery { controller.getAll(any(), association) } returns listOf(domain)
-        coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf()
+        coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
+        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)
@@ -97,13 +107,21 @@ class DomainsInAssociationsRouterTest {
         val client = installApp(this)
         val associationController =
             mockk<IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload>>()
-        val associationRouter = AssociationsRouter(associationController, mockk(), mockk())
+        val associationRouter = AssociationsRouter(associationController, mockk(), mockk(), mockk())
+        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router =
-            DomainsInAssociationsRouter(mockk(), translateUseCase, getAdminMenuForCallUseCase, associationRouter)
+            DomainsInAssociationsRouter(
+                mockk(),
+                getLocaleForCallUseCase,
+                translateUseCase,
+                getAdminMenuForCallUseCase,
+                associationRouter
+            )
         coEvery { associationController.get(any(), UnitModel, "id") } returns association
-        coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf()
+        coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
+        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)

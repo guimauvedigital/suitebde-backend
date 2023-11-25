@@ -17,6 +17,7 @@ class RoutingTest {
             config = ApplicationConfig("application.test.conf")
         }
         application {
+            configureKoin()
             configureI18n()
             configureTemplating()
             configureStatusPage()

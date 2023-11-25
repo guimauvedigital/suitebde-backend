@@ -1,8 +1,9 @@
 package me.nathanfallet.suitebde.controllers.models
 
 import me.nathanfallet.ktorx.controllers.base.IModelController
-import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
+import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
+import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.IModel
 import me.nathanfallet.usecases.models.UnitModel
 import kotlin.reflect.KClass
@@ -12,6 +13,7 @@ open class AdminModelRouter<Model : IModel<Id, CreatePayload, UpdatePayload>, Id
     createPayloadClass: KClass<CreatePayload>,
     updatePayloadClass: KClass<UpdatePayload>,
     controller: IModelController<Model, Id, CreatePayload, UpdatePayload>,
+    getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     route: String? = null,
@@ -23,6 +25,7 @@ open class AdminModelRouter<Model : IModel<Id, CreatePayload, UpdatePayload>, Id
     updatePayloadClass,
     controller,
     null,
+    getLocaleForCallUseCase,
     translateUseCase,
     getAdminMenuForCallUseCase,
     route,

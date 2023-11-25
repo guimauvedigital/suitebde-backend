@@ -14,12 +14,12 @@ import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.application.ISendEmailUseCase
 import me.nathanfallet.suitebde.usecases.application.ISetSessionForCallUseCase
-import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.associations.ICreateCodeInEmailUseCase
 import me.nathanfallet.suitebde.usecases.associations.IDeleteCodeInEmailUseCase
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.associations.IGetCodeInEmailUseCase
 import me.nathanfallet.suitebde.usecases.auth.ILoginUseCase
+import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateModelSuspendUseCase
 import org.junit.jupiter.api.assertThrows

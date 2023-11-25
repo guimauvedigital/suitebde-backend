@@ -1,13 +1,13 @@
 package me.nathanfallet.suitebde.controllers.models
 
-import com.github.aymanizz.ktori18n.locale
 import io.ktor.server.freemarker.*
 import me.nathanfallet.ktorx.controllers.base.IChildModelController
 import me.nathanfallet.ktorx.models.templates.TemplateMapping
 import me.nathanfallet.ktorx.routers.IChildModelRouter
-import me.nathanfallet.ktorx.routers.templates.TemplateChildModelRouter
-import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
+import me.nathanfallet.ktorx.routers.localization.LocalizedTemplateChildModelRouter
+import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
+import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.IChildModel
 import kotlin.reflect.KClass
 
@@ -17,12 +17,13 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
     updatePayloadClass: KClass<UpdatePayload>,
     controller: IChildModelController<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>,
     parentRouter: IChildModelRouter<ParentModel, ParentId, *, *, *, *>?,
+    private val getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     private val translateUseCase: ITranslateUseCase,
     private val getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     route: String? = null,
     id: String? = null,
     prefix: String? = null
-) : TemplateChildModelRouter<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>(
+) : LocalizedTemplateChildModelRouter<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>(
     modelClass,
     createPayloadClass,
     updatePayloadClass,
@@ -39,12 +40,12 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
     { template, model ->
         respondTemplate(
             template, model + mapOf(
-                "locale" to locale,
-                "title" to translateUseCase(locale, "admin_menu_${model["route"]}"),
-                "menu" to getAdminMenuForCallUseCase(this, locale),
+                "title" to translateUseCase(getLocaleForCallUseCase(this), "admin_menu_${model["route"]}"),
+                "menu" to getAdminMenuForCallUseCase(this),
             )
         )
     },
+    getLocaleForCallUseCase,
     route,
     id,
     prefix ?: "/admin"

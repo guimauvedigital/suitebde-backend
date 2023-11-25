@@ -1,6 +1,5 @@
 package me.nathanfallet.suitebde.controllers.auth
 
-import com.github.aymanizz.ktori18n.locale
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
@@ -10,11 +9,13 @@ import io.ktor.server.routing.*
 import kotlinx.datetime.Clock
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.routers.IRouter
+import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.models.auth.*
-import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
+import me.nathanfallet.usecases.localization.ITranslateUseCase
 
 class AuthRouter(
     private val controller: IAuthController,
+    private val getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     private val translateUseCase: ITranslateUseCase
 ) : IRouter {
 
@@ -43,7 +44,7 @@ class AuthRouter(
         root.get {
             call.respondTemplate(
                 "auth/login.ftl",
-                mapOf("locale" to call.locale)
+                mapOf("locale" to getLocaleForCallUseCase(call))
             )
         }
     }
@@ -70,8 +71,8 @@ class AuthRouter(
                 call.respondTemplate(
                     "auth/login.ftl",
                     mapOf(
-                        "locale" to call.locale,
-                        "error" to translateUseCase(call.locale, exception.key)
+                        "locale" to getLocaleForCallUseCase(call),
+                        "error" to translateUseCase(getLocaleForCallUseCase(call), exception.key)
                     )
                 )
             }
@@ -82,7 +83,7 @@ class AuthRouter(
         root.get {
             call.respondTemplate(
                 "auth/register.ftl",
-                mapOf("locale" to call.locale)
+                mapOf("locale" to getLocaleForCallUseCase(call))
             )
         }
     }
@@ -94,12 +95,12 @@ class AuthRouter(
                 val email = parameters["email"] ?: throw ControllerException(
                     HttpStatusCode.BadRequest, "error_body_invalid"
                 )
-                controller.register(RegisterPayload(email), Clock.System.now(), call.locale, call)
+                controller.register(RegisterPayload(email), Clock.System.now(), getLocaleForCallUseCase(call), call)
                 call.respondTemplate(
                     "auth/register.ftl",
                     mapOf(
-                        "locale" to call.locale,
-                        "success" to translateUseCase(call.locale, "auth_register_email_sent")
+                        "locale" to getLocaleForCallUseCase(call),
+                        "success" to translateUseCase(getLocaleForCallUseCase(call), "auth_register_email_sent")
                     )
                 )
             } catch (exception: ControllerException) {
@@ -107,8 +108,8 @@ class AuthRouter(
                 call.respondTemplate(
                     "auth/register.ftl",
                     mapOf(
-                        "locale" to call.locale,
-                        "error" to translateUseCase(call.locale, exception.key)
+                        "locale" to getLocaleForCallUseCase(call),
+                        "error" to translateUseCase(getLocaleForCallUseCase(call), exception.key)
                     )
                 )
             }
@@ -123,7 +124,7 @@ class AuthRouter(
                 call.respondTemplate(
                     "auth/register.ftl",
                     mapOf(
-                        "locale" to call.locale,
+                        "locale" to getLocaleForCallUseCase(call),
                         "code" to payload
                     )
                 )
@@ -132,8 +133,8 @@ class AuthRouter(
                 call.respondTemplate(
                     "auth/register.ftl",
                     mapOf(
-                        "locale" to call.locale,
-                        "error" to translateUseCase(call.locale, exception.key)
+                        "locale" to getLocaleForCallUseCase(call),
+                        "error" to translateUseCase(getLocaleForCallUseCase(call), exception.key)
                     )
                 )
             }
@@ -173,8 +174,8 @@ class AuthRouter(
                 call.respondTemplate(
                     "auth/register.ftl",
                     mapOf(
-                        "locale" to call.locale,
-                        "error" to translateUseCase(call.locale, exception.key)
+                        "locale" to getLocaleForCallUseCase(call),
+                        "error" to translateUseCase(getLocaleForCallUseCase(call), exception.key)
                     )
                 )
             }
@@ -185,7 +186,7 @@ class AuthRouter(
         root.get {
             call.respondTemplate(
                 "auth/join.ftl",
-                mapOf("locale" to call.locale)
+                mapOf("locale" to getLocaleForCallUseCase(call))
             )
         }
     }
@@ -197,12 +198,12 @@ class AuthRouter(
                 val email = parameters["email"] ?: throw ControllerException(
                     HttpStatusCode.BadRequest, "error_body_invalid"
                 )
-                controller.join(JoinPayload(email), Clock.System.now(), call.locale)
+                controller.join(JoinPayload(email), Clock.System.now(), getLocaleForCallUseCase(call))
                 call.respondTemplate(
                     "auth/join.ftl",
                     mapOf(
-                        "locale" to call.locale,
-                        "success" to translateUseCase(call.locale, "auth_join_email_sent")
+                        "locale" to getLocaleForCallUseCase(call),
+                        "success" to translateUseCase(getLocaleForCallUseCase(call), "auth_join_email_sent")
                     )
                 )
             } catch (exception: ControllerException) {
@@ -210,8 +211,8 @@ class AuthRouter(
                 call.respondTemplate(
                     "auth/join.ftl",
                     mapOf(
-                        "locale" to call.locale,
-                        "error" to translateUseCase(call.locale, exception.key)
+                        "locale" to getLocaleForCallUseCase(call),
+                        "error" to translateUseCase(getLocaleForCallUseCase(call), exception.key)
                     )
                 )
             }
@@ -226,7 +227,7 @@ class AuthRouter(
                 call.respondTemplate(
                     "auth/join.ftl",
                     mapOf(
-                        "locale" to call.locale,
+                        "locale" to getLocaleForCallUseCase(call),
                         "code" to payload
                     )
                 )
@@ -235,8 +236,8 @@ class AuthRouter(
                 call.respondTemplate(
                     "auth/join.ftl",
                     mapOf(
-                        "locale" to call.locale,
-                        "error" to translateUseCase(call.locale, exception.key)
+                        "locale" to getLocaleForCallUseCase(call),
+                        "error" to translateUseCase(getLocaleForCallUseCase(call), exception.key)
                     )
                 )
             }
@@ -280,8 +281,8 @@ class AuthRouter(
                 call.respondTemplate(
                     "auth/join.ftl",
                     mapOf(
-                        "locale" to call.locale,
-                        "success" to translateUseCase(call.locale, "auth_join_submitted")
+                        "locale" to getLocaleForCallUseCase(call),
+                        "success" to translateUseCase(getLocaleForCallUseCase(call), "auth_join_submitted")
                     )
                 )
             } catch (exception: ControllerException) {
@@ -289,8 +290,8 @@ class AuthRouter(
                 call.respondTemplate(
                     "auth/join.ftl",
                     mapOf(
-                        "locale" to call.locale,
-                        "error" to translateUseCase(call.locale, exception.key)
+                        "locale" to getLocaleForCallUseCase(call),
+                        "error" to translateUseCase(getLocaleForCallUseCase(call), exception.key)
                     )
                 )
             }

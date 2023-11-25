@@ -14,16 +14,18 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.datetime.Clock
 import me.nathanfallet.ktorx.controllers.base.IChildModelController
+import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.AssociationForCallRouter
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.plugins.*
-import me.nathanfallet.suitebde.usecases.application.ITranslateUseCase
 import me.nathanfallet.suitebde.usecases.associations.IRequireAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
+import me.nathanfallet.usecases.localization.ITranslateUseCase
 import org.jsoup.Jsoup
+import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -61,7 +63,7 @@ class UsersRouterTest {
         val controller =
             mockk<IChildModelController<User, String, CreateUserPayload, UpdateUserPayload, Association, String>>()
         val router = UsersRouter(
-            controller, mockk(), mockk(), AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
+            controller, mockk(), mockk(), mockk(), AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.getAll(any(), association) } returns listOf(user)
@@ -77,17 +79,20 @@ class UsersRouterTest {
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
         val controller =
             mockk<IChildModelController<User, String, CreateUserPayload, UpdateUserPayload, Association, String>>()
+        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = UsersRouter(
             controller,
+            getLocaleForCallUseCase,
             translateUseCase,
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.getAll(any(), association) } returns listOf(user)
-        coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf()
+        coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
+        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)
@@ -104,17 +109,20 @@ class UsersRouterTest {
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
         val controller =
             mockk<IChildModelController<User, String, CreateUserPayload, UpdateUserPayload, Association, String>>()
+        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = UsersRouter(
             controller,
+            getLocaleForCallUseCase,
             translateUseCase,
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.get(any(), association, "id") } returns user
-        coEvery { getAdminMenuForCallUseCase(any(), any()) } returns listOf()
+        coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
+        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)
