@@ -26,22 +26,6 @@
         <main.class>me.nathanfallet.suitebde.ApplicationKt</main.class>
     </properties>
 
-    <repositories>
-        <repository>
-            <id>central</id>
-            <name>Default Repository</name>
-            <layout>default</layout>
-            <url>https://repo1.maven.org/maven2</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>io.ktor</groupId>
