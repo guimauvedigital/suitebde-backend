@@ -101,6 +101,7 @@ fun Application.configureKoin() {
             single<IExpireUseCase> { ExpireUseCase(get(), get(), get(named<Association>())) }
             single<ITranslateUseCase> { TranslateUseCase() }
             single<IGetLocaleForCallUseCase> { GetLocaleForCallUseCase() }
+            single<IGetJWTPrincipalForCallUseCase> { GetJWTPrincipalForCallUseCase() }
             single<IGetSessionForCallUseCase> { GetSessionForCallUseCase() }
             single<ISetSessionForCallUseCase> { SetSessionForCallUseCase() }
             single<IGetZoneForDomainUseCase> {
@@ -162,7 +163,7 @@ fun Application.configureKoin() {
 
             // Users
             single<IGetUserUseCase> { GetUserUseCase(get()) }
-            single<IGetUserForCallUseCase> { GetUserForCallUseCase(get(), get()) }
+            single<IGetUserForCallUseCase> { GetUserForCallUseCase(get(), get(), get()) }
             single<IRequireUserForCallUseCase> { RequireUserForCallUseCase(get()) }
             single<IListChildModelSuspendUseCase<User, String>>(named<User>()) {
                 ListChildModelFromRepositorySuspendUseCase(get<IUsersRepository>())
