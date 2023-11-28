@@ -16,7 +16,7 @@ data class WebPage(
     val content: String,
     @ModelProperty("boolean")
     val home: Boolean = false,
-) : IChildModel<String, me.nathanfallet.suitebde.models.web.CreateWebPagePayload, me.nathanfallet.suitebde.models.web.UpdateWebPagePayload, String> {
+) : IChildModel<String, CreateWebPagePayload, UpdateWebPagePayload, String> {
 
     override val parentId: String
         get() = associationId

@@ -15,8 +15,8 @@ data class WebMenu(
     val url: String,
     val position: Int = 0,
     val parentMenuId: String? = null,
-    val children: List<me.nathanfallet.suitebde.models.web.WebMenu> = emptyList()
-) : IChildModel<String, me.nathanfallet.suitebde.models.web.CreateWebMenuPayload, me.nathanfallet.suitebde.models.web.UpdateWebMenuPayload, String> {
+    val children: List<WebMenu> = emptyList()
+) : IChildModel<String, CreateWebMenuPayload, UpdateWebMenuPayload, String> {
 
     override val parentId: String
         get() = associationId

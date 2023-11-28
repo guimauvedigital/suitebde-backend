@@ -19,4 +19,4 @@ data class Association(
     val validated: Boolean,
     val createdAt: Instant,
     val expiresAt: Instant
-) : IModel<String, me.nathanfallet.suitebde.models.associations.CreateAssociationPayload, me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload>
+) : IModel<String, CreateAssociationPayload, UpdateAssociationPayload>

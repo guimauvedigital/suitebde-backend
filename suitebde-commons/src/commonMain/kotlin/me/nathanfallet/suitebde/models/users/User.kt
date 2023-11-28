@@ -18,7 +18,7 @@ data class User(
     @ModelProperty("string", "6")
     val lastName: String,
     val superuser: Boolean
-) : IChildModel<String, me.nathanfallet.suitebde.models.users.CreateUserPayload, me.nathanfallet.suitebde.models.users.UpdateUserPayload, String>,
+) : IChildModel<String, CreateUserPayload, UpdateUserPayload, String>,
     IPermittee {
 
     override val parentId: String
