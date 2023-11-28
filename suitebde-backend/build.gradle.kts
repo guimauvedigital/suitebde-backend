@@ -24,7 +24,6 @@ kotlin {
     val exposedVersion = "0.40.1"
     val logbackVersion = "0.9.30"
     val ktorxVersion = "1.5.1"
-    val usecasesVersion = "1.3.1"
 
     sourceSets {
         val commonMain by getting {
@@ -69,10 +68,10 @@ kotlin {
                 implementation("org.apache.commons:commons-email:1.5")
                 implementation("io.sentry:sentry:6.34.0")
 
-                api("me.nathanfallet.usecases:usecases:$usecasesVersion")
+                api(project(":suitebde-commons"))
             }
         }
-        val commonTest by getting {
+        val jvmTest by getting {
             dependencies {
                 implementation(kotlin("test"))
                 implementation("io.ktor:ktor-server-test-host:$ktorVersion")

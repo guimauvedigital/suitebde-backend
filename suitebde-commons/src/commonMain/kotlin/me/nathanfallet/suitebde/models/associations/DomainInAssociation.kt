@@ -9,7 +9,7 @@ data class DomainInAssociation(
     @ModelProperty("id")
     val domain: String,
     val associationId: String
-) : IChildModel<String, CreateDomainInAssociationPayload, Unit, String> {
+) : IChildModel<String, me.nathanfallet.suitebde.models.associations.CreateDomainInAssociationPayload, Unit, String> {
 
     override val id: String
         get() = domain

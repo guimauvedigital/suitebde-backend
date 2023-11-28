@@ -11,4 +11,5 @@ plugins {
 
 rootProject.name = "suitebde-backend"
 includeBuild("convention-plugins")
+include(":suitebde-commons")
 include(":suitebde-backend")
