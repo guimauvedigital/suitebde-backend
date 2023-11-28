@@ -23,7 +23,7 @@ class UsersController(
     private val updateUserUseCase: IUpdateChildModelSuspendUseCase<User, String, UpdateUserPayload, String>
 ) : IChildModelController<User, String, CreateUserPayload, UpdateUserPayload, Association, String> {
 
-    override suspend fun getAll(call: ApplicationCall, parent: Association): List<User> {
+    override suspend fun list(call: ApplicationCall, parent: Association): List<User> {
         requireUserForCallUseCase(call).takeIf {
             checkPermissionUseCase(it, Permission.USERS_VIEW inAssociation parent)
         } ?: throw ControllerException(

@@ -56,7 +56,7 @@ class UsersControllerTest {
             mockk(),
             mockk()
         )
-        assertEquals(listOf(targetUser), controller.getAll(call, association))
+        assertEquals(listOf(targetUser), controller.list(call, association))
     }
 
     @Test
@@ -74,7 +74,7 @@ class UsersControllerTest {
             mockk()
         )
         val exception = assertFailsWith(ControllerException::class) {
-            controller.getAll(call, association)
+            controller.list(call, association)
         }
         assertEquals(HttpStatusCode.Forbidden, exception.code)
         assertEquals("users_view_not_allowed", exception.key)

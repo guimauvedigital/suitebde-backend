@@ -58,7 +58,7 @@ class AssociationsRouterTest {
         val controller =
             mockk<IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload>>()
         val router = AssociationsRouter(controller, mockk(), mockk(), mockk())
-        coEvery { controller.getAll(any(), UnitModel) } returns listOf(association)
+        coEvery { controller.list(any(), UnitModel) } returns listOf(association)
         routing {
             router.createRoutes(this)
         }
@@ -75,7 +75,7 @@ class AssociationsRouterTest {
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router =
             AssociationsRouter(controller, getLocaleForCallUseCase, translateUseCase, getAdminMenuForCallUseCase)
-        coEvery { controller.getAll(any(), UnitModel) } returns listOf(association)
+        coEvery { controller.list(any(), UnitModel) } returns listOf(association)
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }

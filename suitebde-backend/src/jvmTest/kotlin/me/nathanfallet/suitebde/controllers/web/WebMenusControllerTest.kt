@@ -47,7 +47,7 @@ class WebMenusControllerTest {
             mockk(), mockk(), mockk()
         )
         coEvery { getWebMenusUseCase(menu.associationId) } returns listOf(menu)
-        assertEquals(listOf(menu), controller.getAll(mockk(), association))
+        assertEquals(listOf(menu), controller.list(mockk(), association))
     }
 
     @Test

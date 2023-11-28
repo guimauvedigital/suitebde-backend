@@ -66,7 +66,7 @@ class WebMenusRouterTest {
             controller, mockk(), mockk(), mockk(), AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
-        coEvery { controller.getAll(any(), association) } returns listOf(menu)
+        coEvery { controller.list(any(), association) } returns listOf(menu)
         routing {
             router.createRoutes(this)
         }
@@ -90,7 +90,7 @@ class WebMenusRouterTest {
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
-        coEvery { controller.getAll(any(), association) } returns listOf(menu)
+        coEvery { controller.list(any(), association) } returns listOf(menu)
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }

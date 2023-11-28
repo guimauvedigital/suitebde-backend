@@ -41,7 +41,7 @@ class AssociationsControllerTest {
         val controller = AssociationsController(
             getAssociationsUseCase, getUserForCallUseCase, mockk(), mockk(), mockk()
         )
-        assertEquals(listOf(association), controller.getAll(mockk()))
+        assertEquals(listOf(association), controller.list(mockk()))
     }
 
     @Test
@@ -55,7 +55,7 @@ class AssociationsControllerTest {
         val controller = AssociationsController(
             getAssociationsUseCase, getUserForCallUseCase, checkPermissionUseCase, mockk(), mockk()
         )
-        assertEquals(listOf(association), controller.getAll(mockk()))
+        assertEquals(listOf(association), controller.list(mockk()))
     }
 
     @Test

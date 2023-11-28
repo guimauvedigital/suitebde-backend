@@ -51,7 +51,7 @@ class WebPagesControllerTest {
             mockk(), mockk(), mockk(), mockk(), mockk()
         )
         coEvery { getWebPagesUseCase(page.associationId) } returns listOf(page)
-        assertEquals(listOf(page), controller.getAll(mockk(), association))
+        assertEquals(listOf(page), controller.list(mockk(), association))
     }
 
     @Test

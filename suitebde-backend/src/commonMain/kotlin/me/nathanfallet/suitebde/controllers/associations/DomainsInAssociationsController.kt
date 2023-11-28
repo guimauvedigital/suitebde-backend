@@ -24,7 +24,7 @@ class DomainsInAssociationsController(
     private val deleteDomainUseCase: IDeleteChildModelSuspendUseCase<DomainInAssociation, String, String>,
 ) : IChildModelController<DomainInAssociation, String, CreateDomainInAssociationPayload, Unit, Association, String> {
 
-    override suspend fun getAll(call: ApplicationCall, parent: Association): List<DomainInAssociation> {
+    override suspend fun list(call: ApplicationCall, parent: Association): List<DomainInAssociation> {
         return getDomainsInAssociationsUseCase(parent.id)
     }
 

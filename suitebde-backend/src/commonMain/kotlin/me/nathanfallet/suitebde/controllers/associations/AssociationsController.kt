@@ -29,7 +29,7 @@ class AssociationsController(
         )
     }
 
-    override suspend fun getAll(call: ApplicationCall): List<Association> {
+    override suspend fun list(call: ApplicationCall): List<Association> {
         val showAll = getUserForCallUseCase(call)?.let {
             checkPermissionUseCase(it, AdminPermission)
         } ?: false

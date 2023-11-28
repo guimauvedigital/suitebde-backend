@@ -50,7 +50,7 @@ class DomainsInAssociationsControllerTest {
             mockk(),
             mockk()
         )
-        assertEquals(listOf(domain), controller.getAll(call, association))
+        assertEquals(listOf(domain), controller.list(call, association))
     }
 
     @Test

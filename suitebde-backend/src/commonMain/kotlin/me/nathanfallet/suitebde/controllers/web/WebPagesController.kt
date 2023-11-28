@@ -30,7 +30,7 @@ class WebPagesController(
     private val deleteWebPageUseCase: IDeleteChildModelSuspendUseCase<WebPage, String, String>
 ) : IWebPagesController {
 
-    override suspend fun getAll(call: ApplicationCall, parent: Association): List<WebPage> {
+    override suspend fun list(call: ApplicationCall, parent: Association): List<WebPage> {
         return getWebPagesUseCase(parent.id)
     }
 

@@ -27,7 +27,7 @@ class WebMenusController(
     private val deleteWebMenuUseCase: IDeleteChildModelSuspendUseCase<WebMenu, String, String>
 ) : IChildModelController<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String> {
 
-    override suspend fun getAll(call: ApplicationCall, parent: Association): List<WebMenu> {
+    override suspend fun list(call: ApplicationCall, parent: Association): List<WebMenu> {
         return getWebMenusUseCase(parent.id)
     }
 
