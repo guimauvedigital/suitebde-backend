@@ -1,0 +1,2 @@
+ignore:
+  - "suitebde-commons/src/commonMain/kotlin/me/nathanfallet/suitebde/models"
