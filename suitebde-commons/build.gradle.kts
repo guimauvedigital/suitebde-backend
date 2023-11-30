@@ -4,6 +4,7 @@ plugins {
     id("convention.publication")
     id("org.jetbrains.kotlinx.kover")
     id("com.google.devtools.ksp")
+    id("dev.petuska.npm.publish")
 }
 
 publishing {
@@ -58,7 +59,7 @@ kotlin {
 
     applyDefaultHierarchyTemplate()
 
-    val usecasesVersion = "1.3.1"
+    val usecasesVersion = "1.4.0"
 
     sourceSets {
         val commonMain by getting {
@@ -74,6 +75,22 @@ kotlin {
                 implementation("io.mockative:mockative:2.0.1")
                 implementation("io.mockk:mockk:1.13.8")
             }
+        }
+    }
+}
+
+npmPublish {
+    readme.set(file("README.md"))
+    packages {
+        named("js") {
+            packageJson {
+                name.set("suitebde")
+            }
+        }
+    }
+    registries {
+        register("npmjs") {
+            uri.set("https://registry.npmjs.org")
         }
     }
 }
