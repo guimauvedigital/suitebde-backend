@@ -5,6 +5,7 @@ import me.nathanfallet.suitebde.models.web.CreateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.UpdateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.repositories.web.IWebMenusRepository
+import me.nathanfallet.usecases.users.IUser
 import org.jetbrains.exposed.sql.*
 
 class DatabaseWebMenusRepository(
@@ -37,7 +38,7 @@ class DatabaseWebMenusRepository(
         }
     }
 
-    override suspend fun create(payload: CreateWebMenuPayload, parentId: String): WebMenu? {
+    override suspend fun create(payload: CreateWebMenuPayload, parentId: String, user: IUser?): WebMenu? {
         return database.dbQuery {
             WebMenus.insert {
                 it[id] = generateId()
@@ -49,7 +50,7 @@ class DatabaseWebMenusRepository(
         }
     }
 
-    override suspend fun update(id: String, payload: UpdateWebMenuPayload, parentId: String): Boolean {
+    override suspend fun update(id: String, payload: UpdateWebMenuPayload, parentId: String, user: IUser?): Boolean {
         return database.dbQuery {
             WebMenus.update({ WebMenus.id eq id and (WebMenus.associationId eq parentId) }) {
                 it[title] = payload.title

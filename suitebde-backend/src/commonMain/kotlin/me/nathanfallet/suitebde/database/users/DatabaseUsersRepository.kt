@@ -5,13 +5,14 @@ import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
+import me.nathanfallet.usecases.users.IUser
 import org.jetbrains.exposed.sql.*
 
 class DatabaseUsersRepository(
     private val database: Database
 ) : IUsersRepository {
 
-    override suspend fun create(payload: CreateUserPayload, parentId: String): User? {
+    override suspend fun create(payload: CreateUserPayload, parentId: String, user: IUser?): User? {
         return database.dbQuery {
             Users.insert {
                 it[id] = generateId()
@@ -74,7 +75,7 @@ class DatabaseUsersRepository(
         }
     }
 
-    override suspend fun update(id: String, payload: UpdateUserPayload, parentId: String): Boolean {
+    override suspend fun update(id: String, payload: UpdateUserPayload, parentId: String, user: IUser?): Boolean {
         return database.dbQuery {
             Users.update({ Users.id eq id and (Users.associationId eq parentId) }) {
                 payload.firstName?.let { firstName ->

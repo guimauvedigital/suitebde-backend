@@ -5,6 +5,7 @@ import me.nathanfallet.suitebde.models.web.CreateWebPagePayload
 import me.nathanfallet.suitebde.models.web.UpdateWebPagePayload
 import me.nathanfallet.suitebde.models.web.WebPage
 import me.nathanfallet.suitebde.repositories.web.IWebPagesRepository
+import me.nathanfallet.usecases.users.IUser
 import org.jetbrains.exposed.sql.*
 
 class DatabaseWebPagesRepository(
@@ -28,7 +29,7 @@ class DatabaseWebPagesRepository(
         }
     }
 
-    override suspend fun create(payload: CreateWebPagePayload, parentId: String): WebPage? {
+    override suspend fun create(payload: CreateWebPagePayload, parentId: String, user: IUser?): WebPage? {
         return database.dbQuery {
             WebPages.insert {
                 it[id] = generateId()
@@ -76,7 +77,7 @@ class DatabaseWebPagesRepository(
         }
     }
 
-    override suspend fun update(id: String, payload: UpdateWebPagePayload, parentId: String): Boolean {
+    override suspend fun update(id: String, payload: UpdateWebPagePayload, parentId: String, user: IUser?): Boolean {
         return database.dbQuery {
             WebPages.update({ WebPages.id eq id and (WebPages.associationId eq parentId) }) {
                 it[url] = payload.url

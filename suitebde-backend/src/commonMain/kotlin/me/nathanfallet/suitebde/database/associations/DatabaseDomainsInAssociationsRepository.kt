@@ -4,6 +4,7 @@ import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.models.associations.CreateDomainInAssociationPayload
 import me.nathanfallet.suitebde.models.associations.DomainInAssociation
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
+import me.nathanfallet.usecases.users.IUser
 import org.jetbrains.exposed.sql.*
 
 class DatabaseDomainsInAssociationsRepository(
@@ -27,7 +28,11 @@ class DatabaseDomainsInAssociationsRepository(
         }
     }
 
-    override suspend fun create(payload: CreateDomainInAssociationPayload, parentId: String): DomainInAssociation? {
+    override suspend fun create(
+        payload: CreateDomainInAssociationPayload,
+        parentId: String,
+        user: IUser?
+    ): DomainInAssociation? {
         return database.dbQuery {
             DomainsInAssociations.insert {
                 it[domain] = payload.domain
@@ -53,7 +58,7 @@ class DatabaseDomainsInAssociationsRepository(
         }
     }
 
-    override suspend fun update(id: String, payload: Unit, parentId: String): Boolean {
+    override suspend fun update(id: String, payload: Unit, parentId: String, user: IUser?): Boolean {
         TODO("Not yet implemented")
     }
 

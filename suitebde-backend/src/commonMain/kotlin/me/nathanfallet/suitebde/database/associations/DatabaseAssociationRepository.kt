@@ -7,13 +7,14 @@ import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
+import me.nathanfallet.usecases.users.IUser
 import org.jetbrains.exposed.sql.*
 
 class DatabaseAssociationRepository(
     private val database: Database
 ) : IAssociationsRepository {
 
-    override suspend fun create(payload: CreateAssociationPayload): Association? {
+    override suspend fun create(payload: CreateAssociationPayload, user: IUser?): Association? {
         val createdAt = Clock.System.now()
         val expiresAt = createdAt.plus(1, DateTimeUnit.MONTH, TimeZone.currentSystemDefault())
         return database.dbQuery {
@@ -29,7 +30,7 @@ class DatabaseAssociationRepository(
         }
     }
 
-    override suspend fun update(id: String, payload: UpdateAssociationPayload): Boolean {
+    override suspend fun update(id: String, payload: UpdateAssociationPayload, user: IUser?): Boolean {
         return database.dbQuery {
             Associations.update({ Associations.id eq id }) {
                 it[name] = payload.name
