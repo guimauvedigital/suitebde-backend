@@ -3,7 +3,7 @@ package me.nathanfallet.suitebde.models.users
 import kotlinx.serialization.Serializable
 import me.nathanfallet.usecases.models.IChildModel
 import me.nathanfallet.usecases.models.annotations.ModelProperty
-import me.nathanfallet.usecases.permissions.IPermittee
+import me.nathanfallet.usecases.users.IUser
 
 @Serializable
 data class User(
@@ -18,8 +18,7 @@ data class User(
     @ModelProperty("string", "6")
     val lastName: String,
     val superuser: Boolean
-) : IChildModel<String, CreateUserPayload, UpdateUserPayload, String>,
-    IPermittee {
+) : IChildModel<String, CreateUserPayload, UpdateUserPayload, String>, IUser {
 
     override val parentId: String
         get() = associationId

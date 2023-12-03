@@ -1,6 +1,6 @@
 package me.nathanfallet.suitebde.controllers.associations
 
-import me.nathanfallet.ktorx.controllers.base.IModelController
+import me.nathanfallet.ktorx.controllers.IModelController
 import me.nathanfallet.ktorx.routers.api.APIModelRouter
 import me.nathanfallet.ktorx.routers.concat.ConcatModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase

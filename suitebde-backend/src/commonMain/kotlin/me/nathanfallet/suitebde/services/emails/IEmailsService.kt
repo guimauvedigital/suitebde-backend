@@ -1,7 +1,9 @@
 package me.nathanfallet.suitebde.services.emails
 
+import me.nathanfallet.usecases.emails.IEmail
+
 interface IEmailsService {
 
-    fun sendEmail(destination: String, subject: String, content: String)
+    fun sendEmail(email: IEmail, destination: List<String>)
 
 }

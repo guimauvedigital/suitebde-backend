@@ -7,10 +7,10 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import me.nathanfallet.ktorx.usecases.auth.IGetSessionForCallUseCase
 import me.nathanfallet.suitebde.models.auth.SessionPayload
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.usecases.application.IGetJWTPrincipalForCallUseCase
-import me.nathanfallet.suitebde.usecases.application.IGetSessionForCallUseCase
+import me.nathanfallet.suitebde.usecases.auth.IGetJWTPrincipalForCallUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 

@@ -4,10 +4,14 @@ import io.ktor.server.application.*
 import me.nathanfallet.cloudflare.client.CloudflareClient
 import me.nathanfallet.cloudflare.client.ICloudflareClient
 import me.nathanfallet.i18n.usecases.localization.TranslateUseCase
-import me.nathanfallet.ktorx.controllers.base.IChildModelController
-import me.nathanfallet.ktorx.controllers.base.IModelController
+import me.nathanfallet.ktorx.controllers.IChildModelController
+import me.nathanfallet.ktorx.controllers.IModelController
+import me.nathanfallet.ktorx.usecases.auth.*
 import me.nathanfallet.ktorx.usecases.localization.GetLocaleForCallUseCase
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IGetUserForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.RequireUserForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.*
 import me.nathanfallet.suitebde.controllers.auth.AuthController
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
@@ -22,6 +26,9 @@ import me.nathanfallet.suitebde.database.users.DatabaseUsersRepository
 import me.nathanfallet.suitebde.database.web.DatabaseWebMenusRepository
 import me.nathanfallet.suitebde.database.web.DatabaseWebPagesRepository
 import me.nathanfallet.suitebde.models.associations.*
+import me.nathanfallet.suitebde.models.auth.LoginPayload
+import me.nathanfallet.suitebde.models.auth.RegisterCodePayload
+import me.nathanfallet.suitebde.models.auth.RegisterPayload
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
@@ -39,6 +46,7 @@ import me.nathanfallet.suitebde.usecases.auth.*
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.users.*
 import me.nathanfallet.suitebde.usecases.web.*
+import me.nathanfallet.usecases.emails.ISendEmailUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.create.CreateChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
@@ -101,9 +109,6 @@ fun Application.configureKoin() {
             single<IExpireUseCase> { ExpireUseCase(get(), get(), get(named<Association>())) }
             single<ITranslateUseCase> { TranslateUseCase() }
             single<IGetLocaleForCallUseCase> { GetLocaleForCallUseCase() }
-            single<IGetJWTPrincipalForCallUseCase> { GetJWTPrincipalForCallUseCase() }
-            single<IGetSessionForCallUseCase> { GetSessionForCallUseCase() }
-            single<ISetSessionForCallUseCase> { SetSessionForCallUseCase() }
             single<IGetZoneForDomainUseCase> {
                 GetZoneForDomainUseCase(
                     get(),
@@ -159,7 +164,23 @@ fun Application.configureKoin() {
             // Auth
             single<IHashPasswordUseCase> { HashPasswordUseCase() }
             single<IVerifyPasswordUseCase> { VerifyPasswordUseCase() }
-            single<ILoginUseCase> { LoginUseCase(get(), get()) }
+            single<IGetJWTPrincipalForCallUseCase> { GetJWTPrincipalForCallUseCase() }
+            single<ICreateSessionForUserUseCase> { CreateSessionForUserUseCase() }
+            single<IGetSessionForCallUseCase> { GetSessionForCallUseCase() }
+            single<ISetSessionForCallUseCase> { SetSessionForCallUseCase() }
+            single<ILoginUseCase<LoginPayload>> { LoginUseCase(get(), get()) }
+            single<IRegisterUseCase<RegisterCodePayload>> { RegisterUseCase(get(named<User>())) }
+            single<ICreateCodeRegisterUseCase<RegisterPayload>> {
+                CreateCodeRegisterUseCase(
+                    get(),
+                    get(),
+                    get(),
+                    get(),
+                    get()
+                )
+            }
+            single<IGetCodeRegisterUseCase<RegisterPayload>> { GetCodeRegisterUseCase(get(), get()) }
+            single<IDeleteCodeRegisterUseCase> { DeleteCodeRegisterUseCase(get()) }
 
             // Users
             single<IGetUserUseCase> { GetUserUseCase(get()) }
@@ -230,6 +251,7 @@ fun Application.configureKoin() {
                     get(),
                     get(),
                     get(),
+                    get(),
                     get(named<Association>()),
                     get(named<Association>())
                 )
@@ -256,8 +278,12 @@ fun Application.configureKoin() {
                     get(),
                     get(),
                     get(),
-                    get(named<User>()),
+                    get(),
+                    get(),
+                    get(),
+                    get(),
                     get(named<Association>()),
+                    get(),
                     get(),
                     get()
                 )
@@ -307,7 +333,7 @@ fun Application.configureKoin() {
             single { AssociationsRouter(get(named<Association>()), get(), get(), get()) }
             single { DomainsInAssociationsRouter(get(named<DomainInAssociation>()), get(), get(), get(), get()) }
             single { UsersRouter(get(named<User>()), get(), get(), get(), get()) }
-            single { AuthRouter(get(), get(), get()) }
+            single { AuthRouter(get(), get()) }
             single { WebPagesRouter(get(), get(), get(), get(), get(), get()) }
             single { WebMenusRouter(get(named<WebMenu>()), get(), get(), get(), get()) }
         }

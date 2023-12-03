@@ -3,14 +3,14 @@
     <h1 class="h3 mb-4 fw-normal" id="auth_register_title"><@t key="auth_register_title" /></h1>
 
     <#if success??>
-        <div id="alert-success" class="alert alert-success" role="alert">${success}</div>
+        <div id="alert-success" class="alert alert-success" role="alert"><@t key=success /></div>
     <#elseif error??>
-        <div id="alert-error" class="alert alert-danger" role="alert">${error}</div>
+        <div id="alert-error" class="alert alert-danger" role="alert"><@t key=error /></div>
     </#if>
 
-    <#if code??>
+    <#if codePayload??>
         <div class="form-floating">
-            <input type="email" class="form-control" id="email" name="email" value="${code.email}" disabled>
+            <input type="email" class="form-control" id="email" name="email" value="${codePayload.email}" disabled>
             <label for="email"><@t key="auth_field_email" /></label>
         </div>
         <div class="row">

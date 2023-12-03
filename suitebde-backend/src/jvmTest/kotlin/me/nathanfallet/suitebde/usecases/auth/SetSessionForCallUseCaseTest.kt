@@ -1,4 +1,4 @@
-package me.nathanfallet.suitebde.usecases.application
+package me.nathanfallet.suitebde.usecases.auth
 
 import io.ktor.client.request.*
 import io.ktor.server.application.*
@@ -11,7 +11,7 @@ import me.nathanfallet.suitebde.plugins.configureSessions
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class GetSessionForCallUseCaseTest {
+class SetSessionForCallUseCaseTest {
 
     @Test
     fun invoke() = testApplication {
@@ -23,10 +23,10 @@ class GetSessionForCallUseCaseTest {
         }
         routing {
             get {
-                val useCase = GetSessionForCallUseCase()
-                assertEquals(null, useCase(call))
-                call.sessions.set(SessionPayload("id"))
-                assertEquals(SessionPayload("id"), useCase(call))
+                val useCase = SetSessionForCallUseCase()
+                assertEquals(null, call.sessions.get<SessionPayload>())
+                useCase(call, SessionPayload("id"))
+                assertEquals(SessionPayload("id"), call.sessions.get<SessionPayload>())
             }
         }
         client.get("/")

@@ -35,13 +35,9 @@ class WebPagesPublicRouter(
     route
 ) {
 
-    override fun createRoutes(root: Route) {
-        super.createRoutes(root)
-
+    override fun createLocalizedRoutes(root: Route) {
+        super.createLocalizedRoutes(root)
         createTemplateGetHomeRoute(root)
-        root.route("/{locale}") {
-            createTemplateGetHomeRoute(this)
-        }
     }
 
     private suspend fun getHome(call: ApplicationCall): WebPage {
@@ -72,7 +68,7 @@ class WebPagesPublicRouter(
                     )
                 )
             } catch (exception: ControllerException) {
-                handleExceptionTemplate(exception, call)
+                handleExceptionTemplate(exception, call, mapping.getTemplate!!)
             }
         }
     }
