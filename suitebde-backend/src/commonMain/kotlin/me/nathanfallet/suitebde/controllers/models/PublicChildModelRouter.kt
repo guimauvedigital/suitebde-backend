@@ -2,10 +2,10 @@ package me.nathanfallet.suitebde.controllers.models
 
 import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
-import me.nathanfallet.ktorx.controllers.base.IChildModelController
+import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.templates.TemplateMapping
 import me.nathanfallet.ktorx.routers.IChildModelRouter
-import me.nathanfallet.ktorx.routers.localization.LocalizedTemplateChildModelRouter
+import me.nathanfallet.ktorx.routers.templates.LocalizedTemplateChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetPublicMenuForCallUseCase
 import me.nathanfallet.usecases.models.IChildModel

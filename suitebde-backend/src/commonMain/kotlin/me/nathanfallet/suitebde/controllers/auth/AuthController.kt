@@ -2,102 +2,67 @@ package me.nathanfallet.suitebde.controllers.auth
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import kotlinx.datetime.Instant
+import me.nathanfallet.ktorx.controllers.auth.AuthWithCodeController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.usecases.auth.*
+import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.suitebde.models.application.Email
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.auth.*
-import me.nathanfallet.suitebde.models.users.CreateUserPayload
-import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.usecases.application.ISendEmailUseCase
-import me.nathanfallet.suitebde.usecases.application.ISetSessionForCallUseCase
 import me.nathanfallet.suitebde.usecases.associations.ICreateCodeInEmailUseCase
 import me.nathanfallet.suitebde.usecases.associations.IDeleteCodeInEmailUseCase
-import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.associations.IGetCodeInEmailUseCase
-import me.nathanfallet.suitebde.usecases.auth.ILoginUseCase
+import me.nathanfallet.usecases.emails.ISendEmailUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
-import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateModelSuspendUseCase
-import java.util.*
 
 class AuthController(
-    private val loginUseCase: ILoginUseCase,
-    private val setSessionForCallUseCase: ISetSessionForCallUseCase,
-    private val getAssociationForCallUseCase: IGetAssociationForCallUseCase,
+    loginUseCase: ILoginUseCase<LoginPayload>,
+    registerUseCase: IRegisterUseCase<RegisterCodePayload>,
+    createSessionForUserUseCase: ICreateSessionForUserUseCase,
+    setSessionForCallUseCase: ISetSessionForCallUseCase,
+    createCodeRegisterUseCase: ICreateCodeRegisterUseCase<RegisterPayload>,
+    getCodeRegisterUseCase: IGetCodeRegisterUseCase<RegisterPayload>,
+    deleteCodeRegisterUseCase: IDeleteCodeRegisterUseCase,
     private val createCodeInEmailUseCase: ICreateCodeInEmailUseCase,
     private val getCodeInEmailUseCase: IGetCodeInEmailUseCase,
     private val deleteCodeInEmailUseCase: IDeleteCodeInEmailUseCase,
-    private val createUserUseCase: ICreateChildModelSuspendUseCase<User, CreateUserPayload, String>,
     private val createAssociationUseCase: ICreateModelSuspendUseCase<Association, CreateAssociationPayload>,
     private val sendEmailUseCase: ISendEmailUseCase,
+    private val getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     private val translateUseCase: ITranslateUseCase
-) : IAuthController {
+) : AuthWithCodeController<LoginPayload, RegisterPayload, RegisterCodePayload>(
+    loginUseCase,
+    registerUseCase,
+    createSessionForUserUseCase,
+    setSessionForCallUseCase,
+    createCodeRegisterUseCase,
+    getCodeRegisterUseCase,
+    deleteCodeRegisterUseCase
+), IAuthController {
 
-    override suspend fun login(payload: LoginPayload, call: ApplicationCall) {
-        val user = loginUseCase(payload) ?: throw ControllerException(
-            HttpStatusCode.Unauthorized, "auth_invalid_credentials"
+    override suspend fun join(call: ApplicationCall, payload: JoinPayload) {
+        val code = createCodeInEmailUseCase(payload.email, null) ?: throw ControllerException(
+            HttpStatusCode.BadRequest, "auth_join_email_taken"
         )
-        setSessionForCallUseCase(call, SessionPayload(user.id))
-    }
-
-    override suspend fun register(payload: RegisterPayload, joiningAt: Instant, locale: Locale, call: ApplicationCall) {
-        val association = getAssociationForCallUseCase(call) ?: throw ControllerException(
-            HttpStatusCode.NotFound, "auth_register_no_association"
-        )
-        val code =
-            createCodeInEmailUseCase(payload.email, association.id, joiningAt) ?: throw ControllerException(
-                HttpStatusCode.BadRequest, "auth_register_email_taken"
-            )
+        val locale = getLocaleForCallUseCase(call)
         sendEmailUseCase(
-            payload.email,
-            translateUseCase(locale, "auth_register_email_title"),
-            translateUseCase(locale, "auth_register_email_body", listOf(code.code))
-        )
-    }
-
-    override suspend fun register(code: String, joiningAt: Instant): RegisterWithAssociationPayload {
-        return getCodeInEmailUseCase(code, joiningAt)?.let {
-            it.associationId?.let { associationId ->
-                RegisterWithAssociationPayload(it.email, associationId)
-            }
-        } ?: throw ControllerException(HttpStatusCode.NotFound, "auth_code_invalid")
-    }
-
-    override suspend fun register(payload: RegisterCodePayload, call: ApplicationCall) {
-        val user = createUserUseCase(
-            CreateUserPayload(
-                email = payload.email,
-                password = payload.password,
-                firstName = payload.firstName,
-                lastName = payload.lastName,
-                superuser = false,
+            Email(
+                translateUseCase(locale, "auth_join_email_title"),
+                translateUseCase(locale, "auth_join_email_body", listOf(code.code))
             ),
-            payload.associationId
-        ) ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
-        setSessionForCallUseCase(call, SessionPayload(user.id))
-        deleteCodeInEmailUseCase(payload.code)
-    }
-
-    override suspend fun join(payload: JoinPayload, joiningAt: Instant, locale: Locale) {
-        val code =
-            createCodeInEmailUseCase(payload.email, null, joiningAt) ?: throw ControllerException(
-                HttpStatusCode.BadRequest, "auth_join_email_taken"
-            )
-        sendEmailUseCase(
-            payload.email,
-            translateUseCase(locale, "auth_join_email_title"),
-            translateUseCase(locale, "auth_join_email_body", listOf(code.code))
+            listOf(payload.email)
         )
     }
 
-    override suspend fun join(code: String, joiningAt: Instant): JoinPayload {
-        return getCodeInEmailUseCase(code, joiningAt)?.let {
+    override suspend fun join(call: ApplicationCall, code: String): JoinPayload {
+        return getCodeInEmailUseCase(code)?.let {
             JoinPayload(it.email)
         } ?: throw ControllerException(HttpStatusCode.NotFound, "auth_code_invalid")
     }
 
-    override suspend fun join(payload: JoinCodePayload) {
+    override suspend fun join(call: ApplicationCall, code: String, payload: JoinCodePayload) {
         createAssociationUseCase(
             CreateAssociationPayload(
                 name = payload.name,

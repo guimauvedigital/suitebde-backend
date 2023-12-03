@@ -30,7 +30,7 @@ class CreateCodeInEmailUseCaseTest {
         )
         coEvery { usersRepository.getForEmail("email", false) } returns null
         coEvery { associationsRepository.createCodeInEmail("email", any(), "associationId", any()) } returns code
-        val result = useCase("email", "associationId", now)
+        val result = useCase("email", "associationId")
         assertEquals("email", result?.email)
         assertEquals("associationId", result?.associationId)
     }
@@ -43,7 +43,7 @@ class CreateCodeInEmailUseCaseTest {
         coEvery { usersRepository.getForEmail("email", false) } returns null
         coEvery { associationsRepository.createCodeInEmail("email", any(), "associationId", any()) } throws Exception()
         coEvery { associationsRepository.updateCodeInEmail("email", any(), "associationId", any()) } returns 1
-        val result = useCase("email", "associationId", Clock.System.now())
+        val result = useCase("email", "associationId")
         assertEquals("email", result?.email)
         assertEquals("associationId", result?.associationId)
     }
@@ -57,7 +57,7 @@ class CreateCodeInEmailUseCaseTest {
         coEvery { associationsRepository.createCodeInEmail("email", any(), "associationId", any()) } throws Exception()
         coEvery { associationsRepository.updateCodeInEmail("email", any(), "associationId", any()) } returns 0
         val exception = assertFailsWith(ControllerException::class) {
-            useCase("email", "associationId", Clock.System.now())
+            useCase("email", "associationId")
         }
         assertEquals(HttpStatusCode.InternalServerError, exception.code)
         assertEquals("error_internal", exception.key)
@@ -71,7 +71,7 @@ class CreateCodeInEmailUseCaseTest {
         coEvery { usersRepository.getForEmail("email", false) } returns User(
             "id", "associationId", "email", "password", "firstname", "lastname", false
         )
-        assertEquals(null, useCase("email", "associationId", Clock.System.now()))
+        assertEquals(null, useCase("email", "associationId"))
     }
 
 }

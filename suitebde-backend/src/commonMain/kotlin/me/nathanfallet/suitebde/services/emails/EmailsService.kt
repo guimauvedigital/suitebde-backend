@@ -3,6 +3,8 @@ package me.nathanfallet.suitebde.services.emails
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import me.nathanfallet.suitebde.models.application.Email
+import me.nathanfallet.usecases.emails.IEmail
 import org.apache.commons.mail.HtmlEmail
 
 class EmailsService(
@@ -11,18 +13,21 @@ class EmailsService(
     private val password: String
 ) : IEmailsService {
 
-    override fun sendEmail(destination: String, subject: String, content: String) {
+    override fun sendEmail(email: IEmail, destination: List<String>) {
+        if (email !is Email) return
         CoroutineScope(Job()).launch {
-            val email = HtmlEmail()
-            email.hostName = host
-            email.isStartTLSEnabled = true
-            email.setSmtpPort(587)
-            email.setAuthentication(username, password)
-            email.setFrom(username)
-            email.addTo(destination)
-            email.subject = subject
-            email.setHtmlMsg(content)
-            email.send()
+            destination.forEach { target ->
+                val htmlEmail = HtmlEmail()
+                htmlEmail.hostName = host
+                htmlEmail.isStartTLSEnabled = true
+                htmlEmail.setSmtpPort(587)
+                htmlEmail.setAuthentication(username, password)
+                htmlEmail.setFrom(username)
+                htmlEmail.addTo(target)
+                htmlEmail.subject = email.title
+                htmlEmail.setHtmlMsg(email.body)
+                htmlEmail.send()
+            }
         }
     }
 

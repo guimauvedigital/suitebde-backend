@@ -4,10 +4,10 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
-import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 

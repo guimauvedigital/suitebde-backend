@@ -1,4 +1,4 @@
-package me.nathanfallet.suitebde.usecases.application
+package me.nathanfallet.suitebde.usecases.auth
 
 import io.ktor.server.application.*
 import io.ktor.server.auth.*

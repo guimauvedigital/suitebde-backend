@@ -1,8 +1,8 @@
 package me.nathanfallet.suitebde.usecases.associations
 
 import io.ktor.http.*
+import kotlinx.datetime.Clock
 import kotlinx.datetime.DateTimeUnit
-import kotlinx.datetime.Instant
 import kotlinx.datetime.TimeZone
 import kotlinx.datetime.plus
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
@@ -16,12 +16,12 @@ class CreateCodeInEmailUseCase(
     private val usersRepository: IUsersRepository
 ) : ICreateCodeInEmailUseCase {
 
-    override suspend fun invoke(input1: String, input2: String?, input3: Instant): CodeInEmail? {
+    override suspend fun invoke(input1: String, input2: String?): CodeInEmail? {
         usersRepository.getForEmail(input1, false)?.let {
             return null
         }
         val code = String.generateId()
-        val expiresAt = input3.plus(1, DateTimeUnit.HOUR, TimeZone.currentSystemDefault())
+        val expiresAt = Clock.System.now().plus(1, DateTimeUnit.HOUR, TimeZone.currentSystemDefault())
         return try {
             associationsRepository.createCodeInEmail(input1, code, input2, expiresAt)
         } catch (e: Exception) {

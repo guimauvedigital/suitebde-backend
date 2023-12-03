@@ -9,14 +9,14 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.config.*
 import io.ktor.server.testing.*
 import io.mockk.coEvery
-import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
-import me.nathanfallet.suitebde.models.auth.*
+import me.nathanfallet.suitebde.models.auth.JoinCodePayload
+import me.nathanfallet.suitebde.models.auth.JoinPayload
+import me.nathanfallet.suitebde.models.auth.RegisterPayload
 import me.nathanfallet.suitebde.plugins.*
-import me.nathanfallet.usecases.localization.ITranslateUseCase
 import org.jsoup.Jsoup
 import java.util.*
 import kotlin.test.Test
@@ -46,7 +46,7 @@ class AuthRouterTest {
     fun testGetLoginRoute() = testApplication {
         val client = installApp(this)
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val router = AuthRouter(mockk<IAuthController>(), getLocaleForCallUseCase, mockk())
+        val router = AuthRouter(mockk(), getLocaleForCallUseCase)
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)
@@ -67,88 +67,10 @@ class AuthRouterTest {
     }
 
     @Test
-    fun testPostLoginRoute() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IAuthController>()
-        val router = AuthRouter(controller, mockk(), mockk())
-        coEvery { controller.login(LoginPayload("email", "password"), any()) } returns Unit
-        routing {
-            router.createRoutes(this)
-        }
-        val response = client.post("/en/auth/login") {
-            contentType(ContentType.Application.FormUrlEncoded)
-            setBody(
-                listOf(
-                    "email" to "email",
-                    "password" to "password"
-                ).formUrlEncode()
-            )
-        }
-        assertEquals(HttpStatusCode.Found, response.status)
-        coVerify { controller.login(LoginPayload("email", "password"), any()) }
-    }
-
-    @Test
-    fun testPostLoginRouteInvalidCredentials() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IAuthController>()
-        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(controller, getLocaleForCallUseCase, translateUseCase)
-        coEvery { controller.login(LoginPayload("email", "password"), any()) } throws ControllerException(
-            HttpStatusCode.Unauthorized,
-            "auth_invalid_credentials"
-        )
-        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createRoutes(this)
-        }
-        val response = client.post("/en/auth/login") {
-            contentType(ContentType.Application.FormUrlEncoded)
-            setBody(
-                listOf(
-                    "email" to "email",
-                    "password" to "password"
-                ).formUrlEncode()
-            )
-        }
-        assertEquals(HttpStatusCode.Unauthorized, response.status)
-        val document = Jsoup.parse(response.bodyAsText())
-        assertEquals(true, document.getElementById("auth_login_title")?.`is`("h1"))
-        assertEquals("t:auth_invalid_credentials", document.getElementById("alert-error")?.text())
-    }
-
-    @Test
-    fun testPostLoginRouteInvalidBody() = testApplication {
-        val client = installApp(this)
-        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(mockk(), getLocaleForCallUseCase, translateUseCase)
-        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createRoutes(this)
-        }
-        val response = client.post("/en/auth/login") {
-            contentType(ContentType.Application.FormUrlEncoded)
-            setBody(
-                listOf(
-                    "email" to "email"
-                ).formUrlEncode()
-            )
-        }
-        assertEquals(HttpStatusCode.BadRequest, response.status)
-        val document = Jsoup.parse(response.bodyAsText())
-        assertEquals(true, document.getElementById("auth_login_title")?.`is`("h1"))
-        assertEquals("t:error_body_invalid", document.getElementById("alert-error")?.text())
-    }
-
-    @Test
     fun testGetRegisterRoute() = testApplication {
         val client = installApp(this)
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val router = AuthRouter(mockk<IAuthController>(), getLocaleForCallUseCase, mockk())
+        val router = AuthRouter(mockk(), getLocaleForCallUseCase)
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)
@@ -165,81 +87,12 @@ class AuthRouterTest {
     }
 
     @Test
-    fun testPostRegisterRoute() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IAuthController>()
-        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(controller, getLocaleForCallUseCase, translateUseCase)
-        coEvery { controller.register(RegisterPayload("email"), any(), any(), any()) } returns Unit
-        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createRoutes(this)
-        }
-        val response = client.post("/en/auth/register") {
-            contentType(ContentType.Application.FormUrlEncoded)
-            setBody(listOf("email" to "email").formUrlEncode())
-        }
-        assertEquals(HttpStatusCode.OK, response.status)
-        val document = Jsoup.parse(response.bodyAsText())
-        assertEquals(true, document.getElementById("auth_register_title")?.`is`("h1"))
-        assertEquals("t:auth_register_email_sent", document.getElementById("alert-success")?.text())
-    }
-
-    @Test
-    fun testPostRegisterRouteInvalidBody() = testApplication {
-        val client = installApp(this)
-        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(mockk<IAuthController>(), getLocaleForCallUseCase, translateUseCase)
-        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createRoutes(this)
-        }
-        val response = client.post("/en/auth/register") {
-            contentType(ContentType.Application.FormUrlEncoded)
-        }
-        assertEquals(HttpStatusCode.BadRequest, response.status)
-        val document = Jsoup.parse(response.bodyAsText())
-        assertEquals(true, document.getElementById("auth_register_title")?.`is`("h1"))
-        assertEquals("t:error_body_invalid", document.getElementById("alert-error")?.text())
-    }
-
-    @Test
-    fun testPostRegisterRouteEmailTaken() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IAuthController>()
-        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(controller, getLocaleForCallUseCase, translateUseCase)
-        coEvery { controller.register(RegisterPayload("email"), any(), any(), any()) } throws ControllerException(
-            HttpStatusCode.BadRequest,
-            "auth_register_email_taken"
-        )
-        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createRoutes(this)
-        }
-        val response = client.post("/en/auth/register") {
-            contentType(ContentType.Application.FormUrlEncoded)
-            setBody(listOf("email" to "email").formUrlEncode())
-        }
-        assertEquals(HttpStatusCode.BadRequest, response.status)
-        val document = Jsoup.parse(response.bodyAsText())
-        assertEquals(true, document.getElementById("auth_register_title")?.`is`("h1"))
-        assertEquals("t:auth_register_email_taken", document.getElementById("alert-error")?.text())
-    }
-
-    @Test
     fun testGetRegisterCodeRoute() = testApplication {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val router = AuthRouter(controller, getLocaleForCallUseCase, mockk())
-        coEvery { controller.register("code", any()) } returns RegisterWithAssociationPayload("email@email.com", "id")
+        val router = AuthRouter(controller, getLocaleForCallUseCase)
+        coEvery { controller.register(any(), "code") } returns RegisterPayload("email@email.com")
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)
@@ -257,141 +110,22 @@ class AuthRouterTest {
         assertEquals("password", document.getElementById("password")?.attr("name"))
         assertEquals("password", document.getElementById("password")?.attr("type"))
         assertEquals(true, document.getElementById("password")?.hasAttr("required"))
-        assertEquals(true, document.getElementById("first_name")?.`is`("input"))
-        assertEquals("first_name", document.getElementById("first_name")?.attr("name"))
-        assertEquals("text", document.getElementById("first_name")?.attr("type"))
-        assertEquals(true, document.getElementById("first_name")?.hasAttr("required"))
-        assertEquals(true, document.getElementById("last_name")?.`is`("input"))
-        assertEquals("last_name", document.getElementById("last_name")?.attr("name"))
-        assertEquals("text", document.getElementById("last_name")?.attr("type"))
-        assertEquals(true, document.getElementById("last_name")?.hasAttr("required"))
+        assertEquals(true, document.getElementById("firstName")?.`is`("input"))
+        assertEquals("firstName", document.getElementById("firstName")?.attr("name"))
+        assertEquals("text", document.getElementById("firstName")?.attr("type"))
+        assertEquals(true, document.getElementById("firstName")?.hasAttr("required"))
+        assertEquals(true, document.getElementById("lastName")?.`is`("input"))
+        assertEquals("lastName", document.getElementById("lastName")?.attr("name"))
+        assertEquals("text", document.getElementById("lastName")?.attr("type"))
+        assertEquals(true, document.getElementById("lastName")?.hasAttr("required"))
         assertEquals(true, document.getElementsByAttributeValue("type", "submit").first()?.`is`("button"))
-    }
-
-    @Test
-    fun testGetRegisterCodeRouteNotFound() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IAuthController>()
-        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(controller, getLocaleForCallUseCase, translateUseCase)
-        coEvery { controller.register("code", any()) } throws ControllerException(
-            HttpStatusCode.NotFound,
-            "auth_code_invalid"
-        )
-        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createRoutes(this)
-        }
-        val response = client.get("/en/auth/register/code")
-        assertEquals(HttpStatusCode.NotFound, response.status)
-        val document = Jsoup.parse(response.bodyAsText())
-        assertEquals(true, document.getElementById("auth_register_title")?.`is`("h1"))
-        assertEquals("t:auth_code_invalid", document.getElementById("alert-error")?.text())
-    }
-
-    @Test
-    fun testPostRegisterCodeRoute() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IAuthController>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(controller, mockk(), translateUseCase)
-        coEvery { controller.register("code", any()) } returns RegisterWithAssociationPayload(
-            "email", "associationId"
-        )
-        coEvery {
-            controller.register(
-                RegisterCodePayload(
-                    "code", "email", "associationId",
-                    "password", "firstname", "lastname"
-                ),
-                any()
-            )
-        } returns Unit
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createRoutes(this)
-        }
-        val response = client.post("/en/auth/register/code") {
-            contentType(ContentType.Application.FormUrlEncoded)
-            setBody(
-                listOf(
-                    "password" to "password",
-                    "first_name" to "firstname",
-                    "last_name" to "lastname"
-                ).formUrlEncode()
-            )
-        }
-        assertEquals(HttpStatusCode.Found, response.status)
-        coVerify {
-            controller.register(
-                RegisterCodePayload(
-                    "code", "email", "associationId",
-                    "password", "firstname", "lastname"
-                ),
-                any()
-            )
-        }
-    }
-
-    @Test
-    fun testPostRegisterCodeRouteNotFound() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IAuthController>()
-        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(controller, getLocaleForCallUseCase, translateUseCase)
-        coEvery { controller.register("code", any()) } throws ControllerException(
-            HttpStatusCode.NotFound,
-            "auth_code_invalid"
-        )
-        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createRoutes(this)
-        }
-        val response = client.post("/en/auth/register/code")
-        assertEquals(HttpStatusCode.NotFound, response.status)
-        val document = Jsoup.parse(response.bodyAsText())
-        assertEquals(true, document.getElementById("auth_register_title")?.`is`("h1"))
-        assertEquals("t:auth_code_invalid", document.getElementById("alert-error")?.text())
-    }
-
-    @Test
-    fun testPostRegisterCodeRouteInvalidBody() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IAuthController>()
-        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(controller, getLocaleForCallUseCase, translateUseCase)
-        coEvery { controller.register("code", any()) } returns RegisterWithAssociationPayload(
-            "email", "associationId"
-        )
-        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createRoutes(this)
-        }
-        val response = client.post("/en/auth/register/code") {
-            contentType(ContentType.Application.FormUrlEncoded)
-            setBody(
-                listOf(
-                    "password" to "password",
-                ).formUrlEncode()
-            )
-        }
-        assertEquals(HttpStatusCode.BadRequest, response.status)
-        val document = Jsoup.parse(response.bodyAsText())
-        assertEquals(true, document.getElementById("auth_register_title")?.`is`("h1"))
-        assertEquals("t:error_body_invalid", document.getElementById("alert-error")?.text())
     }
 
     @Test
     fun testGetJoinRoute() = testApplication {
         val client = installApp(this)
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val router = AuthRouter(mockk<IAuthController>(), getLocaleForCallUseCase, mockk())
+        val router = AuthRouter(mockk(), getLocaleForCallUseCase)
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)
@@ -412,11 +146,9 @@ class AuthRouterTest {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(controller, getLocaleForCallUseCase, translateUseCase)
-        coEvery { controller.join(JoinPayload("email"), any(), any()) } returns Unit
+        val router = AuthRouter(controller, getLocaleForCallUseCase)
+        coEvery { controller.join(any(), JoinPayload("email")) } returns Unit
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)
         }
@@ -427,17 +159,18 @@ class AuthRouterTest {
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("auth_join_title")?.`is`("h1"))
-        assertEquals("t:auth_join_email_sent", document.getElementById("alert-success")?.text())
+        assertEquals(
+            "Please check your inbox to complete your registration",
+            document.getElementById("alert-success")?.text()
+        )
     }
 
     @Test
     fun testPostJoinRouteInvalidBody() = testApplication {
         val client = installApp(this)
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(mockk<IAuthController>(), getLocaleForCallUseCase, translateUseCase)
+        val router = AuthRouter(mockk(), getLocaleForCallUseCase)
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)
         }
@@ -447,7 +180,7 @@ class AuthRouterTest {
         assertEquals(HttpStatusCode.BadRequest, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("auth_join_title")?.`is`("h1"))
-        assertEquals("t:error_body_invalid", document.getElementById("alert-error")?.text())
+        assertEquals("Invalid body", document.getElementById("alert-error")?.text())
     }
 
     @Test
@@ -455,14 +188,12 @@ class AuthRouterTest {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(controller, getLocaleForCallUseCase, translateUseCase)
-        coEvery { controller.join(JoinPayload("email"), any(), any()) } throws ControllerException(
+        val router = AuthRouter(controller, getLocaleForCallUseCase)
+        coEvery { controller.join(any(), JoinPayload("email")) } throws ControllerException(
             HttpStatusCode.BadRequest,
             "auth_join_email_taken"
         )
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)
         }
@@ -473,7 +204,7 @@ class AuthRouterTest {
         assertEquals(HttpStatusCode.BadRequest, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("auth_join_title")?.`is`("h1"))
-        assertEquals("t:auth_join_email_taken", document.getElementById("alert-error")?.text())
+        assertEquals("This email is already taken", document.getElementById("alert-error")?.text())
     }
 
     @Test
@@ -481,8 +212,8 @@ class AuthRouterTest {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val router = AuthRouter(controller, getLocaleForCallUseCase, mockk())
-        coEvery { controller.join("code", any()) } returns JoinPayload("email@email.com")
+        val router = AuthRouter(controller, getLocaleForCallUseCase)
+        coEvery { controller.join(any(), "code") } returns JoinPayload("email@email.com")
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)
@@ -528,14 +259,12 @@ class AuthRouterTest {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(controller, getLocaleForCallUseCase, translateUseCase)
-        coEvery { controller.join("code", any()) } throws ControllerException(
+        val router = AuthRouter(controller, getLocaleForCallUseCase)
+        coEvery { controller.join(any(), "code") } throws ControllerException(
             HttpStatusCode.NotFound,
             "auth_code_invalid"
         )
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)
         }
@@ -543,7 +272,7 @@ class AuthRouterTest {
         assertEquals(HttpStatusCode.NotFound, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("auth_join_title")?.`is`("h1"))
-        assertEquals("t:auth_code_invalid", document.getElementById("alert-error")?.text())
+        assertEquals("Invalid code", document.getElementById("alert-error")?.text())
     }
 
     @Test
@@ -551,11 +280,12 @@ class AuthRouterTest {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(controller, getLocaleForCallUseCase, translateUseCase)
-        coEvery { controller.join("code", any()) } returns JoinPayload("email")
+        val router = AuthRouter(controller, getLocaleForCallUseCase)
+        coEvery { controller.join(any(), "code") } returns JoinPayload("email")
         coEvery {
             controller.join(
+                any(),
+                "code",
                 JoinCodePayload(
                     "code", "email", "name", "school", "city",
                     "password", "firstname", "lastname"
@@ -563,7 +293,6 @@ class AuthRouterTest {
             )
         } returns Unit
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)
         }
@@ -583,7 +312,10 @@ class AuthRouterTest {
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("auth_join_title")?.`is`("h1"))
-        assertEquals("t:auth_join_submitted", document.getElementById("alert-success")?.text())
+        assertEquals(
+            "Your registration has been submitted, please wait for validation",
+            document.getElementById("alert-success")?.text()
+        )
     }
 
     @Test
@@ -591,11 +323,9 @@ class AuthRouterTest {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(controller, getLocaleForCallUseCase, translateUseCase)
-        coEvery { controller.join("code", any()) } returns JoinPayload("email")
+        val router = AuthRouter(controller, getLocaleForCallUseCase)
+        coEvery { controller.join(any(), "code") } returns JoinPayload("email")
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)
         }
@@ -605,7 +335,7 @@ class AuthRouterTest {
         assertEquals(HttpStatusCode.BadRequest, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("auth_join_title")?.`is`("h1"))
-        assertEquals("t:error_body_invalid", document.getElementById("alert-error")?.text())
+        assertEquals("Invalid body", document.getElementById("alert-error")?.text())
     }
 
     @Test
@@ -613,14 +343,12 @@ class AuthRouterTest {
         val client = installApp(this)
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val router = AuthRouter(controller, getLocaleForCallUseCase, translateUseCase)
-        coEvery { controller.join("code", any()) } throws ControllerException(
+        val router = AuthRouter(controller, getLocaleForCallUseCase)
+        coEvery { controller.join(any(), "code") } throws ControllerException(
             HttpStatusCode.NotFound,
             "auth_code_invalid"
         )
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
         routing {
             router.createRoutes(this)
         }
@@ -628,7 +356,7 @@ class AuthRouterTest {
         assertEquals(HttpStatusCode.NotFound, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("auth_join_title")?.`is`("h1"))
-        assertEquals("t:auth_code_invalid", document.getElementById("alert-error")?.text())
+        assertEquals("Invalid code", document.getElementById("alert-error")?.text())
     }
 
 }

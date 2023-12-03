@@ -1,7 +1,7 @@
 package me.nathanfallet.suitebde.controllers.web
 
 import io.ktor.server.application.*
-import me.nathanfallet.ktorx.controllers.base.IChildModelController
+import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.web.CreateWebPagePayload
 import me.nathanfallet.suitebde.models.web.UpdateWebPagePayload

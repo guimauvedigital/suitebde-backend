@@ -2,15 +2,15 @@ package me.nathanfallet.suitebde.controllers.associations
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import me.nathanfallet.ktorx.controllers.base.IModelController
+import me.nathanfallet.ktorx.controllers.IModelController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.usecases.users.IGetUserForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import me.nathanfallet.suitebde.models.roles.AdminPermission
-import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationsUseCase
-import me.nathanfallet.suitebde.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
@@ -18,16 +18,11 @@ import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 class AssociationsController(
     private val getAssociationsUseCase: IGetAssociationsUseCase,
     private val getUserForCallUseCase: IGetUserForCallUseCase,
+    private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
     private val getAssociationUseCase: IGetModelSuspendUseCase<Association, String>,
     private val updateAssociationUseCase: IUpdateModelSuspendUseCase<Association, String, UpdateAssociationPayload>
 ) : IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload> {
-
-    private suspend fun requireUser(call: ApplicationCall): User {
-        return getUserForCallUseCase(call) ?: throw ControllerException(
-            HttpStatusCode.Unauthorized, "auth_invalid_credentials"
-        )
-    }
 
     override suspend fun list(call: ApplicationCall): List<Association> {
         val showAll = getUserForCallUseCase(call)?.let {
@@ -47,7 +42,7 @@ class AssociationsController(
     }
 
     override suspend fun update(call: ApplicationCall, id: String, payload: UpdateAssociationPayload): Association {
-        requireUser(call).takeIf {
+        requireUserForCallUseCase(call).takeIf {
             checkPermissionUseCase(it, AdminPermission)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "associations_update_not_allowed"

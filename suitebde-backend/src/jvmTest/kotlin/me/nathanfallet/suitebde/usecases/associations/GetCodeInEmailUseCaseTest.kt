@@ -23,7 +23,7 @@ class GetCodeInEmailUseCaseTest {
             "email", "code", "associationId", tomorrow
         )
         coEvery { repository.getCodeInEmail("code") } returns code
-        assertEquals(code, useCase("code", now))
+        assertEquals(code, useCase("code"))
     }
 
     @Test
@@ -34,7 +34,7 @@ class GetCodeInEmailUseCaseTest {
             "email", "code", "associationId", yesterday
         )
         coEvery { repository.getCodeInEmail("code") } returns code
-        assertEquals(null, useCase("code", now))
+        assertEquals(null, useCase("code"))
     }
 
     @Test
@@ -42,7 +42,7 @@ class GetCodeInEmailUseCaseTest {
         val repository = mockk<IAssociationsRepository>()
         val useCase = GetCodeInEmailUseCase(repository)
         coEvery { repository.getCodeInEmail("code") } returns null
-        assertEquals(null, useCase("code", now))
+        assertEquals(null, useCase("code"))
     }
 
 }
