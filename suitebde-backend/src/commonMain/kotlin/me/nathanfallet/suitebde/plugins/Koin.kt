@@ -169,7 +169,7 @@ fun Application.configureKoin() {
             single<IGetSessionForCallUseCase> { GetSessionForCallUseCase() }
             single<ISetSessionForCallUseCase> { SetSessionForCallUseCase() }
             single<ILoginUseCase<LoginPayload>> { LoginUseCase(get(), get()) }
-            single<IRegisterUseCase<RegisterCodePayload>> { RegisterUseCase(get(named<User>())) }
+            single<IRegisterUseCase<RegisterCodePayload>> { RegisterUseCase(get(), get(named<User>())) }
             single<ICreateCodeRegisterUseCase<RegisterPayload>> {
                 CreateCodeRegisterUseCase(
                     get(),
