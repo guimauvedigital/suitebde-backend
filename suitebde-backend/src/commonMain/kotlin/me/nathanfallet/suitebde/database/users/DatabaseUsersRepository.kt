@@ -5,14 +5,14 @@ import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
-import me.nathanfallet.usecases.users.IUser
+import me.nathanfallet.usecases.context.IContext
 import org.jetbrains.exposed.sql.*
 
 class DatabaseUsersRepository(
-    private val database: Database
+    private val database: Database,
 ) : IUsersRepository {
 
-    override suspend fun create(payload: CreateUserPayload, parentId: String, user: IUser?): User? {
+    override suspend fun create(payload: CreateUserPayload, parentId: String, context: IContext?): User? {
         return database.dbQuery {
             Users.insert {
                 it[id] = generateId()
@@ -35,7 +35,7 @@ class DatabaseUsersRepository(
         }
     }
 
-    override suspend fun get(id: String, parentId: String): User? {
+    override suspend fun get(id: String, parentId: String, context: IContext?): User? {
         return database.dbQuery {
             Users
                 .select { Users.id eq id and (Users.associationId eq parentId) }
@@ -46,7 +46,7 @@ class DatabaseUsersRepository(
 
     override suspend fun getForEmail(
         email: String,
-        includePassword: Boolean
+        includePassword: Boolean,
     ): User? {
         return database.dbQuery {
             Users
@@ -58,7 +58,7 @@ class DatabaseUsersRepository(
         }
     }
 
-    override suspend fun list(parentId: String): List<User> {
+    override suspend fun list(parentId: String, context: IContext?): List<User> {
         return database.dbQuery {
             Users
                 .select { Users.associationId eq parentId }
@@ -66,7 +66,7 @@ class DatabaseUsersRepository(
         }
     }
 
-    override suspend fun list(limit: Long, offset: Long, parentId: String): List<User> {
+    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<User> {
         return database.dbQuery {
             Users
                 .select { Users.associationId eq parentId }
@@ -75,7 +75,7 @@ class DatabaseUsersRepository(
         }
     }
 
-    override suspend fun update(id: String, payload: UpdateUserPayload, parentId: String, user: IUser?): Boolean {
+    override suspend fun update(id: String, payload: UpdateUserPayload, parentId: String, context: IContext?): Boolean {
         return database.dbQuery {
             Users.update({ Users.id eq id and (Users.associationId eq parentId) }) {
                 payload.firstName?.let { firstName ->
@@ -91,7 +91,7 @@ class DatabaseUsersRepository(
         } == 1
     }
 
-    override suspend fun delete(id: String, parentId: String): Boolean {
+    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
         return database.dbQuery {
             Users.deleteWhere {
                 Op.build { Users.id eq id and (associationId eq parentId) }

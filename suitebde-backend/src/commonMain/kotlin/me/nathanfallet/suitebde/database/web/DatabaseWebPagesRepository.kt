@@ -5,14 +5,14 @@ import me.nathanfallet.suitebde.models.web.CreateWebPagePayload
 import me.nathanfallet.suitebde.models.web.UpdateWebPagePayload
 import me.nathanfallet.suitebde.models.web.WebPage
 import me.nathanfallet.suitebde.repositories.web.IWebPagesRepository
-import me.nathanfallet.usecases.users.IUser
+import me.nathanfallet.usecases.context.IContext
 import org.jetbrains.exposed.sql.*
 
 class DatabaseWebPagesRepository(
-    private val database: Database
+    private val database: Database,
 ) : IWebPagesRepository {
 
-    override suspend fun list(parentId: String): List<WebPage> {
+    override suspend fun list(parentId: String, context: IContext?): List<WebPage> {
         return database.dbQuery {
             WebPages
                 .select { WebPages.associationId eq parentId }
@@ -20,7 +20,7 @@ class DatabaseWebPagesRepository(
         }
     }
 
-    override suspend fun list(limit: Long, offset: Long, parentId: String): List<WebPage> {
+    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<WebPage> {
         return database.dbQuery {
             WebPages
                 .select { WebPages.associationId eq parentId }
@@ -29,7 +29,7 @@ class DatabaseWebPagesRepository(
         }
     }
 
-    override suspend fun create(payload: CreateWebPagePayload, parentId: String, user: IUser?): WebPage? {
+    override suspend fun create(payload: CreateWebPagePayload, parentId: String, context: IContext?): WebPage? {
         return database.dbQuery {
             WebPages.insert {
                 it[id] = generateId()
@@ -42,7 +42,7 @@ class DatabaseWebPagesRepository(
         }
     }
 
-    override suspend fun delete(id: String, parentId: String): Boolean {
+    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
         return database.dbQuery {
             WebPages.deleteWhere {
                 Op.build { WebPages.id eq id and (associationId eq parentId) }
@@ -50,7 +50,7 @@ class DatabaseWebPagesRepository(
         } == 1
     }
 
-    override suspend fun get(id: String, parentId: String): WebPage? {
+    override suspend fun get(id: String, parentId: String, context: IContext?): WebPage? {
         return database.dbQuery {
             WebPages
                 .select { WebPages.id eq id and (WebPages.associationId eq parentId) }
@@ -77,7 +77,12 @@ class DatabaseWebPagesRepository(
         }
     }
 
-    override suspend fun update(id: String, payload: UpdateWebPagePayload, parentId: String, user: IUser?): Boolean {
+    override suspend fun update(
+        id: String,
+        payload: UpdateWebPagePayload,
+        parentId: String,
+        context: IContext?,
+    ): Boolean {
         return database.dbQuery {
             WebPages.update({ WebPages.id eq id and (WebPages.associationId eq parentId) }) {
                 it[url] = payload.url

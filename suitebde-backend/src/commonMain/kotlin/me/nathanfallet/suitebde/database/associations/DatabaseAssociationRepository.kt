@@ -7,14 +7,14 @@ import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
-import me.nathanfallet.usecases.users.IUser
+import me.nathanfallet.usecases.context.IContext
 import org.jetbrains.exposed.sql.*
 
 class DatabaseAssociationRepository(
-    private val database: Database
+    private val database: Database,
 ) : IAssociationsRepository {
 
-    override suspend fun create(payload: CreateAssociationPayload, user: IUser?): Association? {
+    override suspend fun create(payload: CreateAssociationPayload, context: IContext?): Association? {
         val createdAt = Clock.System.now()
         val expiresAt = createdAt.plus(1, DateTimeUnit.MONTH, TimeZone.currentSystemDefault())
         return database.dbQuery {
@@ -30,7 +30,7 @@ class DatabaseAssociationRepository(
         }
     }
 
-    override suspend fun update(id: String, payload: UpdateAssociationPayload, user: IUser?): Boolean {
+    override suspend fun update(id: String, payload: UpdateAssociationPayload, context: IContext?): Boolean {
         return database.dbQuery {
             Associations.update({ Associations.id eq id }) {
                 it[name] = payload.name
@@ -49,7 +49,7 @@ class DatabaseAssociationRepository(
         } == 1
     }
 
-    override suspend fun delete(id: String): Boolean {
+    override suspend fun delete(id: String, context: IContext?): Boolean {
         return database.dbQuery {
             Associations.deleteWhere {
                 Op.build { Associations.id eq id }
@@ -57,7 +57,7 @@ class DatabaseAssociationRepository(
         } == 1
     }
 
-    override suspend fun get(id: String): Association? {
+    override suspend fun get(id: String, context: IContext?): Association? {
         return database.dbQuery {
             Associations
                 .select { Associations.id eq id }
@@ -66,7 +66,7 @@ class DatabaseAssociationRepository(
         }
     }
 
-    override suspend fun list(): List<Association> {
+    override suspend fun list(context: IContext?): List<Association> {
         return database.dbQuery {
             Associations
                 .selectAll()
@@ -74,7 +74,7 @@ class DatabaseAssociationRepository(
         }
     }
 
-    override suspend fun list(limit: Long, offset: Long): List<Association> {
+    override suspend fun list(limit: Long, offset: Long, context: IContext?): List<Association> {
         return database.dbQuery {
             Associations
                 .selectAll()
@@ -130,7 +130,7 @@ class DatabaseAssociationRepository(
         email: String,
         code: String,
         associationId: String?,
-        expiresAt: Instant
+        expiresAt: Instant,
     ): CodeInEmail? {
         return database.dbQuery {
             CodesInEmails.insert {
@@ -146,7 +146,7 @@ class DatabaseAssociationRepository(
         email: String,
         code: String,
         associationId: String?,
-        expiresAt: Instant
+        expiresAt: Instant,
     ): Int {
         return database.dbQuery {
             CodesInEmails.update({ CodesInEmails.email eq email }) {

@@ -5,14 +5,14 @@ import me.nathanfallet.suitebde.models.web.CreateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.UpdateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.repositories.web.IWebMenusRepository
-import me.nathanfallet.usecases.users.IUser
+import me.nathanfallet.usecases.context.IContext
 import org.jetbrains.exposed.sql.*
 
 class DatabaseWebMenusRepository(
-    private val database: Database
+    private val database: Database,
 ) : IWebMenusRepository {
 
-    override suspend fun list(parentId: String): List<WebMenu> {
+    override suspend fun list(parentId: String, context: IContext?): List<WebMenu> {
         return database.dbQuery {
             WebMenus
                 .select { WebMenus.associationId eq parentId }
@@ -20,7 +20,7 @@ class DatabaseWebMenusRepository(
         }
     }
 
-    override suspend fun list(limit: Long, offset: Long, parentId: String): List<WebMenu> {
+    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<WebMenu> {
         return database.dbQuery {
             WebMenus
                 .select { WebMenus.associationId eq parentId }
@@ -29,7 +29,7 @@ class DatabaseWebMenusRepository(
         }
     }
 
-    override suspend fun get(id: String, parentId: String): WebMenu? {
+    override suspend fun get(id: String, parentId: String, context: IContext?): WebMenu? {
         return database.dbQuery {
             WebMenus
                 .select { WebMenus.id eq id and (WebMenus.associationId eq parentId) }
@@ -38,7 +38,7 @@ class DatabaseWebMenusRepository(
         }
     }
 
-    override suspend fun create(payload: CreateWebMenuPayload, parentId: String, user: IUser?): WebMenu? {
+    override suspend fun create(payload: CreateWebMenuPayload, parentId: String, context: IContext?): WebMenu? {
         return database.dbQuery {
             WebMenus.insert {
                 it[id] = generateId()
@@ -50,7 +50,12 @@ class DatabaseWebMenusRepository(
         }
     }
 
-    override suspend fun update(id: String, payload: UpdateWebMenuPayload, parentId: String, user: IUser?): Boolean {
+    override suspend fun update(
+        id: String,
+        payload: UpdateWebMenuPayload,
+        parentId: String,
+        context: IContext?,
+    ): Boolean {
         return database.dbQuery {
             WebMenus.update({ WebMenus.id eq id and (WebMenus.associationId eq parentId) }) {
                 it[title] = payload.title
@@ -60,7 +65,7 @@ class DatabaseWebMenusRepository(
         } == 1
     }
 
-    override suspend fun delete(id: String, parentId: String): Boolean {
+    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
         return database.dbQuery {
             WebMenus.deleteWhere {
                 Op.build { WebMenus.id eq id and (associationId eq parentId) }
