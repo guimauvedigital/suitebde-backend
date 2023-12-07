@@ -26,7 +26,7 @@ class CreateCodeInEmailUseCase(
             codesInEmailsRepository.createCodeInEmail(input1, code, input2, expiresAt)
         } catch (e: Exception) {
             codesInEmailsRepository.updateCodeInEmail(input1, code, input2, expiresAt).takeIf {
-                it == 1
+                it
             } ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
             CodeInEmail(input1, code, input2, expiresAt)
         }

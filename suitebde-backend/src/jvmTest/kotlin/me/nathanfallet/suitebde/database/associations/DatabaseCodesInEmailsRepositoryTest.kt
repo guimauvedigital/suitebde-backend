@@ -67,7 +67,7 @@ class DatabaseCodesInEmailsRepositoryTest {
         val codeInEmail = repository.createCodeInEmail("email", "code", "associationId", tomorrow)
             ?: fail("Unable to create code in email")
         assertEquals(
-            1,
+            true,
             repository.updateCodeInEmail("email", "newCode", "newAssociationId", tomorrow)
         )
         val codeInEmailFromDatabase = database.dbQuery {

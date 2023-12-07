@@ -42,7 +42,7 @@ class CreateCodeInEmailUseCaseTest {
         val useCase = CreateCodeInEmailUseCase(codesInEmailsRepository, usersRepository)
         coEvery { usersRepository.getForEmail("email", false) } returns null
         coEvery { codesInEmailsRepository.createCodeInEmail("email", any(), "associationId", any()) } throws Exception()
-        coEvery { codesInEmailsRepository.updateCodeInEmail("email", any(), "associationId", any()) } returns 1
+        coEvery { codesInEmailsRepository.updateCodeInEmail("email", any(), "associationId", any()) } returns true
         val result = useCase("email", "associationId")
         assertEquals("email", result?.email)
         assertEquals("associationId", result?.associationId)
@@ -55,7 +55,7 @@ class CreateCodeInEmailUseCaseTest {
         val useCase = CreateCodeInEmailUseCase(codesInEmailsRepository, usersRepository)
         coEvery { usersRepository.getForEmail("email", false) } returns null
         coEvery { codesInEmailsRepository.createCodeInEmail("email", any(), "associationId", any()) } throws Exception()
-        coEvery { codesInEmailsRepository.updateCodeInEmail("email", any(), "associationId", any()) } returns 0
+        coEvery { codesInEmailsRepository.updateCodeInEmail("email", any(), "associationId", any()) } returns false
         val exception = assertFailsWith(ControllerException::class) {
             useCase("email", "associationId")
         }

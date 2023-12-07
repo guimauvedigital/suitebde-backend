@@ -48,14 +48,14 @@ class DatabaseCodesInEmailsRepository(
         code: String,
         associationId: String?,
         expiresAt: Instant,
-    ): Int {
+    ): Boolean {
         return database.dbQuery {
             CodesInEmails.update({ CodesInEmails.email eq email }) {
                 it[this.code] = code
                 it[this.associationId] = associationId
                 it[this.expiresAt] = expiresAt.toString()
             }
-        }
+        } == 1
     }
 
     override suspend fun deleteCodeInEmail(code: String) {
