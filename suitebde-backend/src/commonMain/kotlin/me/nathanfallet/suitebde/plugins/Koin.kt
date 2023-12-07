@@ -21,6 +21,7 @@ import me.nathanfallet.suitebde.controllers.users.UsersRouter
 import me.nathanfallet.suitebde.controllers.web.*
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.database.associations.DatabaseAssociationRepository
+import me.nathanfallet.suitebde.database.associations.DatabaseCodesInEmailsRepository
 import me.nathanfallet.suitebde.database.associations.DatabaseDomainsInAssociationsRepository
 import me.nathanfallet.suitebde.database.users.DatabaseUsersRepository
 import me.nathanfallet.suitebde.database.web.DatabaseWebMenusRepository
@@ -34,6 +35,7 @@ import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.models.web.*
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
 import me.nathanfallet.suitebde.repositories.web.IWebMenusRepository
@@ -98,6 +100,7 @@ fun Application.configureKoin() {
         }
         val repositoryModule = module {
             single<IAssociationsRepository> { DatabaseAssociationRepository(get()) }
+            single<ICodesInEmailsRepository> { DatabaseCodesInEmailsRepository(get()) }
             single<IDomainsInAssociationsRepository> { DatabaseDomainsInAssociationsRepository(get()) }
             single<IUsersRepository> { DatabaseUsersRepository(get()) }
             single<IWebPagesRepository> { DatabaseWebPagesRepository(get()) }
@@ -106,7 +109,7 @@ fun Application.configureKoin() {
         val useCaseModule = module {
             // Application
             single<ISendEmailUseCase> { SendEmailUseCase(get()) }
-            single<IExpireUseCase> { ExpireUseCase(get(), get(), get(named<Association>())) }
+            single<IExpireUseCase> { ExpireUseCase(get(), get(), get(), get(named<Association>())) }
             single<ITranslateUseCase> { TranslateUseCase() }
             single<IGetLocaleForCallUseCase> { GetLocaleForCallUseCase() }
             single<IGetZoneForDomainUseCase> {

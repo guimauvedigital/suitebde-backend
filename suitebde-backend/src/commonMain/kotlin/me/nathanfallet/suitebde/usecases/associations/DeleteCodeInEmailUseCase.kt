@@ -1,9 +1,9 @@
 package me.nathanfallet.suitebde.usecases.associations
 
-import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
 
 class DeleteCodeInEmailUseCase(
-    private val repository: IAssociationsRepository
+    private val repository: ICodesInEmailsRepository,
 ) : IDeleteCodeInEmailUseCase {
 
     override suspend fun invoke(input: String) {

@@ -5,7 +5,7 @@ import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.*
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
-import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -17,7 +17,7 @@ class GetCodeInEmailUseCaseTest {
 
     @Test
     fun invoke() = runBlocking {
-        val repository = mockk<IAssociationsRepository>()
+        val repository = mockk<ICodesInEmailsRepository>()
         val useCase = GetCodeInEmailUseCase(repository)
         val code = CodeInEmail(
             "email", "code", "associationId", tomorrow
@@ -28,7 +28,7 @@ class GetCodeInEmailUseCaseTest {
 
     @Test
     fun invokeExpired() = runBlocking {
-        val repository = mockk<IAssociationsRepository>()
+        val repository = mockk<ICodesInEmailsRepository>()
         val useCase = GetCodeInEmailUseCase(repository)
         val code = CodeInEmail(
             "email", "code", "associationId", yesterday
@@ -39,7 +39,7 @@ class GetCodeInEmailUseCaseTest {
 
     @Test
     fun invokeNone() = runBlocking {
-        val repository = mockk<IAssociationsRepository>()
+        val repository = mockk<ICodesInEmailsRepository>()
         val useCase = GetCodeInEmailUseCase(repository)
         coEvery { repository.getCodeInEmail("code") } returns null
         assertEquals(null, useCase("code"))

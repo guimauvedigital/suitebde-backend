@@ -8,12 +8,12 @@ import kotlinx.datetime.plus
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.suitebde.extensions.generateId
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
-import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
 
 class CreateCodeInEmailUseCase(
-    private val associationsRepository: IAssociationsRepository,
-    private val usersRepository: IUsersRepository
+    private val codesInEmailsRepository: ICodesInEmailsRepository,
+    private val usersRepository: IUsersRepository,
 ) : ICreateCodeInEmailUseCase {
 
     override suspend fun invoke(input1: String, input2: String?): CodeInEmail? {
@@ -23,9 +23,9 @@ class CreateCodeInEmailUseCase(
         val code = String.generateId()
         val expiresAt = Clock.System.now().plus(1, DateTimeUnit.HOUR, TimeZone.currentSystemDefault())
         return try {
-            associationsRepository.createCodeInEmail(input1, code, input2, expiresAt)
+            codesInEmailsRepository.createCodeInEmail(input1, code, input2, expiresAt)
         } catch (e: Exception) {
-            associationsRepository.updateCodeInEmail(input1, code, input2, expiresAt).takeIf {
+            codesInEmailsRepository.updateCodeInEmail(input1, code, input2, expiresAt).takeIf {
                 it == 1
             } ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
             CodeInEmail(input1, code, input2, expiresAt)
