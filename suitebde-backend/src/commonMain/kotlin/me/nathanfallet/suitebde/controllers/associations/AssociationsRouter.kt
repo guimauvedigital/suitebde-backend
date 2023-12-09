@@ -1,6 +1,7 @@
 package me.nathanfallet.suitebde.controllers.associations
 
 import me.nathanfallet.ktorx.controllers.IModelController
+import me.nathanfallet.ktorx.models.api.APIMapping
 import me.nathanfallet.ktorx.routers.api.APIModelRouter
 import me.nathanfallet.ktorx.routers.concat.ConcatModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
@@ -15,7 +16,7 @@ class AssociationsRouter(
     associationsController: IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload>,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
-    getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase
+    getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
 ) : ConcatModelRouter<Association, String, CreateAssociationPayload, UpdateAssociationPayload>(
     listOf(
         APIModelRouter(
@@ -23,6 +24,10 @@ class AssociationsRouter(
             CreateAssociationPayload::class,
             UpdateAssociationPayload::class,
             associationsController,
+            mapping = APIMapping(
+                createEnabled = false,
+                deleteEnabled = false
+            ),
             prefix = "/api/v1"
         ),
         AdminModelRouter(

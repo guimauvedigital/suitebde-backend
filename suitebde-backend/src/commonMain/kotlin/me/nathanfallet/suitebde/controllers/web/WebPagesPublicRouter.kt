@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.controllers.web
 
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
+import io.swagger.v3.oas.models.OpenAPI
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.models.templates.TemplateMapping
 import me.nathanfallet.ktorx.routers.IChildModelRouter
@@ -21,7 +22,7 @@ class WebPagesPublicRouter(
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     mapping: TemplateMapping,
     respondTemplate: suspend ApplicationCall.(String, Map<String, Any>) -> Unit,
-    route: String
+    route: String,
 ) : PublicChildModelRouter<WebPage, String, CreateWebPagePayload, UpdateWebPagePayload, Association, String>(
     WebPage::class,
     CreateWebPagePayload::class,
@@ -35,8 +36,8 @@ class WebPagesPublicRouter(
     route
 ) {
 
-    override fun createLocalizedRoutes(root: Route) {
-        super.createLocalizedRoutes(root)
+    override fun createLocalizedRoutes(root: Route, openAPI: OpenAPI?) {
+        super.createLocalizedRoutes(root, openAPI)
         createTemplateGetHomeRoute(root)
     }
 

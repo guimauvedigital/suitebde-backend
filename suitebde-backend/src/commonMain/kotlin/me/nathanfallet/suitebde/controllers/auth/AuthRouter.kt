@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
+import io.swagger.v3.oas.models.OpenAPI
 import me.nathanfallet.ktorx.models.auth.AuthMapping
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.routers.auth.LocalizedAuthWithCodeTemplateRouter
@@ -13,7 +14,7 @@ import me.nathanfallet.suitebde.models.auth.*
 
 class AuthRouter(
     override val controller: IAuthController,
-    getLocaleForCallUseCase: IGetLocaleForCallUseCase
+    getLocaleForCallUseCase: IGetLocaleForCallUseCase,
 ) : LocalizedAuthWithCodeTemplateRouter<LoginPayload, RegisterPayload, RegisterCodePayload>(
     LoginPayload::class,
     RegisterPayload::class,
@@ -24,8 +25,8 @@ class AuthRouter(
     getLocaleForCallUseCase
 ) {
 
-    override fun createLocalizedRoutes(root: Route) {
-        super.createLocalizedRoutes(root)
+    override fun createLocalizedRoutes(root: Route, openAPI: OpenAPI?) {
+        super.createLocalizedRoutes(root, openAPI)
         createGetJoinRoute(root)
         createPostJoinRoute(root)
         createGetJoinCodeRoute(root)

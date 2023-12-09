@@ -21,7 +21,7 @@ class AssociationsController(
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
     private val getAssociationUseCase: IGetModelSuspendUseCase<Association, String>,
-    private val updateAssociationUseCase: IUpdateModelSuspendUseCase<Association, String, UpdateAssociationPayload>
+    private val updateAssociationUseCase: IUpdateModelSuspendUseCase<Association, String, UpdateAssociationPayload>,
 ) : IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload> {
 
     override suspend fun list(call: ApplicationCall): List<Association> {
@@ -58,7 +58,7 @@ class AssociationsController(
     }
 
     override suspend fun delete(call: ApplicationCall, id: String) {
-        TODO("Not yet implemented")
+        throw ControllerException(HttpStatusCode.MethodNotAllowed, "associations_delete_not_allowed")
     }
 
 }

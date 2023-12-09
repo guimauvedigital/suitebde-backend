@@ -4,6 +4,10 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.http.content.*
 import io.ktor.server.routing.*
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.servers.Server
+import me.nathanfallet.ktorx.extensions.info
+import me.nathanfallet.ktorx.routers.openapi.OpenAPIRouter
 import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
 import me.nathanfallet.suitebde.controllers.associations.DomainsInAssociationsRouter
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
@@ -13,6 +17,18 @@ import me.nathanfallet.suitebde.controllers.web.WebPagesRouter
 import org.koin.ktor.ext.inject
 
 fun Application.configureRouting() {
+    val openAPI = OpenAPI().info {
+        this.title = "Suite BDE API"
+        this.description = "Suite BDE API"
+        this.version = "1.0.0"
+    }
+    openAPI.servers(
+        listOf(
+            Server().description("Production server").url("https://suitebde.com"),
+            Server().description("Staging server").url("https://suitebde.dev")
+        )
+    )
+
     routing {
         val associationsRouter by inject<AssociationsRouter>()
         val domainsInAssociationsRouter by inject<DomainsInAssociationsRouter>()
@@ -21,13 +37,17 @@ fun Application.configureRouting() {
         val webPagesRouter by inject<WebPagesRouter>()
         val webMenusRouter by inject<WebMenusRouter>()
 
+        val openAPIRouter = OpenAPIRouter()
+
         authenticate("api-v1-jwt", optional = true) {
-            associationsRouter.createRoutes(this)
-            domainsInAssociationsRouter.createRoutes(this)
-            authRouter.createRoutes(this)
-            usersRouter.createRoutes(this)
-            webPagesRouter.createRoutes(this)
-            webMenusRouter.createRoutes(this)
+            associationsRouter.createRoutes(this, openAPI)
+            domainsInAssociationsRouter.createRoutes(this, openAPI)
+            authRouter.createRoutes(this, openAPI)
+            usersRouter.createRoutes(this, openAPI)
+            webPagesRouter.createRoutes(this, openAPI)
+            webMenusRouter.createRoutes(this, openAPI)
+
+            openAPIRouter.createRoutes(this, openAPI)
         }
 
         staticResources("", "static")
