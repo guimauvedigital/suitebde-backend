@@ -2,6 +2,8 @@ package me.nathanfallet.suitebde.controllers.associations
 
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
+import io.swagger.v3.oas.models.OpenAPI
+import io.swagger.v3.oas.models.parameters.Parameter
 import me.nathanfallet.ktorx.controllers.IModelController
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
@@ -10,7 +12,7 @@ import me.nathanfallet.suitebde.usecases.associations.IRequireAssociationForCall
 
 class AssociationForCallRouter(
     private val requireAssociationForCallUseCase: IRequireAssociationForCallUseCase,
-    override val controller: IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload>
+    override val controller: IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload>,
 ) : IAssociationForCallRouter {
 
     override val modelClass = Association::class
@@ -22,12 +24,16 @@ class AssociationForCallRouter(
     override val id = ""
     override val prefix = ""
 
-    override fun createRoutes(root: Route) {
+    override fun createRoutes(root: Route, openAPI: OpenAPI?) {
         // This does not create routes because it only resolves the association from the call
     }
 
     override suspend fun get(call: ApplicationCall): Association {
         return requireAssociationForCallUseCase(call)
+    }
+
+    override fun getOpenAPIParameters(self: Boolean): List<Parameter> {
+        return emptyList()
     }
 
 }

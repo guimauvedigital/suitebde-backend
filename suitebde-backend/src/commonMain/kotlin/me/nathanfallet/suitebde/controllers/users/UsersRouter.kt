@@ -1,6 +1,7 @@
 package me.nathanfallet.suitebde.controllers.users
 
 import me.nathanfallet.ktorx.controllers.IChildModelController
+import me.nathanfallet.ktorx.models.api.APIMapping
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
 import me.nathanfallet.ktorx.routers.concat.ConcatChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
@@ -18,7 +19,7 @@ class UsersRouter(
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
-    associationsRouter: IAssociationForCallRouter
+    associationsRouter: IAssociationForCallRouter,
 ) : ConcatChildModelRouter<User, String, CreateUserPayload, UpdateUserPayload, Association, String>(
     listOf(
         APIChildModelRouter(
@@ -27,6 +28,10 @@ class UsersRouter(
             UpdateUserPayload::class,
             usersController,
             associationsRouter,
+            mapping = APIMapping(
+                createEnabled = false,
+                deleteEnabled = false
+            ),
             prefix = "/api/v1"
         ),
         AdminChildModelRouter(
