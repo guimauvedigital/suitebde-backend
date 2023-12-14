@@ -8,9 +8,8 @@ import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.IAssociationForCallRouter
 import me.nathanfallet.suitebde.controllers.models.AdminChildModelRouter
 import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.web.CreateWebPagePayload
-import me.nathanfallet.suitebde.models.web.UpdateWebPagePayload
 import me.nathanfallet.suitebde.models.web.WebPage
+import me.nathanfallet.suitebde.models.web.WebPagePayload
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetPublicMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
@@ -21,21 +20,21 @@ class WebPagesRouter(
     translateUseCase: ITranslateUseCase,
     getPublicMenuForCallUseCase: IGetPublicMenuForCallUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
-    associationsRouter: IAssociationForCallRouter
-) : ConcatChildModelRouter<WebPage, String, CreateWebPagePayload, UpdateWebPagePayload, Association, String>(
+    associationsRouter: IAssociationForCallRouter,
+) : ConcatChildModelRouter<WebPage, String, WebPagePayload, WebPagePayload, Association, String>(
     listOf(
         APIChildModelRouter(
             WebPage::class,
-            CreateWebPagePayload::class,
-            UpdateWebPagePayload::class,
+            WebPagePayload::class,
+            WebPagePayload::class,
             webPagesController,
             associationsRouter,
             prefix = "/api/v1"
         ),
         AdminChildModelRouter(
             WebPage::class,
-            CreateWebPagePayload::class,
-            UpdateWebPagePayload::class,
+            WebPagePayload::class,
+            WebPagePayload::class,
             webPagesController,
             associationsRouter,
             getLocaleForCallUseCase,

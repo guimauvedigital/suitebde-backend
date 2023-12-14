@@ -20,12 +20,15 @@ import me.nathanfallet.suitebde.controllers.users.UsersController
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
 import me.nathanfallet.suitebde.controllers.web.*
 import me.nathanfallet.suitebde.database.Database
+import me.nathanfallet.suitebde.database.application.DatabaseClientsRepository
 import me.nathanfallet.suitebde.database.associations.DatabaseAssociationRepository
 import me.nathanfallet.suitebde.database.associations.DatabaseCodesInEmailsRepository
 import me.nathanfallet.suitebde.database.associations.DatabaseDomainsInAssociationsRepository
+import me.nathanfallet.suitebde.database.users.DatabaseClientsInUsersRepository
 import me.nathanfallet.suitebde.database.users.DatabaseUsersRepository
 import me.nathanfallet.suitebde.database.web.DatabaseWebMenusRepository
 import me.nathanfallet.suitebde.database.web.DatabaseWebPagesRepository
+import me.nathanfallet.suitebde.models.application.Client
 import me.nathanfallet.suitebde.models.associations.*
 import me.nathanfallet.suitebde.models.auth.LoginPayload
 import me.nathanfallet.suitebde.models.auth.RegisterCodePayload
@@ -37,11 +40,14 @@ import me.nathanfallet.suitebde.models.web.*
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
+import me.nathanfallet.suitebde.repositories.users.IClientsInUsersRepository
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
 import me.nathanfallet.suitebde.repositories.web.IWebMenusRepository
 import me.nathanfallet.suitebde.repositories.web.IWebPagesRepository
 import me.nathanfallet.suitebde.services.emails.EmailsService
 import me.nathanfallet.suitebde.services.emails.IEmailsService
+import me.nathanfallet.suitebde.services.jwt.IJWTService
+import me.nathanfallet.suitebde.services.jwt.JWTService
 import me.nathanfallet.suitebde.usecases.application.*
 import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.*
@@ -62,6 +68,7 @@ import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.ListChildModelFromRepositorySuspendUseCase
+import me.nathanfallet.usecases.models.repositories.IModelSuspendRepository
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.UpdateChildModelFromRepositorySuspendUseCase
@@ -92,6 +99,12 @@ fun Application.configureKoin() {
                     environment.config.property("email.password").getString()
                 )
             }
+            single<IJWTService> {
+                JWTService(
+                    environment.config.property("jwt.secret").getString(),
+                    environment.config.property("jwt.issuer").getString()
+                )
+            }
             single<ICloudflareClient> {
                 CloudflareClient(
                     environment.config.property("cloudflare.token").getString()
@@ -99,10 +112,21 @@ fun Application.configureKoin() {
             }
         }
         val repositoryModule = module {
+            // Application
+            single<IModelSuspendRepository<Client, String, Unit, Unit>>(named<Client>()) {
+                DatabaseClientsRepository(get())
+            }
+
+            // Associations
             single<IAssociationsRepository> { DatabaseAssociationRepository(get()) }
             single<ICodesInEmailsRepository> { DatabaseCodesInEmailsRepository(get()) }
             single<IDomainsInAssociationsRepository> { DatabaseDomainsInAssociationsRepository(get()) }
+
+            // Users
             single<IUsersRepository> { DatabaseUsersRepository(get()) }
+            single<IClientsInUsersRepository> { DatabaseClientsInUsersRepository(get()) }
+
+            // Web
             single<IWebPagesRepository> { DatabaseWebPagesRepository(get()) }
             single<IWebMenusRepository> { DatabaseWebMenusRepository(get()) }
         }
@@ -126,6 +150,9 @@ fun Application.configureKoin() {
                 )
             }
             single<IShutdownDomainUseCase> { ShutdownDomainUseCase(get(), get()) }
+            single<IGetModelSuspendUseCase<Client, String>>(named<Client>()) {
+                GetModelFromRepositorySuspendUseCase(get(named<Client>()))
+            }
 
             // Associations
             single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
@@ -184,6 +211,13 @@ fun Application.configureKoin() {
             }
             single<IGetCodeRegisterUseCase<RegisterPayload>> { GetCodeRegisterUseCase(get(), get()) }
             single<IDeleteCodeRegisterUseCase> { DeleteCodeRegisterUseCase(get()) }
+            single<IGetClientUseCase> { GetClientFromModelUseCase<Client>(get(named<Client>())) }
+            single<ICreateAuthCodeUseCase> { CreateAuthCodeUseCase(get()) }
+            single<IGetAuthCodeUseCase> { GetAuthCodeUseCase(get(), get(), get()) }
+            single<IDeleteAuthCodeUseCase> { DeleteAuthCodeUseCase(get()) }
+            single<IGenerateAuthTokenUseCase> {
+                GenerateAuthTokenUseCase(get())
+            }
 
             // Users
             single<IGetUserUseCase> { GetUserUseCase(get()) }
@@ -220,10 +254,10 @@ fun Application.configureKoin() {
             single<IGetChildModelSuspendUseCase<WebPage, String, String>>(named<WebPage>()) {
                 GetChildModelFromRepositorySuspendUseCase(get<IWebPagesRepository>())
             }
-            single<ICreateChildModelSuspendUseCase<WebPage, CreateWebPagePayload, String>>(named<WebPage>()) {
+            single<ICreateChildModelSuspendUseCase<WebPage, WebPagePayload, String>>(named<WebPage>()) {
                 CreateChildModelFromRepositorySuspendUseCase(get<IWebPagesRepository>())
             }
-            single<IUpdateChildModelSuspendUseCase<WebPage, String, UpdateWebPagePayload, String>>(named<WebPage>()) {
+            single<IUpdateChildModelSuspendUseCase<WebPage, String, WebPagePayload, String>>(named<WebPage>()) {
                 UpdateChildModelFromRepositorySuspendUseCase(get<IWebPagesRepository>())
             }
             single<IDeleteChildModelSuspendUseCase<WebPage, String, String>>(named<WebPage>()) {
@@ -275,6 +309,12 @@ fun Application.configureKoin() {
             // Auth
             single<IAuthController> {
                 AuthController(
+                    get(),
+                    get(),
+                    get(),
+                    get(),
+                    get(),
+                    get(),
                     get(),
                     get(),
                     get(),

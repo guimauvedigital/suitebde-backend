@@ -1,9 +1,8 @@
 package me.nathanfallet.suitebde.database.web
 
 import me.nathanfallet.suitebde.database.Database
-import me.nathanfallet.suitebde.models.web.CreateWebPagePayload
-import me.nathanfallet.suitebde.models.web.UpdateWebPagePayload
 import me.nathanfallet.suitebde.models.web.WebPage
+import me.nathanfallet.suitebde.models.web.WebPagePayload
 import me.nathanfallet.suitebde.repositories.web.IWebPagesRepository
 import me.nathanfallet.usecases.context.IContext
 import org.jetbrains.exposed.sql.*
@@ -29,7 +28,7 @@ class DatabaseWebPagesRepository(
         }
     }
 
-    override suspend fun create(payload: CreateWebPagePayload, parentId: String, context: IContext?): WebPage? {
+    override suspend fun create(payload: WebPagePayload, parentId: String, context: IContext?): WebPage? {
         return database.dbQuery {
             WebPages.insert {
                 it[id] = generateId()
@@ -79,7 +78,7 @@ class DatabaseWebPagesRepository(
 
     override suspend fun update(
         id: String,
-        payload: UpdateWebPagePayload,
+        payload: WebPagePayload,
         parentId: String,
         context: IContext?,
     ): Boolean {

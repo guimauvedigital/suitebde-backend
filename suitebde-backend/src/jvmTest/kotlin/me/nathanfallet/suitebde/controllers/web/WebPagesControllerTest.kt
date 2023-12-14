@@ -11,9 +11,8 @@ import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.models.web.CreateWebPagePayload
-import me.nathanfallet.suitebde.models.web.UpdateWebPagePayload
 import me.nathanfallet.suitebde.models.web.WebPage
+import me.nathanfallet.suitebde.models.web.WebPagePayload
 import me.nathanfallet.suitebde.usecases.web.IGetHomeWebPageUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetWebPageByUrlUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
@@ -137,7 +136,7 @@ class WebPagesControllerTest {
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val createWebPageUseCase =
-            mockk<ICreateChildModelSuspendUseCase<WebPage, CreateWebPagePayload, String>>()
+            mockk<ICreateChildModelSuspendUseCase<WebPage, WebPagePayload, String>>()
         val controller = WebPagesController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
@@ -149,7 +148,7 @@ class WebPagesControllerTest {
             mockk(),
             mockk()
         )
-        val payload = CreateWebPagePayload("url", "title", "content", true)
+        val payload = WebPagePayload("url", "title", "content", true)
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_CREATE inAssociation association) } returns true
         coEvery { createWebPageUseCase(payload, page.associationId) } returns page
@@ -171,7 +170,7 @@ class WebPagesControllerTest {
             mockk(),
             mockk()
         )
-        val payload = CreateWebPagePayload("url", "title", "content", true)
+        val payload = WebPagePayload("url", "title", "content", true)
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_CREATE inAssociation association) } returns false
         val exception = assertFailsWith(ControllerException::class) {
@@ -186,7 +185,7 @@ class WebPagesControllerTest {
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val createWebPageUseCase =
-            mockk<ICreateChildModelSuspendUseCase<WebPage, CreateWebPagePayload, String>>()
+            mockk<ICreateChildModelSuspendUseCase<WebPage, WebPagePayload, String>>()
         val controller = WebPagesController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
@@ -198,7 +197,7 @@ class WebPagesControllerTest {
             mockk(),
             mockk()
         )
-        val payload = CreateWebPagePayload("url", "title", "content", true)
+        val payload = WebPagePayload("url", "title", "content", true)
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_CREATE inAssociation association) } returns true
         coEvery { createWebPageUseCase(payload, page.associationId) } returns null
@@ -215,7 +214,7 @@ class WebPagesControllerTest {
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getWebPageUseCase = mockk<IGetChildModelSuspendUseCase<WebPage, String, String>>()
         val updateWebPageUseCase =
-            mockk<IUpdateChildModelSuspendUseCase<WebPage, String, UpdateWebPagePayload, String>>()
+            mockk<IUpdateChildModelSuspendUseCase<WebPage, String, WebPagePayload, String>>()
         val controller = WebPagesController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
@@ -227,7 +226,7 @@ class WebPagesControllerTest {
             updateWebPageUseCase,
             mockk()
         )
-        val payload = UpdateWebPagePayload("url", "title2", "content2", true)
+        val payload = WebPagePayload("url", "title2", "content2", true)
         val updatedPage = page.copy(
             title = payload.title,
             content = payload.content,
@@ -246,7 +245,7 @@ class WebPagesControllerTest {
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getWebPageUseCase = mockk<IGetChildModelSuspendUseCase<WebPage, String, String>>()
         val updateWebPageUseCase =
-            mockk<IUpdateChildModelSuspendUseCase<WebPage, String, UpdateWebPagePayload, String>>()
+            mockk<IUpdateChildModelSuspendUseCase<WebPage, String, WebPagePayload, String>>()
         val controller = WebPagesController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
@@ -258,7 +257,7 @@ class WebPagesControllerTest {
             updateWebPageUseCase,
             mockk()
         )
-        val payload = UpdateWebPagePayload("url", "title2", "content2", true)
+        val payload = WebPagePayload("url", "title2", "content2", true)
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_UPDATE inAssociation association) } returns true
         coEvery { getWebPageUseCase(page.id, page.associationId) } returns page
@@ -286,7 +285,7 @@ class WebPagesControllerTest {
             mockk(),
             mockk()
         )
-        val payload = UpdateWebPagePayload("url", "title2", "content2", true)
+        val payload = WebPagePayload("url", "title2", "content2", true)
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_UPDATE inAssociation association) } returns true
         coEvery { getWebPageUseCase(page.id, page.associationId) } returns null
@@ -312,7 +311,7 @@ class WebPagesControllerTest {
             mockk(),
             mockk()
         )
-        val payload = UpdateWebPagePayload("url", "title2", "content2", true)
+        val payload = WebPagePayload("url", "title2", "content2", true)
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_UPDATE inAssociation association) } returns false
         val exception = assertFailsWith(ControllerException::class) {

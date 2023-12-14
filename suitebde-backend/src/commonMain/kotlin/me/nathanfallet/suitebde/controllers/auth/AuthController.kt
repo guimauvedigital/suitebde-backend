@@ -6,6 +6,7 @@ import me.nathanfallet.ktorx.controllers.auth.AuthWithCodeController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.auth.*
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.application.Email
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
@@ -25,13 +26,19 @@ class AuthController(
     createCodeRegisterUseCase: ICreateCodeRegisterUseCase<RegisterPayload>,
     getCodeRegisterUseCase: IGetCodeRegisterUseCase<RegisterPayload>,
     deleteCodeRegisterUseCase: IDeleteCodeRegisterUseCase,
+    requireUserForCallUseCase: IRequireUserForCallUseCase,
+    getClientUseCase: IGetClientUseCase,
+    getAuthCodeUseCase: IGetAuthCodeUseCase,
+    createAuthCodeUseCase: ICreateAuthCodeUseCase,
+    deleteAuthCodeUseCase: IDeleteAuthCodeUseCase,
+    generateAuthTokenUseCase: IGenerateAuthTokenUseCase,
     private val createCodeInEmailUseCase: ICreateCodeInEmailUseCase,
     private val getCodeInEmailUseCase: IGetCodeInEmailUseCase,
     private val deleteCodeInEmailUseCase: IDeleteCodeInEmailUseCase,
     private val createAssociationUseCase: ICreateModelSuspendUseCase<Association, CreateAssociationPayload>,
     private val sendEmailUseCase: ISendEmailUseCase,
     private val getLocaleForCallUseCase: IGetLocaleForCallUseCase,
-    private val translateUseCase: ITranslateUseCase
+    private val translateUseCase: ITranslateUseCase,
 ) : AuthWithCodeController<LoginPayload, RegisterPayload, RegisterCodePayload>(
     loginUseCase,
     registerUseCase,
@@ -39,7 +46,13 @@ class AuthController(
     setSessionForCallUseCase,
     createCodeRegisterUseCase,
     getCodeRegisterUseCase,
-    deleteCodeRegisterUseCase
+    deleteCodeRegisterUseCase,
+    requireUserForCallUseCase,
+    getClientUseCase,
+    getAuthCodeUseCase,
+    createAuthCodeUseCase,
+    deleteAuthCodeUseCase,
+    generateAuthTokenUseCase
 ), IAuthController {
 
     override suspend fun join(call: ApplicationCall, payload: JoinPayload) {
