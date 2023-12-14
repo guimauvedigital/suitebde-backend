@@ -9,9 +9,8 @@ import me.nathanfallet.ktorx.routers.IChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.controllers.models.PublicChildModelRouter
 import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.web.CreateWebPagePayload
-import me.nathanfallet.suitebde.models.web.UpdateWebPagePayload
 import me.nathanfallet.suitebde.models.web.WebPage
+import me.nathanfallet.suitebde.models.web.WebPagePayload
 import me.nathanfallet.suitebde.usecases.web.IGetPublicMenuForCallUseCase
 import me.nathanfallet.usecases.models.annotations.ModelAnnotations
 
@@ -23,10 +22,10 @@ class WebPagesPublicRouter(
     mapping: TemplateMapping,
     respondTemplate: suspend ApplicationCall.(String, Map<String, Any>) -> Unit,
     route: String,
-) : PublicChildModelRouter<WebPage, String, CreateWebPagePayload, UpdateWebPagePayload, Association, String>(
+) : PublicChildModelRouter<WebPage, String, WebPagePayload, WebPagePayload, Association, String>(
     WebPage::class,
-    CreateWebPagePayload::class,
-    UpdateWebPagePayload::class,
+    WebPagePayload::class,
+    WebPagePayload::class,
     webPagesController,
     associationsRouter,
     getPublicMenuForCallUseCase,

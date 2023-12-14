@@ -6,9 +6,8 @@ import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.roles.Permission
-import me.nathanfallet.suitebde.models.web.CreateWebPagePayload
-import me.nathanfallet.suitebde.models.web.UpdateWebPagePayload
 import me.nathanfallet.suitebde.models.web.WebPage
+import me.nathanfallet.suitebde.models.web.WebPagePayload
 import me.nathanfallet.suitebde.usecases.web.IGetHomeWebPageUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetWebPageByUrlUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
@@ -25,9 +24,9 @@ class WebPagesController(
     private val getWebPageByUrlUseCase: IGetWebPageByUrlUseCase,
     private val getHomeWebPageUseCase: IGetHomeWebPageUseCase,
     private val getWebPageUseCase: IGetChildModelSuspendUseCase<WebPage, String, String>,
-    private val createWebPageUseCase: ICreateChildModelSuspendUseCase<WebPage, CreateWebPagePayload, String>,
-    private val updateWebPageUseCase: IUpdateChildModelSuspendUseCase<WebPage, String, UpdateWebPagePayload, String>,
-    private val deleteWebPageUseCase: IDeleteChildModelSuspendUseCase<WebPage, String, String>
+    private val createWebPageUseCase: ICreateChildModelSuspendUseCase<WebPage, WebPagePayload, String>,
+    private val updateWebPageUseCase: IUpdateChildModelSuspendUseCase<WebPage, String, WebPagePayload, String>,
+    private val deleteWebPageUseCase: IDeleteChildModelSuspendUseCase<WebPage, String, String>,
 ) : IWebPagesController {
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<WebPage> {
@@ -52,7 +51,7 @@ class WebPagesController(
         )
     }
 
-    override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateWebPagePayload): WebPage {
+    override suspend fun create(call: ApplicationCall, parent: Association, payload: WebPagePayload): WebPage {
         requireUserForCallUseCase(call).takeIf {
             checkPermissionUseCase(it, Permission.WEBPAGES_CREATE inAssociation parent)
         } ?: throw ControllerException(
@@ -67,7 +66,7 @@ class WebPagesController(
         call: ApplicationCall,
         parent: Association,
         id: String,
-        payload: UpdateWebPagePayload
+        payload: WebPagePayload,
     ): WebPage {
         requireUserForCallUseCase(call).takeIf {
             checkPermissionUseCase(it, Permission.WEBPAGES_UPDATE inAssociation parent)
