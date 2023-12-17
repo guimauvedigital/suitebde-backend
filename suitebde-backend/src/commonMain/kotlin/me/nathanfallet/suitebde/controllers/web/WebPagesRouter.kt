@@ -1,6 +1,7 @@
 package me.nathanfallet.suitebde.controllers.web
 
 import io.ktor.server.freemarker.*
+import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.models.templates.TemplateMapping
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
 import me.nathanfallet.ktorx.routers.concat.ConcatChildModelRouter
@@ -24,17 +25,19 @@ class WebPagesRouter(
 ) : ConcatChildModelRouter<WebPage, String, WebPagePayload, WebPagePayload, Association, String>(
     listOf(
         APIChildModelRouter(
-            WebPage::class,
-            WebPagePayload::class,
-            WebPagePayload::class,
+            typeInfo<WebPage>(),
+            typeInfo<WebPagePayload>(),
+            typeInfo<WebPagePayload>(),
+            typeInfo<List<WebPage>>(),
             webPagesController,
             associationsRouter,
             prefix = "/api/v1"
         ),
         AdminChildModelRouter(
-            WebPage::class,
-            WebPagePayload::class,
-            WebPagePayload::class,
+            typeInfo<WebPage>(),
+            typeInfo<WebPagePayload>(),
+            typeInfo<WebPagePayload>(),
+            typeInfo<List<WebPage>>(),
             webPagesController,
             associationsRouter,
             getLocaleForCallUseCase,

@@ -15,10 +15,14 @@ import io.mockk.mockk
 import kotlinx.datetime.Clock
 import me.nathanfallet.ktorx.controllers.IModelController
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.suitebde.models.application.SuiteBDEJson
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
-import me.nathanfallet.suitebde.plugins.*
+import me.nathanfallet.suitebde.plugins.configureI18n
+import me.nathanfallet.suitebde.plugins.configureSecurity
+import me.nathanfallet.suitebde.plugins.configureSerialization
+import me.nathanfallet.suitebde.plugins.configureTemplating
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.UnitModel
@@ -47,7 +51,7 @@ class AssociationsRouterTest {
         return application.createClient {
             followRedirects = false
             install(ContentNegotiation) {
-                json(Serialization.json)
+                json(SuiteBDEJson.json)
             }
         }
     }

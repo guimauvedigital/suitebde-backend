@@ -1,6 +1,7 @@
 package me.nathanfallet.suitebde.controllers.models
 
 import io.ktor.server.freemarker.*
+import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.templates.TemplateMapping
 import me.nathanfallet.ktorx.routers.IChildModelRouter
@@ -9,12 +10,12 @@ import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.IChildModel
-import kotlin.reflect.KClass
 
 open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePayload, ParentId>, Id, CreatePayload : Any, UpdatePayload : Any, ParentModel : IChildModel<ParentId, *, *, *>, ParentId>(
-    modelClass: KClass<Model>,
-    createPayloadClass: KClass<CreatePayload>,
-    updatePayloadClass: KClass<UpdatePayload>,
+    modelTypeInfo: TypeInfo,
+    createPayloadTypeInfo: TypeInfo,
+    updatePayloadTypeInfo: TypeInfo,
+    listTypeInfo: TypeInfo,
     controller: IChildModelController<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>,
     parentRouter: IChildModelRouter<ParentModel, ParentId, *, *, *, *>?,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
@@ -22,11 +23,12 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
     private val getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     route: String? = null,
     id: String? = null,
-    prefix: String? = null
+    prefix: String? = null,
 ) : LocalizedTemplateChildModelRouter<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>(
-    modelClass,
-    createPayloadClass,
-    updatePayloadClass,
+    modelTypeInfo,
+    createPayloadTypeInfo,
+    updatePayloadTypeInfo,
+    listTypeInfo,
     controller,
     parentRouter,
     TemplateMapping(

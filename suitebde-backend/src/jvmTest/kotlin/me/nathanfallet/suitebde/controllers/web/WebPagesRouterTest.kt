@@ -16,9 +16,13 @@ import kotlinx.datetime.Clock
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.AssociationForCallRouter
+import me.nathanfallet.suitebde.models.application.SuiteBDEJson
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.web.WebPage
-import me.nathanfallet.suitebde.plugins.*
+import me.nathanfallet.suitebde.plugins.configureI18n
+import me.nathanfallet.suitebde.plugins.configureSecurity
+import me.nathanfallet.suitebde.plugins.configureSerialization
+import me.nathanfallet.suitebde.plugins.configureTemplating
 import me.nathanfallet.suitebde.usecases.associations.IRequireAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetPublicMenuForCallUseCase
@@ -50,7 +54,7 @@ class WebPagesRouterTest {
         return application.createClient {
             followRedirects = false
             install(ContentNegotiation) {
-                json(Serialization.json)
+                json(SuiteBDEJson.json)
             }
         }
     }

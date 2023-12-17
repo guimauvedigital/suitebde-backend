@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.controllers.web
 
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
+import io.ktor.util.reflect.*
 import io.swagger.v3.oas.models.OpenAPI
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.models.templates.TemplateMapping
@@ -23,9 +24,10 @@ class WebPagesPublicRouter(
     respondTemplate: suspend ApplicationCall.(String, Map<String, Any>) -> Unit,
     route: String,
 ) : PublicChildModelRouter<WebPage, String, WebPagePayload, WebPagePayload, Association, String>(
-    WebPage::class,
-    WebPagePayload::class,
-    WebPagePayload::class,
+    typeInfo<WebPage>(),
+    typeInfo<WebPagePayload>(),
+    typeInfo<WebPagePayload>(),
+    typeInfo<List<WebPage>>(),
     webPagesController,
     associationsRouter,
     getPublicMenuForCallUseCase,
@@ -51,7 +53,7 @@ class WebPagesPublicRouter(
         return (controller as IWebPagesController).getByUrl(
             call,
             parentRouter!!.get(call),
-            ModelAnnotations.constructIdFromString(modelClass, call.parameters[id]!!)
+            ModelAnnotations.constructIdFromString(WebPage::class, call.parameters[id]!!)
         )
     }
 

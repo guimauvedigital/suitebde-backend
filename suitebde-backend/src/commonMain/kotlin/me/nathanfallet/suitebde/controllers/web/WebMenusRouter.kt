@@ -1,5 +1,6 @@
 package me.nathanfallet.suitebde.controllers.web
 
+import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
 import me.nathanfallet.ktorx.routers.concat.ConcatChildModelRouter
@@ -18,21 +19,23 @@ class WebMenusRouter(
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
-    associationsRouter: IAssociationForCallRouter
+    associationsRouter: IAssociationForCallRouter,
 ) : ConcatChildModelRouter<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String>(
     listOf(
         APIChildModelRouter(
-            WebMenu::class,
-            CreateWebMenuPayload::class,
-            UpdateWebMenuPayload::class,
+            typeInfo<WebMenu>(),
+            typeInfo<CreateWebMenuPayload>(),
+            typeInfo<UpdateWebMenuPayload>(),
+            typeInfo<List<WebMenu>>(),
             webMenusController,
             associationsRouter,
             prefix = "/api/v1"
         ),
         AdminChildModelRouter(
-            WebMenu::class,
-            CreateWebMenuPayload::class,
-            UpdateWebMenuPayload::class,
+            typeInfo<WebMenu>(),
+            typeInfo<CreateWebMenuPayload>(),
+            typeInfo<UpdateWebMenuPayload>(),
+            typeInfo<List<WebMenu>>(),
             webMenusController,
             associationsRouter,
             getLocaleForCallUseCase,

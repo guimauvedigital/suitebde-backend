@@ -1,5 +1,6 @@
 package me.nathanfallet.suitebde.controllers.associations
 
+import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.api.APIMapping
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
@@ -21,9 +22,10 @@ class DomainsInAssociationsRouter(
 ) : ConcatChildModelRouter<DomainInAssociation, String, CreateDomainInAssociationPayload, Unit, Association, String>(
     listOf(
         APIChildModelRouter(
-            DomainInAssociation::class,
-            CreateDomainInAssociationPayload::class,
-            Unit::class,
+            typeInfo<DomainInAssociation>(),
+            typeInfo<CreateDomainInAssociationPayload>(),
+            typeInfo<Unit>(),
+            typeInfo<List<DomainInAssociation>>(),
             domainsInAssociationsController,
             associationsRouter.routerOf(),
             mapping = APIMapping(
@@ -33,9 +35,10 @@ class DomainsInAssociationsRouter(
             prefix = "/api/v1"
         ),
         AdminChildModelRouter(
-            DomainInAssociation::class,
-            CreateDomainInAssociationPayload::class,
-            Unit::class,
+            typeInfo<DomainInAssociation>(),
+            typeInfo<CreateDomainInAssociationPayload>(),
+            typeInfo<Unit>(),
+            typeInfo<List<DomainInAssociation>>(),
             domainsInAssociationsController,
             associationsRouter.routerOf(),
             getLocaleForCallUseCase,

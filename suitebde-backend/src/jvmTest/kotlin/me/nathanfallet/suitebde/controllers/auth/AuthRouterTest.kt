@@ -13,10 +13,14 @@ import io.mockk.every
 import io.mockk.mockk
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.suitebde.models.application.SuiteBDEJson
 import me.nathanfallet.suitebde.models.auth.JoinCodePayload
 import me.nathanfallet.suitebde.models.auth.JoinPayload
 import me.nathanfallet.suitebde.models.auth.RegisterPayload
-import me.nathanfallet.suitebde.plugins.*
+import me.nathanfallet.suitebde.plugins.configureI18n
+import me.nathanfallet.suitebde.plugins.configureSecurity
+import me.nathanfallet.suitebde.plugins.configureSerialization
+import me.nathanfallet.suitebde.plugins.configureTemplating
 import org.jsoup.Jsoup
 import java.util.*
 import kotlin.test.Test
@@ -37,7 +41,7 @@ class AuthRouterTest {
         return application.createClient {
             followRedirects = false
             install(ContentNegotiation) {
-                json(Serialization.json)
+                json(SuiteBDEJson.json)
             }
         }
     }

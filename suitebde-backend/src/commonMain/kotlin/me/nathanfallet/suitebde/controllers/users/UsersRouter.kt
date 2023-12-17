@@ -1,5 +1,6 @@
 package me.nathanfallet.suitebde.controllers.users
 
+import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.api.APIMapping
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
@@ -23,9 +24,10 @@ class UsersRouter(
 ) : ConcatChildModelRouter<User, String, CreateUserPayload, UpdateUserPayload, Association, String>(
     listOf(
         APIChildModelRouter(
-            User::class,
-            CreateUserPayload::class,
-            UpdateUserPayload::class,
+            typeInfo<User>(),
+            typeInfo<CreateUserPayload>(),
+            typeInfo<UpdateUserPayload>(),
+            typeInfo<List<User>>(),
             usersController,
             associationsRouter,
             mapping = APIMapping(
@@ -35,9 +37,10 @@ class UsersRouter(
             prefix = "/api/v1"
         ),
         AdminChildModelRouter(
-            User::class,
-            CreateUserPayload::class,
-            UpdateUserPayload::class,
+            typeInfo<User>(),
+            typeInfo<CreateUserPayload>(),
+            typeInfo<UpdateUserPayload>(),
+            typeInfo<List<User>>(),
             usersController,
             associationsRouter,
             getLocaleForCallUseCase,

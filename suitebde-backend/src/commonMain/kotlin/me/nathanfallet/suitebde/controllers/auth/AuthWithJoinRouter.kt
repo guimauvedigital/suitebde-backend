@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.freemarker.*
 import io.ktor.server.request.*
 import io.ktor.server.routing.*
+import io.ktor.util.reflect.*
 import io.swagger.v3.oas.models.OpenAPI
 import me.nathanfallet.ktorx.models.auth.AuthMapping
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
@@ -16,9 +17,9 @@ class AuthWithJoinRouter(
     override val controller: IAuthController,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
 ) : LocalizedAuthWithCodeTemplateRouter<LoginPayload, RegisterPayload, RegisterCodePayload>(
-    LoginPayload::class,
-    RegisterPayload::class,
-    RegisterCodePayload::class,
+    typeInfo<LoginPayload>(),
+    typeInfo<RegisterPayload>(),
+    typeInfo<RegisterCodePayload>(),
     AuthMapping(
         loginTemplate = "auth/login.ftl",
         registerTemplate = "auth/register.ftl",
