@@ -10,6 +10,13 @@ application {
     mainClass.set("me.nathanfallet.suitebde.ApplicationKt")
 }
 
+ktor {
+    docker {
+        jreVersion.set(JavaVersion.VERSION_19)
+        localImageName.set("suitebde-backend")
+    }
+}
+
 kotlin {
     jvm {
         jvmToolchain(19)
