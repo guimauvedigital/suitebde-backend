@@ -14,6 +14,14 @@ ktor {
     docker {
         jreVersion.set(JavaVersion.VERSION_19)
         localImageName.set("suitebde-backend")
+
+        externalRegistry.set(
+            io.ktor.plugin.features.DockerImageRegistry.dockerHub(
+                appName = provider { "suitebde-backend" },
+                username = provider { "nathanfallet" },
+                password = providers.environmentVariable("DOCKER_HUB_PASSWORD")
+            )
+        )
     }
 }
 
