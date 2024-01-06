@@ -1,6 +1,8 @@
 package me.nathanfallet.suitebde.database
 
 import kotlinx.coroutines.Dispatchers
+import me.nathanfallet.ktorx.database.IDatabase
+import me.nathanfallet.ktorx.database.sessions.Sessions
 import me.nathanfallet.suitebde.database.application.Clients
 import me.nathanfallet.suitebde.database.associations.Associations
 import me.nathanfallet.suitebde.database.associations.CodesInEmails
@@ -19,7 +21,7 @@ class Database(
     name: String = "",
     user: String = "",
     password: String = "",
-) {
+) : IDatabase {
 
     // Connect to database
     private val database: org.jetbrains.exposed.sql.Database = when (protocol) {
@@ -37,6 +39,7 @@ class Database(
 
     init {
         transaction(database) {
+            SchemaUtils.create(Sessions)
             SchemaUtils.create(Clients)
             SchemaUtils.create(Associations)
             SchemaUtils.create(DomainsInAssociations)
@@ -48,7 +51,7 @@ class Database(
         }
     }
 
-    suspend fun <T> dbQuery(block: suspend () -> T): T =
+    override suspend fun <T> dbQuery(block: suspend () -> T): T =
         newSuspendedTransaction(Dispatchers.IO, database) { block() }
 
 }

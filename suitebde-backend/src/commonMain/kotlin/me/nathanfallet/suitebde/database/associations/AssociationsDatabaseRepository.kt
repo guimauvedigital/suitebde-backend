@@ -1,16 +1,17 @@
 package me.nathanfallet.suitebde.database.associations
 
 import kotlinx.datetime.*
-import me.nathanfallet.suitebde.database.Database
+import me.nathanfallet.ktorx.database.IDatabase
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.usecases.context.IContext
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
-class DatabaseAssociationRepository(
-    private val database: Database,
+class AssociationsDatabaseRepository(
+    private val database: IDatabase,
 ) : IAssociationsRepository {
 
     override suspend fun create(payload: CreateAssociationPayload, context: IContext?): Association? {
@@ -51,7 +52,7 @@ class DatabaseAssociationRepository(
     override suspend fun delete(id: String, context: IContext?): Boolean {
         return database.dbQuery {
             Associations.deleteWhere {
-                Op.build { Associations.id eq id }
+                Associations.id eq id
             }
         } == 1
     }
@@ -59,7 +60,8 @@ class DatabaseAssociationRepository(
     override suspend fun get(id: String, context: IContext?): Association? {
         return database.dbQuery {
             Associations
-                .select { Associations.id eq id }
+                .selectAll()
+                .where { Associations.id eq id }
                 .map(Associations::toAssociation)
                 .singleOrNull()
         }
@@ -85,7 +87,8 @@ class DatabaseAssociationRepository(
     override suspend fun getValidatedAssociations(): List<Association> {
         return database.dbQuery {
             Associations
-                .select { Associations.validated eq true }
+                .selectAll()
+                .where { Associations.validated eq true }
                 .map(Associations::toAssociation)
         }
     }
@@ -93,7 +96,8 @@ class DatabaseAssociationRepository(
     override suspend fun getAssociationsExpiringBefore(date: Instant): List<Association> {
         return database.dbQuery {
             Associations
-                .select { Associations.expiresAt less date.toString() }
+                .selectAll()
+                .where { Associations.expiresAt less date.toString() }
                 .map(Associations::toAssociation)
         }
     }
@@ -102,7 +106,8 @@ class DatabaseAssociationRepository(
         return database.dbQuery {
             DomainsInAssociations
                 .join(Associations, JoinType.INNER, DomainsInAssociations.associationId, Associations.id)
-                .select { DomainsInAssociations.domain eq domain }
+                .selectAll()
+                .where { DomainsInAssociations.domain eq domain }
                 .map(Associations::toAssociation)
                 .singleOrNull()
         }

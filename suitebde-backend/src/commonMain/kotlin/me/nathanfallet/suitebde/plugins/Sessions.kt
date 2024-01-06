@@ -2,11 +2,15 @@ package me.nathanfallet.suitebde.plugins
 
 import io.ktor.server.application.*
 import io.ktor.server.sessions.*
+import me.nathanfallet.ktorx.repositories.sessions.ISessionsRepository
 import me.nathanfallet.suitebde.models.auth.SessionPayload
+import org.koin.ktor.ext.inject
 
 fun Application.configureSessions() {
+    val sessionsRepository by inject<ISessionsRepository>()
+
     install(Sessions) {
-        cookie<SessionPayload>("session", SessionStorageMemory()) {
+        cookie<SessionPayload>("session", sessionsRepository) {
             cookie.path = "/"
         }
     }

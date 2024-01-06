@@ -7,7 +7,6 @@ import io.ktor.server.routing.*
 import io.ktor.server.sessions.*
 import io.ktor.server.testing.*
 import me.nathanfallet.suitebde.models.auth.SessionPayload
-import me.nathanfallet.suitebde.plugins.configureSessions
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -19,7 +18,9 @@ class GetSessionForCallUseCaseTest {
             config = ApplicationConfig("application.test.conf")
         }
         application {
-            configureSessions()
+            install(Sessions) {
+                cookie<SessionPayload>("session", SessionStorageMemory())
+            }
         }
         routing {
             get {

@@ -14,10 +14,7 @@ data class DomainInAssociation(
     val associationId: String,
 ) : IChildModel<String, CreateDomainInAssociationPayload, Unit, String> {
 
-    override val id: String
-        get() = domain
-
-    override val parentId: String
-        get() = associationId
+    override val id = domain
+    override val parentId = associationId
 
 }

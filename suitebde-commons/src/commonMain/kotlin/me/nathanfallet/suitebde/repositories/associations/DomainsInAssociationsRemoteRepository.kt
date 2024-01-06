@@ -19,6 +19,7 @@ class DomainsInAssociationsRemoteRepository(
     typeInfo<List<DomainInAssociation>>(),
     client,
     parentRepository,
+    route = "domains",
     prefix = "/api/v1"
 ), IDomainsInAssociationsRemoteRepository {
 

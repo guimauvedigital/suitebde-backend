@@ -9,12 +9,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
-class DatabaseWebMenusRepositoryTest {
+class WebMenusDatabaseRepositoryTest {
 
     @Test
     fun getWebMenusInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebMenusInAssociation")
-        val repository = DatabaseWebMenusRepository(database)
+        val repository = WebMenusDatabaseRepository(database)
         val menu = repository.create(
             CreateWebMenuPayload(
                 "title", "url", 42
@@ -32,7 +32,7 @@ class DatabaseWebMenusRepositoryTest {
     @Test
     fun getWebMenusInAssociationLimitOffset() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebMenusInAssociationLimitOffset")
-        val repository = DatabaseWebMenusRepository(database)
+        val repository = WebMenusDatabaseRepository(database)
         for (i in 1..4) repository.create(
             CreateWebMenuPayload(
                 "title $i", "url", 42
@@ -45,7 +45,7 @@ class DatabaseWebMenusRepositoryTest {
     @Test
     fun getWebMenusInAssociationNotInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebMenusInAssociationNotInAssociation")
-        val repository = DatabaseWebMenusRepository(database)
+        val repository = WebMenusDatabaseRepository(database)
         repository.create(
             CreateWebMenuPayload(
                 "title", "url", 42
@@ -58,7 +58,7 @@ class DatabaseWebMenusRepositoryTest {
     @Test
     fun createWebMenu() = runBlocking {
         val database = Database(protocol = "h2", name = "createWebMenu")
-        val repository = DatabaseWebMenusRepository(database)
+        val repository = WebMenusDatabaseRepository(database)
         val menu = repository.create(
             CreateWebMenuPayload(
                 "title", "url", 42
@@ -84,7 +84,7 @@ class DatabaseWebMenusRepositoryTest {
     @Test
     fun createWebMenuDefaultPosition() = runBlocking {
         val database = Database(protocol = "h2", name = "createWebMenuDefaultPosition")
-        val repository = DatabaseWebMenusRepository(database)
+        val repository = WebMenusDatabaseRepository(database)
         val menu = repository.create(
             CreateWebMenuPayload(
                 "title", "url"
@@ -103,7 +103,7 @@ class DatabaseWebMenusRepositoryTest {
     @Test
     fun getWebMenu() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebMenu")
-        val repository = DatabaseWebMenusRepository(database)
+        val repository = WebMenusDatabaseRepository(database)
         val menu = repository.create(
             CreateWebMenuPayload(
                 "title", "url", 42
@@ -120,7 +120,7 @@ class DatabaseWebMenusRepositoryTest {
     @Test
     fun getWebMenuNotInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebMenuNotInAssociation")
-        val repository = DatabaseWebMenusRepository(database)
+        val repository = WebMenusDatabaseRepository(database)
         val menu = repository.create(
             CreateWebMenuPayload(
                 "title", "url", 42
@@ -133,7 +133,7 @@ class DatabaseWebMenusRepositoryTest {
     @Test
     fun getWebMenuNotExists() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebMenuNotExists")
-        val repository = DatabaseWebMenusRepository(database)
+        val repository = WebMenusDatabaseRepository(database)
         val menuFromDatabase = repository.get("id", "associationId")
         assertEquals(menuFromDatabase, null)
     }
@@ -141,7 +141,7 @@ class DatabaseWebMenusRepositoryTest {
     @Test
     fun updateWebMenu() = runBlocking {
         val database = Database(protocol = "h2", name = "updateWebMenu")
-        val repository = DatabaseWebMenusRepository(database)
+        val repository = WebMenusDatabaseRepository(database)
         val menu = repository.create(
             CreateWebMenuPayload(
                 "title", "url", 42
@@ -165,7 +165,7 @@ class DatabaseWebMenusRepositoryTest {
     @Test
     fun updateWebMenuNotInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "updateWebMenuNotInAssociation")
-        val repository = DatabaseWebMenusRepository(database)
+        val repository = WebMenusDatabaseRepository(database)
         val menu = repository.create(
             CreateWebMenuPayload(
                 "title", "url", 42
@@ -178,7 +178,7 @@ class DatabaseWebMenusRepositoryTest {
     @Test
     fun updateWebMenuNotExists() = runBlocking {
         val database = Database(protocol = "h2", name = "updateWebMenuNotExists")
-        val repository = DatabaseWebMenusRepository(database)
+        val repository = WebMenusDatabaseRepository(database)
         val payload = UpdateWebMenuPayload("newTitle", "newUrl", 43)
         assertEquals(false, repository.update("id", payload, "associationId"))
     }
@@ -186,7 +186,7 @@ class DatabaseWebMenusRepositoryTest {
     @Test
     fun deleteWebMenu() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteWebMenu")
-        val repository = DatabaseWebMenusRepository(database)
+        val repository = WebMenusDatabaseRepository(database)
         val menu = repository.create(
             CreateWebMenuPayload(
                 "title", "url", 42
@@ -204,7 +204,7 @@ class DatabaseWebMenusRepositoryTest {
     @Test
     fun deleteWebMenuNotInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteWebMenuNotInAssociation")
-        val repository = DatabaseWebMenusRepository(database)
+        val repository = WebMenusDatabaseRepository(database)
         val menu = repository.create(
             CreateWebMenuPayload(
                 "title", "url", 42
@@ -222,7 +222,7 @@ class DatabaseWebMenusRepositoryTest {
     @Test
     fun deleteWebMenuNotExists() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteWebMenuNotExists")
-        val repository = DatabaseWebMenusRepository(database)
+        val repository = WebMenusDatabaseRepository(database)
         assertEquals(false, repository.delete("id", "associationId"))
     }
 

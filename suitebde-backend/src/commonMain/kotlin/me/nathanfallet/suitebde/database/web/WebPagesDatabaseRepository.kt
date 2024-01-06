@@ -1,20 +1,22 @@
 package me.nathanfallet.suitebde.database.web
 
-import me.nathanfallet.suitebde.database.Database
+import me.nathanfallet.ktorx.database.IDatabase
 import me.nathanfallet.suitebde.models.web.WebPage
 import me.nathanfallet.suitebde.models.web.WebPagePayload
 import me.nathanfallet.suitebde.repositories.web.IWebPagesRepository
 import me.nathanfallet.usecases.context.IContext
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
-class DatabaseWebPagesRepository(
-    private val database: Database,
+class WebPagesDatabaseRepository(
+    private val database: IDatabase,
 ) : IWebPagesRepository {
 
     override suspend fun list(parentId: String, context: IContext?): List<WebPage> {
         return database.dbQuery {
             WebPages
-                .select { WebPages.associationId eq parentId }
+                .selectAll()
+                .where { WebPages.associationId eq parentId }
                 .map(WebPages::toWebPage)
         }
     }
@@ -22,7 +24,8 @@ class DatabaseWebPagesRepository(
     override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<WebPage> {
         return database.dbQuery {
             WebPages
-                .select { WebPages.associationId eq parentId }
+                .selectAll()
+                .where { WebPages.associationId eq parentId }
                 .limit(limit.toInt(), offset)
                 .map(WebPages::toWebPage)
         }
@@ -44,7 +47,7 @@ class DatabaseWebPagesRepository(
     override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
         return database.dbQuery {
             WebPages.deleteWhere {
-                Op.build { WebPages.id eq id and (associationId eq parentId) }
+                WebPages.id eq id and (associationId eq parentId)
             }
         } == 1
     }
@@ -61,7 +64,8 @@ class DatabaseWebPagesRepository(
     override suspend fun getByUrl(url: String, associationId: String): WebPage? {
         return database.dbQuery {
             WebPages
-                .select { WebPages.associationId eq associationId and (WebPages.url eq url) }
+                .selectAll()
+                .where { WebPages.associationId eq associationId and (WebPages.url eq url) }
                 .map(WebPages::toWebPage)
                 .singleOrNull()
         }
@@ -70,7 +74,8 @@ class DatabaseWebPagesRepository(
     override suspend fun getHome(associationId: String): WebPage? {
         return database.dbQuery {
             WebPages
-                .select { WebPages.associationId eq associationId and (WebPages.home eq true) }
+                .selectAll()
+                .where { WebPages.associationId eq associationId and (WebPages.home eq true) }
                 .map(WebPages::toWebPage)
                 .singleOrNull()
         }

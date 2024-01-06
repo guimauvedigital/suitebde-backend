@@ -8,12 +8,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
-class DatabaseWebPagesRepositoryTest {
+class WebPagesDatabaseRepositoryTest {
 
     @Test
     fun getWebPagesInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPagesInAssociation")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
@@ -32,7 +32,7 @@ class DatabaseWebPagesRepositoryTest {
     @Test
     fun getWebPagesInAssociationLimitOffset() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPagesInAssociationLimitOffset")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         for (i in 1..4) repository.create(
             WebPagePayload(
                 "url", "title $i", "content", false
@@ -45,7 +45,7 @@ class DatabaseWebPagesRepositoryTest {
     @Test
     fun getWebPagesInAssociationNotInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPagesInAssociationNotInAssociation")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         repository.create(
             WebPagePayload(
                 "url", "title", "content", false
@@ -58,7 +58,7 @@ class DatabaseWebPagesRepositoryTest {
     @Test
     fun createWebPage() = runBlocking {
         val database = Database(protocol = "h2", name = "createWebPage")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
@@ -86,7 +86,7 @@ class DatabaseWebPagesRepositoryTest {
     @Test
     fun getWebPage() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPage")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
@@ -104,7 +104,7 @@ class DatabaseWebPagesRepositoryTest {
     @Test
     fun getWebPageNotInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPageNotInAssociation")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
@@ -116,14 +116,14 @@ class DatabaseWebPagesRepositoryTest {
     @Test
     fun getWebPageNotExists() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPageNotExists")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         assertEquals(null, repository.get("pageId", "associationId"))
     }
 
     @Test
     fun getWebPageByUrl() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPageByUrl")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
@@ -141,7 +141,7 @@ class DatabaseWebPagesRepositoryTest {
     @Test
     fun getWebPageByUrlNotInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPageByUrlNotInAssociation")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
@@ -153,14 +153,14 @@ class DatabaseWebPagesRepositoryTest {
     @Test
     fun getWebPageByUrlNotExists() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPageByUrlNotExists")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         assertEquals(null, repository.getByUrl("url", "associationId"))
     }
 
     @Test
     fun getWebPageHome() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPageHome")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", true
@@ -178,7 +178,7 @@ class DatabaseWebPagesRepositoryTest {
     @Test
     fun getWebPageHomeNotInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPageHomeNotInAssociation")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         repository.create(
             WebPagePayload(
                 "url", "title", "content", true
@@ -190,14 +190,14 @@ class DatabaseWebPagesRepositoryTest {
     @Test
     fun getWebPageHomeNotExists() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPageHomeNotExists")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         assertEquals(null, repository.getHome("associationId"))
     }
 
     @Test
     fun updateWebPage() = runBlocking {
         val database = Database(protocol = "h2", name = "updateWebPage")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
@@ -227,7 +227,7 @@ class DatabaseWebPagesRepositoryTest {
     @Test
     fun updateWebPageNotInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "updateWebPageNotInAssociation")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
@@ -240,7 +240,7 @@ class DatabaseWebPagesRepositoryTest {
     @Test
     fun updateWebPageNotExists() = runBlocking {
         val database = Database(protocol = "h2", name = "updateWebPageNotExists")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         val payload = WebPagePayload("url", "title2", "content2", true)
         assertEquals(false, repository.update("pageId", payload, "associationId"))
     }
@@ -248,7 +248,7 @@ class DatabaseWebPagesRepositoryTest {
     @Test
     fun deleteWebPage() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteWebPage")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
@@ -266,7 +266,7 @@ class DatabaseWebPagesRepositoryTest {
     @Test
     fun deleteWebPageNotInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteWebPageNotInAssociation")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
@@ -284,7 +284,7 @@ class DatabaseWebPagesRepositoryTest {
     @Test
     fun deleteWebPageNotExists() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteWebPageNotExists")
-        val repository = DatabaseWebPagesRepository(database)
+        val repository = WebPagesDatabaseRepository(database)
         assertEquals(false, repository.delete("pageId", "associationId"))
     }
 

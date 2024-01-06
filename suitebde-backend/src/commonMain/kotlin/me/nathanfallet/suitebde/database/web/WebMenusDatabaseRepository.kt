@@ -1,21 +1,23 @@
 package me.nathanfallet.suitebde.database.web
 
-import me.nathanfallet.suitebde.database.Database
+import me.nathanfallet.ktorx.database.IDatabase
 import me.nathanfallet.suitebde.models.web.CreateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.UpdateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.repositories.web.IWebMenusRepository
 import me.nathanfallet.usecases.context.IContext
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
-class DatabaseWebMenusRepository(
-    private val database: Database,
+class WebMenusDatabaseRepository(
+    private val database: IDatabase,
 ) : IWebMenusRepository {
 
     override suspend fun list(parentId: String, context: IContext?): List<WebMenu> {
         return database.dbQuery {
             WebMenus
-                .select { WebMenus.associationId eq parentId }
+                .selectAll()
+                .where { WebMenus.associationId eq parentId }
                 .map(WebMenus::toWebMenu)
         }
     }
@@ -23,7 +25,8 @@ class DatabaseWebMenusRepository(
     override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<WebMenu> {
         return database.dbQuery {
             WebMenus
-                .select { WebMenus.associationId eq parentId }
+                .selectAll()
+                .where { WebMenus.associationId eq parentId }
                 .limit(limit.toInt(), offset)
                 .map(WebMenus::toWebMenu)
         }
@@ -32,7 +35,8 @@ class DatabaseWebMenusRepository(
     override suspend fun get(id: String, parentId: String, context: IContext?): WebMenu? {
         return database.dbQuery {
             WebMenus
-                .select { WebMenus.id eq id and (WebMenus.associationId eq parentId) }
+                .selectAll()
+                .where { WebMenus.id eq id and (WebMenus.associationId eq parentId) }
                 .map(WebMenus::toWebMenu)
                 .singleOrNull()
         }
@@ -68,7 +72,7 @@ class DatabaseWebMenusRepository(
     override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
         return database.dbQuery {
             WebMenus.deleteWhere {
-                Op.build { WebMenus.id eq id and (associationId eq parentId) }
+                WebMenus.id eq id and (associationId eq parentId)
             }
         } == 1
     }

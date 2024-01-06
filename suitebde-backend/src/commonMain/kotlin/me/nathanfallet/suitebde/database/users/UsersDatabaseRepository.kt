@@ -1,15 +1,16 @@
 package me.nathanfallet.suitebde.database.users
 
-import me.nathanfallet.suitebde.database.Database
+import me.nathanfallet.ktorx.database.IDatabase
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
 import me.nathanfallet.usecases.context.IContext
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
-class DatabaseUsersRepository(
-    private val database: Database,
+class UsersDatabaseRepository(
+    private val database: IDatabase,
 ) : IUsersRepository {
 
     override suspend fun create(payload: CreateUserPayload, parentId: String, context: IContext?): User? {
@@ -94,7 +95,7 @@ class DatabaseUsersRepository(
     override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
         return database.dbQuery {
             Users.deleteWhere {
-                Op.build { Users.id eq id and (associationId eq parentId) }
+                Users.id eq id and (associationId eq parentId)
             }
         } == 1
     }

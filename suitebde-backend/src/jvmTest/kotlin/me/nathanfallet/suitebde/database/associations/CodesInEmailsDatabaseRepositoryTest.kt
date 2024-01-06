@@ -8,7 +8,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
-class DatabaseCodesInEmailsRepositoryTest {
+class CodesInEmailsDatabaseRepositoryTest {
 
     private val now = Clock.System.now()
     private val tomorrow = now.plus(1, DateTimeUnit.DAY, TimeZone.currentSystemDefault())
@@ -17,7 +17,7 @@ class DatabaseCodesInEmailsRepositoryTest {
     @Test
     fun getCodeInEmail() = runBlocking {
         val database = Database(protocol = "h2", name = "getCodeInEmail")
-        val repository = DatabaseCodesInEmailsRepository(database)
+        val repository = CodesInEmailsDatabaseRepository(database)
         val codeInEmail = repository.createCodeInEmail("email", "code", "associationId", tomorrow)
             ?: fail("Unable to create code in email")
         val codeInEmailFromDatabase = repository.getCodeInEmail(codeInEmail.code)
@@ -30,7 +30,7 @@ class DatabaseCodesInEmailsRepositoryTest {
     @Test
     fun getCodesInEmailsExpiringBefore() = runBlocking {
         val database = Database(protocol = "h2", name = "getCodesInEmailsExpiringBefore")
-        val repository = DatabaseCodesInEmailsRepository(database)
+        val repository = CodesInEmailsDatabaseRepository(database)
         val codeInEmail = repository.createCodeInEmail("email", "code", "associationId", yesterday)
             ?: fail("Unable to create code in email")
         repository.createCodeInEmail("email2", "code", "associationId", tomorrow)
@@ -46,7 +46,7 @@ class DatabaseCodesInEmailsRepositoryTest {
     @Test
     fun createCodeInEmail() = runBlocking {
         val database = Database(protocol = "h2", name = "createCodeInEmail")
-        val repository = DatabaseCodesInEmailsRepository(database)
+        val repository = CodesInEmailsDatabaseRepository(database)
         val codeInEmail = repository.createCodeInEmail("email", "code", "associationId", tomorrow)
         val codeInEmailFromDatabase = database.dbQuery {
             CodesInEmails
@@ -63,7 +63,7 @@ class DatabaseCodesInEmailsRepositoryTest {
     @Test
     fun updateCodeInEmail() = runBlocking {
         val database = Database(protocol = "h2", name = "updateCodeInEmail")
-        val repository = DatabaseCodesInEmailsRepository(database)
+        val repository = CodesInEmailsDatabaseRepository(database)
         val codeInEmail = repository.createCodeInEmail("email", "code", "associationId", tomorrow)
             ?: fail("Unable to create code in email")
         assertEquals(
@@ -85,7 +85,7 @@ class DatabaseCodesInEmailsRepositoryTest {
     @Test
     fun deleteCodeInEmail() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteCodeInEmail")
-        val repository = DatabaseCodesInEmailsRepository(database)
+        val repository = CodesInEmailsDatabaseRepository(database)
         val codeInEmail = repository.createCodeInEmail("email", "code", "associationId", tomorrow)
             ?: fail("Unable to create code in email")
         repository.deleteCodeInEmail(codeInEmail.code)

@@ -9,12 +9,12 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.fail
 
-class DatabaseUsersRepositoryTest {
+class UsersDatabaseRepositoryTest {
 
     @Test
     fun createUser() = runBlocking {
         val database = Database(protocol = "h2", name = "createUser")
-        val repository = DatabaseUsersRepository(database)
+        val repository = UsersDatabaseRepository(database)
         val user = repository.create(
             CreateUserPayload(
                 "email", "password",
@@ -48,7 +48,7 @@ class DatabaseUsersRepositoryTest {
     @Test
     fun getUser() = runBlocking {
         val database = Database(protocol = "h2", name = "getUser")
-        val repository = DatabaseUsersRepository(database)
+        val repository = UsersDatabaseRepository(database)
         val user = repository.create(
             CreateUserPayload(
                 "email", "password",
@@ -69,7 +69,7 @@ class DatabaseUsersRepositoryTest {
     @Test
     fun getUserNotInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getUserNotInAssociation")
-        val repository = DatabaseUsersRepository(database)
+        val repository = UsersDatabaseRepository(database)
         val user = repository.create(
             CreateUserPayload(
                 "email", "password",
@@ -83,7 +83,7 @@ class DatabaseUsersRepositoryTest {
     @Test
     fun getUserWithoutAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getUserWithoutAssociation")
-        val repository = DatabaseUsersRepository(database)
+        val repository = UsersDatabaseRepository(database)
         val user = repository.create(
             CreateUserPayload(
                 "email", "password",
@@ -104,7 +104,7 @@ class DatabaseUsersRepositoryTest {
     @Test
     fun getUserForEmail() = runBlocking {
         val database = Database(protocol = "h2", name = "getUserForEmail")
-        val repository = DatabaseUsersRepository(database)
+        val repository = UsersDatabaseRepository(database)
         val user = repository.create(
             CreateUserPayload(
                 "email", "password",
@@ -125,7 +125,7 @@ class DatabaseUsersRepositoryTest {
     @Test
     fun getUserForEmailWithPassword() = runBlocking {
         val database = Database(protocol = "h2", name = "getUserForEmailWithPassword")
-        val repository = DatabaseUsersRepository(database)
+        val repository = UsersDatabaseRepository(database)
         val user = repository.create(
             CreateUserPayload(
                 "email", "password",
@@ -146,7 +146,7 @@ class DatabaseUsersRepositoryTest {
     @Test
     fun getUsersInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getUsersInAssociation")
-        val repository = DatabaseUsersRepository(database)
+        val repository = UsersDatabaseRepository(database)
         val user = repository.create(
             CreateUserPayload(
                 "email", "password",
@@ -168,7 +168,7 @@ class DatabaseUsersRepositoryTest {
     @Test
     fun getUsersInAssociationLimitOffset() = runBlocking {
         val database = Database(protocol = "h2", name = "getUsersInAssociationLimitOffset")
-        val repository = DatabaseUsersRepository(database)
+        val repository = UsersDatabaseRepository(database)
         for (i in 1..4) repository.create(
             CreateUserPayload(
                 "email $i", "password",
@@ -183,7 +183,7 @@ class DatabaseUsersRepositoryTest {
     @Test
     fun getUsersInAssociationNotInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getUsersInAssociationNotInAssociation")
-        val repository = DatabaseUsersRepository(database)
+        val repository = UsersDatabaseRepository(database)
         repository.create(
             CreateUserPayload(
                 "email", "password",
@@ -197,7 +197,7 @@ class DatabaseUsersRepositoryTest {
     @Test
     fun updateUser() = runBlocking {
         val database = Database(protocol = "h2", name = "updateUser")
-        val repository = DatabaseUsersRepository(database)
+        val repository = UsersDatabaseRepository(database)
         val user = repository.create(
             CreateUserPayload(
                 "email", "password",
@@ -232,7 +232,7 @@ class DatabaseUsersRepositoryTest {
     @Test
     fun updateUserNotInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "updateUserNotInAssociation")
-        val repository = DatabaseUsersRepository(database)
+        val repository = UsersDatabaseRepository(database)
         val user = repository.create(
             CreateUserPayload(
                 "email", "password",
@@ -247,7 +247,7 @@ class DatabaseUsersRepositoryTest {
     @Test
     fun updateUserNotExists() = runBlocking {
         val database = Database(protocol = "h2", name = "updateUserNotExists")
-        val repository = DatabaseUsersRepository(database)
+        val repository = UsersDatabaseRepository(database)
         val payload = UpdateUserPayload("firstName2", "lastName2", "password2")
         assertEquals(false, repository.update("userId", payload, "associationId"))
     }
@@ -255,7 +255,7 @@ class DatabaseUsersRepositoryTest {
     @Test
     fun deleteUser() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteUser")
-        val repository = DatabaseUsersRepository(database)
+        val repository = UsersDatabaseRepository(database)
         val user = repository.create(
             CreateUserPayload(
                 "email", "password",
@@ -275,7 +275,7 @@ class DatabaseUsersRepositoryTest {
     @Test
     fun deleteUserNotInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteUserNotInAssociation")
-        val repository = DatabaseUsersRepository(database)
+        val repository = UsersDatabaseRepository(database)
         val user = repository.create(
             CreateUserPayload(
                 "email", "password",
@@ -295,7 +295,7 @@ class DatabaseUsersRepositoryTest {
     @Test
     fun deleteUserNotExists() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteUserNotExists")
-        val repository = DatabaseUsersRepository(database)
+        val repository = UsersDatabaseRepository(database)
         assertEquals(false, repository.delete("userId", "associationId"))
     }
 

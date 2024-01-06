@@ -6,6 +6,9 @@ import me.nathanfallet.cloudflare.client.ICloudflareClient
 import me.nathanfallet.i18n.usecases.localization.TranslateUseCase
 import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.controllers.IModelController
+import me.nathanfallet.ktorx.database.IDatabase
+import me.nathanfallet.ktorx.database.sessions.SessionsDatabaseRepository
+import me.nathanfallet.ktorx.repositories.sessions.ISessionsRepository
 import me.nathanfallet.ktorx.usecases.auth.*
 import me.nathanfallet.ktorx.usecases.localization.GetLocaleForCallUseCase
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
@@ -20,14 +23,14 @@ import me.nathanfallet.suitebde.controllers.users.UsersController
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
 import me.nathanfallet.suitebde.controllers.web.*
 import me.nathanfallet.suitebde.database.Database
-import me.nathanfallet.suitebde.database.application.DatabaseClientsRepository
-import me.nathanfallet.suitebde.database.associations.DatabaseAssociationRepository
-import me.nathanfallet.suitebde.database.associations.DatabaseCodesInEmailsRepository
-import me.nathanfallet.suitebde.database.associations.DatabaseDomainsInAssociationsRepository
-import me.nathanfallet.suitebde.database.users.DatabaseClientsInUsersRepository
-import me.nathanfallet.suitebde.database.users.DatabaseUsersRepository
-import me.nathanfallet.suitebde.database.web.DatabaseWebMenusRepository
-import me.nathanfallet.suitebde.database.web.DatabaseWebPagesRepository
+import me.nathanfallet.suitebde.database.application.ClientsDatabaseRepository
+import me.nathanfallet.suitebde.database.associations.AssociationsDatabaseRepository
+import me.nathanfallet.suitebde.database.associations.CodesInEmailsDatabaseRepository
+import me.nathanfallet.suitebde.database.associations.DomainsInAssociationsDatabaseRepository
+import me.nathanfallet.suitebde.database.users.ClientsInUsersDatabaseRepository
+import me.nathanfallet.suitebde.database.users.UsersDatabaseRepository
+import me.nathanfallet.suitebde.database.web.WebMenusDatabaseRepository
+import me.nathanfallet.suitebde.database.web.WebPagesDatabaseRepository
 import me.nathanfallet.suitebde.models.application.Client
 import me.nathanfallet.suitebde.models.associations.*
 import me.nathanfallet.suitebde.models.auth.LoginPayload
@@ -81,7 +84,7 @@ import org.koin.ktor.plugin.Koin
 fun Application.configureKoin() {
     install(Koin) {
         val databaseModule = module {
-            single {
+            single<IDatabase> {
                 Database(
                     environment.config.property("database.protocol").getString(),
                     environment.config.property("database.host").getString(),
@@ -114,21 +117,22 @@ fun Application.configureKoin() {
         val repositoryModule = module {
             // Application
             single<IModelSuspendRepository<Client, String, Unit, Unit>>(named<Client>()) {
-                DatabaseClientsRepository(get())
+                ClientsDatabaseRepository(get())
             }
+            single<ISessionsRepository> { SessionsDatabaseRepository(get()) }
 
             // Associations
-            single<IAssociationsRepository> { DatabaseAssociationRepository(get()) }
-            single<ICodesInEmailsRepository> { DatabaseCodesInEmailsRepository(get()) }
-            single<IDomainsInAssociationsRepository> { DatabaseDomainsInAssociationsRepository(get()) }
+            single<IAssociationsRepository> { AssociationsDatabaseRepository(get()) }
+            single<ICodesInEmailsRepository> { CodesInEmailsDatabaseRepository(get()) }
+            single<IDomainsInAssociationsRepository> { DomainsInAssociationsDatabaseRepository(get()) }
 
             // Users
-            single<IUsersRepository> { DatabaseUsersRepository(get()) }
-            single<IClientsInUsersRepository> { DatabaseClientsInUsersRepository(get()) }
+            single<IUsersRepository> { UsersDatabaseRepository(get()) }
+            single<IClientsInUsersRepository> { ClientsInUsersDatabaseRepository(get()) }
 
             // Web
-            single<IWebPagesRepository> { DatabaseWebPagesRepository(get()) }
-            single<IWebMenusRepository> { DatabaseWebMenusRepository(get()) }
+            single<IWebPagesRepository> { WebPagesDatabaseRepository(get()) }
+            single<IWebMenusRepository> { WebMenusDatabaseRepository(get()) }
         }
         val useCaseModule = module {
             // Application
