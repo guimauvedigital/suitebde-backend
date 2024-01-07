@@ -5,7 +5,7 @@ import me.nathanfallet.suitebde.extensions.generateId
 import me.nathanfallet.suitebde.models.associations.Association
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 object Associations : Table() {
 
@@ -21,11 +21,11 @@ object Associations : Table() {
 
     fun generateId(): String {
         val candidate = String.generateId()
-        return if (select { id eq candidate }.count() > 0) generateId() else candidate
+        return if (selectAll().where { id eq candidate }.count() > 0) generateId() else candidate
     }
 
     fun toAssociation(
-        row: ResultRow
+        row: ResultRow,
     ) = Association(
         row[id],
         row[name],

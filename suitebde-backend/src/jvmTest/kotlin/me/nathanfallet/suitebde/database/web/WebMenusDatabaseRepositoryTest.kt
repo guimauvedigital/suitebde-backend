@@ -64,7 +64,7 @@ class WebMenusDatabaseRepositoryTest {
                 "title", "url", 42
             ), "associationId"
         )
-        val menuFromDatabase = database.dbQuery {
+        val menuFromDatabase = database.suspendedTransaction {
             WebMenus
                 .selectAll()
                 .map(WebMenus::toWebMenu)
@@ -90,7 +90,7 @@ class WebMenusDatabaseRepositoryTest {
                 "title", "url"
             ), "associationId"
         )
-        val menuFromDatabase = database.dbQuery {
+        val menuFromDatabase = database.suspendedTransaction {
             WebMenus
                 .selectAll()
                 .map(WebMenus::toWebMenu)
@@ -193,7 +193,7 @@ class WebMenusDatabaseRepositoryTest {
             ), "associationId"
         ) ?: fail("Unable to create menu")
         assertEquals(true, repository.delete(menu.id, menu.associationId))
-        val count = database.dbQuery {
+        val count = database.suspendedTransaction {
             WebMenus
                 .selectAll()
                 .count()
@@ -211,7 +211,7 @@ class WebMenusDatabaseRepositoryTest {
             ), "associationId"
         ) ?: fail("Unable to create menu")
         assertEquals(false, repository.delete(menu.id, "otherAssociationId"))
-        val count = database.dbQuery {
+        val count = database.suspendedTransaction {
             WebMenus
                 .selectAll()
                 .count()

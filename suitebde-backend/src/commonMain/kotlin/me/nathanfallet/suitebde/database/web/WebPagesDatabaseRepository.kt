@@ -12,8 +12,14 @@ class WebPagesDatabaseRepository(
     private val database: IDatabase,
 ) : IWebPagesRepository {
 
+    init {
+        database.transaction {
+            SchemaUtils.create(WebPages)
+        }
+    }
+
     override suspend fun list(parentId: String, context: IContext?): List<WebPage> {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             WebPages
                 .selectAll()
                 .where { WebPages.associationId eq parentId }
@@ -22,7 +28,7 @@ class WebPagesDatabaseRepository(
     }
 
     override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<WebPage> {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             WebPages
                 .selectAll()
                 .where { WebPages.associationId eq parentId }
@@ -32,7 +38,7 @@ class WebPagesDatabaseRepository(
     }
 
     override suspend fun create(payload: WebPagePayload, parentId: String, context: IContext?): WebPage? {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             WebPages.insert {
                 it[id] = generateId()
                 it[associationId] = parentId
@@ -45,7 +51,7 @@ class WebPagesDatabaseRepository(
     }
 
     override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             WebPages.deleteWhere {
                 WebPages.id eq id and (associationId eq parentId)
             }
@@ -53,7 +59,7 @@ class WebPagesDatabaseRepository(
     }
 
     override suspend fun get(id: String, parentId: String, context: IContext?): WebPage? {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             WebPages
                 .select { WebPages.id eq id and (WebPages.associationId eq parentId) }
                 .map(WebPages::toWebPage)
@@ -62,7 +68,7 @@ class WebPagesDatabaseRepository(
     }
 
     override suspend fun getByUrl(url: String, associationId: String): WebPage? {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             WebPages
                 .selectAll()
                 .where { WebPages.associationId eq associationId and (WebPages.url eq url) }
@@ -72,7 +78,7 @@ class WebPagesDatabaseRepository(
     }
 
     override suspend fun getHome(associationId: String): WebPage? {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             WebPages
                 .selectAll()
                 .where { WebPages.associationId eq associationId and (WebPages.home eq true) }
@@ -87,7 +93,7 @@ class WebPagesDatabaseRepository(
         parentId: String,
         context: IContext?,
     ): Boolean {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             WebPages.update({ WebPages.id eq id and (WebPages.associationId eq parentId) }) {
                 it[url] = payload.url
                 it[title] = payload.title

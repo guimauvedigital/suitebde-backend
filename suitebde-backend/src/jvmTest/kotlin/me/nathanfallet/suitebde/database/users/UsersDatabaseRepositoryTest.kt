@@ -22,7 +22,7 @@ class UsersDatabaseRepositoryTest {
             ),
             "associationId"
         )
-        val userFromDatabase = database.dbQuery {
+        val userFromDatabase = database.suspendedTransaction {
             Users
                 .selectAll()
                 .map {
@@ -212,7 +212,7 @@ class UsersDatabaseRepositoryTest {
         )
         val payload = UpdateUserPayload("firstName2", "lastName2", "password2")
         assertEquals(true, repository.update(user.id, payload, "associationId"))
-        val userFromDatabase = database.dbQuery {
+        val userFromDatabase = database.suspendedTransaction {
             Users
                 .selectAll()
                 .map {
@@ -264,7 +264,7 @@ class UsersDatabaseRepositoryTest {
             "associationId"
         ) ?: fail("Unable to create user")
         assertEquals(true, repository.delete(user.id, "associationId"))
-        val count = database.dbQuery {
+        val count = database.suspendedTransaction {
             Users
                 .selectAll()
                 .count()
@@ -284,7 +284,7 @@ class UsersDatabaseRepositoryTest {
             "associationId"
         ) ?: fail("Unable to create user")
         assertEquals(false, repository.delete(user.id, "otherAssociationId"))
-        val count = database.dbQuery {
+        val count = database.suspendedTransaction {
             Users
                 .selectAll()
                 .count()

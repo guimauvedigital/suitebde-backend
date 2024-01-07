@@ -4,7 +4,7 @@ import me.nathanfallet.suitebde.extensions.generateId
 import me.nathanfallet.suitebde.models.users.User
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 object Users : Table() {
 
@@ -20,12 +20,12 @@ object Users : Table() {
 
     fun generateId(): String {
         val candidate = String.generateId()
-        return if (select { id eq candidate }.count() > 0) generateId() else candidate
+        return if (selectAll().where { id eq candidate }.count() > 0) generateId() else candidate
     }
 
     fun toUser(
         row: ResultRow,
-        includePassword: Boolean = false
+        includePassword: Boolean = false,
     ) = User(
         row[id],
         row[associationId],

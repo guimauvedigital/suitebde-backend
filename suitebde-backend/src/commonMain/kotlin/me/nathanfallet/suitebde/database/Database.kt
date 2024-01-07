@@ -2,16 +2,7 @@ package me.nathanfallet.suitebde.database
 
 import kotlinx.coroutines.Dispatchers
 import me.nathanfallet.ktorx.database.IDatabase
-import me.nathanfallet.ktorx.database.sessions.Sessions
-import me.nathanfallet.suitebde.database.application.Clients
-import me.nathanfallet.suitebde.database.associations.Associations
-import me.nathanfallet.suitebde.database.associations.CodesInEmails
-import me.nathanfallet.suitebde.database.associations.DomainsInAssociations
-import me.nathanfallet.suitebde.database.users.ClientsInUsers
-import me.nathanfallet.suitebde.database.users.Users
-import me.nathanfallet.suitebde.database.web.WebMenus
-import me.nathanfallet.suitebde.database.web.WebPages
-import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.Transaction
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -37,21 +28,9 @@ class Database(
         else -> throw Exception("Unsupported database protocol: $protocol")
     }
 
-    init {
-        transaction(database) {
-            SchemaUtils.create(Sessions)
-            SchemaUtils.create(Clients)
-            SchemaUtils.create(Associations)
-            SchemaUtils.create(DomainsInAssociations)
-            SchemaUtils.create(CodesInEmails)
-            SchemaUtils.create(Users)
-            SchemaUtils.create(ClientsInUsers)
-            SchemaUtils.create(WebPages)
-            SchemaUtils.create(WebMenus)
-        }
-    }
+    override fun <T> transaction(statement: Transaction.() -> T): T = transaction(database, statement)
 
-    override suspend fun <T> dbQuery(block: suspend () -> T): T =
-        newSuspendedTransaction(Dispatchers.IO, database) { block() }
+    override suspend fun <T> suspendedTransaction(statement: suspend Transaction.() -> T): T =
+        newSuspendedTransaction(Dispatchers.IO, database) { statement() }
 
 }

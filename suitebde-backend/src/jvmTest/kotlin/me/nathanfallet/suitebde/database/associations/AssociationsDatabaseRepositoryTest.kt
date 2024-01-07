@@ -27,7 +27,7 @@ class AssociationsDatabaseRepositoryTest {
                 "email", "password", "firstname", "lastname"
             )
         )
-        val associationFromDatabase = database.dbQuery {
+        val associationFromDatabase = database.suspendedTransaction {
             Associations
                 .selectAll()
                 .map(Associations::toAssociation)
@@ -71,7 +71,7 @@ class AssociationsDatabaseRepositoryTest {
                 )
             )
         )
-        val associationFromDatabase = database.dbQuery {
+        val associationFromDatabase = database.suspendedTransaction {
             Associations
                 .selectAll()
                 .map(Associations::toAssociation)
@@ -115,7 +115,7 @@ class AssociationsDatabaseRepositoryTest {
             expiresAt = tomorrow
         ) ?: fail("Unable to create association")
         assertEquals(true, repository.updateExpiresAt(association.id, tomorrow))
-        val associationFromDatabase = database.dbQuery {
+        val associationFromDatabase = database.suspendedTransaction {
             Associations
                 .selectAll()
                 .map(Associations::toAssociation)
@@ -148,7 +148,7 @@ class AssociationsDatabaseRepositoryTest {
             )
         ) ?: fail("Unable to create association")
         assertEquals(true, repository.delete(association.id))
-        val count = database.dbQuery {
+        val count = database.suspendedTransaction {
             Associations
                 .selectAll()
                 .count()

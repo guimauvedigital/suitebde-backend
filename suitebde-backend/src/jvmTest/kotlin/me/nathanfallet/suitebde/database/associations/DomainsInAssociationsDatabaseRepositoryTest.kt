@@ -17,7 +17,7 @@ class DomainsInAssociationsDatabaseRepositoryTest {
         val database = Database(protocol = "h2", name = "createDomain")
         val repository = DomainsInAssociationsDatabaseRepository(database)
         val domain = repository.create(CreateDomainInAssociationPayload("domain"), "associationId")
-        val domainFromDatabase = database.dbQuery {
+        val domainFromDatabase = database.suspendedTransaction {
             DomainsInAssociations
                 .selectAll()
                 .map(DomainsInAssociations::toDomainInAssociation)
@@ -46,7 +46,7 @@ class DomainsInAssociationsDatabaseRepositoryTest {
         repository.create(CreateDomainInAssociationPayload("domain"), "associationId")
             ?: fail("Unable to create domain")
         assertEquals(true, repository.delete("domain", "associationId"))
-        val count = database.dbQuery {
+        val count = database.suspendedTransaction {
             DomainsInAssociations
                 .selectAll()
                 .count()

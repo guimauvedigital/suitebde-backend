@@ -4,7 +4,7 @@ import me.nathanfallet.suitebde.extensions.generateId
 import me.nathanfallet.suitebde.models.application.Client
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 
 object Clients : Table() {
 
@@ -19,7 +19,7 @@ object Clients : Table() {
 
     fun generateId(): String {
         val candidate = String.generateId()
-        return if (select { id eq candidate }.count() > 0) generateId() else candidate
+        return if (selectAll().where { id eq candidate }.count() > 0) generateId() else candidate
     }
 
     fun toClient(

@@ -13,8 +13,14 @@ class UsersDatabaseRepository(
     private val database: IDatabase,
 ) : IUsersRepository {
 
+    init {
+        database.transaction {
+            SchemaUtils.create(Users)
+        }
+    }
+
     override suspend fun create(payload: CreateUserPayload, parentId: String, context: IContext?): User? {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Users.insert {
                 it[id] = generateId()
                 it[associationId] = parentId
@@ -28,7 +34,7 @@ class UsersDatabaseRepository(
     }
 
     override suspend fun get(id: String): User? {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Users
                 .select { Users.id eq id }
                 .map(Users::toUser)
@@ -37,7 +43,7 @@ class UsersDatabaseRepository(
     }
 
     override suspend fun get(id: String, parentId: String, context: IContext?): User? {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Users
                 .select { Users.id eq id and (Users.associationId eq parentId) }
                 .map(Users::toUser)
@@ -49,7 +55,7 @@ class UsersDatabaseRepository(
         email: String,
         includePassword: Boolean,
     ): User? {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Users
                 .select { Users.email eq email }
                 .map {
@@ -60,7 +66,7 @@ class UsersDatabaseRepository(
     }
 
     override suspend fun list(parentId: String, context: IContext?): List<User> {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Users
                 .select { Users.associationId eq parentId }
                 .map(Users::toUser)
@@ -68,7 +74,7 @@ class UsersDatabaseRepository(
     }
 
     override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<User> {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Users
                 .select { Users.associationId eq parentId }
                 .limit(limit.toInt(), offset)
@@ -77,7 +83,7 @@ class UsersDatabaseRepository(
     }
 
     override suspend fun update(id: String, payload: UpdateUserPayload, parentId: String, context: IContext?): Boolean {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Users.update({ Users.id eq id and (Users.associationId eq parentId) }) {
                 payload.firstName?.let { firstName ->
                     it[Users.firstName] = firstName
@@ -93,7 +99,7 @@ class UsersDatabaseRepository(
     }
 
     override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Users.deleteWhere {
                 Users.id eq id and (associationId eq parentId)
             }

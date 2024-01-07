@@ -64,7 +64,7 @@ class WebPagesDatabaseRepositoryTest {
                 "url", "title", "content", false
             ), "associationId"
         )
-        val pageFromDatabase = database.dbQuery {
+        val pageFromDatabase = database.suspendedTransaction {
             WebPages
                 .selectAll()
                 .map(WebPages::toWebPage)
@@ -210,7 +210,7 @@ class WebPagesDatabaseRepositoryTest {
         )
         val payload = WebPagePayload("url", "title2", "content2", true)
         assertEquals(true, repository.update(page.id, payload, "associationId"))
-        val pageFromDatabase = database.dbQuery {
+        val pageFromDatabase = database.suspendedTransaction {
             WebPages
                 .selectAll()
                 .map(WebPages::toWebPage)
@@ -255,7 +255,7 @@ class WebPagesDatabaseRepositoryTest {
             ), "associationId"
         ) ?: fail("Unable to create page")
         assertEquals(true, repository.delete(page.id, "associationId"))
-        val count = database.dbQuery {
+        val count = database.suspendedTransaction {
             WebPages
                 .selectAll()
                 .count()
@@ -273,7 +273,7 @@ class WebPagesDatabaseRepositoryTest {
             ), "associationId"
         ) ?: fail("Unable to create page")
         assertEquals(false, repository.delete(page.id, "otherAssociationId"))
-        val count = database.dbQuery {
+        val count = database.suspendedTransaction {
             WebPages
                 .selectAll()
                 .count()

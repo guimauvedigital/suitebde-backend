@@ -5,18 +5,21 @@ import me.nathanfallet.suitebde.models.associations.CreateDomainInAssociationPay
 import me.nathanfallet.suitebde.models.associations.DomainInAssociation
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
 import me.nathanfallet.usecases.context.IContext
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.selectAll
 
 class DomainsInAssociationsDatabaseRepository(
     private val database: IDatabase,
 ) : IDomainsInAssociationsRepository {
 
+    init {
+        database.transaction {
+            SchemaUtils.create(DomainsInAssociations)
+        }
+    }
+
     override suspend fun list(parentId: String, context: IContext?): List<DomainInAssociation> {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             DomainsInAssociations
                 .selectAll()
                 .where { DomainsInAssociations.associationId eq parentId }
@@ -30,7 +33,7 @@ class DomainsInAssociationsDatabaseRepository(
         parentId: String,
         context: IContext?,
     ): List<DomainInAssociation> {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             DomainsInAssociations
                 .selectAll()
                 .where { DomainsInAssociations.associationId eq parentId }
@@ -44,7 +47,7 @@ class DomainsInAssociationsDatabaseRepository(
         parentId: String,
         context: IContext?,
     ): DomainInAssociation? {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             DomainsInAssociations.insert {
                 it[domain] = payload.domain
                 it[associationId] = parentId
@@ -53,7 +56,7 @@ class DomainsInAssociationsDatabaseRepository(
     }
 
     override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             DomainsInAssociations.deleteWhere {
                 domain eq id and (associationId eq parentId)
             }
@@ -61,7 +64,7 @@ class DomainsInAssociationsDatabaseRepository(
     }
 
     override suspend fun get(id: String, parentId: String, context: IContext?): DomainInAssociation? {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             DomainsInAssociations
                 .selectAll()
                 .where { DomainsInAssociations.domain eq id and (DomainsInAssociations.associationId eq parentId) }

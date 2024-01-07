@@ -14,10 +14,16 @@ class AssociationsDatabaseRepository(
     private val database: IDatabase,
 ) : IAssociationsRepository {
 
+    init {
+        database.transaction {
+            SchemaUtils.create(Associations)
+        }
+    }
+
     override suspend fun create(payload: CreateAssociationPayload, context: IContext?): Association? {
         val createdAt = Clock.System.now()
         val expiresAt = createdAt.plus(1, DateTimeUnit.MONTH, TimeZone.currentSystemDefault())
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Associations.insert {
                 it[id] = generateId()
                 it[name] = payload.name
@@ -31,7 +37,7 @@ class AssociationsDatabaseRepository(
     }
 
     override suspend fun update(id: String, payload: UpdateAssociationPayload, context: IContext?): Boolean {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Associations.update({ Associations.id eq id }) {
                 it[name] = payload.name
                 it[school] = payload.school
@@ -42,7 +48,7 @@ class AssociationsDatabaseRepository(
     }
 
     override suspend fun updateExpiresAt(id: String, expiresAt: Instant): Boolean {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Associations.update({ Associations.id eq id }) {
                 it[Associations.expiresAt] = expiresAt.toString()
             }
@@ -50,7 +56,7 @@ class AssociationsDatabaseRepository(
     }
 
     override suspend fun delete(id: String, context: IContext?): Boolean {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Associations.deleteWhere {
                 Associations.id eq id
             }
@@ -58,7 +64,7 @@ class AssociationsDatabaseRepository(
     }
 
     override suspend fun get(id: String, context: IContext?): Association? {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Associations
                 .selectAll()
                 .where { Associations.id eq id }
@@ -68,7 +74,7 @@ class AssociationsDatabaseRepository(
     }
 
     override suspend fun list(context: IContext?): List<Association> {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Associations
                 .selectAll()
                 .map(Associations::toAssociation)
@@ -76,7 +82,7 @@ class AssociationsDatabaseRepository(
     }
 
     override suspend fun list(limit: Long, offset: Long, context: IContext?): List<Association> {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Associations
                 .selectAll()
                 .limit(limit.toInt(), offset)
@@ -85,7 +91,7 @@ class AssociationsDatabaseRepository(
     }
 
     override suspend fun getValidatedAssociations(): List<Association> {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Associations
                 .selectAll()
                 .where { Associations.validated eq true }
@@ -94,7 +100,7 @@ class AssociationsDatabaseRepository(
     }
 
     override suspend fun getAssociationsExpiringBefore(date: Instant): List<Association> {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             Associations
                 .selectAll()
                 .where { Associations.expiresAt less date.toString() }
@@ -103,7 +109,7 @@ class AssociationsDatabaseRepository(
     }
 
     override suspend fun getAssociationForDomain(domain: String): Association? {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             DomainsInAssociations
                 .join(Associations, JoinType.INNER, DomainsInAssociations.associationId, Associations.id)
                 .selectAll()

@@ -13,8 +13,14 @@ class WebMenusDatabaseRepository(
     private val database: IDatabase,
 ) : IWebMenusRepository {
 
+    init {
+        database.transaction {
+            SchemaUtils.create(WebMenus)
+        }
+    }
+
     override suspend fun list(parentId: String, context: IContext?): List<WebMenu> {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             WebMenus
                 .selectAll()
                 .where { WebMenus.associationId eq parentId }
@@ -23,7 +29,7 @@ class WebMenusDatabaseRepository(
     }
 
     override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<WebMenu> {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             WebMenus
                 .selectAll()
                 .where { WebMenus.associationId eq parentId }
@@ -33,7 +39,7 @@ class WebMenusDatabaseRepository(
     }
 
     override suspend fun get(id: String, parentId: String, context: IContext?): WebMenu? {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             WebMenus
                 .selectAll()
                 .where { WebMenus.id eq id and (WebMenus.associationId eq parentId) }
@@ -43,7 +49,7 @@ class WebMenusDatabaseRepository(
     }
 
     override suspend fun create(payload: CreateWebMenuPayload, parentId: String, context: IContext?): WebMenu? {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             WebMenus.insert {
                 it[id] = generateId()
                 it[associationId] = parentId
@@ -60,7 +66,7 @@ class WebMenusDatabaseRepository(
         parentId: String,
         context: IContext?,
     ): Boolean {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             WebMenus.update({ WebMenus.id eq id and (WebMenus.associationId eq parentId) }) {
                 it[title] = payload.title
                 it[url] = payload.url
@@ -70,7 +76,7 @@ class WebMenusDatabaseRepository(
     }
 
     override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
-        return database.dbQuery {
+        return database.suspendedTransaction {
             WebMenus.deleteWhere {
                 WebMenus.id eq id and (associationId eq parentId)
             }
