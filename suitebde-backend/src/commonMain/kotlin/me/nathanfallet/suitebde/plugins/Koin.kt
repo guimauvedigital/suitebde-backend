@@ -19,6 +19,8 @@ import me.nathanfallet.suitebde.controllers.associations.*
 import me.nathanfallet.suitebde.controllers.auth.AuthController
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
 import me.nathanfallet.suitebde.controllers.auth.IAuthController
+import me.nathanfallet.suitebde.controllers.roles.RolesController
+import me.nathanfallet.suitebde.controllers.roles.RolesRouter
 import me.nathanfallet.suitebde.controllers.users.UsersController
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
 import me.nathanfallet.suitebde.controllers.web.*
@@ -258,6 +260,21 @@ fun Application.configureKoin() {
 
             // Roles
             single<ICheckPermissionSuspendUseCase> { CheckPermissionUseCase() }
+            single<IListChildModelSuspendUseCase<Role, String>>(named<Role>()) {
+                ListChildModelFromRepositorySuspendUseCase(get(named<Role>()))
+            }
+            single<IGetChildModelSuspendUseCase<Role, String, String>>(named<Role>()) {
+                GetChildModelFromRepositorySuspendUseCase(get(named<Role>()))
+            }
+            single<ICreateChildModelSuspendUseCase<Role, CreateRolePayload, String>>(named<Role>()) {
+                CreateChildModelFromRepositorySuspendUseCase(get(named<Role>()))
+            }
+            single<IUpdateChildModelSuspendUseCase<Role, String, UpdateRolePayload, String>>(named<Role>()) {
+                UpdateChildModelFromRepositorySuspendUseCase(get(named<Role>()))
+            }
+            single<IDeleteChildModelSuspendUseCase<Role, String, String>>(named<Role>()) {
+                DeleteChildModelFromRepositorySuspendUseCase(get(named<Role>()))
+            }
 
             // Web
             single<IListChildModelSuspendUseCase<WebPage, String>>(named<WebPage>()) {
@@ -357,6 +374,19 @@ fun Application.configureKoin() {
                 )
             }
 
+            // Roles
+            single<IChildModelController<Role, String, CreateRolePayload, UpdateRolePayload, Association, String>>(named<Role>()) {
+                RolesController(
+                    get(),
+                    get(),
+                    get(named<Role>()),
+                    get(named<Role>()),
+                    get(named<Role>()),
+                    get(named<Role>()),
+                    get(named<Role>())
+                )
+            }
+
             // Web
             single<IWebPagesController> {
                 WebPagesController(
@@ -391,6 +421,7 @@ fun Application.configureKoin() {
             single { DomainsInAssociationsRouter(get(named<DomainInAssociation>()), get(), get(), get(), get()) }
             single { UsersRouter(get(named<User>()), get(), get(), get(), get()) }
             single { AuthRouter(get(), get()) }
+            single { RolesRouter(get(named<Role>()), get(), get(), get(), get()) }
             single { WebPagesRouter(get(), get(), get(), get(), get(), get()) }
             single { WebMenusRouter(get(named<WebMenu>()), get(), get(), get(), get()) }
         }
