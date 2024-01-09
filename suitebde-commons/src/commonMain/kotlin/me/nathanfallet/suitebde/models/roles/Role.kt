@@ -10,7 +10,7 @@ data class Role(
     @ModelProperty("id")
     @Schema("Id of the role", "123abc")
     override val id: String,
-    @Schema("Id of the association the menu is in", "123abc")
+    @Schema("Id of the association the role is in", "123abc")
     val associationId: String,
     @ModelProperty("string")
     @Schema("Name of the role", "Respo Web")

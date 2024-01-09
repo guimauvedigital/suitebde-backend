@@ -15,8 +15,8 @@ object UsersInRoles : Table() {
 
     fun toUserInRole(
         row: ResultRow,
-        role: Role?,
-        user: User?,
+        role: Role? = null,
+        user: User? = null,
     ) = UserInRole(
         row[roleId],
         row[userId],
