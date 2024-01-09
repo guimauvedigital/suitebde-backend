@@ -26,10 +26,8 @@ data class WebMenu(
     val children: List<WebMenu> = emptyList(),
 ) : IChildModel<String, CreateWebMenuPayload, UpdateWebMenuPayload, String> {
 
-    override val parentId: String
-        get() = associationId
+    override val parentId = associationId
 
-    val short: String
-        get() = title.singleOrNull()?.toString() ?: ""
+    val short = title.singleOrNull()?.toString() ?: ""
 
 }

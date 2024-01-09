@@ -27,7 +27,6 @@ data class User(
     val superuser: Boolean,
 ) : IChildModel<String, CreateUserPayload, UpdateUserPayload, String>, IUser {
 
-    override val parentId: String
-        get() = associationId
+    override val parentId = associationId
 
 }
