@@ -27,6 +27,7 @@ import me.nathanfallet.suitebde.database.application.ClientsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.AssociationsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.CodesInEmailsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.DomainsInAssociationsDatabaseRepository
+import me.nathanfallet.suitebde.database.roles.RolesDatabaseRepository
 import me.nathanfallet.suitebde.database.users.ClientsInUsersDatabaseRepository
 import me.nathanfallet.suitebde.database.users.UsersDatabaseRepository
 import me.nathanfallet.suitebde.database.web.WebMenusDatabaseRepository
@@ -36,6 +37,9 @@ import me.nathanfallet.suitebde.models.associations.*
 import me.nathanfallet.suitebde.models.auth.LoginPayload
 import me.nathanfallet.suitebde.models.auth.RegisterCodePayload
 import me.nathanfallet.suitebde.models.auth.RegisterPayload
+import me.nathanfallet.suitebde.models.roles.CreateRolePayload
+import me.nathanfallet.suitebde.models.roles.Role
+import me.nathanfallet.suitebde.models.roles.UpdateRolePayload
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
@@ -71,6 +75,7 @@ import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.ListChildModelFromRepositorySuspendUseCase
+import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 import me.nathanfallet.usecases.models.repositories.IModelSuspendRepository
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
@@ -129,6 +134,11 @@ fun Application.configureKoin() {
             // Users
             single<IUsersRepository> { UsersDatabaseRepository(get()) }
             single<IClientsInUsersRepository> { ClientsInUsersDatabaseRepository(get()) }
+
+            // Roles
+            single<IChildModelSuspendRepository<Role, String, CreateRolePayload, UpdateRolePayload, String>>(named<Role>()) {
+                RolesDatabaseRepository(get())
+            }
 
             // Web
             single<IWebPagesRepository> { WebPagesDatabaseRepository(get()) }
