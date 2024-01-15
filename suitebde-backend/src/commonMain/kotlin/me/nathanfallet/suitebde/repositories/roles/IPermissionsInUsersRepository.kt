@@ -1,9 +1,9 @@
 package me.nathanfallet.suitebde.repositories.roles
 
-import me.nathanfallet.suitebde.models.roles.Permission
+import me.nathanfallet.suitebde.models.roles.PermissionInRole
 
 interface IPermissionsInUsersRepository {
 
-    suspend fun getPermissionsForUser(userId: String): List<Permission>
+    suspend fun getPermissionsForUser(userId: String): List<PermissionInRole>
 
 }

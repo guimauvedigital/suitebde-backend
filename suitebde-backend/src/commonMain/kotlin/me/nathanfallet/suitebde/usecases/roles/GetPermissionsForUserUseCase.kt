@@ -10,17 +10,17 @@ class GetPermissionsForUserUseCase(
 ) : IGetPermissionsForUserUseCase {
 
     private data class PermissionsForUser(
-        val permissions: List<Permission>,
+        val permissions: Set<Permission>,
         val expiresAt: Instant,
     )
 
     private val cachedPermissions = mutableMapOf<String, PermissionsForUser>()
 
-    override suspend fun invoke(input: User): List<Permission> {
+    override suspend fun invoke(input: User): Set<Permission> {
         return cachedPermissions[input.id]?.takeIf {
             it.expiresAt > Clock.System.now()
         }?.permissions ?: run {
-            repository.getPermissionsForUser(input.id).also {
+            repository.getPermissionsForUser(input.id).map { it.permission }.toSet().also {
                 // Cache permissions for 5 seconds (we only fetch them once)
                 cachedPermissions[input.id] = PermissionsForUser(
                     it,

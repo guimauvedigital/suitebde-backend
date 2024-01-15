@@ -44,7 +44,7 @@ class CheckPermissionUseCaseTest {
         val getPermissionsForUserUseCase = mockk<IGetPermissionsForUserUseCase>()
         val useCase = CheckPermissionUseCase(getPermissionsForUserUseCase)
         val user = User("id", "associationId", "email", "password", "firstName", "lastName", false)
-        coEvery { getPermissionsForUserUseCase(user) } returns listOf()
+        coEvery { getPermissionsForUserUseCase(user) } returns setOf()
         assertEquals(false, useCase(user, Permission.USERS_VIEW inAssociation association))
     }
 
@@ -53,7 +53,7 @@ class CheckPermissionUseCaseTest {
         val getPermissionsForUserUseCase = mockk<IGetPermissionsForUserUseCase>()
         val useCase = CheckPermissionUseCase(getPermissionsForUserUseCase)
         val user = User("id", "associationId", "email", "password", "firstName", "lastName", false)
-        coEvery { getPermissionsForUserUseCase(user) } returns listOf(Permission.USERS_VIEW)
+        coEvery { getPermissionsForUserUseCase(user) } returns setOf(Permission.USERS_VIEW)
         assertEquals(true, useCase(user, Permission.USERS_VIEW inAssociation association))
     }
 

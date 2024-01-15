@@ -43,6 +43,7 @@ import me.nathanfallet.suitebde.models.auth.LoginPayload
 import me.nathanfallet.suitebde.models.auth.RegisterCodePayload
 import me.nathanfallet.suitebde.models.auth.RegisterPayload
 import me.nathanfallet.suitebde.models.roles.CreateRolePayload
+import me.nathanfallet.suitebde.models.roles.PermissionInRole
 import me.nathanfallet.suitebde.models.roles.Role
 import me.nathanfallet.suitebde.models.roles.UpdateRolePayload
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
@@ -52,7 +53,6 @@ import me.nathanfallet.suitebde.models.web.*
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
-import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInUsersRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRepository
 import me.nathanfallet.suitebde.repositories.users.IClientsInUsersRepository
@@ -149,8 +149,12 @@ fun Application.configureKoin() {
             single<IChildModelSuspendRepository<Role, String, CreateRolePayload, UpdateRolePayload, String>>(named<Role>()) {
                 RolesDatabaseRepository(get())
             }
+            single<IChildModelSuspendRepository<PermissionInRole, String, Unit, Unit, String>>(named<PermissionInRole>()) {
+                PermissionsInRolesDatabaseRepository(
+                    get()
+                )
+            }
             single<IUsersInRolesRepository> { UsersInRolesDatabaseRepository(get()) }
-            single<IPermissionsInRolesRepository> { PermissionsInRolesDatabaseRepository(get()) }
             single<IPermissionsInUsersRepository> { PermissionsInUsersDatabaseRepository(get()) }
 
             // Web
