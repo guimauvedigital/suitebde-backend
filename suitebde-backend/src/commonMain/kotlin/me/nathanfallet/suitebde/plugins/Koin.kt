@@ -29,7 +29,9 @@ import me.nathanfallet.suitebde.database.application.ClientsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.AssociationsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.CodesInEmailsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.DomainsInAssociationsDatabaseRepository
+import me.nathanfallet.suitebde.database.roles.PermissionsInUsersDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.RolesDatabaseRepository
+import me.nathanfallet.suitebde.database.roles.UsersInRolesDatabaseRepository
 import me.nathanfallet.suitebde.database.users.ClientsInUsersDatabaseRepository
 import me.nathanfallet.suitebde.database.users.UsersDatabaseRepository
 import me.nathanfallet.suitebde.database.web.WebMenusDatabaseRepository
@@ -49,6 +51,8 @@ import me.nathanfallet.suitebde.models.web.*
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
+import me.nathanfallet.suitebde.repositories.roles.IPermissionsInUsersRepository
+import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRepository
 import me.nathanfallet.suitebde.repositories.users.IClientsInUsersRepository
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
 import me.nathanfallet.suitebde.repositories.web.IWebMenusRepository
@@ -61,6 +65,8 @@ import me.nathanfallet.suitebde.usecases.application.*
 import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.*
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
+import me.nathanfallet.suitebde.usecases.roles.GetPermissionsForUserUseCase
+import me.nathanfallet.suitebde.usecases.roles.IGetPermissionsForUserUseCase
 import me.nathanfallet.suitebde.usecases.users.*
 import me.nathanfallet.suitebde.usecases.web.*
 import me.nathanfallet.usecases.emails.ISendEmailUseCase
@@ -141,6 +147,8 @@ fun Application.configureKoin() {
             single<IChildModelSuspendRepository<Role, String, CreateRolePayload, UpdateRolePayload, String>>(named<Role>()) {
                 RolesDatabaseRepository(get())
             }
+            single<IUsersInRolesRepository> { UsersInRolesDatabaseRepository(get()) }
+            single<IPermissionsInUsersRepository> { PermissionsInUsersDatabaseRepository(get()) }
 
             // Web
             single<IWebPagesRepository> { WebPagesDatabaseRepository(get()) }
@@ -259,7 +267,8 @@ fun Application.configureKoin() {
             }
 
             // Roles
-            single<ICheckPermissionSuspendUseCase> { CheckPermissionUseCase() }
+            single<ICheckPermissionSuspendUseCase> { CheckPermissionUseCase(get()) }
+            single<IGetPermissionsForUserUseCase> { GetPermissionsForUserUseCase(get()) }
             single<IListChildModelSuspendUseCase<Role, String>>(named<Role>()) {
                 ListChildModelFromRepositorySuspendUseCase(get(named<Role>()))
             }

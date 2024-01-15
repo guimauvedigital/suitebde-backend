@@ -15,22 +15,24 @@ import me.nathanfallet.suitebde.controllers.roles.RolesRouter
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
 import me.nathanfallet.suitebde.controllers.web.WebMenusRouter
 import me.nathanfallet.suitebde.controllers.web.WebPagesRouter
+import me.nathanfallet.suitebde.models.application.SuiteBDEEnvironment
 import org.koin.ktor.ext.inject
 
 fun Application.configureRouting() {
-    val openAPI = OpenAPI().info {
-        this.title = "Suite BDE API"
-        this.description = "Suite BDE API"
-        this.version = "1.0.0"
-    }
-    openAPI.servers(
-        listOf(
-            Server().description("Production server").url("https://suitebde.com"),
-            Server().description("Staging server").url("https://suitebde.dev")
-        )
-    )
-
+    install(IgnoreTrailingSlash)
     routing {
+        val openAPI = OpenAPI().info {
+            this.title = "Suite BDE API"
+            this.description = "Suite BDE API"
+            this.version = "1.0.0"
+        }
+        openAPI.servers(
+            listOf(
+                Server().description("Production server").url(SuiteBDEEnvironment.PRODUCTION.baseUrl),
+                Server().description("Staging server").url(SuiteBDEEnvironment.DEVELOPMENT.baseUrl)
+            )
+        )
+
         val associationsRouter by inject<AssociationsRouter>()
         val domainsInAssociationsRouter by inject<DomainsInAssociationsRouter>()
         val authRouter by inject<AuthRouter>()
