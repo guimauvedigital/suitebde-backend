@@ -435,11 +435,11 @@ fun Application.configureKoin() {
             single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get(named<Association>())) }
             single { AssociationsRouter(get(named<Association>()), get(), get(), get()) }
             single { DomainsInAssociationsRouter(get(named<DomainInAssociation>()), get(), get(), get(), get()) }
-            single { UsersRouter(get(named<User>()), get(), get(), get(), get()) }
+            single { UsersRouter(get(named<User>()), get(), get(), get(), get(), get()) }
             single { AuthRouter(get(), get()) }
-            single { RolesRouter(get(named<Role>()), get(), get(), get(), get()) }
-            single { WebPagesRouter(get(), get(), get(), get(), get(), get()) }
-            single { WebMenusRouter(get(named<WebMenu>()), get(), get(), get(), get()) }
+            single { RolesRouter(get(named<Role>()), get(), get(), get(), get(), get()) }
+            single { WebPagesRouter(get(), get(), get(), get(), get(), get(), get()) }
+            single { WebMenusRouter(get(named<WebMenu>()), get(), get(), get(), get(), get()) }
         }
 
         modules(

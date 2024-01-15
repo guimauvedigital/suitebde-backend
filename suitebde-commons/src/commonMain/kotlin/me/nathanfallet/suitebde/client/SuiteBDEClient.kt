@@ -23,8 +23,8 @@ class SuiteBDEClient(
     override val auth = AuthAPIRemoteRepository(this, prefix = "/api/v1")
     override val associations = AssociationsRemoteRepository(this)
     override val domainsInAssociations = DomainsInAssociationsRemoteRepository(this, associations)
-    override val users = UsersRemoteRepository(this)
-    override val webMenus = WebMenusRemoteRepository(this)
-    override val webPages = WebPagesRemoteRepository(this)
+    override val users = UsersRemoteRepository(this, associations)
+    override val webMenus = WebMenusRemoteRepository(this, associations)
+    override val webPages = WebPagesRemoteRepository(this, associations)
 
 }

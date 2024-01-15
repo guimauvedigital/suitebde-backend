@@ -6,6 +6,7 @@ import me.nathanfallet.ktorx.models.templates.TemplateMapping
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
 import me.nathanfallet.ktorx.routers.concat.ConcatChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
 import me.nathanfallet.suitebde.controllers.associations.IAssociationForCallRouter
 import me.nathanfallet.suitebde.controllers.models.AdminChildModelRouter
 import me.nathanfallet.suitebde.models.associations.Association
@@ -21,7 +22,8 @@ class WebPagesRouter(
     translateUseCase: ITranslateUseCase,
     getPublicMenuForCallUseCase: IGetPublicMenuForCallUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
-    associationsRouter: IAssociationForCallRouter,
+    associationForCallRouter: IAssociationForCallRouter,
+    associationsRouter: AssociationsRouter,
 ) : ConcatChildModelRouter<WebPage, String, WebPagePayload, WebPagePayload, Association, String>(
     listOf(
         APIChildModelRouter(
@@ -39,14 +41,14 @@ class WebPagesRouter(
             typeInfo<WebPagePayload>(),
             typeInfo<List<WebPage>>(),
             webPagesController,
-            associationsRouter,
+            associationForCallRouter,
             getLocaleForCallUseCase,
             translateUseCase,
             getAdminMenuForCallUseCase
         ),
         WebPagesPublicRouter(
             webPagesController,
-            associationsRouter,
+            associationForCallRouter,
             getPublicMenuForCallUseCase,
             getLocaleForCallUseCase,
             TemplateMapping(

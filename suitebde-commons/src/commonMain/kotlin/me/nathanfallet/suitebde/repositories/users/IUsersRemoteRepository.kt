@@ -5,8 +5,8 @@ import me.nathanfallet.suitebde.models.users.User
 
 interface IUsersRemoteRepository {
 
-    suspend fun list(): List<User>
-    suspend fun get(id: String): User?
-    suspend fun update(id: String, payload: UpdateUserPayload): User?
+    suspend fun list(associationId: String): List<User>
+    suspend fun get(id: String, associationId: String): User?
+    suspend fun update(id: String, payload: UpdateUserPayload, associationId: String): User?
 
 }

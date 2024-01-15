@@ -5,6 +5,7 @@ import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
 import me.nathanfallet.ktorx.routers.concat.ConcatChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
 import me.nathanfallet.suitebde.controllers.associations.IAssociationForCallRouter
 import me.nathanfallet.suitebde.controllers.models.AdminChildModelRouter
 import me.nathanfallet.suitebde.models.associations.Association
@@ -19,7 +20,8 @@ class WebMenusRouter(
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
-    associationsRouter: IAssociationForCallRouter,
+    associationForCallRouter: IAssociationForCallRouter,
+    associationsRouter: AssociationsRouter,
 ) : ConcatChildModelRouter<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String>(
     listOf(
         APIChildModelRouter(
@@ -37,7 +39,7 @@ class WebMenusRouter(
             typeInfo<UpdateWebMenuPayload>(),
             typeInfo<List<WebMenu>>(),
             webMenusController,
-            associationsRouter,
+            associationForCallRouter,
             getLocaleForCallUseCase,
             translateUseCase,
             getAdminMenuForCallUseCase

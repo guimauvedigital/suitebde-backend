@@ -14,10 +14,14 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.datetime.Clock
 import me.nathanfallet.ktorx.controllers.IChildModelController
+import me.nathanfallet.ktorx.controllers.IModelController
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.AssociationForCallRouter
+import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
 import me.nathanfallet.suitebde.models.application.SuiteBDEJson
 import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
+import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
@@ -28,6 +32,7 @@ import me.nathanfallet.suitebde.plugins.configureTemplating
 import me.nathanfallet.suitebde.usecases.associations.IRequireAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
+import me.nathanfallet.usecases.models.UnitModel
 import org.jsoup.Jsoup
 import java.util.*
 import kotlin.test.Test
@@ -63,18 +68,24 @@ class UsersRouterTest {
     @Test
     fun testGetAllAPIv1() = testApplication {
         val client = installApp(this)
-        val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
+        val associationController =
+            mockk<IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload>>()
         val controller =
             mockk<IChildModelController<User, String, CreateUserPayload, UpdateUserPayload, Association, String>>()
         val router = UsersRouter(
-            controller, mockk(), mockk(), mockk(), AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
+            controller,
+            mockk(),
+            mockk(),
+            mockk(),
+            AssociationForCallRouter(mockk(), mockk()),
+            AssociationsRouter(associationController, mockk(), mockk(), mockk())
         )
-        coEvery { requireAssociationForCallUseCase(any()) } returns association
+        coEvery { associationController.get(any(), UnitModel, "id") } returns association
         coEvery { controller.list(any(), association) } returns listOf(user)
         routing {
             router.createRoutes(this)
         }
-        assertEquals(listOf(user), client.get("/api/v1/users").body())
+        assertEquals(listOf(user), client.get("/api/v1/associations/id/users").body())
     }
 
     @Test
@@ -91,7 +102,8 @@ class UsersRouterTest {
             getLocaleForCallUseCase,
             translateUseCase,
             getAdminMenuForCallUseCase,
-            AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
+            AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
+            AssociationsRouter(mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.list(any(), association) } returns listOf(user)
@@ -121,7 +133,8 @@ class UsersRouterTest {
             getLocaleForCallUseCase,
             translateUseCase,
             getAdminMenuForCallUseCase,
-            AssociationForCallRouter(requireAssociationForCallUseCase, mockk())
+            AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
+            AssociationsRouter(mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.get(any(), association, "id") } returns user
