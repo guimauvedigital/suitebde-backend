@@ -36,7 +36,8 @@ class UsersDatabaseRepository(
     override suspend fun get(id: String): User? {
         return database.suspendedTransaction {
             Users
-                .select { Users.id eq id }
+                .selectAll()
+                .where { Users.id eq id }
                 .map(Users::toUser)
                 .singleOrNull()
         }
@@ -45,7 +46,8 @@ class UsersDatabaseRepository(
     override suspend fun get(id: String, parentId: String, context: IContext?): User? {
         return database.suspendedTransaction {
             Users
-                .select { Users.id eq id and (Users.associationId eq parentId) }
+                .selectAll()
+                .where { Users.id eq id and (Users.associationId eq parentId) }
                 .map(Users::toUser)
                 .singleOrNull()
         }
@@ -57,7 +59,8 @@ class UsersDatabaseRepository(
     ): User? {
         return database.suspendedTransaction {
             Users
-                .select { Users.email eq email }
+                .selectAll()
+                .where { Users.email eq email }
                 .map {
                     Users.toUser(it, includePassword)
                 }
@@ -68,7 +71,8 @@ class UsersDatabaseRepository(
     override suspend fun list(parentId: String, context: IContext?): List<User> {
         return database.suspendedTransaction {
             Users
-                .select { Users.associationId eq parentId }
+                .selectAll()
+                .where { Users.associationId eq parentId }
                 .map(Users::toUser)
         }
     }
@@ -76,7 +80,8 @@ class UsersDatabaseRepository(
     override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<User> {
         return database.suspendedTransaction {
             Users
-                .select { Users.associationId eq parentId }
+                .selectAll()
+                .where { Users.associationId eq parentId }
                 .limit(limit.toInt(), offset)
                 .map(Users::toUser)
         }

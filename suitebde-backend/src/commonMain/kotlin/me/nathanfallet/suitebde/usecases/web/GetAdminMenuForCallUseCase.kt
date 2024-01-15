@@ -16,7 +16,7 @@ class GetAdminMenuForCallUseCase(
     private val getUserForCallUseCase: IGetUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
     private val getLocaleForCallUseCase: IGetLocaleForCallUseCase,
-    private val translateUseCase: ITranslateUseCase
+    private val translateUseCase: ITranslateUseCase,
 ) : IGetAdminMenuForCallUseCase {
 
     override suspend fun invoke(input: ApplicationCall): List<WebMenu> {
@@ -32,7 +32,7 @@ class GetAdminMenuForCallUseCase(
             HttpStatusCode.Forbidden, "admin_not_allowed"
         )
         val locale = getLocaleForCallUseCase(input)
-        return listOf("dashboard", "users", "webpages", "webmenus")
+        return listOf("dashboard", "users", "roles", "webpages", "webmenus")
             .filter {
                 it == "dashboard" || Permission.entries.firstOrNull { p -> p.name == "${it.uppercase()}_VIEW" }
                     ?.let { permission ->

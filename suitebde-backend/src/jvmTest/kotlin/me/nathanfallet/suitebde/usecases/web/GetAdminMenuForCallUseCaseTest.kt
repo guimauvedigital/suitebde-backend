@@ -49,6 +49,7 @@ class GetAdminMenuForCallUseCaseTest {
         coEvery { getUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.ADMIN inAssociation association) } returns true
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.ROLES_VIEW inAssociation association) } returns true
         coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_VIEW inAssociation association) } returns true
         coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_VIEW inAssociation association) } returns true
         every { getLocaleForCallUseCase(call) } returns Locale.ENGLISH
@@ -66,6 +67,12 @@ class GetAdminMenuForCallUseCaseTest {
                     "associationId",
                     "t:admin_menu_users",
                     "/admin/users"
+                ),
+                WebMenu(
+                    "roles",
+                    "associationId",
+                    "t:admin_menu_roles",
+                    "/admin/roles"
                 ),
                 WebMenu(
                     "webpages",
@@ -100,6 +107,7 @@ class GetAdminMenuForCallUseCaseTest {
         coEvery { getUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.ADMIN inAssociation association) } returns true
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.ROLES_VIEW inAssociation association) } returns false
         coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_VIEW inAssociation association) } returns false
         coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_VIEW inAssociation association) } returns false
         every { getLocaleForCallUseCase(call) } returns Locale.ENGLISH

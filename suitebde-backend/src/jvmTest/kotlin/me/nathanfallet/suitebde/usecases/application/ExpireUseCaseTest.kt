@@ -17,14 +17,14 @@ class ExpireUseCaseTest {
 
     @Test
     fun invoke() = runBlocking {
-        val associationsRepository = mockk<IAssociationsRepository>()
         val codesInEmailsRepository = mockk<ICodesInEmailsRepository>()
         val deleteCodeInEmailUseCase = mockk<IDeleteCodeInEmailUseCase>(relaxed = true)
+        val associationsRepository = mockk<IAssociationsRepository>()
         val deleteAssociationUseCase = mockk<IDeleteModelSuspendUseCase<Association, String>>(relaxed = true)
         val useCase = ExpireUseCase(
-            associationsRepository,
             codesInEmailsRepository,
             deleteCodeInEmailUseCase,
+            associationsRepository,
             deleteAssociationUseCase
         )
         val now = Clock.System.now()

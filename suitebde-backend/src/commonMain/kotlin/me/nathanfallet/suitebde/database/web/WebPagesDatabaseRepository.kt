@@ -61,7 +61,8 @@ class WebPagesDatabaseRepository(
     override suspend fun get(id: String, parentId: String, context: IContext?): WebPage? {
         return database.suspendedTransaction {
             WebPages
-                .select { WebPages.id eq id and (WebPages.associationId eq parentId) }
+                .selectAll()
+                .where { WebPages.id eq id and (WebPages.associationId eq parentId) }
                 .map(WebPages::toWebPage)
                 .singleOrNull()
         }

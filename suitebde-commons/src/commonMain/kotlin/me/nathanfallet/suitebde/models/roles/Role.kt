@@ -15,7 +15,7 @@ data class Role(
     @ModelProperty("string")
     @Schema("Name of the role", "Respo Web")
     val name: String,
-) : IChildModel<String, Unit, Unit, String> {
+) : IChildModel<String, CreateRolePayload, UpdateRolePayload, String> {
 
     override val parentId = associationId
 

@@ -8,9 +8,9 @@ import me.nathanfallet.suitebde.usecases.associations.IDeleteCodeInEmailUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteModelSuspendUseCase
 
 class ExpireUseCase(
-    private val associationsRepository: IAssociationsRepository,
     private val codesInEmailsRepository: ICodesInEmailsRepository,
     private val deleteCodeInEmailUseCase: IDeleteCodeInEmailUseCase,
+    private val associationsRepository: IAssociationsRepository,
     private val deleteAssociationUseCase: IDeleteModelSuspendUseCase<Association, String>,
 ) : IExpireUseCase {
 
