@@ -29,6 +29,7 @@ import me.nathanfallet.suitebde.database.application.ClientsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.AssociationsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.CodesInEmailsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.DomainsInAssociationsDatabaseRepository
+import me.nathanfallet.suitebde.database.roles.PermissionsInRolesDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.PermissionsInUsersDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.RolesDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.UsersInRolesDatabaseRepository
@@ -51,6 +52,7 @@ import me.nathanfallet.suitebde.models.web.*
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
+import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInUsersRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRepository
 import me.nathanfallet.suitebde.repositories.users.IClientsInUsersRepository
@@ -148,6 +150,7 @@ fun Application.configureKoin() {
                 RolesDatabaseRepository(get())
             }
             single<IUsersInRolesRepository> { UsersInRolesDatabaseRepository(get()) }
+            single<IPermissionsInRolesRepository> { PermissionsInRolesDatabaseRepository(get()) }
             single<IPermissionsInUsersRepository> { PermissionsInUsersDatabaseRepository(get()) }
 
             // Web
