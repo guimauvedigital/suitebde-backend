@@ -10,6 +10,7 @@ import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.IChildModel
+import me.nathanfallet.usecases.models.annotations.PayloadKey
 
 open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePayload, ParentId>, Id, CreatePayload : Any, UpdatePayload : Any, ParentModel : IChildModel<ParentId, *, *, *>, ParentId>(
     modelTypeInfo: TypeInfo,
@@ -40,10 +41,12 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
         redirectUnauthorizedToUrl = "/auth/login?redirect={path}",
     ),
     { template, model ->
+        val flatpickr = (model["keys"] as? List<*>)?.any { (it as? PayloadKey)?.type == "date" } == true
         respondTemplate(
             template, model + mapOf(
                 "title" to translateUseCase(getLocaleForCallUseCase(this), "admin_menu_${model["route"]}"),
                 "menu" to getAdminMenuForCallUseCase(this),
+                "flatpickr" to flatpickr,
             )
         )
     },

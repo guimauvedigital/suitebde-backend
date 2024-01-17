@@ -19,6 +19,8 @@ import me.nathanfallet.suitebde.controllers.associations.*
 import me.nathanfallet.suitebde.controllers.auth.AuthController
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
 import me.nathanfallet.suitebde.controllers.auth.IAuthController
+import me.nathanfallet.suitebde.controllers.events.EventsController
+import me.nathanfallet.suitebde.controllers.events.EventsRouter
 import me.nathanfallet.suitebde.controllers.roles.RolesController
 import me.nathanfallet.suitebde.controllers.roles.RolesRouter
 import me.nathanfallet.suitebde.controllers.users.UsersController
@@ -29,6 +31,7 @@ import me.nathanfallet.suitebde.database.application.ClientsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.AssociationsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.CodesInEmailsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.DomainsInAssociationsDatabaseRepository
+import me.nathanfallet.suitebde.database.events.EventsDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.PermissionsInRolesDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.PermissionsInUsersDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.RolesDatabaseRepository
@@ -42,6 +45,9 @@ import me.nathanfallet.suitebde.models.associations.*
 import me.nathanfallet.suitebde.models.auth.LoginPayload
 import me.nathanfallet.suitebde.models.auth.RegisterCodePayload
 import me.nathanfallet.suitebde.models.auth.RegisterPayload
+import me.nathanfallet.suitebde.models.events.CreateEventPayload
+import me.nathanfallet.suitebde.models.events.Event
+import me.nathanfallet.suitebde.models.events.UpdateEventPayload
 import me.nathanfallet.suitebde.models.roles.CreateRolePayload
 import me.nathanfallet.suitebde.models.roles.PermissionInRole
 import me.nathanfallet.suitebde.models.roles.Role
@@ -85,6 +91,8 @@ import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.ListChildModelFromRepositorySuspendUseCase
+import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.slice.ListSliceChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 import me.nathanfallet.usecases.models.repositories.IModelSuspendRepository
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
@@ -150,9 +158,7 @@ fun Application.configureKoin() {
                 RolesDatabaseRepository(get())
             }
             single<IChildModelSuspendRepository<PermissionInRole, String, Unit, Unit, String>>(named<PermissionInRole>()) {
-                PermissionsInRolesDatabaseRepository(
-                    get()
-                )
+                PermissionsInRolesDatabaseRepository(get())
             }
             single<IUsersInRolesRepository> { UsersInRolesDatabaseRepository(get()) }
             single<IPermissionsInUsersRepository> { PermissionsInUsersDatabaseRepository(get()) }
@@ -160,6 +166,11 @@ fun Application.configureKoin() {
             // Web
             single<IWebPagesRepository> { WebPagesDatabaseRepository(get()) }
             single<IWebMenusRepository> { WebMenusDatabaseRepository(get()) }
+
+            // Events
+            single<IChildModelSuspendRepository<Event, String, CreateEventPayload, UpdateEventPayload, String>>(named<Event>()) {
+                EventsDatabaseRepository(get())
+            }
         }
         val useCaseModule = module {
             // Application
@@ -327,6 +338,23 @@ fun Application.configureKoin() {
             single<IDeleteChildModelSuspendUseCase<WebMenu, String, String>>(named<WebMenu>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get<IWebMenusRepository>())
             }
+
+            // Events
+            single<IListSliceChildModelSuspendUseCase<Event, String>>(named<Event>()) {
+                ListSliceChildModelFromRepositorySuspendUseCase(get(named<Event>()))
+            }
+            single<IGetChildModelSuspendUseCase<Event, String, String>>(named<Event>()) {
+                GetChildModelFromRepositorySuspendUseCase(get(named<Event>()))
+            }
+            single<ICreateChildModelSuspendUseCase<Event, CreateEventPayload, String>>(named<Event>()) {
+                CreateChildModelFromRepositorySuspendUseCase(get(named<Event>()))
+            }
+            single<IUpdateChildModelSuspendUseCase<Event, String, UpdateEventPayload, String>>(named<Event>()) {
+                UpdateChildModelFromRepositorySuspendUseCase(get(named<Event>()))
+            }
+            single<IDeleteChildModelSuspendUseCase<Event, String, String>>(named<Event>()) {
+                DeleteChildModelFromRepositorySuspendUseCase(get(named<Event>()))
+            }
         }
         val controllerModule = module {
             // Associations
@@ -430,6 +458,21 @@ fun Application.configureKoin() {
                     get(named<WebMenu>())
                 )
             }
+
+            // Events
+            single<IChildModelController<Event, String, CreateEventPayload, UpdateEventPayload, Association, String>>(
+                named<Event>()
+            ) {
+                EventsController(
+                    get(),
+                    get(),
+                    get(named<Event>()),
+                    get(named<Event>()),
+                    get(named<Event>()),
+                    get(named<Event>()),
+                    get(named<Event>())
+                )
+            }
         }
         val routerModule = module {
             single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get(named<Association>())) }
@@ -440,6 +483,7 @@ fun Application.configureKoin() {
             single { RolesRouter(get(named<Role>()), get(), get(), get(), get(), get()) }
             single { WebPagesRouter(get(), get(), get(), get(), get(), get(), get()) }
             single { WebMenusRouter(get(named<WebMenu>()), get(), get(), get(), get(), get()) }
+            single { EventsRouter(get(named<Event>()), get(), get(), get(), get(), get()) }
         }
 
         modules(

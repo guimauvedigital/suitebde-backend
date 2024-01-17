@@ -25,6 +25,7 @@ class AssociationForCallRouter(
     override val route = ""
     override val id = ""
     override val prefix = ""
+    override val routeIncludingParent = ""
 
     override fun createRoutes(root: Route, openAPI: OpenAPI?) {
         // This does not create routes because it only resolves the association from the call
