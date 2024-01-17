@@ -22,6 +22,10 @@ enum class Permission {
     WEBMENUS_CREATE,
     WEBMENUS_UPDATE,
     WEBMENUS_DELETE,
+    EVENTS_VIEW,
+    EVENTS_CREATE,
+    EVENTS_UPDATE,
+    EVENTS_DELETE,
     ;
 
     infix fun inAssociation(association: Association) =

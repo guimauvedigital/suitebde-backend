@@ -36,6 +36,21 @@
             </div>
         </div>
     </div>
+
+    <#if flatpickr?? && flatpickr>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script>
+            if (document.querySelector('.datetimepicker')) {
+                flatpickr('.datetimepicker', {
+                    allowInput: true,
+                    enableTime: true,
+                    dateFormat: "Z",
+                    altInput: true,
+                    altFormat: "d/m/Y à H:i"
+                });
+            }
+        </script>
+    </#if>
 </@template.page>
 
 <#macro field key>
@@ -62,6 +77,12 @@
                 <#break>
             <#case "integer">
                 <input type="number" class="form-control"
+                       name="${key.key}" id="${key.key}"
+                       <#if item??>value="${item[key.key]}"</#if>
+                        <#if !key.editable>disabled</#if>>
+                <#break>
+            <#case "date">
+                <input type="text" class="form-control datetimepicker"
                        name="${key.key}" id="${key.key}"
                        <#if item??>value="${item[key.key]}"</#if>
                         <#if !key.editable>disabled</#if>>
