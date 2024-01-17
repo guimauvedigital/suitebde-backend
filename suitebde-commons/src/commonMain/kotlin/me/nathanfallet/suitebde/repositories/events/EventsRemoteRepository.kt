@@ -23,8 +23,8 @@ class EventsRemoteRepository(
     prefix = "/api/v1"
 ), IEventsRemoteRepository {
 
-    override suspend fun list(associationId: String): List<Event> {
-        return list(RecursiveId<Association, String, Unit>(associationId), null)
+    override suspend fun list(limit: Long, offset: Long, associationId: String): List<Event> {
+        return list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
     }
 
     override suspend fun get(id: String, associationId: String): Event? {
