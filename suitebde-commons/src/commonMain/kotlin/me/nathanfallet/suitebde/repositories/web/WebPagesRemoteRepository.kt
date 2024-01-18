@@ -22,8 +22,8 @@ class WebPagesRemoteRepository(
     prefix = "/api/v1"
 ), IWebPagesRemoteRepository {
 
-    override suspend fun list(associationId: String): List<WebPage> {
-        return list(RecursiveId<Association, String, Unit>(associationId), null)
+    override suspend fun list(limit: Long, offset: Long, associationId: String): List<WebPage> {
+        return list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
     }
 
     override suspend fun get(id: String, associationId: String): WebPage? {

@@ -28,6 +28,16 @@ class RolesDatabaseRepository(
         }
     }
 
+    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<Role> {
+        return database.suspendedTransaction {
+            Roles
+                .selectAll()
+                .where { Roles.associationId eq parentId }
+                .limit(limit.toInt(), offset)
+                .map(Roles::toRole)
+        }
+    }
+
     override suspend fun create(payload: CreateRolePayload, parentId: String, context: IContext?): Role? {
         return database.suspendedTransaction {
             Roles.insert {

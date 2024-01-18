@@ -7,7 +7,7 @@ import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 
 class GetPublicMenuForCallUseCase(
     private val requireAssociationForCallUseCase: IRequireAssociationForCallUseCase,
-    private val getWebMenusUseCase: IListChildModelSuspendUseCase<WebMenu, String>
+    private val getWebMenusUseCase: IListChildModelSuspendUseCase<WebMenu, String>,
 ) : IGetPublicMenuForCallUseCase {
 
     override suspend fun invoke(input: ApplicationCall): List<WebMenu> {

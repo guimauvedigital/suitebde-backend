@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.controllers.roles
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
@@ -14,6 +15,7 @@ import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
@@ -21,6 +23,7 @@ class RolesController(
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
     private val getRolesInAssociationUseCase: IListChildModelSuspendUseCase<Role, String>,
+    private val getRolesInAssociationSlicedUseCase: IListSliceChildModelSuspendUseCase<Role, String>,
     private val createRoleUseCase: ICreateChildModelSuspendUseCase<Role, CreateRolePayload, String>,
     private val getRoleUseCase: IGetChildModelSuspendUseCase<Role, String, String>,
     private val updateRoleUseCase: IUpdateChildModelSuspendUseCase<Role, String, UpdateRolePayload, String>,
@@ -28,7 +31,12 @@ class RolesController(
 ) : IChildModelController<Role, String, CreateRolePayload, UpdateRolePayload, Association, String> {
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<Role> {
-        return getRolesInAssociationUseCase(parent.id)
+        if (call.request.path().contains("/admin/")) return getRolesInAssociationUseCase(parent.id)
+        return getRolesInAssociationSlicedUseCase(
+            call.parameters["limit"]?.toLongOrNull() ?: 25,
+            call.parameters["offset"]?.toLongOrNull() ?: 0,
+            parent.id
+        )
     }
 
     override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateRolePayload): Role {

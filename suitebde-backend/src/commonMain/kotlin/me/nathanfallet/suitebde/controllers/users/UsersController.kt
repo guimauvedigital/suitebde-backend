@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.controllers.users
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
@@ -12,6 +13,7 @@ import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
@@ -19,8 +21,9 @@ class UsersController(
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
     private val getUsersInAssociationUseCase: IListChildModelSuspendUseCase<User, String>,
+    private val getUsersInAssociationSlicedUseCase: IListSliceChildModelSuspendUseCase<User, String>,
     private val getUserUseCase: IGetChildModelSuspendUseCase<User, String, String>,
-    private val updateUserUseCase: IUpdateChildModelSuspendUseCase<User, String, UpdateUserPayload, String>
+    private val updateUserUseCase: IUpdateChildModelSuspendUseCase<User, String, UpdateUserPayload, String>,
 ) : IChildModelController<User, String, CreateUserPayload, UpdateUserPayload, Association, String> {
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<User> {
@@ -29,7 +32,12 @@ class UsersController(
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "users_view_not_allowed"
         )
-        return getUsersInAssociationUseCase(parent.id)
+        if (call.request.path().contains("/admin/")) return getUsersInAssociationUseCase(parent.id)
+        return getUsersInAssociationSlicedUseCase(
+            call.parameters["limit"]?.toLongOrNull() ?: 25,
+            call.parameters["offset"]?.toLongOrNull() ?: 0,
+            parent.id
+        )
     }
 
     override suspend fun get(call: ApplicationCall, parent: Association, id: String): User {
@@ -51,7 +59,7 @@ class UsersController(
         call: ApplicationCall,
         parent: Association,
         id: String,
-        payload: UpdateUserPayload
+        payload: UpdateUserPayload,
     ): User {
         (requireUserForCallUseCase(call) as User).takeIf {
             it.id == id || checkPermissionUseCase(it, Permission.USERS_UPDATE inAssociation parent)

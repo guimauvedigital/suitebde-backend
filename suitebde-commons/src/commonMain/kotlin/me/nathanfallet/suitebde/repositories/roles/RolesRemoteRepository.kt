@@ -1,41 +1,41 @@
-package me.nathanfallet.suitebde.repositories.web
+package me.nathanfallet.suitebde.repositories.roles
 
 import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.repositories.api.APIChildModelRemoteRepository
 import me.nathanfallet.ktorx.repositories.api.IAPIModelRemoteRepository
 import me.nathanfallet.suitebde.client.ISuiteBDEClient
 import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.web.CreateWebMenuPayload
-import me.nathanfallet.suitebde.models.web.UpdateWebMenuPayload
-import me.nathanfallet.suitebde.models.web.WebMenu
+import me.nathanfallet.suitebde.models.roles.CreateRolePayload
+import me.nathanfallet.suitebde.models.roles.Role
+import me.nathanfallet.suitebde.models.roles.UpdateRolePayload
 import me.nathanfallet.usecases.models.id.RecursiveId
 
-class WebMenusRemoteRepository(
+class RolesRemoteRepository(
     client: ISuiteBDEClient,
     parentRepository: IAPIModelRemoteRepository<Association, String, *, *>,
-) : APIChildModelRemoteRepository<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, String>(
-    typeInfo<WebMenu>(),
-    typeInfo<CreateWebMenuPayload>(),
-    typeInfo<UpdateWebMenuPayload>(),
-    typeInfo<List<WebMenu>>(),
+) : APIChildModelRemoteRepository<Role, String, CreateRolePayload, UpdateRolePayload, String>(
+    typeInfo<Role>(),
+    typeInfo<CreateRolePayload>(),
+    typeInfo<UpdateRolePayload>(),
+    typeInfo<List<Role>>(),
     client,
     parentRepository,
     prefix = "/api/v1"
-), IWebMenusRemoteRepository {
+), IRolesRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long, associationId: String): List<WebMenu> {
+    override suspend fun list(limit: Long, offset: Long, associationId: String): List<Role> {
         return list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
     }
 
-    override suspend fun get(id: String, associationId: String): WebMenu? {
+    override suspend fun get(id: String, associationId: String): Role? {
         return get(id, RecursiveId<Association, String, Unit>(associationId), null)
     }
 
-    override suspend fun create(payload: CreateWebMenuPayload, associationId: String): WebMenu? {
+    override suspend fun create(payload: CreateRolePayload, associationId: String): Role? {
         return create(payload, RecursiveId<Association, String, Unit>(associationId), null)
     }
 
-    override suspend fun update(id: String, payload: UpdateWebMenuPayload, associationId: String): WebMenu? {
+    override suspend fun update(id: String, payload: UpdateRolePayload, associationId: String): Role? {
         return update(id, payload, RecursiveId<Association, String, Unit>(associationId), null)
     }
 
