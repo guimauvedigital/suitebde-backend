@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.controllers.roles
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -19,6 +20,7 @@ import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
@@ -46,9 +48,10 @@ class RolesControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getRolesInAssociationUseCase(10, 5, association.id) } returns listOf(role)
         val controller = RolesController(
-            mockk(), mockk(), getRolesInAssociationUseCase,
+            mockk(), mockk(), mockk(), getRolesInAssociationUseCase,
             mockk(), mockk(), mockk(), mockk()
         )
+        every { call.request.path() } returns "/api/v1/associations/id/roles"
         every { call.parameters["limit"] } returns "10"
         every { call.parameters["offset"] } returns "5"
         assertEquals(listOf(role), controller.list(call, association))
@@ -60,9 +63,10 @@ class RolesControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getRolesInAssociationUseCase(25, 0, association.id) } returns listOf(role)
         val controller = RolesController(
-            mockk(), mockk(), getRolesInAssociationUseCase,
+            mockk(), mockk(), mockk(), getRolesInAssociationUseCase,
             mockk(), mockk(), mockk(), mockk()
         )
+        every { call.request.path() } returns "/api/v1/associations/id/roles"
         every { call.parameters["limit"] } returns null
         every { call.parameters["offset"] } returns null
         assertEquals(listOf(role), controller.list(call, association))
@@ -74,11 +78,25 @@ class RolesControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getRolesInAssociationUseCase(25, 0, association.id) } returns listOf(role)
         val controller = RolesController(
-            mockk(), mockk(), getRolesInAssociationUseCase,
+            mockk(), mockk(), mockk(), getRolesInAssociationUseCase,
             mockk(), mockk(), mockk(), mockk()
         )
+        every { call.request.path() } returns "/api/v1/associations/id/roles"
         every { call.parameters["limit"] } returns "a"
         every { call.parameters["offset"] } returns "b"
+        assertEquals(listOf(role), controller.list(call, association))
+    }
+
+    @Test
+    fun testListAdmin() = runBlocking {
+        val getRolesInAssociationUseCase = mockk<IListChildModelSuspendUseCase<Role, String>>()
+        val call = mockk<ApplicationCall>()
+        coEvery { getRolesInAssociationUseCase(association.id) } returns listOf(role)
+        val controller = RolesController(
+            mockk(), mockk(), getRolesInAssociationUseCase, mockk(),
+            mockk(), mockk(), mockk(), mockk()
+        )
+        every { call.request.path() } returns "/admin/roles"
         assertEquals(listOf(role), controller.list(call, association))
     }
 
@@ -86,7 +104,7 @@ class RolesControllerTest {
     fun testGet() = runBlocking {
         val getRoleUseCase = mockk<IGetChildModelSuspendUseCase<Role, String, String>>()
         val controller = RolesController(
-            mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(),
             getRoleUseCase, mockk(), mockk()
         )
         coEvery { getRoleUseCase(role.id, role.associationId) } returns role
@@ -97,7 +115,7 @@ class RolesControllerTest {
     fun testGetNotFound() = runBlocking {
         val getRoleUseCase = mockk<IGetChildModelSuspendUseCase<Role, String, String>>()
         val controller = RolesController(
-            mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(),
             getRoleUseCase, mockk(), mockk()
         )
         coEvery { getRoleUseCase(role.id, role.associationId) } returns null
@@ -116,6 +134,7 @@ class RolesControllerTest {
         val controller = RolesController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             createRoleUseCase,
             mockk(),
@@ -140,6 +159,7 @@ class RolesControllerTest {
             mockk(),
             mockk(),
             mockk(),
+            mockk(),
             mockk()
         )
         val payload = CreateRolePayload("name")
@@ -160,6 +180,7 @@ class RolesControllerTest {
         val controller = RolesController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             createRoleUseCase,
             mockk(),
@@ -188,6 +209,7 @@ class RolesControllerTest {
             checkPermissionUseCase,
             mockk(),
             mockk(),
+            mockk(),
             getRoleUseCase,
             updateRoleUseCase,
             mockk()
@@ -212,6 +234,7 @@ class RolesControllerTest {
         val controller = RolesController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             mockk(),
             getRoleUseCase,
@@ -240,6 +263,7 @@ class RolesControllerTest {
             checkPermissionUseCase,
             mockk(),
             mockk(),
+            mockk(),
             getRoleUseCase,
             mockk(),
             mockk()
@@ -262,6 +286,7 @@ class RolesControllerTest {
         val controller = RolesController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             mockk(),
             mockk(),
@@ -289,6 +314,7 @@ class RolesControllerTest {
             checkPermissionUseCase,
             mockk(),
             mockk(),
+            mockk(),
             getRoleUseCase,
             mockk(),
             deleteRoleUseCase
@@ -312,6 +338,7 @@ class RolesControllerTest {
         val controller = RolesController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             mockk(),
             getRoleUseCase,
@@ -339,6 +366,7 @@ class RolesControllerTest {
             checkPermissionUseCase,
             mockk(),
             mockk(),
+            mockk(),
             getRoleUseCase,
             mockk(),
             mockk()
@@ -360,6 +388,7 @@ class RolesControllerTest {
         val controller = RolesController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             mockk(),
             mockk(),

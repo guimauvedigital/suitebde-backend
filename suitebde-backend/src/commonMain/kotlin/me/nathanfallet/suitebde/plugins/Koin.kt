@@ -220,6 +220,9 @@ fun Application.configureKoin() {
             single<IDeleteCodeInEmailUseCase> { DeleteCodeInEmailUseCase(get()) }
 
             // Domains in associations
+            single<IListChildModelSuspendUseCase<DomainInAssociation, String>>(named<DomainInAssociation>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<IDomainsInAssociationsRepository>())
+            }
             single<IListSliceChildModelSuspendUseCase<DomainInAssociation, String>>(named<DomainInAssociation>()) {
                 ListSliceChildModelFromRepositorySuspendUseCase(get<IDomainsInAssociationsRepository>())
             }
@@ -265,6 +268,9 @@ fun Application.configureKoin() {
             single<IGetUserUseCase> { GetUserUseCase(get()) }
             single<IGetUserForCallUseCase> { GetUserForCallUseCase(get(), get(), get()) }
             single<IRequireUserForCallUseCase> { RequireUserForCallUseCase(get()) }
+            single<IListChildModelSuspendUseCase<User, String>>(named<User>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<IUsersRepository>())
+            }
             single<IListSliceChildModelSuspendUseCase<User, String>>(named<User>()) {
                 ListSliceChildModelFromRepositorySuspendUseCase(get<IUsersRepository>())
             }
@@ -287,6 +293,9 @@ fun Application.configureKoin() {
             // Roles
             single<ICheckPermissionSuspendUseCase> { CheckPermissionUseCase(get()) }
             single<IGetPermissionsForUserUseCase> { GetPermissionsForUserUseCase(get()) }
+            single<IListChildModelSuspendUseCase<Role, String>>(named<Role>()) {
+                ListChildModelFromRepositorySuspendUseCase(get(named<Role>()))
+            }
             single<IListSliceChildModelSuspendUseCase<Role, String>>(named<Role>()) {
                 ListSliceChildModelFromRepositorySuspendUseCase(get(named<Role>()))
             }
@@ -304,6 +313,9 @@ fun Application.configureKoin() {
             }
 
             // Web
+            single<IListChildModelSuspendUseCase<WebPage, String>>(named<WebPage>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<IWebPagesRepository>())
+            }
             single<IListSliceChildModelSuspendUseCase<WebPage, String>>(named<WebPage>()) {
                 ListSliceChildModelFromRepositorySuspendUseCase(get<IWebPagesRepository>())
             }
@@ -343,6 +355,9 @@ fun Application.configureKoin() {
             }
 
             // Events
+            single<IListChildModelSuspendUseCase<Event, String>>(named<Event>()) {
+                ListChildModelFromRepositorySuspendUseCase(get(named<Event>()))
+            }
             single<IListSliceChildModelSuspendUseCase<Event, String>>(named<Event>()) {
                 ListSliceChildModelFromRepositorySuspendUseCase(get(named<Event>()))
             }
@@ -377,6 +392,7 @@ fun Application.configureKoin() {
                 DomainsInAssociationsController(
                     get(),
                     get(),
+                    get(named<DomainInAssociation>()),
                     get(named<DomainInAssociation>()),
                     get(named<DomainInAssociation>()),
                     get(named<DomainInAssociation>()),
@@ -417,6 +433,7 @@ fun Application.configureKoin() {
                     get(),
                     get(named<User>()),
                     get(named<User>()),
+                    get(named<User>()),
                     get(named<User>())
                 )
             }
@@ -430,6 +447,7 @@ fun Application.configureKoin() {
                     get(named<Role>()),
                     get(named<Role>()),
                     get(named<Role>()),
+                    get(named<Role>()),
                     get(named<Role>())
                 )
             }
@@ -439,6 +457,7 @@ fun Application.configureKoin() {
                 WebPagesController(
                     get(),
                     get(),
+                    get(named<WebPage>()),
                     get(named<WebPage>()),
                     get(),
                     get(),
@@ -458,6 +477,7 @@ fun Application.configureKoin() {
                     get(named<WebMenu>()),
                     get(named<WebMenu>()),
                     get(named<WebMenu>()),
+                    get(named<WebMenu>()),
                     get(named<WebMenu>())
                 )
             }
@@ -469,6 +489,7 @@ fun Application.configureKoin() {
                 EventsController(
                     get(),
                     get(),
+                    get(named<Event>()),
                     get(named<Event>()),
                     get(named<Event>()),
                     get(named<Event>()),

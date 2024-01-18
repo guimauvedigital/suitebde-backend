@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.controllers.associations
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -18,6 +19,7 @@ import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import kotlin.test.Test
@@ -46,11 +48,13 @@ class DomainsInAssociationsControllerTest {
         val controller = DomainsInAssociationsController(
             mockk(),
             mockk(),
+            mockk(),
             getDomainsInAssociationsUseCase,
             mockk(),
             mockk(),
             mockk()
         )
+        every { call.request.path() } returns "/api/v1/associations/id/domains"
         every { call.parameters["limit"] } returns "10"
         every { call.parameters["offset"] } returns "5"
         assertEquals(listOf(domain), controller.list(call, association))
@@ -64,11 +68,13 @@ class DomainsInAssociationsControllerTest {
         val controller = DomainsInAssociationsController(
             mockk(),
             mockk(),
+            mockk(),
             getDomainsInAssociationsUseCase,
             mockk(),
             mockk(),
             mockk()
         )
+        every { call.request.path() } returns "/api/v1/associations/id/domains"
         every { call.parameters["limit"] } returns null
         every { call.parameters["offset"] } returns null
         assertEquals(listOf(domain), controller.list(call, association))
@@ -82,13 +88,33 @@ class DomainsInAssociationsControllerTest {
         val controller = DomainsInAssociationsController(
             mockk(),
             mockk(),
+            mockk(),
             getDomainsInAssociationsUseCase,
             mockk(),
             mockk(),
             mockk()
         )
+        every { call.request.path() } returns "/api/v1/associations/id/domains"
         every { call.parameters["limit"] } returns "a"
         every { call.parameters["offset"] } returns "b"
+        assertEquals(listOf(domain), controller.list(call, association))
+    }
+
+    @Test
+    fun testListAdmin() = runBlocking {
+        val getDomainsInAssociationsUseCase = mockk<IListChildModelSuspendUseCase<DomainInAssociation, String>>()
+        val call = mockk<ApplicationCall>()
+        coEvery { getDomainsInAssociationsUseCase(association.id) } returns listOf(domain)
+        val controller = DomainsInAssociationsController(
+            mockk(),
+            mockk(),
+            getDomainsInAssociationsUseCase,
+            mockk(),
+            mockk(),
+            mockk(),
+            mockk()
+        )
+        every { call.request.path() } returns "/admin/associations/id/domains"
         assertEquals(listOf(domain), controller.list(call, association))
     }
 
@@ -98,6 +124,7 @@ class DomainsInAssociationsControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getDomainUseCase(domain.domain, association.id) } returns domain
         val controller = DomainsInAssociationsController(
+            mockk(),
             mockk(),
             mockk(),
             mockk(),
@@ -114,6 +141,7 @@ class DomainsInAssociationsControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getDomainUseCase(domain.domain, association.id) } returns null
         val controller = DomainsInAssociationsController(
+            mockk(),
             mockk(),
             mockk(),
             mockk(),
@@ -144,6 +172,7 @@ class DomainsInAssociationsControllerTest {
             checkPermissionUseCase,
             mockk(),
             mockk(),
+            mockk(),
             createDomainUseCase,
             mockk()
         )
@@ -161,6 +190,7 @@ class DomainsInAssociationsControllerTest {
         val controller = DomainsInAssociationsController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             mockk(),
             mockk(),
@@ -189,6 +219,7 @@ class DomainsInAssociationsControllerTest {
             checkPermissionUseCase,
             mockk(),
             mockk(),
+            mockk(),
             createDomainUseCase,
             mockk()
         )
@@ -203,6 +234,7 @@ class DomainsInAssociationsControllerTest {
     fun testUpdate() = runBlocking {
         val call = mockk<ApplicationCall>()
         val controller = DomainsInAssociationsController(
+            mockk(),
             mockk(),
             mockk(),
             mockk(),
@@ -232,6 +264,7 @@ class DomainsInAssociationsControllerTest {
             requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
+            mockk(),
             getDomainUseCase,
             mockk(),
             deleteDomainUseCase
@@ -252,6 +285,7 @@ class DomainsInAssociationsControllerTest {
         val controller = DomainsInAssociationsController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             mockk(),
             mockk(),
@@ -278,6 +312,7 @@ class DomainsInAssociationsControllerTest {
         val controller = DomainsInAssociationsController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             getDomainUseCase,
             mockk(),

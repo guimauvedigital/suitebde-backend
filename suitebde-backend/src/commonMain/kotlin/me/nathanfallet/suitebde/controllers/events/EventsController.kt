@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.controllers.events
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
@@ -13,6 +14,7 @@ import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
@@ -20,7 +22,8 @@ import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 class EventsController(
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
-    private val getEventsInAssociationUseCase: IListSliceChildModelSuspendUseCase<Event, String>,
+    private val getEventsInAssociationUseCase: IListChildModelSuspendUseCase<Event, String>,
+    private val getEventsInAssociationSlicedUseCase: IListSliceChildModelSuspendUseCase<Event, String>,
     private val getEventUseCase: IGetChildModelSuspendUseCase<Event, String, String>,
     private val createEventUseCase: ICreateChildModelSuspendUseCase<Event, CreateEventPayload, String>,
     private val updateEventUseCase: IUpdateChildModelSuspendUseCase<Event, String, UpdateEventPayload, String>,
@@ -60,7 +63,8 @@ class EventsController(
     }
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<Event> {
-        return getEventsInAssociationUseCase(
+        if (call.request.path().contains("/admin/")) return getEventsInAssociationUseCase(parent.id)
+        return getEventsInAssociationSlicedUseCase(
             call.parameters["limit"]?.toLongOrNull() ?: 25,
             call.parameters["offset"]?.toLongOrNull() ?: 0,
             parent.id

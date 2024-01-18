@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.controllers.web
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -20,6 +21,7 @@ import me.nathanfallet.suitebde.usecases.web.IGetWebPageByUrlUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
@@ -48,11 +50,12 @@ class WebPagesControllerTest {
     fun testList() = runBlocking {
         val getWebPagesUseCase = mockk<IListSliceChildModelSuspendUseCase<WebPage, String>>()
         val controller = WebPagesController(
-            mockk(), mockk(), getWebPagesUseCase, mockk(),
+            mockk(), mockk(), mockk(), getWebPagesUseCase, mockk(),
             mockk(), mockk(), mockk(), mockk(), mockk()
         )
         val call = mockk<ApplicationCall>()
         coEvery { getWebPagesUseCase(10, 5, page.associationId) } returns listOf(page)
+        every { call.request.path() } returns "/api/v1/associations/id/webpages"
         every { call.parameters["limit"] } returns "10"
         every { call.parameters["offset"] } returns "5"
         assertEquals(listOf(page), controller.list(call, association))
@@ -62,11 +65,12 @@ class WebPagesControllerTest {
     fun testListDefaultLimitOffset() = runBlocking {
         val getWebPagesUseCase = mockk<IListSliceChildModelSuspendUseCase<WebPage, String>>()
         val controller = WebPagesController(
-            mockk(), mockk(), getWebPagesUseCase, mockk(),
+            mockk(), mockk(), mockk(), getWebPagesUseCase, mockk(),
             mockk(), mockk(), mockk(), mockk(), mockk()
         )
         val call = mockk<ApplicationCall>()
         coEvery { getWebPagesUseCase(25, 0, page.associationId) } returns listOf(page)
+        every { call.request.path() } returns "/api/v1/associations/id/webpages"
         every { call.parameters["limit"] } returns null
         every { call.parameters["offset"] } returns null
         assertEquals(listOf(page), controller.list(call, association))
@@ -76,13 +80,27 @@ class WebPagesControllerTest {
     fun testListInvalidLimitOffset() = runBlocking {
         val getWebPagesUseCase = mockk<IListSliceChildModelSuspendUseCase<WebPage, String>>()
         val controller = WebPagesController(
-            mockk(), mockk(), getWebPagesUseCase, mockk(),
+            mockk(), mockk(), mockk(), getWebPagesUseCase, mockk(),
             mockk(), mockk(), mockk(), mockk(), mockk()
         )
         val call = mockk<ApplicationCall>()
         coEvery { getWebPagesUseCase(25, 0, page.associationId) } returns listOf(page)
+        every { call.request.path() } returns "/api/v1/associations/id/webpages"
         every { call.parameters["limit"] } returns "a"
         every { call.parameters["offset"] } returns "b"
+        assertEquals(listOf(page), controller.list(call, association))
+    }
+
+    @Test
+    fun testListAdmin() = runBlocking {
+        val getWebPagesUseCase = mockk<IListChildModelSuspendUseCase<WebPage, String>>()
+        val controller = WebPagesController(
+            mockk(), mockk(), getWebPagesUseCase, mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk()
+        )
+        val call = mockk<ApplicationCall>()
+        coEvery { getWebPagesUseCase(page.associationId) } returns listOf(page)
+        every { call.request.path() } returns "/admin/webpages"
         assertEquals(listOf(page), controller.list(call, association))
     }
 
@@ -90,7 +108,7 @@ class WebPagesControllerTest {
     fun testGet() = runBlocking {
         val getWebPageUseCase = mockk<IGetChildModelSuspendUseCase<WebPage, String, String>>()
         val controller = WebPagesController(
-            mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(),
             mockk(), getWebPageUseCase, mockk(), mockk(), mockk()
         )
         coEvery { getWebPageUseCase(page.id, page.associationId) } returns page
@@ -101,7 +119,7 @@ class WebPagesControllerTest {
     fun testGetNotFound() = runBlocking {
         val getWebPageUseCase = mockk<IGetChildModelSuspendUseCase<WebPage, String, String>>()
         val controller = WebPagesController(
-            mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(),
             mockk(), getWebPageUseCase, mockk(), mockk(), mockk()
         )
         coEvery { getWebPageUseCase(page.id, page.associationId) } returns null
@@ -116,7 +134,7 @@ class WebPagesControllerTest {
     fun testGetByUrl() = runBlocking {
         val getWebPageByUrlUseCase = mockk<IGetWebPageByUrlUseCase>()
         val controller = WebPagesController(
-            mockk(), mockk(), mockk(), getWebPageByUrlUseCase, mockk(),
+            mockk(), mockk(), mockk(), mockk(), getWebPageByUrlUseCase, mockk(),
             mockk(), mockk(), mockk(), mockk()
         )
         coEvery { getWebPageByUrlUseCase(page.url, page.associationId) } returns page
@@ -127,7 +145,7 @@ class WebPagesControllerTest {
     fun testGetByUrlNotFound() = runBlocking {
         val getWebPageByUrlUseCase = mockk<IGetWebPageByUrlUseCase>()
         val controller = WebPagesController(
-            mockk(), mockk(), mockk(), getWebPageByUrlUseCase, mockk(),
+            mockk(), mockk(), mockk(), mockk(), getWebPageByUrlUseCase, mockk(),
             mockk(), mockk(), mockk(), mockk()
         )
         coEvery { getWebPageByUrlUseCase(page.url, page.associationId) } returns null
@@ -142,7 +160,7 @@ class WebPagesControllerTest {
     fun testGetHome() = runBlocking {
         val getHomeWebPageUseCase = mockk<IGetHomeWebPageUseCase>()
         val controller = WebPagesController(
-            mockk(), mockk(), mockk(), mockk(), getHomeWebPageUseCase,
+            mockk(), mockk(), mockk(), mockk(), mockk(), getHomeWebPageUseCase,
             mockk(), mockk(), mockk(), mockk()
         )
         coEvery { getHomeWebPageUseCase(homePage.associationId) } returns homePage
@@ -153,7 +171,7 @@ class WebPagesControllerTest {
     fun testGetHomeNotFound() = runBlocking {
         val getHomeWebPageUseCase = mockk<IGetHomeWebPageUseCase>()
         val controller = WebPagesController(
-            mockk(), mockk(), mockk(), mockk(), getHomeWebPageUseCase,
+            mockk(), mockk(), mockk(), mockk(), mockk(), getHomeWebPageUseCase,
             mockk(), mockk(), mockk(), mockk()
         )
         coEvery { getHomeWebPageUseCase(homePage.associationId) } returns null
@@ -177,6 +195,7 @@ class WebPagesControllerTest {
             mockk(),
             mockk(),
             mockk(),
+            mockk(),
             createWebPageUseCase,
             mockk(),
             mockk()
@@ -195,6 +214,7 @@ class WebPagesControllerTest {
         val controller = WebPagesController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             mockk(),
             mockk(),
@@ -226,6 +246,7 @@ class WebPagesControllerTest {
             mockk(),
             mockk(),
             mockk(),
+            mockk(),
             createWebPageUseCase,
             mockk(),
             mockk()
@@ -251,6 +272,7 @@ class WebPagesControllerTest {
         val controller = WebPagesController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             mockk(),
             mockk(),
@@ -285,6 +307,7 @@ class WebPagesControllerTest {
             mockk(),
             mockk(),
             mockk(),
+            mockk(),
             getWebPageUseCase,
             mockk(),
             updateWebPageUseCase,
@@ -310,6 +333,7 @@ class WebPagesControllerTest {
         val controller = WebPagesController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             mockk(),
             mockk(),
@@ -342,6 +366,7 @@ class WebPagesControllerTest {
             mockk(),
             mockk(),
             mockk(),
+            mockk(),
             mockk()
         )
         val payload = WebPagePayload("url", "title2", "content2", true)
@@ -364,6 +389,7 @@ class WebPagesControllerTest {
         val controller = WebPagesController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             mockk(),
             mockk(),
@@ -395,6 +421,7 @@ class WebPagesControllerTest {
             mockk(),
             mockk(),
             mockk(),
+            mockk(),
             getWebPageUseCase,
             mockk(),
             mockk(),
@@ -422,6 +449,7 @@ class WebPagesControllerTest {
             mockk(),
             mockk(),
             mockk(),
+            mockk(),
             getWebPageUseCase,
             mockk(),
             mockk(),
@@ -444,6 +472,7 @@ class WebPagesControllerTest {
         val controller = WebPagesController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             mockk(),
             mockk(),

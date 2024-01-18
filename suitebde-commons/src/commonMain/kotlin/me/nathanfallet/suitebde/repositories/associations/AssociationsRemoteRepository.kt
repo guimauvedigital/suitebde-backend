@@ -18,8 +18,8 @@ class AssociationsRemoteRepository(
     prefix = "/api/v1"
 ), IAssociationsRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long): List<Association> {
-        return list(limit, offset, null)
+    override suspend fun list(): List<Association> {
+        return list(null)
     }
 
     override suspend fun get(id: String): Association? {

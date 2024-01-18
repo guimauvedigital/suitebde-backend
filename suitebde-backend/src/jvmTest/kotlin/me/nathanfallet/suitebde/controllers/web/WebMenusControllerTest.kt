@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.controllers.web
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -19,6 +20,7 @@ import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
@@ -45,11 +47,12 @@ class WebMenusControllerTest {
     fun testList() = runBlocking {
         val getWebMenusUseCase = mockk<IListSliceChildModelSuspendUseCase<WebMenu, String>>()
         val controller = WebMenusController(
-            mockk(), mockk(), getWebMenusUseCase, mockk(),
+            mockk(), mockk(), mockk(), getWebMenusUseCase, mockk(),
             mockk(), mockk(), mockk()
         )
         val call = mockk<ApplicationCall>()
         coEvery { getWebMenusUseCase(10, 5, menu.associationId) } returns listOf(menu)
+        every { call.request.path() } returns "/api/v1/associations/id/webmenus"
         every { call.parameters["limit"] } returns "10"
         every { call.parameters["offset"] } returns "5"
         assertEquals(listOf(menu), controller.list(call, association))
@@ -59,11 +62,12 @@ class WebMenusControllerTest {
     fun testListDefaultLimitOffset() = runBlocking {
         val getWebMenusUseCase = mockk<IListSliceChildModelSuspendUseCase<WebMenu, String>>()
         val controller = WebMenusController(
-            mockk(), mockk(), getWebMenusUseCase, mockk(),
+            mockk(), mockk(), mockk(), getWebMenusUseCase, mockk(),
             mockk(), mockk(), mockk()
         )
         val call = mockk<ApplicationCall>()
         coEvery { getWebMenusUseCase(25, 0, menu.associationId) } returns listOf(menu)
+        every { call.request.path() } returns "/api/v1/associations/id/webmenus"
         every { call.parameters["limit"] } returns null
         every { call.parameters["offset"] } returns null
         assertEquals(listOf(menu), controller.list(call, association))
@@ -73,13 +77,27 @@ class WebMenusControllerTest {
     fun testListInvalidLimitOffset() = runBlocking {
         val getWebMenusUseCase = mockk<IListSliceChildModelSuspendUseCase<WebMenu, String>>()
         val controller = WebMenusController(
-            mockk(), mockk(), getWebMenusUseCase, mockk(),
+            mockk(), mockk(), mockk(), getWebMenusUseCase, mockk(),
             mockk(), mockk(), mockk()
         )
         val call = mockk<ApplicationCall>()
         coEvery { getWebMenusUseCase(25, 0, menu.associationId) } returns listOf(menu)
+        every { call.request.path() } returns "/api/v1/associations/id/webmenus"
         every { call.parameters["limit"] } returns "a"
         every { call.parameters["offset"] } returns "b"
+        assertEquals(listOf(menu), controller.list(call, association))
+    }
+
+    @Test
+    fun testListAdmin() = runBlocking {
+        val getWebMenusUseCase = mockk<IListChildModelSuspendUseCase<WebMenu, String>>()
+        val controller = WebMenusController(
+            mockk(), mockk(), getWebMenusUseCase, mockk(), mockk(),
+            mockk(), mockk(), mockk()
+        )
+        val call = mockk<ApplicationCall>()
+        coEvery { getWebMenusUseCase(menu.associationId) } returns listOf(menu)
+        every { call.request.path() } returns "/admin/webmenus"
         assertEquals(listOf(menu), controller.list(call, association))
     }
 
@@ -87,7 +105,7 @@ class WebMenusControllerTest {
     fun testGet() = runBlocking {
         val getWebMenuUseCase = mockk<IGetChildModelSuspendUseCase<WebMenu, String, String>>()
         val controller = WebMenusController(
-            mockk(), mockk(), mockk(), getWebMenuUseCase,
+            mockk(), mockk(), mockk(), mockk(), getWebMenuUseCase,
             mockk(), mockk(), mockk()
         )
         coEvery { getWebMenuUseCase(menu.id, menu.associationId) } returns menu
@@ -98,7 +116,7 @@ class WebMenusControllerTest {
     fun testGetNotFound() = runBlocking {
         val getWebMenuUseCase = mockk<IGetChildModelSuspendUseCase<WebMenu, String, String>>()
         val controller = WebMenusController(
-            mockk(), mockk(), mockk(), getWebMenuUseCase,
+            mockk(), mockk(), mockk(), mockk(), getWebMenuUseCase,
             mockk(), mockk(), mockk()
         )
         coEvery { getWebMenuUseCase(menu.id, menu.associationId) } returns null
@@ -116,7 +134,7 @@ class WebMenusControllerTest {
         val createWebMenuUseCase = mockk<ICreateChildModelSuspendUseCase<WebMenu, CreateWebMenuPayload, String>>()
         val controller = WebMenusController(
             requireUserForCallUseCase, checkPermissionUseCase, mockk(),
-            mockk(), createWebMenuUseCase, mockk(), mockk()
+            mockk(), mockk(), createWebMenuUseCase, mockk(), mockk()
         )
         val payload = CreateWebMenuPayload("url", "title", 0)
         coEvery { requireUserForCallUseCase(any()) } returns user
@@ -131,7 +149,7 @@ class WebMenusControllerTest {
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val controller = WebMenusController(
             requireUserForCallUseCase, checkPermissionUseCase, mockk(),
-            mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk()
         )
         val payload = CreateWebMenuPayload("url", "title", 0)
         coEvery { requireUserForCallUseCase(any()) } returns user
@@ -150,7 +168,7 @@ class WebMenusControllerTest {
         val createWebMenuUseCase = mockk<ICreateChildModelSuspendUseCase<WebMenu, CreateWebMenuPayload, String>>()
         val controller = WebMenusController(
             requireUserForCallUseCase, checkPermissionUseCase, mockk(),
-            mockk(), createWebMenuUseCase, mockk(), mockk()
+            mockk(), mockk(), createWebMenuUseCase, mockk(), mockk()
         )
         val payload = CreateWebMenuPayload("url", "title", 0)
         coEvery { requireUserForCallUseCase(any()) } returns user
@@ -172,7 +190,7 @@ class WebMenusControllerTest {
             mockk<IUpdateChildModelSuspendUseCase<WebMenu, String, UpdateWebMenuPayload, String>>()
         val controller = WebMenusController(
             requireUserForCallUseCase, checkPermissionUseCase, mockk(),
-            getWebMenuUseCase, mockk(), updateWebMenuUseCase, mockk()
+            mockk(), getWebMenuUseCase, mockk(), updateWebMenuUseCase, mockk()
         )
         val payload = UpdateWebMenuPayload("url", "title", 0)
         coEvery { requireUserForCallUseCase(any()) } returns user
@@ -191,7 +209,7 @@ class WebMenusControllerTest {
             mockk<IUpdateChildModelSuspendUseCase<WebMenu, String, UpdateWebMenuPayload, String>>()
         val controller = WebMenusController(
             requireUserForCallUseCase, checkPermissionUseCase, mockk(),
-            getWebMenuUseCase, mockk(), updateWebMenuUseCase, mockk()
+            mockk(), getWebMenuUseCase, mockk(), updateWebMenuUseCase, mockk()
         )
         val payload = UpdateWebMenuPayload("url", "title", 0)
         coEvery { requireUserForCallUseCase(any()) } returns user
@@ -212,7 +230,7 @@ class WebMenusControllerTest {
         val getWebMenuUseCase = mockk<IGetChildModelSuspendUseCase<WebMenu, String, String>>()
         val controller = WebMenusController(
             requireUserForCallUseCase, checkPermissionUseCase, mockk(),
-            getWebMenuUseCase, mockk(), mockk(), mockk()
+            mockk(), getWebMenuUseCase, mockk(), mockk(), mockk()
         )
         val payload = UpdateWebMenuPayload("url", "title", 0)
         coEvery { requireUserForCallUseCase(any()) } returns user
@@ -231,7 +249,7 @@ class WebMenusControllerTest {
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val controller = WebMenusController(
             requireUserForCallUseCase, checkPermissionUseCase, mockk(),
-            mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk()
         )
         val payload = UpdateWebMenuPayload("url", "title", 0)
         coEvery { requireUserForCallUseCase(any()) } returns user
@@ -251,7 +269,7 @@ class WebMenusControllerTest {
         val deleteWebMenuUseCase = mockk<IDeleteChildModelSuspendUseCase<WebMenu, String, String>>()
         val controller = WebMenusController(
             requireUserForCallUseCase, checkPermissionUseCase, mockk(),
-            getWebMenuUseCase, mockk(), mockk(), deleteWebMenuUseCase
+            mockk(), getWebMenuUseCase, mockk(), mockk(), deleteWebMenuUseCase
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_DELETE inAssociation association) } returns true
@@ -271,7 +289,7 @@ class WebMenusControllerTest {
         val deleteWebMenuUseCase = mockk<IDeleteChildModelSuspendUseCase<WebMenu, String, String>>()
         val controller = WebMenusController(
             requireUserForCallUseCase, checkPermissionUseCase, mockk(),
-            getWebMenuUseCase, mockk(), mockk(), deleteWebMenuUseCase
+            mockk(), getWebMenuUseCase, mockk(), mockk(), deleteWebMenuUseCase
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_DELETE inAssociation association) } returns true
@@ -291,7 +309,7 @@ class WebMenusControllerTest {
         val getWebMenuUseCase = mockk<IGetChildModelSuspendUseCase<WebMenu, String, String>>()
         val controller = WebMenusController(
             requireUserForCallUseCase, checkPermissionUseCase, mockk(),
-            getWebMenuUseCase, mockk(), mockk(), mockk()
+            mockk(), getWebMenuUseCase, mockk(), mockk(), mockk()
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_DELETE inAssociation association) } returns true
@@ -309,7 +327,7 @@ class WebMenusControllerTest {
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val controller = WebMenusController(
             requireUserForCallUseCase, checkPermissionUseCase, mockk(),
-            mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk()
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_DELETE inAssociation association) } returns false

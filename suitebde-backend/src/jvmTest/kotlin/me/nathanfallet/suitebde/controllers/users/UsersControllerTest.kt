@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.controllers.users
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -15,6 +16,7 @@ import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
@@ -53,10 +55,12 @@ class UsersControllerTest {
         val controller = UsersController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             getUsersInAssociationUseCase,
             mockk(),
             mockk()
         )
+        every { call.request.path() } returns "/api/v1/associations/id/users"
         every { call.parameters["limit"] } returns "10"
         every { call.parameters["offset"] } returns "5"
         assertEquals(listOf(targetUser), controller.list(call, association))
@@ -74,10 +78,12 @@ class UsersControllerTest {
         val controller = UsersController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             getUsersInAssociationUseCase,
             mockk(),
             mockk()
         )
+        every { call.request.path() } returns "/api/v1/associations/id/users"
         every { call.parameters["limit"] } returns null
         every { call.parameters["offset"] } returns null
         assertEquals(listOf(targetUser), controller.list(call, association))
@@ -95,12 +101,35 @@ class UsersControllerTest {
         val controller = UsersController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             getUsersInAssociationUseCase,
             mockk(),
             mockk()
         )
+        every { call.request.path() } returns "/api/v1/associations/id/users"
         every { call.parameters["limit"] } returns "a"
         every { call.parameters["offset"] } returns "b"
+        assertEquals(listOf(targetUser), controller.list(call, association))
+    }
+
+    @Test
+    fun testListAdmin() = runBlocking {
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
+        val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
+        val getUsersInAssociationUseCase = mockk<IListChildModelSuspendUseCase<User, String>>()
+        val call = mockk<ApplicationCall>()
+        coEvery { requireUserForCallUseCase(call) } returns user
+        coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns true
+        coEvery { getUsersInAssociationUseCase(association.id) } returns listOf(targetUser)
+        val controller = UsersController(
+            requireUserForCallUseCase,
+            checkPermissionUseCase,
+            getUsersInAssociationUseCase,
+            mockk(),
+            mockk(),
+            mockk()
+        )
+        every { call.request.path() } returns "/admin/users"
         assertEquals(listOf(targetUser), controller.list(call, association))
     }
 
@@ -114,6 +143,7 @@ class UsersControllerTest {
         val controller = UsersController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             mockk(),
             mockk()
@@ -138,6 +168,7 @@ class UsersControllerTest {
             requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
+            mockk(),
             getUserUseCase,
             mockk()
         )
@@ -156,6 +187,7 @@ class UsersControllerTest {
         val controller = UsersController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             getUserUseCase,
             mockk()
@@ -177,6 +209,7 @@ class UsersControllerTest {
         val controller = UsersController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             mockk(),
             mockk()
@@ -201,6 +234,7 @@ class UsersControllerTest {
             requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
+            mockk(),
             getUserUseCase,
             mockk()
         )
@@ -210,7 +244,7 @@ class UsersControllerTest {
     @Test
     fun testCreate() = runBlocking {
         val call = mockk<ApplicationCall>()
-        val controller = UsersController(mockk(), mockk(), mockk(), mockk(), mockk())
+        val controller = UsersController(mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
         val exception = assertFailsWith(ControllerException::class) {
             controller.create(
                 call, association,
@@ -243,6 +277,7 @@ class UsersControllerTest {
             requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
+            mockk(),
             getUserUseCase,
             updateUserUseCase
         )
@@ -272,6 +307,7 @@ class UsersControllerTest {
             requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
+            mockk(),
             getUserUseCase,
             updateUserUseCase
         )
@@ -294,6 +330,7 @@ class UsersControllerTest {
             requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
+            mockk(),
             getUserUseCase,
             updateUserUseCase
         )
@@ -312,6 +349,7 @@ class UsersControllerTest {
         val controller = UsersController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             getUserUseCase,
             mockk()
@@ -333,6 +371,7 @@ class UsersControllerTest {
         val controller = UsersController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             mockk(),
             mockk()
@@ -366,6 +405,7 @@ class UsersControllerTest {
             requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
+            mockk(),
             getUserUseCase,
             updateUserUseCase
         )
@@ -388,6 +428,7 @@ class UsersControllerTest {
             requireUserForCallUseCase,
             checkPermissionUseCase,
             mockk(),
+            mockk(),
             getUserUseCase,
             updateUserUseCase
         )
@@ -401,7 +442,7 @@ class UsersControllerTest {
     @Test
     fun testDelete() = runBlocking {
         val call = mockk<ApplicationCall>()
-        val controller = UsersController(mockk(), mockk(), mockk(), mockk(), mockk())
+        val controller = UsersController(mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
         val exception = assertFailsWith(ControllerException::class) {
             controller.delete(call, association, "id")
         }

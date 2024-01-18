@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.controllers.associations
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
@@ -12,20 +13,23 @@ import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class DomainsInAssociationsController(
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
-    private val getDomainsInAssociationsUseCase: IListSliceChildModelSuspendUseCase<DomainInAssociation, String>,
+    private val getDomainsInAssociationsUseCase: IListChildModelSuspendUseCase<DomainInAssociation, String>,
+    private val getDomainsInAssociationsSlicedUseCase: IListSliceChildModelSuspendUseCase<DomainInAssociation, String>,
     private val getDomainUseCase: IGetChildModelSuspendUseCase<DomainInAssociation, String, String>,
     private val createDomainUseCase: ICreateChildModelSuspendUseCase<DomainInAssociation, CreateDomainInAssociationPayload, String>,
     private val deleteDomainUseCase: IDeleteChildModelSuspendUseCase<DomainInAssociation, String, String>,
 ) : IChildModelController<DomainInAssociation, String, CreateDomainInAssociationPayload, Unit, Association, String> {
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<DomainInAssociation> {
-        return getDomainsInAssociationsUseCase(
+        if (call.request.path().contains("/admin/")) return getDomainsInAssociationsUseCase(parent.id)
+        return getDomainsInAssociationsSlicedUseCase(
             call.parameters["limit"]?.toLongOrNull() ?: 25,
             call.parameters["offset"]?.toLongOrNull() ?: 0,
             parent.id
