@@ -23,8 +23,8 @@ class WebMenusRemoteRepository(
     prefix = "/api/v1"
 ), IWebMenusRemoteRepository {
 
-    override suspend fun list(associationId: String): List<WebMenu> {
-        return list(RecursiveId<Association, String, Unit>(associationId), null)
+    override suspend fun list(limit: Long, offset: Long, associationId: String): List<WebMenu> {
+        return list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
     }
 
     override suspend fun get(id: String, associationId: String): WebMenu? {

@@ -3,6 +3,7 @@ package me.nathanfallet.suitebde.controllers.users
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.mockk.coEvery
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
@@ -14,7 +15,7 @@ import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
-import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import kotlin.test.Test
@@ -41,14 +42,14 @@ class UsersControllerTest {
     )
 
     @Test
-    fun testGetAll() = runBlocking {
+    fun testList() = runBlocking {
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
-        val getUsersInAssociationUseCase = mockk<IListChildModelSuspendUseCase<User, String>>()
+        val getUsersInAssociationUseCase = mockk<IListSliceChildModelSuspendUseCase<User, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns true
-        coEvery { getUsersInAssociationUseCase(association.id) } returns listOf(targetUser)
+        coEvery { getUsersInAssociationUseCase(10, 5, association.id) } returns listOf(targetUser)
         val controller = UsersController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
@@ -56,6 +57,50 @@ class UsersControllerTest {
             mockk(),
             mockk()
         )
+        every { call.parameters["limit"] } returns "10"
+        every { call.parameters["offset"] } returns "5"
+        assertEquals(listOf(targetUser), controller.list(call, association))
+    }
+
+    @Test
+    fun testListDefaultLimitOffset() = runBlocking {
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
+        val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
+        val getUsersInAssociationUseCase = mockk<IListSliceChildModelSuspendUseCase<User, String>>()
+        val call = mockk<ApplicationCall>()
+        coEvery { requireUserForCallUseCase(call) } returns user
+        coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns true
+        coEvery { getUsersInAssociationUseCase(25, 0, association.id) } returns listOf(targetUser)
+        val controller = UsersController(
+            requireUserForCallUseCase,
+            checkPermissionUseCase,
+            getUsersInAssociationUseCase,
+            mockk(),
+            mockk()
+        )
+        every { call.parameters["limit"] } returns null
+        every { call.parameters["offset"] } returns null
+        assertEquals(listOf(targetUser), controller.list(call, association))
+    }
+
+    @Test
+    fun testListInvalidLimitOffset() = runBlocking {
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
+        val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
+        val getUsersInAssociationUseCase = mockk<IListSliceChildModelSuspendUseCase<User, String>>()
+        val call = mockk<ApplicationCall>()
+        coEvery { requireUserForCallUseCase(call) } returns user
+        coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns true
+        coEvery { getUsersInAssociationUseCase(25, 0, association.id) } returns listOf(targetUser)
+        val controller = UsersController(
+            requireUserForCallUseCase,
+            checkPermissionUseCase,
+            getUsersInAssociationUseCase,
+            mockk(),
+            mockk()
+        )
+        every { call.parameters["limit"] } returns "a"
+        every { call.parameters["offset"] } returns "b"
         assertEquals(listOf(targetUser), controller.list(call, association))
     }
 

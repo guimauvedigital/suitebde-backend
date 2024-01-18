@@ -13,14 +13,14 @@ import me.nathanfallet.suitebde.usecases.web.IGetWebPageByUrlUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
-import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class WebPagesController(
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
-    private val getWebPagesUseCase: IListChildModelSuspendUseCase<WebPage, String>,
+    private val getWebPagesUseCase: IListSliceChildModelSuspendUseCase<WebPage, String>,
     private val getWebPageByUrlUseCase: IGetWebPageByUrlUseCase,
     private val getHomeWebPageUseCase: IGetHomeWebPageUseCase,
     private val getWebPageUseCase: IGetChildModelSuspendUseCase<WebPage, String, String>,
@@ -30,7 +30,11 @@ class WebPagesController(
 ) : IWebPagesController {
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<WebPage> {
-        return getWebPagesUseCase(parent.id)
+        return getWebPagesUseCase(
+            call.parameters["limit"]?.toLongOrNull() ?: 25,
+            call.parameters["offset"]?.toLongOrNull() ?: 0,
+            parent.id
+        )
     }
 
     override suspend fun get(call: ApplicationCall, parent: Association, id: String): WebPage {

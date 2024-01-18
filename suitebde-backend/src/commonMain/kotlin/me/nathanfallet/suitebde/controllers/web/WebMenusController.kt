@@ -13,22 +13,26 @@ import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
-import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class WebMenusController(
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
-    private val getWebMenusUseCase: IListChildModelSuspendUseCase<WebMenu, String>,
+    private val getWebMenusUseCase: IListSliceChildModelSuspendUseCase<WebMenu, String>,
     private val getWebMenuUseCase: IGetChildModelSuspendUseCase<WebMenu, String, String>,
     private val createWebMenuUseCase: ICreateChildModelSuspendUseCase<WebMenu, CreateWebMenuPayload, String>,
     private val updateWebMenuUseCase: IUpdateChildModelSuspendUseCase<WebMenu, String, UpdateWebMenuPayload, String>,
-    private val deleteWebMenuUseCase: IDeleteChildModelSuspendUseCase<WebMenu, String, String>
+    private val deleteWebMenuUseCase: IDeleteChildModelSuspendUseCase<WebMenu, String, String>,
 ) : IChildModelController<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String> {
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<WebMenu> {
-        return getWebMenusUseCase(parent.id)
+        return getWebMenusUseCase(
+            call.parameters["limit"]?.toLongOrNull() ?: 25,
+            call.parameters["offset"]?.toLongOrNull() ?: 0,
+            parent.id
+        )
     }
 
     override suspend fun get(call: ApplicationCall, parent: Association, id: String): WebMenu {
@@ -52,7 +56,7 @@ class WebMenusController(
         call: ApplicationCall,
         parent: Association,
         id: String,
-        payload: UpdateWebMenuPayload
+        payload: UpdateWebMenuPayload,
     ): WebMenu {
         requireUserForCallUseCase(call).takeIf {
             checkPermissionUseCase(it, Permission.WEBMENUS_UPDATE inAssociation parent)

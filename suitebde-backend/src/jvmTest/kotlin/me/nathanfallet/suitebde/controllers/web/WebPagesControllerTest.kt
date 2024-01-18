@@ -1,8 +1,10 @@
 package me.nathanfallet.suitebde.controllers.web
 
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
@@ -18,7 +20,7 @@ import me.nathanfallet.suitebde.usecases.web.IGetWebPageByUrlUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
-import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import kotlin.test.Test
@@ -43,14 +45,45 @@ class WebPagesControllerTest {
     )
 
     @Test
-    fun testGetAll() = runBlocking {
-        val getWebPagesUseCase = mockk<IListChildModelSuspendUseCase<WebPage, String>>()
+    fun testList() = runBlocking {
+        val getWebPagesUseCase = mockk<IListSliceChildModelSuspendUseCase<WebPage, String>>()
         val controller = WebPagesController(
             mockk(), mockk(), getWebPagesUseCase, mockk(),
             mockk(), mockk(), mockk(), mockk(), mockk()
         )
-        coEvery { getWebPagesUseCase(page.associationId) } returns listOf(page)
-        assertEquals(listOf(page), controller.list(mockk(), association))
+        val call = mockk<ApplicationCall>()
+        coEvery { getWebPagesUseCase(10, 5, page.associationId) } returns listOf(page)
+        every { call.parameters["limit"] } returns "10"
+        every { call.parameters["offset"] } returns "5"
+        assertEquals(listOf(page), controller.list(call, association))
+    }
+
+    @Test
+    fun testListDefaultLimitOffset() = runBlocking {
+        val getWebPagesUseCase = mockk<IListSliceChildModelSuspendUseCase<WebPage, String>>()
+        val controller = WebPagesController(
+            mockk(), mockk(), getWebPagesUseCase, mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk()
+        )
+        val call = mockk<ApplicationCall>()
+        coEvery { getWebPagesUseCase(25, 0, page.associationId) } returns listOf(page)
+        every { call.parameters["limit"] } returns null
+        every { call.parameters["offset"] } returns null
+        assertEquals(listOf(page), controller.list(call, association))
+    }
+
+    @Test
+    fun testListInvalidLimitOffset() = runBlocking {
+        val getWebPagesUseCase = mockk<IListSliceChildModelSuspendUseCase<WebPage, String>>()
+        val controller = WebPagesController(
+            mockk(), mockk(), getWebPagesUseCase, mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk()
+        )
+        val call = mockk<ApplicationCall>()
+        coEvery { getWebPagesUseCase(25, 0, page.associationId) } returns listOf(page)
+        every { call.parameters["limit"] } returns "a"
+        every { call.parameters["offset"] } returns "b"
+        assertEquals(listOf(page), controller.list(call, association))
     }
 
     @Test

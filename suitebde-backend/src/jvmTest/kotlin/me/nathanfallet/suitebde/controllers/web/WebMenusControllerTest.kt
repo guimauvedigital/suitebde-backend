@@ -1,8 +1,10 @@
 package me.nathanfallet.suitebde.controllers.web
 
 import io.ktor.http.*
+import io.ktor.server.application.*
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
@@ -17,7 +19,7 @@ import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
-import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import kotlin.test.Test
@@ -40,14 +42,45 @@ class WebMenusControllerTest {
     )
 
     @Test
-    fun testGetAll() = runBlocking {
-        val getWebMenusUseCase = mockk<IListChildModelSuspendUseCase<WebMenu, String>>()
+    fun testList() = runBlocking {
+        val getWebMenusUseCase = mockk<IListSliceChildModelSuspendUseCase<WebMenu, String>>()
         val controller = WebMenusController(
             mockk(), mockk(), getWebMenusUseCase, mockk(),
             mockk(), mockk(), mockk()
         )
-        coEvery { getWebMenusUseCase(menu.associationId) } returns listOf(menu)
-        assertEquals(listOf(menu), controller.list(mockk(), association))
+        val call = mockk<ApplicationCall>()
+        coEvery { getWebMenusUseCase(10, 5, menu.associationId) } returns listOf(menu)
+        every { call.parameters["limit"] } returns "10"
+        every { call.parameters["offset"] } returns "5"
+        assertEquals(listOf(menu), controller.list(call, association))
+    }
+
+    @Test
+    fun testListDefaultLimitOffset() = runBlocking {
+        val getWebMenusUseCase = mockk<IListSliceChildModelSuspendUseCase<WebMenu, String>>()
+        val controller = WebMenusController(
+            mockk(), mockk(), getWebMenusUseCase, mockk(),
+            mockk(), mockk(), mockk()
+        )
+        val call = mockk<ApplicationCall>()
+        coEvery { getWebMenusUseCase(25, 0, menu.associationId) } returns listOf(menu)
+        every { call.parameters["limit"] } returns null
+        every { call.parameters["offset"] } returns null
+        assertEquals(listOf(menu), controller.list(call, association))
+    }
+
+    @Test
+    fun testListInvalidLimitOffset() = runBlocking {
+        val getWebMenusUseCase = mockk<IListSliceChildModelSuspendUseCase<WebMenu, String>>()
+        val controller = WebMenusController(
+            mockk(), mockk(), getWebMenusUseCase, mockk(),
+            mockk(), mockk(), mockk()
+        )
+        val call = mockk<ApplicationCall>()
+        coEvery { getWebMenusUseCase(25, 0, menu.associationId) } returns listOf(menu)
+        every { call.parameters["limit"] } returns "a"
+        every { call.parameters["offset"] } returns "b"
+        assertEquals(listOf(menu), controller.list(call, association))
     }
 
     @Test

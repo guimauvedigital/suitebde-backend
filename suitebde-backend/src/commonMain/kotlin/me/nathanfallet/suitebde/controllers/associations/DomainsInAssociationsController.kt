@@ -12,20 +12,24 @@ import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
-import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class DomainsInAssociationsController(
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
-    private val getDomainsInAssociationsUseCase: IListChildModelSuspendUseCase<DomainInAssociation, String>,
+    private val getDomainsInAssociationsUseCase: IListSliceChildModelSuspendUseCase<DomainInAssociation, String>,
     private val getDomainUseCase: IGetChildModelSuspendUseCase<DomainInAssociation, String, String>,
     private val createDomainUseCase: ICreateChildModelSuspendUseCase<DomainInAssociation, CreateDomainInAssociationPayload, String>,
     private val deleteDomainUseCase: IDeleteChildModelSuspendUseCase<DomainInAssociation, String, String>,
 ) : IChildModelController<DomainInAssociation, String, CreateDomainInAssociationPayload, Unit, Association, String> {
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<DomainInAssociation> {
-        return getDomainsInAssociationsUseCase(parent.id)
+        return getDomainsInAssociationsUseCase(
+            call.parameters["limit"]?.toLongOrNull() ?: 25,
+            call.parameters["offset"]?.toLongOrNull() ?: 0,
+            parent.id
+        )
     }
 
     override suspend fun get(call: ApplicationCall, parent: Association, id: String): DomainInAssociation {
@@ -37,7 +41,7 @@ class DomainsInAssociationsController(
     override suspend fun create(
         call: ApplicationCall,
         parent: Association,
-        payload: CreateDomainInAssociationPayload
+        payload: CreateDomainInAssociationPayload,
     ): DomainInAssociation {
         requireUserForCallUseCase(call).takeIf {
             checkPermissionUseCase(it, Permission.DOMAINS_CREATE inAssociation parent)
@@ -53,7 +57,7 @@ class DomainsInAssociationsController(
         call: ApplicationCall,
         parent: Association,
         id: String,
-        payload: Unit
+        payload: Unit,
     ): DomainInAssociation {
         throw ControllerException(HttpStatusCode.MethodNotAllowed, "domains_update_not_allowed")
     }

@@ -23,8 +23,8 @@ class DomainsInAssociationsRemoteRepository(
     prefix = "/api/v1"
 ), IDomainsInAssociationsRemoteRepository {
 
-    override suspend fun list(associationId: String): List<DomainInAssociation> {
-        return list(RecursiveId<Association, String, Unit>(associationId), null)
+    override suspend fun list(limit: Long, offset: Long, associationId: String): List<DomainInAssociation> {
+        return list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
     }
 
     override suspend fun get(domain: String, associationId: String): DomainInAssociation? {
