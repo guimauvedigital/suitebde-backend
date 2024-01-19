@@ -11,11 +11,11 @@ class GenerateAuthTokenUseCase(
 ) : IGenerateAuthTokenUseCase {
 
     override suspend fun invoke(input: ClientForUser): AuthToken {
-        val userId = (input.user as User).id
+        val user = input.user as User
         return AuthToken(
-            jwtService.generateJWT(userId, input.client.clientId, "access"),
-            jwtService.generateJWT(userId, input.client.clientId, "refresh"),
-            userId
+            jwtService.generateJWT(user.id, input.client.clientId, "access"),
+            jwtService.generateJWT(user.id, input.client.clientId, "refresh"),
+            "${user.associationId}/${user.id}"
         )
     }
 

@@ -23,7 +23,7 @@ class GenerateAuthTokenUseCaseTest {
             AuthToken(
                 "accessToken",
                 "refreshToken",
-                "uid"
+                "associationId/uid"
             ),
             userCase(
                 ClientForUser(
