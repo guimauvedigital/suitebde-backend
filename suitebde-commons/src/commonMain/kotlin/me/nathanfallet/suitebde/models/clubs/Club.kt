@@ -21,13 +21,13 @@ data class Club(
     val description: String,
     @ModelProperty("string")
     @Schema("Icon of the club", "https://example.com/icon.png")
-    val icon: String,
+    val icon: String?,
     @Schema("Creation date of the club", "2023-12-14T09:41:00Z")
     val createdAt: Instant,
     @ModelProperty("boolean")
     @Schema("Is the event validated?", "true")
     val validated: Boolean,
-) : IChildModel<String, Unit, Unit, String> {
+) : IChildModel<String, CreateClubPayload, UpdateClubPayload, String> {
 
     override val parentId = associationId
 

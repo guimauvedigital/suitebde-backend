@@ -13,7 +13,7 @@ object Clubs : Table() {
     val associationId = varchar("association_id", 32).index()
     val name = text("name")
     val description = text("description")
-    val icon = text("icon")
+    val icon = text("icon").nullable()
     val createdAt = varchar("created_at", 255)
     val validated = bool("validated")
 

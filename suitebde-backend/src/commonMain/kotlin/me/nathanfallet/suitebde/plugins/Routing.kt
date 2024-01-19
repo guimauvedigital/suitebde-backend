@@ -11,6 +11,7 @@ import me.nathanfallet.ktorx.routers.openapi.OpenAPIRouter
 import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
 import me.nathanfallet.suitebde.controllers.associations.DomainsInAssociationsRouter
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
+import me.nathanfallet.suitebde.controllers.clubs.ClubsRouter
 import me.nathanfallet.suitebde.controllers.events.EventsRouter
 import me.nathanfallet.suitebde.controllers.roles.RolesRouter
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
@@ -42,6 +43,7 @@ fun Application.configureRouting() {
         val webPagesRouter by inject<WebPagesRouter>()
         val webMenusRouter by inject<WebMenusRouter>()
         val eventsRouter by inject<EventsRouter>()
+        val clubsRouter by inject<ClubsRouter>()
 
         val openAPIRouter = OpenAPIRouter()
 
@@ -54,6 +56,7 @@ fun Application.configureRouting() {
             webPagesRouter.createRoutes(this, openAPI)
             webMenusRouter.createRoutes(this, openAPI)
             eventsRouter.createRoutes(this, openAPI)
+            clubsRouter.createRoutes(this, openAPI)
 
             openAPIRouter.createRoutes(this, openAPI)
         }

@@ -52,6 +52,8 @@ class GetAdminMenuForCallUseCaseTest {
         coEvery { checkPermissionUseCase(user, Permission.ROLES_VIEW inAssociation association) } returns true
         coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_VIEW inAssociation association) } returns true
         coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_VIEW inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.EVENTS_VIEW inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.CLUBS_VIEW inAssociation association) } returns true
         every { getLocaleForCallUseCase(call) } returns Locale.ENGLISH
         every { translateUseCase(Locale.ENGLISH, any()) } answers { "t:${secondArg<String>()}" }
         assertEquals(
@@ -85,6 +87,18 @@ class GetAdminMenuForCallUseCaseTest {
                     "associationId",
                     "t:admin_menu_webmenus",
                     "/admin/webmenus"
+                ),
+                WebMenu(
+                    "events",
+                    "associationId",
+                    "t:admin_menu_events",
+                    "/admin/events"
+                ),
+                WebMenu(
+                    "clubs",
+                    "associationId",
+                    "t:admin_menu_clubs",
+                    "/admin/clubs"
                 )
             ),
             useCase(call)
@@ -110,6 +124,8 @@ class GetAdminMenuForCallUseCaseTest {
         coEvery { checkPermissionUseCase(user, Permission.ROLES_VIEW inAssociation association) } returns false
         coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_VIEW inAssociation association) } returns false
         coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_VIEW inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.EVENTS_VIEW inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.CLUBS_VIEW inAssociation association) } returns false
         every { getLocaleForCallUseCase(call) } returns Locale.ENGLISH
         every { translateUseCase(Locale.ENGLISH, any()) } answers { "t:${secondArg<String>()}" }
         assertEquals(

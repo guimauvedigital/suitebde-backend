@@ -19,6 +19,8 @@ import me.nathanfallet.suitebde.controllers.associations.*
 import me.nathanfallet.suitebde.controllers.auth.AuthController
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
 import me.nathanfallet.suitebde.controllers.auth.IAuthController
+import me.nathanfallet.suitebde.controllers.clubs.ClubsController
+import me.nathanfallet.suitebde.controllers.clubs.ClubsRouter
 import me.nathanfallet.suitebde.controllers.events.EventsController
 import me.nathanfallet.suitebde.controllers.events.EventsRouter
 import me.nathanfallet.suitebde.controllers.roles.RolesController
@@ -31,6 +33,8 @@ import me.nathanfallet.suitebde.database.application.ClientsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.AssociationsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.CodesInEmailsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.DomainsInAssociationsDatabaseRepository
+import me.nathanfallet.suitebde.database.clubs.ClubsDatabaseRepository
+import me.nathanfallet.suitebde.database.clubs.UsersInClubsDatabaseRepository
 import me.nathanfallet.suitebde.database.events.EventsDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.PermissionsInRolesDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.PermissionsInUsersDatabaseRepository
@@ -45,6 +49,7 @@ import me.nathanfallet.suitebde.models.associations.*
 import me.nathanfallet.suitebde.models.auth.LoginPayload
 import me.nathanfallet.suitebde.models.auth.RegisterCodePayload
 import me.nathanfallet.suitebde.models.auth.RegisterPayload
+import me.nathanfallet.suitebde.models.clubs.*
 import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
 import me.nathanfallet.suitebde.models.events.UpdateEventPayload
@@ -170,6 +175,14 @@ fun Application.configureKoin() {
             // Events
             single<IChildModelSuspendRepository<Event, String, CreateEventPayload, UpdateEventPayload, String>>(named<Event>()) {
                 EventsDatabaseRepository(get())
+            }
+
+            // Clubs
+            single<IChildModelSuspendRepository<Club, String, CreateClubPayload, UpdateClubPayload, String>>(named<Club>()) {
+                ClubsDatabaseRepository(get())
+            }
+            single<IChildModelSuspendRepository<UserInClub, String, CreateUserInClub, Unit, String>>(named<UserInClub>()) {
+                UsersInClubsDatabaseRepository(get())
             }
         }
         val useCaseModule = module {
@@ -373,6 +386,26 @@ fun Application.configureKoin() {
             single<IDeleteChildModelSuspendUseCase<Event, String, String>>(named<Event>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get(named<Event>()))
             }
+
+            // Clubs
+            single<IListChildModelSuspendUseCase<Club, String>>(named<Club>()) {
+                ListChildModelFromRepositorySuspendUseCase(get(named<Club>()))
+            }
+            single<IListSliceChildModelSuspendUseCase<Club, String>>(named<Club>()) {
+                ListSliceChildModelFromRepositorySuspendUseCase(get(named<Club>()))
+            }
+            single<IGetChildModelSuspendUseCase<Club, String, String>>(named<Club>()) {
+                GetChildModelFromRepositorySuspendUseCase(get(named<Club>()))
+            }
+            single<ICreateChildModelSuspendUseCase<Club, CreateClubPayload, String>>(named<Club>()) {
+                CreateChildModelFromRepositorySuspendUseCase(get(named<Club>()))
+            }
+            single<IUpdateChildModelSuspendUseCase<Club, String, UpdateClubPayload, String>>(named<Club>()) {
+                UpdateChildModelFromRepositorySuspendUseCase(get(named<Club>()))
+            }
+            single<IDeleteChildModelSuspendUseCase<Club, String, String>>(named<Club>()) {
+                DeleteChildModelFromRepositorySuspendUseCase(get(named<Club>()))
+            }
         }
         val controllerModule = module {
             // Associations
@@ -497,6 +530,22 @@ fun Application.configureKoin() {
                     get(named<Event>())
                 )
             }
+
+            // Clubs
+            single<IChildModelController<Club, String, CreateClubPayload, UpdateClubPayload, Association, String>>(
+                named<Club>()
+            ) {
+                ClubsController(
+                    get(),
+                    get(),
+                    get(named<Club>()),
+                    get(named<Club>()),
+                    get(named<Club>()),
+                    get(named<Club>()),
+                    get(named<Club>()),
+                    get(named<Club>())
+                )
+            }
         }
         val routerModule = module {
             single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get(named<Association>())) }
@@ -508,6 +557,7 @@ fun Application.configureKoin() {
             single { WebPagesRouter(get(), get(), get(), get(), get(), get(), get()) }
             single { WebMenusRouter(get(named<WebMenu>()), get(), get(), get(), get(), get()) }
             single { EventsRouter(get(named<Event>()), get(), get(), get(), get(), get()) }
+            single { ClubsRouter(get(named<Club>()), get(), get(), get(), get(), get()) }
         }
 
         modules(

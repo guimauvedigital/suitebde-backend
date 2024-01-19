@@ -34,7 +34,7 @@ class EventsController(
         val user = requireUserForCallUseCase(call)
         payload.validated?.let {
             if (!checkPermissionUseCase(user, Permission.EVENTS_CREATE inAssociation parent)) throw ControllerException(
-                HttpStatusCode.Forbidden, "roles_validated_not_allowed"
+                HttpStatusCode.Forbidden, "events_validated_not_allowed"
             )
         }
         return createEventUseCase(payload, parent.id) ?: throw ControllerException(

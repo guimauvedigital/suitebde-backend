@@ -32,7 +32,7 @@ class GetAdminMenuForCallUseCase(
             HttpStatusCode.Forbidden, "admin_not_allowed"
         )
         val locale = getLocaleForCallUseCase(input)
-        return listOf("dashboard", "users", "roles", "webpages", "webmenus")
+        return listOf("dashboard", "users", "roles", "webpages", "webmenus", "events", "clubs")
             .filter {
                 it == "dashboard" || Permission.entries.firstOrNull { p -> p.name == "${it.uppercase()}_VIEW" }
                     ?.let { permission ->
