@@ -10,7 +10,7 @@ data class UserInClub(
     val userId: String,
     val club: Club?,
     val user: User?,
-) : IChildModel<String, Unit, Unit, String> {
+) : IChildModel<String, CreateUserInClub, Unit, String> {
 
     override val id = userId
     override val parentId = clubId

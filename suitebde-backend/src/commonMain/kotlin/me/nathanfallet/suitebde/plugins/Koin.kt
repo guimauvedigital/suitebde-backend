@@ -34,6 +34,7 @@ import me.nathanfallet.suitebde.database.associations.AssociationsDatabaseReposi
 import me.nathanfallet.suitebde.database.associations.CodesInEmailsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.DomainsInAssociationsDatabaseRepository
 import me.nathanfallet.suitebde.database.clubs.ClubsDatabaseRepository
+import me.nathanfallet.suitebde.database.clubs.UsersInClubsDatabaseRepository
 import me.nathanfallet.suitebde.database.events.EventsDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.PermissionsInRolesDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.PermissionsInUsersDatabaseRepository
@@ -48,9 +49,7 @@ import me.nathanfallet.suitebde.models.associations.*
 import me.nathanfallet.suitebde.models.auth.LoginPayload
 import me.nathanfallet.suitebde.models.auth.RegisterCodePayload
 import me.nathanfallet.suitebde.models.auth.RegisterPayload
-import me.nathanfallet.suitebde.models.clubs.Club
-import me.nathanfallet.suitebde.models.clubs.CreateClubPayload
-import me.nathanfallet.suitebde.models.clubs.UpdateClubPayload
+import me.nathanfallet.suitebde.models.clubs.*
 import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
 import me.nathanfallet.suitebde.models.events.UpdateEventPayload
@@ -181,6 +180,9 @@ fun Application.configureKoin() {
             // Clubs
             single<IChildModelSuspendRepository<Club, String, CreateClubPayload, UpdateClubPayload, String>>(named<Club>()) {
                 ClubsDatabaseRepository(get())
+            }
+            single<IChildModelSuspendRepository<UserInClub, String, CreateUserInClub, Unit, String>>(named<UserInClub>()) {
+                UsersInClubsDatabaseRepository(get())
             }
         }
         val useCaseModule = module {
