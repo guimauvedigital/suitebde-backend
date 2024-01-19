@@ -9,13 +9,15 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
-import me.nathanfallet.ktorx.usecases.users.IGetUserForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.roles.AdminPermission
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
+import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import java.util.*
 import kotlin.test.Test
@@ -35,18 +37,18 @@ class GetAdminMenuForCallUseCaseTest {
 
     @Test
     fun invoke() = runBlocking {
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val call = mockk<ApplicationCall>()
         val useCase = GetAdminMenuForCallUseCase(
-            getAssociationForCallUseCase, getUserForCallUseCase,
+            requireUserForCallUseCase, getAssociationForCallUseCase, mockk(),
             checkPermissionUseCase, getLocaleForCallUseCase, translateUseCase
         )
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.ADMIN inAssociation association) } returns true
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns true
         coEvery { checkPermissionUseCase(user, Permission.ROLES_VIEW inAssociation association) } returns true
@@ -107,18 +109,18 @@ class GetAdminMenuForCallUseCaseTest {
 
     @Test
     fun invokeOnlyDashboard() = runBlocking {
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val call = mockk<ApplicationCall>()
         val useCase = GetAdminMenuForCallUseCase(
-            getAssociationForCallUseCase, getUserForCallUseCase,
+            requireUserForCallUseCase, getAssociationForCallUseCase, mockk(),
             checkPermissionUseCase, getLocaleForCallUseCase, translateUseCase
         )
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.ADMIN inAssociation association) } returns true
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association) } returns false
         coEvery { checkPermissionUseCase(user, Permission.ROLES_VIEW inAssociation association) } returns false
@@ -143,16 +145,16 @@ class GetAdminMenuForCallUseCaseTest {
 
     @Test
     fun invokeNotAdmin() = runBlocking {
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val call = mockk<ApplicationCall>()
         val useCase = GetAdminMenuForCallUseCase(
-            getAssociationForCallUseCase, getUserForCallUseCase,
+            requireUserForCallUseCase, getAssociationForCallUseCase, mockk(),
             checkPermissionUseCase, mockk(), mockk()
         )
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.ADMIN inAssociation association) } returns false
         val exception = assertFailsWith(ControllerException::class) {
             useCase(call)
@@ -162,36 +164,57 @@ class GetAdminMenuForCallUseCaseTest {
     }
 
     @Test
-    fun invokeNoUser() = runBlocking {
+    fun invokeNoAssociationNeitherAdmin() = runBlocking {
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
+        val getAssociationByIdUseCase = mockk<IGetModelSuspendUseCase<Association, String>>()
+        val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val call = mockk<ApplicationCall>()
         val useCase = GetAdminMenuForCallUseCase(
-            getAssociationForCallUseCase, getUserForCallUseCase,
-            mockk(), mockk(), mockk()
+            requireUserForCallUseCase, getAssociationForCallUseCase, getAssociationByIdUseCase,
+            checkPermissionUseCase, mockk(), mockk()
         )
-        coEvery { getAssociationForCallUseCase(call) } returns association
-        coEvery { getUserForCallUseCase(call) } returns null
-        val exception = assertFailsWith(ControllerException::class) {
-            useCase(call)
-        }
-        assertEquals(HttpStatusCode.Unauthorized, exception.code)
-        assertEquals("auth_invalid_credentials", exception.key)
-    }
-
-    @Test
-    fun invokeNoAssociation() = runBlocking {
-        val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
-        val call = mockk<ApplicationCall>()
-        val useCase = GetAdminMenuForCallUseCase(
-            getAssociationForCallUseCase, mockk(), mockk(), mockk(), mockk()
-        )
+        coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { getAssociationForCallUseCase(call) } returns null
+        coEvery { getAssociationByIdUseCase(user.associationId) } returns null
+        coEvery { checkPermissionUseCase(user, AdminPermission) } returns false
         val exception = assertFailsWith(ControllerException::class) {
             useCase(call)
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
         assertEquals("associations_not_found", exception.key)
+    }
+
+    @Test
+    fun invokeNoAssociationButAdmin() = runBlocking {
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
+        val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
+        val getAssociationByIdUseCase = mockk<IGetModelSuspendUseCase<Association, String>>()
+        val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
+        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
+        val translateUseCase = mockk<ITranslateUseCase>()
+        val call = mockk<ApplicationCall>()
+        val useCase = GetAdminMenuForCallUseCase(
+            requireUserForCallUseCase, getAssociationForCallUseCase, getAssociationByIdUseCase,
+            checkPermissionUseCase, getLocaleForCallUseCase, translateUseCase
+        )
+        coEvery { requireUserForCallUseCase(call) } returns user
+        coEvery { getAssociationForCallUseCase(call) } returns null
+        coEvery { getAssociationByIdUseCase(user.associationId) } returns null
+        coEvery { checkPermissionUseCase(user, AdminPermission) } returns true
+        every { getLocaleForCallUseCase(call) } returns Locale.ENGLISH
+        every { translateUseCase(Locale.ENGLISH, any()) } answers { "t:${secondArg<String>()}" }
+        assertEquals(
+            listOf(
+                WebMenu(
+                    "associations",
+                    "admin",
+                    "t:admin_menu_associations",
+                    "/admin/associations"
+                )
+            ),
+            useCase(call)
+        )
     }
 
 }

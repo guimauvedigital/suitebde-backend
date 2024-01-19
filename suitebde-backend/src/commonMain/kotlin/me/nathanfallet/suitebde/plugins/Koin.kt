@@ -353,7 +353,9 @@ fun Application.configureKoin() {
                 ListSliceChildModelFromRepositorySuspendUseCase(get<IWebMenusRepository>())
             }
             single<IGetPublicMenuForCallUseCase> { GetPublicMenuForCallUseCase(get(), get(named<WebMenu>())) }
-            single<IGetAdminMenuForCallUseCase> { GetAdminMenuForCallUseCase(get(), get(), get(), get(), get()) }
+            single<IGetAdminMenuForCallUseCase> {
+                GetAdminMenuForCallUseCase(get(), get(), get(named<Association>()), get(), get(), get())
+            }
             single<IGetChildModelSuspendUseCase<WebMenu, String, String>>(named<WebMenu>()) {
                 GetChildModelFromRepositorySuspendUseCase(get<IWebMenusRepository>())
             }
