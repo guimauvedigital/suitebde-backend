@@ -13,7 +13,7 @@
 
         <button class="w-100 btn btn-lg btn-danger" type="submit"><@t key="auth_field_authorize" /></button>
         <div class="mt-4">
-            <@t key="auth_hint_authorize_connected_as" args=["${user.displayName} (@${user.username})"] />
+            <@t key="auth_hint_authorize_connected_as" args=["${user.firstName} ${user.lastName}"] />
         </div>
         <div class="mt-3">
             <a href="logout?redirect=/account/authorize?clientId=${client.id}" class="text-danger">
