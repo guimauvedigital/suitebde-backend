@@ -7,6 +7,7 @@ import me.nathanfallet.suitebde.models.application.SuiteBDEEnvironment
 import me.nathanfallet.suitebde.models.application.SuiteBDEJson
 import me.nathanfallet.suitebde.repositories.associations.AssociationsRemoteRepository
 import me.nathanfallet.suitebde.repositories.associations.DomainsInAssociationsRemoteRepository
+import me.nathanfallet.suitebde.repositories.clubs.ClubsRemoteRepository
 import me.nathanfallet.suitebde.repositories.events.EventsRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.RolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.users.UsersRemoteRepository
@@ -30,5 +31,6 @@ class SuiteBDEClient(
     override val webPages = WebPagesRemoteRepository(this, associations)
     override val events = EventsRemoteRepository(this, associations)
     override val roles = RolesRemoteRepository(this, associations)
+    override val clubs = ClubsRemoteRepository(this, associations)
 
 }

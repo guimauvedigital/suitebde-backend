@@ -26,6 +26,10 @@ enum class Permission {
     EVENTS_CREATE,
     EVENTS_UPDATE,
     EVENTS_DELETE,
+    CLUBS_VIEW,
+    CLUBS_CREATE,
+    CLUBS_UPDATE,
+    CLUBS_DELETE,
     ;
 
     infix fun inAssociation(association: Association) =

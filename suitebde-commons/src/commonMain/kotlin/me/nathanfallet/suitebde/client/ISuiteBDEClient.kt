@@ -4,6 +4,7 @@ import me.nathanfallet.ktorx.models.api.IAPIClient
 import me.nathanfallet.ktorx.repositories.auth.IAuthAPIRemoteRepository
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRemoteRepository
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRemoteRepository
+import me.nathanfallet.suitebde.repositories.clubs.IClubsRemoteRepository
 import me.nathanfallet.suitebde.repositories.events.IEventsRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.IRolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.users.IUsersRemoteRepository
@@ -20,5 +21,6 @@ interface ISuiteBDEClient : IAPIClient {
     val webPages: IWebPagesRemoteRepository
     val events: IEventsRemoteRepository
     val roles: IRolesRemoteRepository
+    val clubs: IClubsRemoteRepository
 
 }

@@ -7,6 +7,7 @@ import me.nathanfallet.suitebde.models.events.UpdateEventPayload
 import me.nathanfallet.usecases.context.IContext
 import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class EventsDatabaseRepository(
     private val database: IDatabase,
@@ -67,6 +68,14 @@ class EventsDatabaseRepository(
                 payload.startsAt?.let { startsAt -> it[Events.startsAt] = startsAt.toString() }
                 payload.endsAt?.let { endsAt -> it[Events.endsAt] = endsAt.toString() }
                 payload.validated?.let { validated -> it[Events.validated] = validated }
+            }
+        } == 1
+    }
+
+    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
+        return database.suspendedTransaction {
+            Events.deleteWhere {
+                Events.id eq id and (associationId eq parentId)
             }
         } == 1
     }
