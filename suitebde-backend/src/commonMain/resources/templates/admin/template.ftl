@@ -104,7 +104,15 @@
             <hr class="horizontal dark">
             <div class="sidenav-footer mx-3 my-3 text-center">
                 <p class="small px-3 pt-3">
-                    &copy; 2023 Suite BDE
+                    &copy; 2024 <a href="https://suitebde.com">Suite BDE</a>
+                </p>
+                <p class="small px-3">
+                    <@t key="admin_developed_with_love" args=[
+                    "<i class=\"fa fa-heart text-danger\"></i>",
+                    "<a href=\"https://kotlinlang.org\" class=\"text-dark font-weight-bold\">Kotlin</a>",
+                    "<a href=\"https://nathanfallet.me\" class=\"text-dark font-weight-bold\">Nathan Fallet</a>",
+                    "<a href=\"https://toastcie.dev\" class=\"text-dark font-weight-bold\">Toast.cie</a>"
+                    ] />
                 </p>
             </div>
         </aside>
