@@ -2,14 +2,15 @@ package me.nathanfallet.suitebde.database.roles
 
 import me.nathanfallet.ktorx.database.IDatabase
 import me.nathanfallet.suitebde.models.roles.PermissionInRole
+import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
 import me.nathanfallet.usecases.context.IContext
-import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
+import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.selectAll
 
 class PermissionsInRolesDatabaseRepository(
     private val database: IDatabase,
-) : IChildModelSuspendRepository<PermissionInRole, String, Unit, Unit, String> {
+) : IPermissionsInRolesRepository {
 
     init {
         database.transaction {
@@ -22,6 +23,16 @@ class PermissionsInRolesDatabaseRepository(
             PermissionsInRoles
                 .selectAll()
                 .where { PermissionsInRoles.roleId eq parentId }
+                .map(PermissionsInRoles::toPermissionInRole)
+        }
+    }
+
+    override suspend fun listForUser(userId: String): List<PermissionInRole> {
+        return database.suspendedTransaction {
+            PermissionsInRoles
+                .join(UsersInRoles, JoinType.INNER, PermissionsInRoles.roleId, UsersInRoles.roleId)
+                .selectAll()
+                .where { UsersInRoles.userId eq userId }
                 .map(PermissionsInRoles::toPermissionInRole)
         }
     }

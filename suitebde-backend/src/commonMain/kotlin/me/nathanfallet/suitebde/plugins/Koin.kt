@@ -37,7 +37,6 @@ import me.nathanfallet.suitebde.database.clubs.ClubsDatabaseRepository
 import me.nathanfallet.suitebde.database.clubs.UsersInClubsDatabaseRepository
 import me.nathanfallet.suitebde.database.events.EventsDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.PermissionsInRolesDatabaseRepository
-import me.nathanfallet.suitebde.database.roles.PermissionsInUsersDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.RolesDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.UsersInRolesDatabaseRepository
 import me.nathanfallet.suitebde.database.users.ClientsInUsersDatabaseRepository
@@ -54,7 +53,6 @@ import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
 import me.nathanfallet.suitebde.models.events.UpdateEventPayload
 import me.nathanfallet.suitebde.models.roles.CreateRolePayload
-import me.nathanfallet.suitebde.models.roles.PermissionInRole
 import me.nathanfallet.suitebde.models.roles.Role
 import me.nathanfallet.suitebde.models.roles.UpdateRolePayload
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
@@ -64,7 +62,7 @@ import me.nathanfallet.suitebde.models.web.*
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
-import me.nathanfallet.suitebde.repositories.roles.IPermissionsInUsersRepository
+import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRepository
 import me.nathanfallet.suitebde.repositories.users.IClientsInUsersRepository
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
@@ -162,11 +160,8 @@ fun Application.configureKoin() {
             single<IChildModelSuspendRepository<Role, String, CreateRolePayload, UpdateRolePayload, String>>(named<Role>()) {
                 RolesDatabaseRepository(get())
             }
-            single<IChildModelSuspendRepository<PermissionInRole, String, Unit, Unit, String>>(named<PermissionInRole>()) {
-                PermissionsInRolesDatabaseRepository(get())
-            }
+            single<IPermissionsInRolesRepository> { PermissionsInRolesDatabaseRepository(get()) }
             single<IUsersInRolesRepository> { UsersInRolesDatabaseRepository(get()) }
-            single<IPermissionsInUsersRepository> { PermissionsInUsersDatabaseRepository(get()) }
 
             // Web
             single<IWebPagesRepository> { WebPagesDatabaseRepository(get()) }

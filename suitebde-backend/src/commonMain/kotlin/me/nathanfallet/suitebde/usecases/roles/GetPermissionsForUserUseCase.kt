@@ -3,10 +3,10 @@ package me.nathanfallet.suitebde.usecases.roles
 import kotlinx.datetime.*
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.User
-import me.nathanfallet.suitebde.repositories.roles.IPermissionsInUsersRepository
+import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
 
 class GetPermissionsForUserUseCase(
-    private val repository: IPermissionsInUsersRepository,
+    private val repository: IPermissionsInRolesRepository,
 ) : IGetPermissionsForUserUseCase {
 
     private data class PermissionsForUser(
@@ -20,7 +20,7 @@ class GetPermissionsForUserUseCase(
         return cachedPermissions[input.id]?.takeIf {
             it.expiresAt > Clock.System.now()
         }?.permissions ?: run {
-            repository.getPermissionsForUser(input.id).map { it.permission }.toSet().also {
+            repository.listForUser(input.id).map { it.permission }.toSet().also {
                 // Cache permissions for 5 seconds (we only fetch them once)
                 cachedPermissions[input.id] = PermissionsForUser(
                     it,
