@@ -19,6 +19,15 @@ class EventsDatabaseRepository(
         }
     }
 
+    override suspend fun list(parentId: String, context: IContext?): List<Event> {
+        return database.suspendedTransaction {
+            Events
+                .selectAll()
+                .where { Events.associationId eq parentId }
+                .map(Events::toEvent)
+        }
+    }
+
     override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<Event> {
         return database.suspendedTransaction {
             Events
