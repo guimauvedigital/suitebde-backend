@@ -20,7 +20,7 @@ class CheckPermissionUseCase(
 
             is PermissionInAssociation ->
                 if (user.associationId == adminAssociation) true
-                else if (user.associationId != input2.association.id) false
+                else if (user.associationId != input2.associationId) false
                 else if (user.superuser) true
                 else getPermissionsForUserUseCase(user).contains(input2.permission)
 

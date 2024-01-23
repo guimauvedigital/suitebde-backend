@@ -48,7 +48,7 @@ class DomainsInAssociationsController(
         payload: CreateDomainInAssociationPayload,
     ): DomainInAssociation {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.DOMAINS_CREATE inAssociation parent)
+            checkPermissionUseCase(it, Permission.DOMAINS_CREATE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "domains_update_not_allowed"
         )
@@ -68,7 +68,7 @@ class DomainsInAssociationsController(
 
     override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.DOMAINS_DELETE inAssociation parent)
+            checkPermissionUseCase(it, Permission.DOMAINS_DELETE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "domains_delete_not_allowed"
         )

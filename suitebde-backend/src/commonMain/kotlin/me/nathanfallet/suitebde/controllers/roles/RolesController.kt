@@ -41,7 +41,7 @@ class RolesController(
 
     override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateRolePayload): Role {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.ROLES_CREATE inAssociation parent)
+            checkPermissionUseCase(it, Permission.ROLES_CREATE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "roles_create_not_allowed"
         )
@@ -63,7 +63,7 @@ class RolesController(
         payload: UpdateRolePayload,
     ): Role {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.ROLES_UPDATE inAssociation parent)
+            checkPermissionUseCase(it, Permission.ROLES_UPDATE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "roles_update_not_allowed"
         )
@@ -77,7 +77,7 @@ class RolesController(
 
     override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.ROLES_DELETE inAssociation parent)
+            checkPermissionUseCase(it, Permission.ROLES_DELETE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "roles_delete_not_allowed"
         )

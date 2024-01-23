@@ -41,7 +41,7 @@ class GetAdminMenuForCallUseCase(
             else throw ControllerException(HttpStatusCode.NotFound, "associations_not_found")
 
         user.takeIf {
-            checkPermissionUseCase(it, Permission.ADMIN inAssociation association)
+            checkPermissionUseCase(it, Permission.ADMIN inAssociation association.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "admin_not_allowed"
         )
@@ -51,7 +51,7 @@ class GetAdminMenuForCallUseCase(
             .filter {
                 it == "dashboard" || Permission.entries.firstOrNull { p -> p.name == "${it.uppercase()}_VIEW" }
                     ?.let { permission ->
-                        checkPermissionUseCase(user, permission inAssociation association)
+                        checkPermissionUseCase(user, permission inAssociation association.id)
                     } ?: true
 
             }

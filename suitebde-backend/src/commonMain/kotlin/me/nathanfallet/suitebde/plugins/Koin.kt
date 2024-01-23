@@ -25,6 +25,8 @@ import me.nathanfallet.suitebde.controllers.events.EventsController
 import me.nathanfallet.suitebde.controllers.events.EventsRouter
 import me.nathanfallet.suitebde.controllers.roles.RolesController
 import me.nathanfallet.suitebde.controllers.roles.RolesRouter
+import me.nathanfallet.suitebde.controllers.roles.UsersInRolesController
+import me.nathanfallet.suitebde.controllers.roles.UsersInRolesRouter
 import me.nathanfallet.suitebde.controllers.users.UsersController
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
 import me.nathanfallet.suitebde.controllers.web.*
@@ -52,9 +54,7 @@ import me.nathanfallet.suitebde.models.clubs.*
 import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
 import me.nathanfallet.suitebde.models.events.UpdateEventPayload
-import me.nathanfallet.suitebde.models.roles.CreateRolePayload
-import me.nathanfallet.suitebde.models.roles.Role
-import me.nathanfallet.suitebde.models.roles.UpdateRolePayload
+import me.nathanfallet.suitebde.models.roles.*
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
@@ -319,6 +319,21 @@ fun Application.configureKoin() {
             single<IDeleteChildModelSuspendUseCase<Role, String, String>>(named<Role>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get(named<Role>()))
             }
+            single<IListChildModelSuspendUseCase<UserInRole, String>>(named<UserInRole>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<IUsersInRolesRepository>())
+            }
+            single<IListSliceChildModelSuspendUseCase<UserInRole, String>>(named<UserInRole>()) {
+                ListSliceChildModelFromRepositorySuspendUseCase(get<IUsersInRolesRepository>())
+            }
+            single<IGetChildModelSuspendUseCase<UserInRole, String, String>>(named<UserInRole>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<IUsersInRolesRepository>())
+            }
+            single<ICreateChildModelSuspendUseCase<UserInRole, CreateUserInRole, String>>(named<UserInRole>()) {
+                CreateChildModelFromRepositorySuspendUseCase(get<IUsersInRolesRepository>())
+            }
+            single<IDeleteChildModelSuspendUseCase<UserInRole, String, String>>(named<UserInRole>()) {
+                DeleteChildModelFromRepositorySuspendUseCase(get<IUsersInRolesRepository>())
+            }
 
             // Web
             single<IListChildModelSuspendUseCase<WebPage, String>>(named<WebPage>()) {
@@ -481,6 +496,19 @@ fun Application.configureKoin() {
                     get(named<Role>())
                 )
             }
+            single<IChildModelController<UserInRole, String, CreateUserInRole, Unit, Role, String>>(
+                named<UserInRole>()
+            ) {
+                UsersInRolesController(
+                    get(),
+                    get(),
+                    get(named<UserInRole>()),
+                    get(named<UserInRole>()),
+                    get(named<UserInRole>()),
+                    get(named<UserInRole>()),
+                    get(named<UserInRole>())
+                )
+            }
 
             // Web
             single<IWebPagesController> {
@@ -551,6 +579,7 @@ fun Application.configureKoin() {
             single { UsersRouter(get(named<User>()), get(), get(), get(), get(), get()) }
             single { AuthRouter(get(), get()) }
             single { RolesRouter(get(named<Role>()), get(), get(), get(), get(), get()) }
+            single { UsersInRolesRouter(get(named<UserInRole>()), get()) }
             single { WebPagesRouter(get(), get(), get(), get(), get(), get(), get()) }
             single { WebMenusRouter(get(named<WebMenu>()), get(), get(), get(), get(), get()) }
             single { EventsRouter(get(named<Event>()), get(), get(), get(), get(), get()) }

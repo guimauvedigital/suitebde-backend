@@ -33,7 +33,11 @@ class ClubsController(
     override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateClubPayload): Club {
         val user = requireUserForCallUseCase(call)
         payload.validated?.let {
-            if (!checkPermissionUseCase(user, Permission.CLUBS_CREATE inAssociation parent)) throw ControllerException(
+            if (!checkPermissionUseCase(
+                    user,
+                    Permission.CLUBS_CREATE inAssociation parent.id
+                )
+            ) throw ControllerException(
                 HttpStatusCode.Forbidden, "clubs_validated_not_allowed"
             )
         }
@@ -44,7 +48,7 @@ class ClubsController(
 
     override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.CLUBS_DELETE inAssociation parent)
+            checkPermissionUseCase(it, Permission.CLUBS_DELETE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "clubs_delete_not_allowed"
         )
@@ -78,7 +82,7 @@ class ClubsController(
         payload: UpdateClubPayload,
     ): Club {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.CLUBS_UPDATE inAssociation parent)
+            checkPermissionUseCase(it, Permission.CLUBS_UPDATE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "clubs_update_not_allowed"
         )

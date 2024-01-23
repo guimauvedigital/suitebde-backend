@@ -1,7 +1,5 @@
 package me.nathanfallet.suitebde.models.roles
 
-import me.nathanfallet.suitebde.models.associations.Association
-
 enum class Permission {
 
     ADMIN,
@@ -14,6 +12,7 @@ enum class Permission {
     ROLES_CREATE,
     ROLES_UPDATE,
     ROLES_DELETE,
+    ROLES_USERS,
     WEBPAGES_VIEW,
     WEBPAGES_CREATE,
     WEBPAGES_UPDATE,
@@ -32,7 +31,7 @@ enum class Permission {
     CLUBS_DELETE,
     ;
 
-    infix fun inAssociation(association: Association) =
-        PermissionInAssociation(this, association)
+    infix fun inAssociation(associationId: String) =
+        PermissionInAssociation(this, associationId)
 
 }
