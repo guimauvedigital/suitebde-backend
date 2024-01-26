@@ -1,0 +1,48 @@
+package me.nathanfallet.suitebde.controllers.clubs
+
+import io.ktor.server.application.*
+import me.nathanfallet.ktorx.controllers.IChildModelController
+import me.nathanfallet.ktorx.models.annotations.*
+import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.clubs.Club
+import me.nathanfallet.suitebde.models.clubs.CreateClubPayload
+import me.nathanfallet.suitebde.models.clubs.UpdateClubPayload
+
+interface IClubsController :
+    IChildModelController<Club, String, CreateClubPayload, UpdateClubPayload, Association, String> {
+
+    @APIMapping
+    @AdminTemplateMapping
+    @ListModelPath
+    suspend fun list(call: ApplicationCall, @ParentModel parent: Association): List<Club>
+
+    @APIMapping
+    @AdminTemplateMapping
+    @CreateModelPath
+    suspend fun create(
+        call: ApplicationCall,
+        @ParentModel parent: Association,
+        @Payload payload: CreateClubPayload,
+    ): Club
+
+    @APIMapping
+    @GetModelPath
+    suspend fun get(call: ApplicationCall, @ParentModel parent: Association, @Id id: String): Club
+
+    @APIMapping
+    @AdminTemplateMapping
+    @UpdateModelPath
+    suspend fun update(
+        call: ApplicationCall,
+        @ParentModel parent: Association,
+        @Id id: String,
+        @Payload payload: UpdateClubPayload,
+    ): Club
+
+    @APIMapping
+    @AdminTemplateMapping
+    @DeleteModelPath
+    @DocumentedType(Club::class)
+    suspend fun delete(call: ApplicationCall, @ParentModel parent: Association, @Id id: String)
+
+}

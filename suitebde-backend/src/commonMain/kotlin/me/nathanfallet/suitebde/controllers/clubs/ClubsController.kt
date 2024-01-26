@@ -3,7 +3,6 @@ package me.nathanfallet.suitebde.controllers.clubs
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.associations.Association
@@ -28,7 +27,7 @@ class ClubsController(
     private val createClubUseCase: ICreateChildModelSuspendUseCase<Club, CreateClubPayload, String>,
     private val updateClubUseCase: IUpdateChildModelSuspendUseCase<Club, String, UpdateClubPayload, String>,
     private val deleteClubUseCase: IDeleteChildModelSuspendUseCase<Club, String, String>,
-) : IChildModelController<Club, String, CreateClubPayload, UpdateClubPayload, Association, String> {
+) : IClubsController {
 
     override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateClubPayload): Club {
         val user = requireUserForCallUseCase(call)

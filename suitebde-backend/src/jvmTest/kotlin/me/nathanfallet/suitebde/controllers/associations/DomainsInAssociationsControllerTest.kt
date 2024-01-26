@@ -231,25 +231,6 @@ class DomainsInAssociationsControllerTest {
     }
 
     @Test
-    fun testUpdate() = runBlocking {
-        val call = mockk<ApplicationCall>()
-        val controller = DomainsInAssociationsController(
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk()
-        )
-        val exception = assertFailsWith(ControllerException::class) {
-            controller.update(call, association, "domain", Unit)
-        }
-        assertEquals(HttpStatusCode.MethodNotAllowed, exception.code)
-        assertEquals("domains_update_not_allowed", exception.key)
-    }
-
-    @Test
     fun testDelete() = runBlocking {
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()

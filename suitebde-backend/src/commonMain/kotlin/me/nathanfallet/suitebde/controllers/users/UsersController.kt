@@ -3,12 +3,10 @@ package me.nathanfallet.suitebde.controllers.users
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.roles.Permission
-import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
@@ -24,7 +22,7 @@ class UsersController(
     private val getUsersInAssociationSlicedUseCase: IListSliceChildModelSuspendUseCase<User, String>,
     private val getUserUseCase: IGetChildModelSuspendUseCase<User, String, String>,
     private val updateUserUseCase: IUpdateChildModelSuspendUseCase<User, String, UpdateUserPayload, String>,
-) : IChildModelController<User, String, CreateUserPayload, UpdateUserPayload, Association, String> {
+) : IUsersController {
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<User> {
         requireUserForCallUseCase(call).takeIf {
@@ -51,10 +49,6 @@ class UsersController(
         )
     }
 
-    override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateUserPayload): User {
-        throw ControllerException(HttpStatusCode.MethodNotAllowed, "users_create_not_allowed")
-    }
-
     override suspend fun update(
         call: ApplicationCall,
         parent: Association,
@@ -74,10 +68,6 @@ class UsersController(
         ) ?: throw ControllerException(
             HttpStatusCode.InternalServerError, "error_internal"
         )
-    }
-
-    override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {
-        throw ControllerException(HttpStatusCode.MethodNotAllowed, "users_delete_not_allowed")
     }
 
 }

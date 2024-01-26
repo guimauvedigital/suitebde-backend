@@ -3,7 +3,6 @@ package me.nathanfallet.suitebde.controllers.events
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.associations.Association
@@ -28,7 +27,7 @@ class EventsController(
     private val createEventUseCase: ICreateChildModelSuspendUseCase<Event, CreateEventPayload, String>,
     private val updateEventUseCase: IUpdateChildModelSuspendUseCase<Event, String, UpdateEventPayload, String>,
     private val deleteEventUseCase: IDeleteChildModelSuspendUseCase<Event, String, String>,
-) : IChildModelController<Event, String, CreateEventPayload, UpdateEventPayload, Association, String> {
+) : IEventsController {
 
     override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateEventPayload): Event {
         val user = requireUserForCallUseCase(call)

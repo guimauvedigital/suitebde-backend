@@ -1,10 +1,10 @@
 package me.nathanfallet.suitebde.database.roles
 
-import me.nathanfallet.ktorx.database.IDatabase
 import me.nathanfallet.suitebde.database.users.Users
 import me.nathanfallet.suitebde.models.roles.CreateUserInRole
 import me.nathanfallet.suitebde.models.roles.UserInRole
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRepository
+import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

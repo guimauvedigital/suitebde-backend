@@ -1,9 +1,9 @@
 package me.nathanfallet.suitebde.database.users
 
 import kotlinx.datetime.Instant
-import me.nathanfallet.ktorx.database.IDatabase
 import me.nathanfallet.suitebde.models.users.ClientInUser
 import me.nathanfallet.suitebde.repositories.users.IClientsInUsersRepository
+import me.nathanfallet.surexposed.database.IDatabase
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.deleteWhere

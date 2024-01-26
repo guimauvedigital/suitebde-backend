@@ -3,7 +3,6 @@ package me.nathanfallet.suitebde.controllers.roles
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.roles.CreateUserInRole
@@ -25,7 +24,7 @@ class UsersInRolesController(
     private val createUserInRolesUseCase: ICreateChildModelSuspendUseCase<UserInRole, CreateUserInRole, String>,
     private val getUserInRoleUseCase: IGetChildModelSuspendUseCase<UserInRole, String, String>,
     private val deleteUserInRoleUseCase: IDeleteChildModelSuspendUseCase<UserInRole, String, String>,
-) : IChildModelController<UserInRole, String, CreateUserInRole, Unit, Role, String> {
+) : IUsersInRolesController {
 
     override suspend fun create(call: ApplicationCall, parent: Role, payload: CreateUserInRole): UserInRole {
         requireUserForCallUseCase(call).takeIf {
@@ -65,10 +64,6 @@ class UsersInRolesController(
             call.parameters["offset"]?.toLongOrNull() ?: 0,
             parent.id
         )
-    }
-
-    override suspend fun update(call: ApplicationCall, parent: Role, id: String, payload: Unit): UserInRole {
-        throw ControllerException(HttpStatusCode.MethodNotAllowed, "users_in_roles_update_not_allowed")
     }
 
 }

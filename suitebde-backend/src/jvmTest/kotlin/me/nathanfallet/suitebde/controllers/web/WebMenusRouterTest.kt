@@ -13,17 +13,12 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.datetime.Clock
-import me.nathanfallet.ktorx.controllers.IChildModelController
-import me.nathanfallet.ktorx.controllers.IModelController
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.AssociationForCallRouter
 import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
+import me.nathanfallet.suitebde.controllers.associations.IAssociationsController
 import me.nathanfallet.suitebde.models.application.SuiteBDEJson
 import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
-import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
-import me.nathanfallet.suitebde.models.web.CreateWebMenuPayload
-import me.nathanfallet.suitebde.models.web.UpdateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.plugins.configureI18n
 import me.nathanfallet.suitebde.plugins.configureSecurity
@@ -32,7 +27,6 @@ import me.nathanfallet.suitebde.plugins.configureTemplating
 import me.nathanfallet.suitebde.usecases.associations.IRequireAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
-import me.nathanfallet.usecases.models.UnitModel
 import org.jsoup.Jsoup
 import java.util.*
 import kotlin.test.Test
@@ -68,10 +62,8 @@ class WebMenusRouterTest {
     @Test
     fun testGetAllAPIv1() = testApplication {
         val client = installApp(this)
-        val associationController =
-            mockk<IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload>>()
-        val controller =
-            mockk<IChildModelController<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String>>()
+        val associationController = mockk<IAssociationsController>()
+        val controller = mockk<IWebMenusController>()
         val router = WebMenusRouter(
             controller,
             mockk(),
@@ -80,7 +72,7 @@ class WebMenusRouterTest {
             AssociationForCallRouter(mockk(), mockk()),
             AssociationsRouter(associationController, mockk(), mockk(), mockk())
         )
-        coEvery { associationController.get(any(), UnitModel, "id") } returns association
+        coEvery { associationController.get(any(), "id") } returns association
         coEvery { controller.list(any(), association) } returns listOf(menu)
         routing {
             router.createRoutes(this)
@@ -92,8 +84,7 @@ class WebMenusRouterTest {
     fun testGetAllAdmin() = testApplication {
         val client = installApp(this)
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
-        val controller =
-            mockk<IChildModelController<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String>>()
+        val controller = mockk<IWebMenusController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
@@ -123,8 +114,7 @@ class WebMenusRouterTest {
     fun testGetByIdAdmin() = testApplication {
         val client = installApp(this)
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
-        val controller =
-            mockk<IChildModelController<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String>>()
+        val controller = mockk<IWebMenusController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()

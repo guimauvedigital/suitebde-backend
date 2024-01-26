@@ -13,15 +13,13 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.datetime.Clock
-import me.nathanfallet.ktorx.controllers.IModelController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.AssociationForCallRouter
 import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
+import me.nathanfallet.suitebde.controllers.associations.IAssociationsController
 import me.nathanfallet.suitebde.models.application.SuiteBDEJson
 import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
-import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import me.nathanfallet.suitebde.models.web.WebPage
 import me.nathanfallet.suitebde.plugins.configureI18n
 import me.nathanfallet.suitebde.plugins.configureSecurity
@@ -31,7 +29,6 @@ import me.nathanfallet.suitebde.usecases.associations.IRequireAssociationForCall
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetPublicMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
-import me.nathanfallet.usecases.models.UnitModel
 import org.jsoup.Jsoup
 import java.util.*
 import kotlin.test.Test
@@ -67,8 +64,7 @@ class WebPagesRouterTest {
     @Test
     fun testGetAllAPIv1() = testApplication {
         val client = installApp(this)
-        val associationController =
-            mockk<IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload>>()
+        val associationController = mockk<IAssociationsController>()
         val controller = mockk<IWebPagesController>()
         val router = WebPagesRouter(
             controller,
@@ -79,7 +75,7 @@ class WebPagesRouterTest {
             AssociationForCallRouter(mockk(), mockk()),
             AssociationsRouter(associationController, mockk(), mockk(), mockk())
         )
-        coEvery { associationController.get(any(), UnitModel, "id") } returns association
+        coEvery { associationController.get(any(), "id") } returns association
         coEvery { controller.list(any(), association) } returns listOf(page)
         routing {
             router.createRoutes(this)

@@ -1,9 +1,9 @@
 package me.nathanfallet.suitebde.database.web
 
-import me.nathanfallet.ktorx.database.IDatabase
 import me.nathanfallet.suitebde.models.web.WebPage
 import me.nathanfallet.suitebde.models.web.WebPagePayload
 import me.nathanfallet.suitebde.repositories.web.IWebPagesRepository
+import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

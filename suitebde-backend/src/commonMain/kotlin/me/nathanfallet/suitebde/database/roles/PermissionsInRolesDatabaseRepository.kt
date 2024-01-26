@@ -1,8 +1,8 @@
 package me.nathanfallet.suitebde.database.roles
 
-import me.nathanfallet.ktorx.database.IDatabase
 import me.nathanfallet.suitebde.models.roles.PermissionInRole
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
+import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
 import org.jetbrains.exposed.sql.JoinType
 import org.jetbrains.exposed.sql.SchemaUtils

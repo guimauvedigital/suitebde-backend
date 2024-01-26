@@ -12,7 +12,6 @@ import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.roles.Permission
-import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
@@ -242,20 +241,6 @@ class UsersControllerTest {
     }
 
     @Test
-    fun testCreate() = runBlocking {
-        val call = mockk<ApplicationCall>()
-        val controller = UsersController(mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
-        val exception = assertFailsWith(ControllerException::class) {
-            controller.create(
-                call, association,
-                CreateUserPayload("email", "password", "firstname", "lastname", false)
-            )
-        }
-        assertEquals(HttpStatusCode.MethodNotAllowed, exception.code)
-        assertEquals("users_create_not_allowed", exception.key)
-    }
-
-    @Test
     fun testUpdate() = runBlocking {
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
@@ -442,17 +427,6 @@ class UsersControllerTest {
         }
         assertEquals(HttpStatusCode.InternalServerError, exception.code)
         assertEquals("error_internal", exception.key)
-    }
-
-    @Test
-    fun testDelete() = runBlocking {
-        val call = mockk<ApplicationCall>()
-        val controller = UsersController(mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
-        val exception = assertFailsWith(ControllerException::class) {
-            controller.delete(call, association, "id")
-        }
-        assertEquals(HttpStatusCode.MethodNotAllowed, exception.code)
-        assertEquals("users_delete_not_allowed", exception.key)
     }
 
 }

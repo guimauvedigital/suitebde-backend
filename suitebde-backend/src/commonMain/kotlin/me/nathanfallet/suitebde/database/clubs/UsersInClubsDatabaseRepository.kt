@@ -1,10 +1,10 @@
 package me.nathanfallet.suitebde.database.clubs
 
-import me.nathanfallet.ktorx.database.IDatabase
 import me.nathanfallet.suitebde.database.users.Users
 import me.nathanfallet.suitebde.models.clubs.CreateUserInClub
 import me.nathanfallet.suitebde.models.clubs.UserInClub
 import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRepository
+import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq

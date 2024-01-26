@@ -4,9 +4,6 @@ import io.ktor.server.application.*
 import me.nathanfallet.cloudflare.client.CloudflareClient
 import me.nathanfallet.cloudflare.client.ICloudflareClient
 import me.nathanfallet.i18n.usecases.localization.TranslateUseCase
-import me.nathanfallet.ktorx.controllers.IChildModelController
-import me.nathanfallet.ktorx.controllers.IModelController
-import me.nathanfallet.ktorx.database.IDatabase
 import me.nathanfallet.ktorx.database.sessions.SessionsDatabaseRepository
 import me.nathanfallet.ktorx.repositories.sessions.ISessionsRepository
 import me.nathanfallet.ktorx.usecases.auth.*
@@ -21,12 +18,12 @@ import me.nathanfallet.suitebde.controllers.auth.AuthRouter
 import me.nathanfallet.suitebde.controllers.auth.IAuthController
 import me.nathanfallet.suitebde.controllers.clubs.ClubsController
 import me.nathanfallet.suitebde.controllers.clubs.ClubsRouter
+import me.nathanfallet.suitebde.controllers.clubs.IClubsController
 import me.nathanfallet.suitebde.controllers.events.EventsController
 import me.nathanfallet.suitebde.controllers.events.EventsRouter
-import me.nathanfallet.suitebde.controllers.roles.RolesController
-import me.nathanfallet.suitebde.controllers.roles.RolesRouter
-import me.nathanfallet.suitebde.controllers.roles.UsersInRolesController
-import me.nathanfallet.suitebde.controllers.roles.UsersInRolesRouter
+import me.nathanfallet.suitebde.controllers.events.IEventsController
+import me.nathanfallet.suitebde.controllers.roles.*
+import me.nathanfallet.suitebde.controllers.users.IUsersController
 import me.nathanfallet.suitebde.controllers.users.UsersController
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
 import me.nathanfallet.suitebde.controllers.web.*
@@ -80,6 +77,7 @@ import me.nathanfallet.suitebde.usecases.roles.GetPermissionsForUserUseCase
 import me.nathanfallet.suitebde.usecases.roles.IGetPermissionsForUserUseCase
 import me.nathanfallet.suitebde.usecases.users.*
 import me.nathanfallet.suitebde.usecases.web.*
+import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.emails.ISendEmailUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.create.CreateChildModelFromRepositorySuspendUseCase
@@ -421,7 +419,7 @@ fun Application.configureKoin() {
         }
         val controllerModule = module {
             // Associations
-            single<IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload>>(named<Association>()) {
+            single<IAssociationsController> {
                 AssociationsController(
                     get(),
                     get(),
@@ -431,9 +429,7 @@ fun Application.configureKoin() {
                     get(named<Association>())
                 )
             }
-            single<IChildModelController<DomainInAssociation, String, CreateDomainInAssociationPayload, Unit, Association, String>>(
-                named<DomainInAssociation>()
-            ) {
+            single<IDomainsInAssociationsController> {
                 DomainsInAssociationsController(
                     get(),
                     get(),
@@ -472,7 +468,7 @@ fun Application.configureKoin() {
             }
 
             // Users
-            single<IChildModelController<User, String, CreateUserPayload, UpdateUserPayload, Association, String>>(named<User>()) {
+            single<IUsersController> {
                 UsersController(
                     get(),
                     get(),
@@ -484,7 +480,7 @@ fun Application.configureKoin() {
             }
 
             // Roles
-            single<IChildModelController<Role, String, CreateRolePayload, UpdateRolePayload, Association, String>>(named<Role>()) {
+            single<IRolesController> {
                 RolesController(
                     get(),
                     get(),
@@ -496,9 +492,7 @@ fun Application.configureKoin() {
                     get(named<Role>())
                 )
             }
-            single<IChildModelController<UserInRole, String, CreateUserInRole, Unit, Role, String>>(
-                named<UserInRole>()
-            ) {
+            single<IUsersInRolesController> {
                 UsersInRolesController(
                     get(),
                     get(),
@@ -525,9 +519,7 @@ fun Application.configureKoin() {
                     get(named<WebPage>())
                 )
             }
-            single<IChildModelController<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String>>(
-                named<WebMenu>()
-            ) {
+            single<IWebMenusController> {
                 WebMenusController(
                     get(),
                     get(),
@@ -541,9 +533,7 @@ fun Application.configureKoin() {
             }
 
             // Events
-            single<IChildModelController<Event, String, CreateEventPayload, UpdateEventPayload, Association, String>>(
-                named<Event>()
-            ) {
+            single<IEventsController> {
                 EventsController(
                     get(),
                     get(),
@@ -557,9 +547,7 @@ fun Application.configureKoin() {
             }
 
             // Clubs
-            single<IChildModelController<Club, String, CreateClubPayload, UpdateClubPayload, Association, String>>(
-                named<Club>()
-            ) {
+            single<IClubsController> {
                 ClubsController(
                     get(),
                     get(),
@@ -573,17 +561,17 @@ fun Application.configureKoin() {
             }
         }
         val routerModule = module {
-            single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get(named<Association>())) }
-            single { AssociationsRouter(get(named<Association>()), get(), get(), get()) }
-            single { DomainsInAssociationsRouter(get(named<DomainInAssociation>()), get(), get(), get(), get()) }
-            single { UsersRouter(get(named<User>()), get(), get(), get(), get(), get()) }
+            single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get()) }
+            single { AssociationsRouter(get(), get(), get(), get()) }
+            single { DomainsInAssociationsRouter(get(), get(), get(), get(), get()) }
+            single { UsersRouter(get(), get(), get(), get(), get(), get()) }
             single { AuthRouter(get(), get()) }
-            single { RolesRouter(get(named<Role>()), get(), get(), get(), get(), get()) }
-            single { UsersInRolesRouter(get(named<UserInRole>()), get()) }
+            single { RolesRouter(get(), get(), get(), get(), get(), get()) }
+            single { UsersInRolesRouter(get(), get()) }
             single { WebPagesRouter(get(), get(), get(), get(), get(), get(), get()) }
-            single { WebMenusRouter(get(named<WebMenu>()), get(), get(), get(), get(), get()) }
-            single { EventsRouter(get(named<Event>()), get(), get(), get(), get(), get()) }
-            single { ClubsRouter(get(named<Club>()), get(), get(), get(), get(), get()) }
+            single { WebMenusRouter(get(), get(), get(), get(), get(), get()) }
+            single { EventsRouter(get(), get(), get(), get(), get(), get()) }
+            single { ClubsRouter(get(), get(), get(), get(), get(), get()) }
         }
 
         modules(

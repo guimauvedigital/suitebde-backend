@@ -5,7 +5,6 @@ import io.ktor.server.routing.*
 import io.ktor.util.reflect.*
 import io.swagger.v3.oas.models.OpenAPI
 import io.swagger.v3.oas.models.parameters.Parameter
-import me.nathanfallet.ktorx.controllers.IModelController
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
@@ -13,13 +12,14 @@ import me.nathanfallet.suitebde.usecases.associations.IRequireAssociationForCall
 
 class AssociationForCallRouter(
     private val requireAssociationForCallUseCase: IRequireAssociationForCallUseCase,
-    override val controller: IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload>,
+    override val controller: IAssociationsController,
 ) : IAssociationForCallRouter {
 
     override val modelTypeInfo = typeInfo<Association>()
     override val createPayloadTypeInfo = typeInfo<CreateAssociationPayload>()
     override val updatePayloadTypeInfo = typeInfo<UpdateAssociationPayload>()
-    override val listTypeInfo = typeInfo<List<Association>>()
+
+    override val controllerClass = IAssociationsController::class
     override val parentRouter = null
 
     override val route = ""

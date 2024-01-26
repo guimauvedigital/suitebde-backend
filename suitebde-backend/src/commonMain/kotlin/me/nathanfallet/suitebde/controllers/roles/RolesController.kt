@@ -3,7 +3,6 @@ package me.nathanfallet.suitebde.controllers.roles
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.associations.Association
@@ -28,7 +27,7 @@ class RolesController(
     private val getRoleUseCase: IGetChildModelSuspendUseCase<Role, String, String>,
     private val updateRoleUseCase: IUpdateChildModelSuspendUseCase<Role, String, UpdateRolePayload, String>,
     private val deleteRoleUseCase: IDeleteChildModelSuspendUseCase<Role, String, String>,
-) : IChildModelController<Role, String, CreateRolePayload, UpdateRolePayload, Association, String> {
+) : IRolesController {
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<Role> {
         if (call.request.path().contains("/admin/")) return getRolesInAssociationUseCase(parent.id)
