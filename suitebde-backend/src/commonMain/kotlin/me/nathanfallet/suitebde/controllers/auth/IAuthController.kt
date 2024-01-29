@@ -36,6 +36,7 @@ interface IAuthController : IAuthWithCodeController<LoginPayload, RegisterPayloa
 
     @APIMapping("createToken", "Create a token")
     @CreateModelPath("/token")
+    @DocumentedType(AuthToken::class)
     @DocumentedError(400, "auth_invalid_code")
     @DocumentedError(500, "error_internal")
     suspend fun token(call: ApplicationCall, @Payload request: AuthRequest): AuthToken
