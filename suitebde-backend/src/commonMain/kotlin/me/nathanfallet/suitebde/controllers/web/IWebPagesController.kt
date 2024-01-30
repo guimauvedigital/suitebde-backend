@@ -18,6 +18,7 @@ interface IWebPagesController :
     @APIMapping
     @AdminTemplateMapping
     @GetModelPath
+    @DocumentedError(404, "web_pages_not_found")
     suspend fun get(call: ApplicationCall, @ParentModel parent: Association, @Id id: String): WebPage
 
     @TemplateMapping("public/web/page.ftl")
@@ -31,6 +32,9 @@ interface IWebPagesController :
     @APIMapping
     @AdminTemplateMapping
     @CreateModelPath
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(403, "web_pages_create_not_allowed")
+    @DocumentedError(500, "error_internal")
     suspend fun create(
         call: ApplicationCall,
         @ParentModel parent: Association,
@@ -40,6 +44,10 @@ interface IWebPagesController :
     @APIMapping
     @AdminTemplateMapping
     @UpdateModelPath
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(403, "web_pages_update_not_allowed")
+    @DocumentedError(404, "web_pages_not_found")
+    @DocumentedError(500, "error_internal")
     suspend fun update(
         call: ApplicationCall,
         @ParentModel parent: Association,
@@ -51,6 +59,10 @@ interface IWebPagesController :
     @AdminTemplateMapping
     @DeleteModelPath
     @DocumentedType(WebPage::class)
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(403, "web_pages_delete_not_allowed")
+    @DocumentedError(404, "web_pages_not_found")
+    @DocumentedError(500, "error_internal")
     suspend fun delete(call: ApplicationCall, @ParentModel parent: Association, @Id id: String)
 
 }

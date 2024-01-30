@@ -12,6 +12,9 @@ interface IUsersInRolesController : IChildModelController<UserInRole, String, Cr
     @APIMapping
     @AdminTemplateMapping
     @CreateModelPath
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(403, "users_in_roles_not_allowed")
+    @DocumentedError(500, "error_internal")
     suspend fun create(
         call: ApplicationCall,
         @ParentModel parent: Role,
@@ -22,9 +25,12 @@ interface IUsersInRolesController : IChildModelController<UserInRole, String, Cr
     @AdminTemplateMapping
     @DeleteModelPath
     @DocumentedType(UserInRole::class)
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(403, "users_in_roles_not_allowed")
+    @DocumentedError(404, "users_in_roles_not_found")
+    @DocumentedError(500, "error_internal")
     suspend fun delete(call: ApplicationCall, @ParentModel parent: Role, @Id id: String)
 
-    @APIMapping
     @GetModelPath
     suspend fun get(call: ApplicationCall, @ParentModel parent: Role, @Id id: String): UserInRole
 

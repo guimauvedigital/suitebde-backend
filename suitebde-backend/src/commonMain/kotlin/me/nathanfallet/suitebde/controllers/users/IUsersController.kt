@@ -14,15 +14,24 @@ interface IUsersController :
     @APIMapping
     @AdminTemplateMapping
     @ListModelPath
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(403, "users_view_not_allowed")
     suspend fun list(call: ApplicationCall, @ParentModel parent: Association): List<User>
 
     @APIMapping
     @GetModelPath
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(403, "users_view_not_allowed")
+    @DocumentedError(404, "users_not_found")
     suspend fun get(call: ApplicationCall, @ParentModel parent: Association, @Id id: String): User
 
     @APIMapping
     @AdminTemplateMapping
     @UpdateModelPath
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(403, "users_update_not_allowed")
+    @DocumentedError(404, "users_not_found")
+    @DocumentedError(500, "error_internal")
     suspend fun update(
         call: ApplicationCall,
         @ParentModel parent: Association,

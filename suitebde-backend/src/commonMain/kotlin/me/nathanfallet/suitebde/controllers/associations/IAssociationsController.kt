@@ -17,11 +17,16 @@ interface IAssociationsController :
 
     @APIMapping
     @GetModelPath
+    @DocumentedError(404, "associations_not_found")
     suspend fun get(call: ApplicationCall, @Id id: String): Association
 
     @APIMapping
     @AdminTemplateMapping
     @UpdateModelPath
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(403, "associations_update_not_allowed")
+    @DocumentedError(404, "associations_not_found")
+    @DocumentedError(500, "error_internal")
     suspend fun update(call: ApplicationCall, @Id id: String, @Payload payload: UpdateAssociationPayload): Association
 
 }

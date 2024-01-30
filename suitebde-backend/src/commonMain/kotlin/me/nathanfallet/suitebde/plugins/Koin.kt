@@ -16,9 +16,7 @@ import me.nathanfallet.suitebde.controllers.associations.*
 import me.nathanfallet.suitebde.controllers.auth.AuthController
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
 import me.nathanfallet.suitebde.controllers.auth.IAuthController
-import me.nathanfallet.suitebde.controllers.clubs.ClubsController
-import me.nathanfallet.suitebde.controllers.clubs.ClubsRouter
-import me.nathanfallet.suitebde.controllers.clubs.IClubsController
+import me.nathanfallet.suitebde.controllers.clubs.*
 import me.nathanfallet.suitebde.controllers.events.EventsController
 import me.nathanfallet.suitebde.controllers.events.EventsRouter
 import me.nathanfallet.suitebde.controllers.events.IEventsController
@@ -59,6 +57,7 @@ import me.nathanfallet.suitebde.models.web.*
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
+import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRepository
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRepository
 import me.nathanfallet.suitebde.repositories.users.IClientsInUsersRepository
@@ -174,7 +173,7 @@ fun Application.configureKoin() {
             single<IChildModelSuspendRepository<Club, String, CreateClubPayload, UpdateClubPayload, String>>(named<Club>()) {
                 ClubsDatabaseRepository(get())
             }
-            single<IChildModelSuspendRepository<UserInClub, String, CreateUserInClub, Unit, String>>(named<UserInClub>()) {
+            single<IUsersInClubsRepository> {
                 UsersInClubsDatabaseRepository(get())
             }
         }
@@ -416,6 +415,21 @@ fun Application.configureKoin() {
             single<IDeleteChildModelSuspendUseCase<Club, String, String>>(named<Club>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get(named<Club>()))
             }
+            single<IListChildModelSuspendUseCase<UserInClub, String>>(named<UserInClub>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
+            }
+            single<IListSliceChildModelSuspendUseCase<UserInClub, String>>(named<UserInClub>()) {
+                ListSliceChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
+            }
+            single<IGetChildModelSuspendUseCase<UserInClub, String, String>>(named<UserInClub>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
+            }
+            single<ICreateChildModelSuspendUseCase<UserInClub, CreateUserInClub, String>>(named<UserInClub>()) {
+                CreateChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
+            }
+            single<IDeleteChildModelSuspendUseCase<UserInClub, String, String>>(named<UserInClub>()) {
+                DeleteChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
+            }
         }
         val controllerModule = module {
             // Associations
@@ -559,6 +573,17 @@ fun Application.configureKoin() {
                     get(named<Club>())
                 )
             }
+            single<IUsersInClubsController> {
+                UsersInClubsController(
+                    get(),
+                    get(),
+                    get(named<UserInClub>()),
+                    get(named<UserInClub>()),
+                    get(named<UserInClub>()),
+                    get(named<UserInClub>()),
+                    get(named<UserInClub>())
+                )
+            }
         }
         val routerModule = module {
             single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get()) }
@@ -572,6 +597,7 @@ fun Application.configureKoin() {
             single { WebMenusRouter(get(), get(), get(), get(), get(), get()) }
             single { EventsRouter(get(), get(), get(), get(), get(), get()) }
             single { ClubsRouter(get(), get(), get(), get(), get(), get()) }
+            single { UsersInClubsRouter(get(), get()) }
         }
 
         modules(

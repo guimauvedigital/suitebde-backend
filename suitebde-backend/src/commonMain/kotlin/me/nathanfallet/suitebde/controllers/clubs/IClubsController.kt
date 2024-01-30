@@ -19,6 +19,9 @@ interface IClubsController :
     @APIMapping
     @AdminTemplateMapping
     @CreateModelPath
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(403, "clubs_validated_not_allowed")
+    @DocumentedError(500, "error_internal")
     suspend fun create(
         call: ApplicationCall,
         @ParentModel parent: Association,
@@ -27,11 +30,16 @@ interface IClubsController :
 
     @APIMapping
     @GetModelPath
+    @DocumentedError(404, "clubs_not_found")
     suspend fun get(call: ApplicationCall, @ParentModel parent: Association, @Id id: String): Club
 
     @APIMapping
     @AdminTemplateMapping
     @UpdateModelPath
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(403, "clubs_update_not_allowed")
+    @DocumentedError(404, "clubs_not_found")
+    @DocumentedError(500, "error_internal")
     suspend fun update(
         call: ApplicationCall,
         @ParentModel parent: Association,
@@ -43,6 +51,10 @@ interface IClubsController :
     @AdminTemplateMapping
     @DeleteModelPath
     @DocumentedType(Club::class)
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(403, "clubs_delete_not_allowed")
+    @DocumentedError(404, "clubs_not_found")
+    @DocumentedError(500, "error_internal")
     suspend fun delete(call: ApplicationCall, @ParentModel parent: Association, @Id id: String)
 
 }

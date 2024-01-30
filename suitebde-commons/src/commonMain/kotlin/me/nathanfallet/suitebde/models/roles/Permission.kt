@@ -29,6 +29,7 @@ enum class Permission {
     CLUBS_CREATE,
     CLUBS_UPDATE,
     CLUBS_DELETE,
+    CLUBS_USERS,
     ;
 
     infix fun inAssociation(associationId: String) =

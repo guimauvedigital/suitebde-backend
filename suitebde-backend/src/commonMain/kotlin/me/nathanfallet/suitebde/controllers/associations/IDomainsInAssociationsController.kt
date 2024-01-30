@@ -28,6 +28,9 @@ interface IDomainsInAssociationsController :
     @APIMapping
     @AdminTemplateMapping
     @CreateModelPath
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(403, "domains_update_not_allowed")
+    @DocumentedError(500, "error_internal")
     suspend fun create(
         call: ApplicationCall,
         @ParentModel parent: Association,
@@ -38,6 +41,10 @@ interface IDomainsInAssociationsController :
     @AdminTemplateMapping
     @DeleteModelPath
     @DocumentedType(DomainInAssociation::class)
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(403, "domains_delete_not_allowed")
+    @DocumentedError(404, "domains_not_found")
+    @DocumentedError(500, "error_internal")
     suspend fun delete(call: ApplicationCall, @ParentModel parent: Association, @Id id: String)
 
 }

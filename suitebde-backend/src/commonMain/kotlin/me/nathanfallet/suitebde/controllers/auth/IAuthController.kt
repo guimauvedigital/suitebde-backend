@@ -34,9 +34,9 @@ interface IAuthController : IAuthWithCodeController<LoginPayload, RegisterPayloa
     @AuthorizeRedirectPath
     suspend fun authorize(call: ApplicationCall, client: ClientForUser): String
 
-    @APIMapping("createToken", "Create a token")
+    @APIMapping
     @CreateModelPath("/token")
-    @DocumentedType(AuthToken::class)
+    @DocumentedTag("Auth")
     @DocumentedError(400, "auth_invalid_code")
     @DocumentedError(500, "error_internal")
     suspend fun token(call: ApplicationCall, @Payload request: AuthRequest): AuthToken
