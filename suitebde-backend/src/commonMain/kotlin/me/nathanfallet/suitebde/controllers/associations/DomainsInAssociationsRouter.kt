@@ -1,8 +1,6 @@
 package me.nathanfallet.suitebde.controllers.associations
 
 import io.ktor.util.reflect.*
-import me.nathanfallet.ktorx.controllers.IChildModelController
-import me.nathanfallet.ktorx.models.api.APIMapping
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
 import me.nathanfallet.ktorx.routers.concat.ConcatChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
@@ -14,38 +12,32 @@ import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 
 class DomainsInAssociationsRouter(
-    domainsInAssociationsController: IChildModelController<DomainInAssociation, String, CreateDomainInAssociationPayload, Unit, Association, String>,
+    domainsInAssociationsController: IDomainsInAssociationsController,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     associationsRouter: AssociationsRouter,
 ) : ConcatChildModelRouter<DomainInAssociation, String, CreateDomainInAssociationPayload, Unit, Association, String>(
-    listOf(
-        APIChildModelRouter(
-            typeInfo<DomainInAssociation>(),
-            typeInfo<CreateDomainInAssociationPayload>(),
-            typeInfo<Unit>(),
-            typeInfo<List<DomainInAssociation>>(),
-            domainsInAssociationsController,
-            associationsRouter.routerOf(),
-            mapping = APIMapping(
-                updateEnabled = false
-            ),
-            route = "domains",
-            prefix = "/api/v1"
-        ),
-        AdminChildModelRouter(
-            typeInfo<DomainInAssociation>(),
-            typeInfo<CreateDomainInAssociationPayload>(),
-            typeInfo<Unit>(),
-            typeInfo<List<DomainInAssociation>>(),
-            domainsInAssociationsController,
-            associationsRouter.routerOf(),
-            getLocaleForCallUseCase,
-            translateUseCase,
-            getAdminMenuForCallUseCase,
-            route = "domains"
-        )
+    APIChildModelRouter(
+        typeInfo<DomainInAssociation>(),
+        typeInfo<CreateDomainInAssociationPayload>(),
+        typeInfo<Unit>(),
+        domainsInAssociationsController,
+        IDomainsInAssociationsController::class,
+        associationsRouter.routerOf(),
+        route = "domains",
+        prefix = "/api/v1"
     ),
-    associationsRouter
+    AdminChildModelRouter(
+        typeInfo<DomainInAssociation>(),
+        typeInfo<CreateDomainInAssociationPayload>(),
+        typeInfo<Unit>(),
+        domainsInAssociationsController,
+        IDomainsInAssociationsController::class,
+        associationsRouter.routerOf(),
+        getLocaleForCallUseCase,
+        translateUseCase,
+        getAdminMenuForCallUseCase,
+        route = "domains"
+    )
 )

@@ -1,11 +1,7 @@
 package me.nathanfallet.suitebde.controllers.web
 
 import io.ktor.server.application.*
-import io.ktor.server.routing.*
 import io.ktor.util.reflect.*
-import io.swagger.v3.oas.models.OpenAPI
-import me.nathanfallet.ktorx.models.exceptions.ControllerException
-import me.nathanfallet.ktorx.models.templates.TemplateMapping
 import me.nathanfallet.ktorx.routers.IChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.controllers.models.PublicChildModelRouter
@@ -20,34 +16,19 @@ class WebPagesPublicRouter(
     associationsRouter: IChildModelRouter<Association, String, *, *, *, *>,
     getPublicMenuForCallUseCase: IGetPublicMenuForCallUseCase,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
-    mapping: TemplateMapping,
-    respondTemplate: suspend ApplicationCall.(String, Map<String, Any>) -> Unit,
-    route: String,
+    respondTemplate: suspend ApplicationCall.(String, Map<String, Any?>) -> Unit,
 ) : PublicChildModelRouter<WebPage, String, WebPagePayload, WebPagePayload, Association, String>(
     typeInfo<WebPage>(),
     typeInfo<WebPagePayload>(),
     typeInfo<WebPagePayload>(),
-    typeInfo<List<WebPage>>(),
     webPagesController,
+    IWebPagesController::class,
     associationsRouter,
     getPublicMenuForCallUseCase,
     getLocaleForCallUseCase,
-    mapping,
     respondTemplate,
-    route
+    ""
 ) {
-
-    override fun createLocalizedRoutes(root: Route, openAPI: OpenAPI?) {
-        super.createLocalizedRoutes(root, openAPI)
-        createTemplateGetHomeRoute(root)
-    }
-
-    private suspend fun getHome(call: ApplicationCall): WebPage {
-        return (controller as IWebPagesController).getHome(
-            call,
-            parentRouter!!.get(call)
-        )
-    }
 
     override suspend fun get(call: ApplicationCall): WebPage {
         return (controller as IWebPagesController).getByUrl(
@@ -55,24 +36,6 @@ class WebPagesPublicRouter(
             parentRouter!!.get(call),
             ModelAnnotations.constructIdFromString(WebPage::class, call.parameters[id]!!)
         )
-    }
-
-    private fun createTemplateGetHomeRoute(root: Route) {
-        mapping.getTemplate ?: return
-        root.get {
-            try {
-                call.respondTemplate(
-                    mapping.getTemplate!!,
-                    mapOf(
-                        "route" to route,
-                        "item" to getHome(call),
-                        "keys" to modelKeys
-                    )
-                )
-            } catch (exception: ControllerException) {
-                handleExceptionTemplate(exception, call, mapping.getTemplate!!)
-            }
-        }
     }
 
 }

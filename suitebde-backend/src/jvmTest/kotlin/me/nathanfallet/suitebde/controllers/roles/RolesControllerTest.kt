@@ -143,7 +143,7 @@ class RolesControllerTest {
         )
         val payload = CreateRolePayload("name")
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.ROLES_CREATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.ROLES_CREATE inAssociation association.id) } returns true
         coEvery { createRoleUseCase(payload, role.associationId) } returns role
         assertEquals(role, controller.create(mockk(), association, payload))
     }
@@ -164,7 +164,7 @@ class RolesControllerTest {
         )
         val payload = CreateRolePayload("name")
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.ROLES_CREATE inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.ROLES_CREATE inAssociation association.id) } returns false
         val exception = assertFailsWith(ControllerException::class) {
             controller.create(mockk(), association, payload)
         }
@@ -189,7 +189,7 @@ class RolesControllerTest {
         )
         val payload = CreateRolePayload("name")
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.ROLES_CREATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.ROLES_CREATE inAssociation association.id) } returns true
         coEvery { createRoleUseCase(payload, role.associationId) } returns null
         val exception = assertFailsWith(ControllerException::class) {
             controller.create(mockk(), association, payload)
@@ -219,7 +219,7 @@ class RolesControllerTest {
             name = "newName"
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.ROLES_UPDATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.ROLES_UPDATE inAssociation association.id) } returns true
         coEvery { getRoleUseCase(role.id, role.associationId) } returns role
         coEvery { updateRoleUseCase(role.id, payload, role.associationId) } returns updatedPage
         assertEquals(updatedPage, controller.update(mockk(), association, role.id, payload))
@@ -243,7 +243,7 @@ class RolesControllerTest {
         )
         val payload = UpdateRolePayload("newName")
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.ROLES_UPDATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.ROLES_UPDATE inAssociation association.id) } returns true
         coEvery { getRoleUseCase(role.id, role.associationId) } returns role
         coEvery { updateRoleUseCase(role.id, payload, role.associationId) } returns null
         val exception = assertFailsWith(ControllerException::class) {
@@ -270,7 +270,7 @@ class RolesControllerTest {
         )
         val payload = UpdateRolePayload("newName")
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.ROLES_UPDATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.ROLES_UPDATE inAssociation association.id) } returns true
         coEvery { getRoleUseCase(role.id, role.associationId) } returns null
         val exception = assertFailsWith(ControllerException::class) {
             controller.update(mockk(), association, role.id, payload)
@@ -295,7 +295,7 @@ class RolesControllerTest {
         )
         val payload = UpdateRolePayload("newName")
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.ROLES_UPDATE inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.ROLES_UPDATE inAssociation association.id) } returns false
         val exception = assertFailsWith(ControllerException::class) {
             controller.update(mockk(), association, role.id, payload)
         }
@@ -320,7 +320,7 @@ class RolesControllerTest {
             deleteRoleUseCase
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.ROLES_DELETE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.ROLES_DELETE inAssociation association.id) } returns true
         coEvery { getRoleUseCase(role.id, role.associationId) } returns role
         coEvery { deleteRoleUseCase(role.id, role.associationId) } returns true
         controller.delete(mockk(), association, role.id)
@@ -346,7 +346,7 @@ class RolesControllerTest {
             deleteRoleUseCase
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.ROLES_DELETE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.ROLES_DELETE inAssociation association.id) } returns true
         coEvery { getRoleUseCase(role.id, role.associationId) } returns role
         coEvery { deleteRoleUseCase(role.id, role.associationId) } returns false
         val exception = assertFailsWith(ControllerException::class) {
@@ -372,7 +372,7 @@ class RolesControllerTest {
             mockk()
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.ROLES_DELETE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.ROLES_DELETE inAssociation association.id) } returns true
         coEvery { getRoleUseCase(role.id, role.associationId) } returns null
         val exception = assertFailsWith(ControllerException::class) {
             controller.delete(mockk(), association, role.id)
@@ -396,7 +396,7 @@ class RolesControllerTest {
             mockk()
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.ROLES_DELETE inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.ROLES_DELETE inAssociation association.id) } returns false
         val exception = assertFailsWith(ControllerException::class) {
             controller.delete(mockk(), association, role.id)
         }

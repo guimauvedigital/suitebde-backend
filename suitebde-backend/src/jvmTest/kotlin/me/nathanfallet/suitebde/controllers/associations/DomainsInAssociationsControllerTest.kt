@@ -165,7 +165,7 @@ class DomainsInAssociationsControllerTest {
         val call = mockk<ApplicationCall>()
         val payload = CreateDomainInAssociationPayload("domain")
         coEvery { requireUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.DOMAINS_CREATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.DOMAINS_CREATE inAssociation association.id) } returns true
         coEvery { createDomainUseCase(payload, association.id) } returns domain
         val controller = DomainsInAssociationsController(
             requireUserForCallUseCase,
@@ -186,7 +186,7 @@ class DomainsInAssociationsControllerTest {
         val call = mockk<ApplicationCall>()
         val payload = CreateDomainInAssociationPayload("domain")
         coEvery { requireUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.DOMAINS_CREATE inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.DOMAINS_CREATE inAssociation association.id) } returns false
         val controller = DomainsInAssociationsController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
@@ -212,7 +212,7 @@ class DomainsInAssociationsControllerTest {
         val call = mockk<ApplicationCall>()
         val payload = CreateDomainInAssociationPayload("domain")
         coEvery { requireUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.DOMAINS_CREATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.DOMAINS_CREATE inAssociation association.id) } returns true
         coEvery { createDomainUseCase(payload, association.id) } returns null
         val controller = DomainsInAssociationsController(
             requireUserForCallUseCase,
@@ -231,25 +231,6 @@ class DomainsInAssociationsControllerTest {
     }
 
     @Test
-    fun testUpdate() = runBlocking {
-        val call = mockk<ApplicationCall>()
-        val controller = DomainsInAssociationsController(
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk()
-        )
-        val exception = assertFailsWith(ControllerException::class) {
-            controller.update(call, association, "domain", Unit)
-        }
-        assertEquals(HttpStatusCode.MethodNotAllowed, exception.code)
-        assertEquals("domains_update_not_allowed", exception.key)
-    }
-
-    @Test
     fun testDelete() = runBlocking {
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
@@ -257,7 +238,7 @@ class DomainsInAssociationsControllerTest {
         val deleteDomainUseCase = mockk<IDeleteChildModelSuspendUseCase<DomainInAssociation, String, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { requireUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.DOMAINS_DELETE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.DOMAINS_DELETE inAssociation association.id) } returns true
         coEvery { getDomainUseCase(domain.domain, association.id) } returns domain
         coEvery { deleteDomainUseCase(domain.domain, association.id) } returns true
         val controller = DomainsInAssociationsController(
@@ -281,7 +262,7 @@ class DomainsInAssociationsControllerTest {
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
         val call = mockk<ApplicationCall>()
         coEvery { requireUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.DOMAINS_DELETE inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.DOMAINS_DELETE inAssociation association.id) } returns false
         val controller = DomainsInAssociationsController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
@@ -306,7 +287,7 @@ class DomainsInAssociationsControllerTest {
         val deleteDomainUseCase = mockk<IDeleteChildModelSuspendUseCase<DomainInAssociation, String, String>>()
         val call = mockk<ApplicationCall>()
         coEvery { requireUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.DOMAINS_DELETE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.DOMAINS_DELETE inAssociation association.id) } returns true
         coEvery { getDomainUseCase(domain.domain, association.id) } returns domain
         coEvery { deleteDomainUseCase(domain.domain, association.id) } returns false
         val controller = DomainsInAssociationsController(

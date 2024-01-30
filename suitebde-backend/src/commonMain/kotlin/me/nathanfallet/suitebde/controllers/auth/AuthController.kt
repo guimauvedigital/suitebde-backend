@@ -2,7 +2,7 @@ package me.nathanfallet.suitebde.controllers.auth
 
 import io.ktor.http.*
 import io.ktor.server.application.*
-import me.nathanfallet.ktorx.controllers.auth.AuthWithCodeController
+import me.nathanfallet.ktorx.controllers.auth.AbstractAuthWithCodeController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.auth.*
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
@@ -39,7 +39,7 @@ class AuthController(
     private val sendEmailUseCase: ISendEmailUseCase,
     private val getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     private val translateUseCase: ITranslateUseCase,
-) : AuthWithCodeController<LoginPayload, RegisterPayload, RegisterCodePayload>(
+) : AbstractAuthWithCodeController<LoginPayload, RegisterPayload, RegisterCodePayload>(
     loginUseCase,
     registerUseCase,
     createSessionForUserUseCase,

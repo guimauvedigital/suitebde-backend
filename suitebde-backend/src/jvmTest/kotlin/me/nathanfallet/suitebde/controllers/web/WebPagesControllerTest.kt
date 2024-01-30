@@ -202,7 +202,7 @@ class WebPagesControllerTest {
         )
         val payload = WebPagePayload("url", "title", "content", true)
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_CREATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_CREATE inAssociation association.id) } returns true
         coEvery { createWebPageUseCase(payload, page.associationId) } returns page
         assertEquals(page, controller.create(mockk(), association, payload))
     }
@@ -225,7 +225,7 @@ class WebPagesControllerTest {
         )
         val payload = WebPagePayload("url", "title", "content", true)
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_CREATE inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_CREATE inAssociation association.id) } returns false
         val exception = assertFailsWith(ControllerException::class) {
             controller.create(mockk(), association, payload)
         }
@@ -253,7 +253,7 @@ class WebPagesControllerTest {
         )
         val payload = WebPagePayload("url", "title", "content", true)
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_CREATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_CREATE inAssociation association.id) } returns true
         coEvery { createWebPageUseCase(payload, page.associationId) } returns null
         val exception = assertFailsWith(ControllerException::class) {
             controller.create(mockk(), association, payload)
@@ -288,7 +288,7 @@ class WebPagesControllerTest {
             home = payload.home
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_UPDATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_UPDATE inAssociation association.id) } returns true
         coEvery { getWebPageUseCase(page.id, page.associationId) } returns page
         coEvery { updateWebPageUseCase(page.id, payload, page.associationId) } returns updatedPage
         assertEquals(updatedPage, controller.update(mockk(), association, page.id, payload))
@@ -315,7 +315,7 @@ class WebPagesControllerTest {
         )
         val payload = WebPagePayload("url", "title2", "content2", true)
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_UPDATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_UPDATE inAssociation association.id) } returns true
         coEvery { getWebPageUseCase(page.id, page.associationId) } returns page
         coEvery { updateWebPageUseCase(page.id, payload, page.associationId) } returns null
         val exception = assertFailsWith(ControllerException::class) {
@@ -344,7 +344,7 @@ class WebPagesControllerTest {
         )
         val payload = WebPagePayload("url", "title2", "content2", true)
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_UPDATE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_UPDATE inAssociation association.id) } returns true
         coEvery { getWebPageUseCase(page.id, page.associationId) } returns null
         val exception = assertFailsWith(ControllerException::class) {
             controller.update(mockk(), association, page.id, payload)
@@ -371,7 +371,7 @@ class WebPagesControllerTest {
         )
         val payload = WebPagePayload("url", "title2", "content2", true)
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_UPDATE inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_UPDATE inAssociation association.id) } returns false
         val exception = assertFailsWith(ControllerException::class) {
             controller.update(mockk(), association, page.id, payload)
         }
@@ -399,7 +399,7 @@ class WebPagesControllerTest {
             deleteWebPageUseCase
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_DELETE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_DELETE inAssociation association.id) } returns true
         coEvery { getWebPageUseCase(page.id, page.associationId) } returns page
         coEvery { deleteWebPageUseCase(page.id, page.associationId) } returns true
         controller.delete(mockk(), association, page.id)
@@ -428,7 +428,7 @@ class WebPagesControllerTest {
             deleteWebPageUseCase
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_DELETE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_DELETE inAssociation association.id) } returns true
         coEvery { getWebPageUseCase(page.id, page.associationId) } returns page
         coEvery { deleteWebPageUseCase(page.id, page.associationId) } returns false
         val exception = assertFailsWith(ControllerException::class) {
@@ -456,7 +456,7 @@ class WebPagesControllerTest {
             mockk()
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_DELETE inAssociation association) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_DELETE inAssociation association.id) } returns true
         coEvery { getWebPageUseCase(page.id, page.associationId) } returns null
         val exception = assertFailsWith(ControllerException::class) {
             controller.delete(mockk(), association, page.id)
@@ -482,7 +482,7 @@ class WebPagesControllerTest {
             mockk()
         )
         coEvery { requireUserForCallUseCase(any()) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_DELETE inAssociation association) } returns false
+        coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_DELETE inAssociation association.id) } returns false
         val exception = assertFailsWith(ControllerException::class) {
             controller.delete(mockk(), association, page.id)
         }

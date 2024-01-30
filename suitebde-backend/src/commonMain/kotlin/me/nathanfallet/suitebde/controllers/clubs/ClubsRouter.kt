@@ -1,7 +1,6 @@
 package me.nathanfallet.suitebde.controllers.clubs
 
 import io.ktor.util.reflect.*
-import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
 import me.nathanfallet.ktorx.routers.concat.ConcatChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
@@ -16,34 +15,31 @@ import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 
 class ClubsRouter(
-    clubsController: IChildModelController<Club, String, CreateClubPayload, UpdateClubPayload, Association, String>,
+    clubsController: IClubsController,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     associationForCallRouter: IAssociationForCallRouter,
     associationsRouter: AssociationsRouter,
 ) : ConcatChildModelRouter<Club, String, CreateClubPayload, UpdateClubPayload, Association, String>(
-    listOf(
-        APIChildModelRouter(
-            typeInfo<Club>(),
-            typeInfo<CreateClubPayload>(),
-            typeInfo<UpdateClubPayload>(),
-            typeInfo<List<Club>>(),
-            clubsController,
-            associationsRouter,
-            prefix = "/api/v1"
-        ),
-        AdminChildModelRouter(
-            typeInfo<Club>(),
-            typeInfo<CreateClubPayload>(),
-            typeInfo<UpdateClubPayload>(),
-            typeInfo<List<Club>>(),
-            clubsController,
-            associationForCallRouter,
-            getLocaleForCallUseCase,
-            translateUseCase,
-            getAdminMenuForCallUseCase
-        )
+    APIChildModelRouter(
+        typeInfo<Club>(),
+        typeInfo<CreateClubPayload>(),
+        typeInfo<UpdateClubPayload>(),
+        clubsController,
+        IClubsController::class,
+        associationsRouter,
+        prefix = "/api/v1"
     ),
-    associationsRouter
+    AdminChildModelRouter(
+        typeInfo<Club>(),
+        typeInfo<CreateClubPayload>(),
+        typeInfo<UpdateClubPayload>(),
+        clubsController,
+        IClubsController::class,
+        associationForCallRouter,
+        getLocaleForCallUseCase,
+        translateUseCase,
+        getAdminMenuForCallUseCase
+    )
 )

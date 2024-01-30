@@ -1,7 +1,6 @@
 package me.nathanfallet.suitebde.controllers.web
 
 import io.ktor.util.reflect.*
-import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
 import me.nathanfallet.ktorx.routers.concat.ConcatChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
@@ -16,34 +15,31 @@ import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 
 class WebMenusRouter(
-    webMenusController: IChildModelController<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String>,
+    webMenusController: IWebMenusController,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     associationForCallRouter: IAssociationForCallRouter,
     associationsRouter: AssociationsRouter,
 ) : ConcatChildModelRouter<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String>(
-    listOf(
-        APIChildModelRouter(
-            typeInfo<WebMenu>(),
-            typeInfo<CreateWebMenuPayload>(),
-            typeInfo<UpdateWebMenuPayload>(),
-            typeInfo<List<WebMenu>>(),
-            webMenusController,
-            associationsRouter,
-            prefix = "/api/v1"
-        ),
-        AdminChildModelRouter(
-            typeInfo<WebMenu>(),
-            typeInfo<CreateWebMenuPayload>(),
-            typeInfo<UpdateWebMenuPayload>(),
-            typeInfo<List<WebMenu>>(),
-            webMenusController,
-            associationForCallRouter,
-            getLocaleForCallUseCase,
-            translateUseCase,
-            getAdminMenuForCallUseCase
-        ),
+    APIChildModelRouter(
+        typeInfo<WebMenu>(),
+        typeInfo<CreateWebMenuPayload>(),
+        typeInfo<UpdateWebMenuPayload>(),
+        webMenusController,
+        IWebMenusController::class,
+        associationsRouter,
+        prefix = "/api/v1"
     ),
-    associationsRouter
+    AdminChildModelRouter(
+        typeInfo<WebMenu>(),
+        typeInfo<CreateWebMenuPayload>(),
+        typeInfo<UpdateWebMenuPayload>(),
+        webMenusController,
+        IWebMenusController::class,
+        associationForCallRouter,
+        getLocaleForCallUseCase,
+        translateUseCase,
+        getAdminMenuForCallUseCase
+    )
 )

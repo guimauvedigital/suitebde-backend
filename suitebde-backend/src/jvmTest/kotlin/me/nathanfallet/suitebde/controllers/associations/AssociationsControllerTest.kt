@@ -10,7 +10,6 @@ import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import me.nathanfallet.suitebde.models.roles.AdminPermission
 import me.nathanfallet.suitebde.models.users.User
@@ -93,23 +92,6 @@ class AssociationsControllerTest {
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
         assertEquals("associations_not_found", exception.key)
-    }
-
-    @Test
-    fun testCreate() = runBlocking {
-        val call = mockk<ApplicationCall>()
-        val controller = AssociationsController(mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
-        val exception = assertFailsWith(ControllerException::class) {
-            controller.create(
-                call,
-                CreateAssociationPayload(
-                    "name", "school", "city", "email",
-                    "password", "firstname", "lastname"
-                )
-            )
-        }
-        assertEquals(HttpStatusCode.MethodNotAllowed, exception.code)
-        assertEquals("associations_create_not_allowed", exception.key)
     }
 
     @Test

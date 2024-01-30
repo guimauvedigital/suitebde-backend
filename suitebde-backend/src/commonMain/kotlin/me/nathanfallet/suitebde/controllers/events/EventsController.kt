@@ -3,7 +3,6 @@ package me.nathanfallet.suitebde.controllers.events
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.associations.Association
@@ -28,12 +27,16 @@ class EventsController(
     private val createEventUseCase: ICreateChildModelSuspendUseCase<Event, CreateEventPayload, String>,
     private val updateEventUseCase: IUpdateChildModelSuspendUseCase<Event, String, UpdateEventPayload, String>,
     private val deleteEventUseCase: IDeleteChildModelSuspendUseCase<Event, String, String>,
-) : IChildModelController<Event, String, CreateEventPayload, UpdateEventPayload, Association, String> {
+) : IEventsController {
 
     override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateEventPayload): Event {
         val user = requireUserForCallUseCase(call)
         payload.validated?.let {
-            if (!checkPermissionUseCase(user, Permission.EVENTS_CREATE inAssociation parent)) throw ControllerException(
+            if (!checkPermissionUseCase(
+                    user,
+                    Permission.EVENTS_CREATE inAssociation parent.id
+                )
+            ) throw ControllerException(
                 HttpStatusCode.Forbidden, "events_validated_not_allowed"
             )
         }
@@ -44,7 +47,7 @@ class EventsController(
 
     override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.EVENTS_DELETE inAssociation parent)
+            checkPermissionUseCase(it, Permission.EVENTS_DELETE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "events_delete_not_allowed"
         )
@@ -78,7 +81,7 @@ class EventsController(
         payload: UpdateEventPayload,
     ): Event {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.EVENTS_UPDATE inAssociation parent)
+            checkPermissionUseCase(it, Permission.EVENTS_UPDATE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "events_update_not_allowed"
         )

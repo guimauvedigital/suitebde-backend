@@ -1,10 +1,10 @@
 package me.nathanfallet.suitebde.database.clubs
 
 import kotlinx.datetime.Clock
-import me.nathanfallet.ktorx.database.IDatabase
 import me.nathanfallet.suitebde.models.clubs.Club
 import me.nathanfallet.suitebde.models.clubs.CreateClubPayload
 import me.nathanfallet.suitebde.models.clubs.UpdateClubPayload
+import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
 import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 import org.jetbrains.exposed.sql.*

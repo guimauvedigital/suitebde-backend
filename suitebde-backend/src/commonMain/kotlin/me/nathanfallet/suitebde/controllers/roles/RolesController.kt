@@ -3,7 +3,6 @@ package me.nathanfallet.suitebde.controllers.roles
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.associations.Association
@@ -28,7 +27,7 @@ class RolesController(
     private val getRoleUseCase: IGetChildModelSuspendUseCase<Role, String, String>,
     private val updateRoleUseCase: IUpdateChildModelSuspendUseCase<Role, String, UpdateRolePayload, String>,
     private val deleteRoleUseCase: IDeleteChildModelSuspendUseCase<Role, String, String>,
-) : IChildModelController<Role, String, CreateRolePayload, UpdateRolePayload, Association, String> {
+) : IRolesController {
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<Role> {
         if (call.request.path().contains("/admin/")) return getRolesInAssociationUseCase(parent.id)
@@ -41,7 +40,7 @@ class RolesController(
 
     override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateRolePayload): Role {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.ROLES_CREATE inAssociation parent)
+            checkPermissionUseCase(it, Permission.ROLES_CREATE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "roles_create_not_allowed"
         )
@@ -63,7 +62,7 @@ class RolesController(
         payload: UpdateRolePayload,
     ): Role {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.ROLES_UPDATE inAssociation parent)
+            checkPermissionUseCase(it, Permission.ROLES_UPDATE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "roles_update_not_allowed"
         )
@@ -77,7 +76,7 @@ class RolesController(
 
     override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.ROLES_DELETE inAssociation parent)
+            checkPermissionUseCase(it, Permission.ROLES_DELETE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "roles_delete_not_allowed"
         )

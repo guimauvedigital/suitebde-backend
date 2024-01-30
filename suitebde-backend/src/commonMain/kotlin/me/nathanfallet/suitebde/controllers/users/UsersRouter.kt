@@ -1,8 +1,6 @@
 package me.nathanfallet.suitebde.controllers.users
 
 import io.ktor.util.reflect.*
-import me.nathanfallet.ktorx.controllers.IChildModelController
-import me.nathanfallet.ktorx.models.api.APIMapping
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
 import me.nathanfallet.ktorx.routers.concat.ConcatChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
@@ -17,38 +15,31 @@ import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 
 class UsersRouter(
-    usersController: IChildModelController<User, String, CreateUserPayload, UpdateUserPayload, Association, String>,
+    usersController: IUsersController,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     associationForCallRouter: IAssociationForCallRouter,
     associationsRouter: AssociationsRouter,
 ) : ConcatChildModelRouter<User, String, CreateUserPayload, UpdateUserPayload, Association, String>(
-    listOf(
-        APIChildModelRouter(
-            typeInfo<User>(),
-            typeInfo<CreateUserPayload>(),
-            typeInfo<UpdateUserPayload>(),
-            typeInfo<List<User>>(),
-            usersController,
-            associationsRouter,
-            mapping = APIMapping(
-                createEnabled = false,
-                deleteEnabled = false
-            ),
-            prefix = "/api/v1"
-        ),
-        AdminChildModelRouter(
-            typeInfo<User>(),
-            typeInfo<CreateUserPayload>(),
-            typeInfo<UpdateUserPayload>(),
-            typeInfo<List<User>>(),
-            usersController,
-            associationForCallRouter,
-            getLocaleForCallUseCase,
-            translateUseCase,
-            getAdminMenuForCallUseCase
-        )
+    APIChildModelRouter(
+        typeInfo<User>(),
+        typeInfo<CreateUserPayload>(),
+        typeInfo<UpdateUserPayload>(),
+        usersController,
+        IUsersController::class,
+        associationsRouter,
+        prefix = "/api/v1"
     ),
-    associationsRouter
+    AdminChildModelRouter(
+        typeInfo<User>(),
+        typeInfo<CreateUserPayload>(),
+        typeInfo<UpdateUserPayload>(),
+        usersController,
+        IUsersController::class,
+        associationForCallRouter,
+        getLocaleForCallUseCase,
+        translateUseCase,
+        getAdminMenuForCallUseCase
+    )
 )

@@ -1,9 +1,9 @@
 package me.nathanfallet.suitebde.database.roles
 
-import me.nathanfallet.ktorx.database.IDatabase
 import me.nathanfallet.suitebde.models.roles.CreateRolePayload
 import me.nathanfallet.suitebde.models.roles.Role
 import me.nathanfallet.suitebde.models.roles.UpdateRolePayload
+import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
 import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 import org.jetbrains.exposed.sql.*

@@ -3,7 +3,6 @@ package me.nathanfallet.suitebde.controllers.web
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.associations.Association
@@ -28,7 +27,7 @@ class WebMenusController(
     private val createWebMenuUseCase: ICreateChildModelSuspendUseCase<WebMenu, CreateWebMenuPayload, String>,
     private val updateWebMenuUseCase: IUpdateChildModelSuspendUseCase<WebMenu, String, UpdateWebMenuPayload, String>,
     private val deleteWebMenuUseCase: IDeleteChildModelSuspendUseCase<WebMenu, String, String>,
-) : IChildModelController<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String> {
+) : IWebMenusController {
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<WebMenu> {
         if (call.request.path().contains("/admin/")) return getWebMenusUseCase(parent.id)
@@ -47,7 +46,7 @@ class WebMenusController(
 
     override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateWebMenuPayload): WebMenu {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.WEBMENUS_CREATE inAssociation parent)
+            checkPermissionUseCase(it, Permission.WEBMENUS_CREATE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "webmenus_create_not_allowed"
         )
@@ -63,7 +62,7 @@ class WebMenusController(
         payload: UpdateWebMenuPayload,
     ): WebMenu {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.WEBMENUS_UPDATE inAssociation parent)
+            checkPermissionUseCase(it, Permission.WEBMENUS_UPDATE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "webmenus_update_not_allowed"
         )
@@ -77,7 +76,7 @@ class WebMenusController(
 
     override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.WEBMENUS_DELETE inAssociation parent)
+            checkPermissionUseCase(it, Permission.WEBMENUS_DELETE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "webmenus_delete_not_allowed"
         )

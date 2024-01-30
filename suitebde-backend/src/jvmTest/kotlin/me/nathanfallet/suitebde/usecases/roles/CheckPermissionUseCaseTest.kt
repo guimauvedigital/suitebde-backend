@@ -22,21 +22,21 @@ class CheckPermissionUseCaseTest {
     fun invokeNotInAssociation() = runBlocking {
         val useCase = CheckPermissionUseCase(mockk())
         val user = User("id", "otherAssociationId", "email", "password", "firstName", "lastName", true)
-        assertEquals(false, useCase(user, Permission.USERS_VIEW inAssociation association))
+        assertEquals(false, useCase(user, Permission.USERS_VIEW inAssociation association.id))
     }
 
     @Test
     fun invokeSuperAdmin() = runBlocking {
         val useCase = CheckPermissionUseCase(mockk())
         val user = User("id", "admin", "email", "password", "firstName", "lastName", false)
-        assertEquals(true, useCase(user, Permission.USERS_VIEW inAssociation association))
+        assertEquals(true, useCase(user, Permission.USERS_VIEW inAssociation association.id))
     }
 
     @Test
     fun invokeSuperuser() = runBlocking {
         val useCase = CheckPermissionUseCase(mockk())
         val user = User("id", "associationId", "email", "password", "firstName", "lastName", true)
-        assertEquals(true, useCase(user, Permission.USERS_VIEW inAssociation association))
+        assertEquals(true, useCase(user, Permission.USERS_VIEW inAssociation association.id))
     }
 
     @Test
@@ -45,7 +45,7 @@ class CheckPermissionUseCaseTest {
         val useCase = CheckPermissionUseCase(getPermissionsForUserUseCase)
         val user = User("id", "associationId", "email", "password", "firstName", "lastName", false)
         coEvery { getPermissionsForUserUseCase(user) } returns setOf()
-        assertEquals(false, useCase(user, Permission.USERS_VIEW inAssociation association))
+        assertEquals(false, useCase(user, Permission.USERS_VIEW inAssociation association.id))
     }
 
     @Test
@@ -54,7 +54,7 @@ class CheckPermissionUseCaseTest {
         val useCase = CheckPermissionUseCase(getPermissionsForUserUseCase)
         val user = User("id", "associationId", "email", "password", "firstName", "lastName", false)
         coEvery { getPermissionsForUserUseCase(user) } returns setOf(Permission.USERS_VIEW)
-        assertEquals(true, useCase(user, Permission.USERS_VIEW inAssociation association))
+        assertEquals(true, useCase(user, Permission.USERS_VIEW inAssociation association.id))
     }
 
     @Test

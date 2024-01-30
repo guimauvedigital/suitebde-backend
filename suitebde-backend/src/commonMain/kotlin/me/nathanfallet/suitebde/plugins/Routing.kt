@@ -12,8 +12,10 @@ import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
 import me.nathanfallet.suitebde.controllers.associations.DomainsInAssociationsRouter
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
 import me.nathanfallet.suitebde.controllers.clubs.ClubsRouter
+import me.nathanfallet.suitebde.controllers.clubs.UsersInClubsRouter
 import me.nathanfallet.suitebde.controllers.events.EventsRouter
 import me.nathanfallet.suitebde.controllers.roles.RolesRouter
+import me.nathanfallet.suitebde.controllers.roles.UsersInRolesRouter
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
 import me.nathanfallet.suitebde.controllers.web.WebMenusRouter
 import me.nathanfallet.suitebde.controllers.web.WebPagesRouter
@@ -40,10 +42,12 @@ fun Application.configureRouting() {
         val authRouter by inject<AuthRouter>()
         val usersRouter by inject<UsersRouter>()
         val rolesRouter by inject<RolesRouter>()
+        val usersInRolesRouter by inject<UsersInRolesRouter>()
         val webPagesRouter by inject<WebPagesRouter>()
         val webMenusRouter by inject<WebMenusRouter>()
         val eventsRouter by inject<EventsRouter>()
         val clubsRouter by inject<ClubsRouter>()
+        val usersInClubsRouter by inject<UsersInClubsRouter>()
 
         val openAPIRouter = OpenAPIRouter()
 
@@ -53,10 +57,12 @@ fun Application.configureRouting() {
             authRouter.createRoutes(this, openAPI)
             usersRouter.createRoutes(this, openAPI)
             rolesRouter.createRoutes(this, openAPI)
+            usersInRolesRouter.createRoutes(this, openAPI)
             webPagesRouter.createRoutes(this, openAPI)
             webMenusRouter.createRoutes(this, openAPI)
             eventsRouter.createRoutes(this, openAPI)
             clubsRouter.createRoutes(this, openAPI)
+            usersInClubsRouter.createRoutes(this, openAPI)
 
             openAPIRouter.createRoutes(this, openAPI)
         }

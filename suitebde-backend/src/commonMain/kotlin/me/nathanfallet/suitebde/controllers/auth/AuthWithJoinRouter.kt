@@ -7,29 +7,25 @@ import io.ktor.server.request.*
 import io.ktor.server.routing.*
 import io.ktor.util.reflect.*
 import io.swagger.v3.oas.models.OpenAPI
-import me.nathanfallet.ktorx.models.auth.AuthMapping
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.routers.auth.LocalizedAuthWithCodeTemplateRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.models.auth.*
 
 class AuthWithJoinRouter(
-    override val controller: IAuthController,
+    private val authController: IAuthController,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
 ) : LocalizedAuthWithCodeTemplateRouter<LoginPayload, RegisterPayload, RegisterCodePayload>(
     typeInfo<LoginPayload>(),
     typeInfo<RegisterPayload>(),
     typeInfo<RegisterCodePayload>(),
-    AuthMapping(
-        loginTemplate = "auth/login.ftl",
-        registerTemplate = "auth/register.ftl",
-        authorizeTemplate = "auth/authorize.ftl",
-        redirectTemplate = "auth/redirect.ftl",
-        redirectUnauthorizedToUrl = "/auth/login?redirect={path}",
-    ),
+    authController,
+    IAuthController::class,
     { template, model -> respondTemplate(template, model) },
-    controller,
-    getLocaleForCallUseCase
+    getLocaleForCallUseCase,
+    null,
+    "/auth/login?redirect={path}",
+    "auth/redirect.ftl",
 ) {
 
     override fun createLocalizedRoutes(root: Route, openAPI: OpenAPI?) {
@@ -56,7 +52,7 @@ class AuthWithJoinRouter(
                 val email = parameters["email"] ?: throw ControllerException(
                     HttpStatusCode.BadRequest, "error_body_invalid"
                 )
-                controller.join(call, JoinPayload(email))
+                authController.join(call, JoinPayload(email))
                 call.respondTemplate(
                     "auth/join.ftl",
                     mapOf("success" to "auth_join_email_sent")
@@ -71,7 +67,7 @@ class AuthWithJoinRouter(
         root.get("$fullRoute/join/{code}") {
             try {
                 val code = call.parameters["code"]!!
-                val payload = controller.join(call, code)
+                val payload = authController.join(call, code)
                 call.respondTemplate(
                     "auth/join.ftl",
                     mapOf("codePayload" to payload)
@@ -86,7 +82,7 @@ class AuthWithJoinRouter(
         root.post("$fullRoute/join/{code}") {
             try {
                 val code = call.parameters["code"]!!
-                val payload = controller.join(call, code)
+                val payload = authController.join(call, code)
                 val parameters = call.receiveParameters()
                 val name = parameters["name"]?.takeIf { it.isNotBlank() }
                 val school = parameters["school"]?.takeIf { it.isNotBlank() }
@@ -104,7 +100,7 @@ class AuthWithJoinRouter(
                 ) {
                     throw ControllerException(HttpStatusCode.BadRequest, "error_body_invalid")
                 }
-                controller.join(
+                authController.join(
                     call,
                     code,
                     JoinCodePayload(

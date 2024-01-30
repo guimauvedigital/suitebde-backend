@@ -4,9 +4,6 @@ import io.ktor.server.application.*
 import me.nathanfallet.cloudflare.client.CloudflareClient
 import me.nathanfallet.cloudflare.client.ICloudflareClient
 import me.nathanfallet.i18n.usecases.localization.TranslateUseCase
-import me.nathanfallet.ktorx.controllers.IChildModelController
-import me.nathanfallet.ktorx.controllers.IModelController
-import me.nathanfallet.ktorx.database.IDatabase
 import me.nathanfallet.ktorx.database.sessions.SessionsDatabaseRepository
 import me.nathanfallet.ktorx.repositories.sessions.ISessionsRepository
 import me.nathanfallet.ktorx.usecases.auth.*
@@ -19,12 +16,12 @@ import me.nathanfallet.suitebde.controllers.associations.*
 import me.nathanfallet.suitebde.controllers.auth.AuthController
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
 import me.nathanfallet.suitebde.controllers.auth.IAuthController
-import me.nathanfallet.suitebde.controllers.clubs.ClubsController
-import me.nathanfallet.suitebde.controllers.clubs.ClubsRouter
+import me.nathanfallet.suitebde.controllers.clubs.*
 import me.nathanfallet.suitebde.controllers.events.EventsController
 import me.nathanfallet.suitebde.controllers.events.EventsRouter
-import me.nathanfallet.suitebde.controllers.roles.RolesController
-import me.nathanfallet.suitebde.controllers.roles.RolesRouter
+import me.nathanfallet.suitebde.controllers.events.IEventsController
+import me.nathanfallet.suitebde.controllers.roles.*
+import me.nathanfallet.suitebde.controllers.users.IUsersController
 import me.nathanfallet.suitebde.controllers.users.UsersController
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
 import me.nathanfallet.suitebde.controllers.web.*
@@ -52,9 +49,7 @@ import me.nathanfallet.suitebde.models.clubs.*
 import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
 import me.nathanfallet.suitebde.models.events.UpdateEventPayload
-import me.nathanfallet.suitebde.models.roles.CreateRolePayload
-import me.nathanfallet.suitebde.models.roles.Role
-import me.nathanfallet.suitebde.models.roles.UpdateRolePayload
+import me.nathanfallet.suitebde.models.roles.*
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
@@ -62,6 +57,7 @@ import me.nathanfallet.suitebde.models.web.*
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
+import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRepository
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRepository
 import me.nathanfallet.suitebde.repositories.users.IClientsInUsersRepository
@@ -80,6 +76,7 @@ import me.nathanfallet.suitebde.usecases.roles.GetPermissionsForUserUseCase
 import me.nathanfallet.suitebde.usecases.roles.IGetPermissionsForUserUseCase
 import me.nathanfallet.suitebde.usecases.users.*
 import me.nathanfallet.suitebde.usecases.web.*
+import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.emails.ISendEmailUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.create.CreateChildModelFromRepositorySuspendUseCase
@@ -176,7 +173,7 @@ fun Application.configureKoin() {
             single<IChildModelSuspendRepository<Club, String, CreateClubPayload, UpdateClubPayload, String>>(named<Club>()) {
                 ClubsDatabaseRepository(get())
             }
-            single<IChildModelSuspendRepository<UserInClub, String, CreateUserInClub, Unit, String>>(named<UserInClub>()) {
+            single<IUsersInClubsRepository> {
                 UsersInClubsDatabaseRepository(get())
             }
         }
@@ -319,6 +316,21 @@ fun Application.configureKoin() {
             single<IDeleteChildModelSuspendUseCase<Role, String, String>>(named<Role>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get(named<Role>()))
             }
+            single<IListChildModelSuspendUseCase<UserInRole, String>>(named<UserInRole>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<IUsersInRolesRepository>())
+            }
+            single<IListSliceChildModelSuspendUseCase<UserInRole, String>>(named<UserInRole>()) {
+                ListSliceChildModelFromRepositorySuspendUseCase(get<IUsersInRolesRepository>())
+            }
+            single<IGetChildModelSuspendUseCase<UserInRole, String, String>>(named<UserInRole>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<IUsersInRolesRepository>())
+            }
+            single<ICreateChildModelSuspendUseCase<UserInRole, CreateUserInRole, String>>(named<UserInRole>()) {
+                CreateChildModelFromRepositorySuspendUseCase(get<IUsersInRolesRepository>())
+            }
+            single<IDeleteChildModelSuspendUseCase<UserInRole, String, String>>(named<UserInRole>()) {
+                DeleteChildModelFromRepositorySuspendUseCase(get<IUsersInRolesRepository>())
+            }
 
             // Web
             single<IListChildModelSuspendUseCase<WebPage, String>>(named<WebPage>()) {
@@ -403,10 +415,25 @@ fun Application.configureKoin() {
             single<IDeleteChildModelSuspendUseCase<Club, String, String>>(named<Club>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get(named<Club>()))
             }
+            single<IListChildModelSuspendUseCase<UserInClub, String>>(named<UserInClub>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
+            }
+            single<IListSliceChildModelSuspendUseCase<UserInClub, String>>(named<UserInClub>()) {
+                ListSliceChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
+            }
+            single<IGetChildModelSuspendUseCase<UserInClub, String, String>>(named<UserInClub>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
+            }
+            single<ICreateChildModelSuspendUseCase<UserInClub, CreateUserInClub, String>>(named<UserInClub>()) {
+                CreateChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
+            }
+            single<IDeleteChildModelSuspendUseCase<UserInClub, String, String>>(named<UserInClub>()) {
+                DeleteChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
+            }
         }
         val controllerModule = module {
             // Associations
-            single<IModelController<Association, String, CreateAssociationPayload, UpdateAssociationPayload>>(named<Association>()) {
+            single<IAssociationsController> {
                 AssociationsController(
                     get(),
                     get(),
@@ -416,9 +443,7 @@ fun Application.configureKoin() {
                     get(named<Association>())
                 )
             }
-            single<IChildModelController<DomainInAssociation, String, CreateDomainInAssociationPayload, Unit, Association, String>>(
-                named<DomainInAssociation>()
-            ) {
+            single<IDomainsInAssociationsController> {
                 DomainsInAssociationsController(
                     get(),
                     get(),
@@ -457,7 +482,7 @@ fun Application.configureKoin() {
             }
 
             // Users
-            single<IChildModelController<User, String, CreateUserPayload, UpdateUserPayload, Association, String>>(named<User>()) {
+            single<IUsersController> {
                 UsersController(
                     get(),
                     get(),
@@ -469,7 +494,7 @@ fun Application.configureKoin() {
             }
 
             // Roles
-            single<IChildModelController<Role, String, CreateRolePayload, UpdateRolePayload, Association, String>>(named<Role>()) {
+            single<IRolesController> {
                 RolesController(
                     get(),
                     get(),
@@ -479,6 +504,17 @@ fun Application.configureKoin() {
                     get(named<Role>()),
                     get(named<Role>()),
                     get(named<Role>())
+                )
+            }
+            single<IUsersInRolesController> {
+                UsersInRolesController(
+                    get(),
+                    get(),
+                    get(named<UserInRole>()),
+                    get(named<UserInRole>()),
+                    get(named<UserInRole>()),
+                    get(named<UserInRole>()),
+                    get(named<UserInRole>())
                 )
             }
 
@@ -497,9 +533,7 @@ fun Application.configureKoin() {
                     get(named<WebPage>())
                 )
             }
-            single<IChildModelController<WebMenu, String, CreateWebMenuPayload, UpdateWebMenuPayload, Association, String>>(
-                named<WebMenu>()
-            ) {
+            single<IWebMenusController> {
                 WebMenusController(
                     get(),
                     get(),
@@ -513,9 +547,7 @@ fun Application.configureKoin() {
             }
 
             // Events
-            single<IChildModelController<Event, String, CreateEventPayload, UpdateEventPayload, Association, String>>(
-                named<Event>()
-            ) {
+            single<IEventsController> {
                 EventsController(
                     get(),
                     get(),
@@ -529,9 +561,7 @@ fun Application.configureKoin() {
             }
 
             // Clubs
-            single<IChildModelController<Club, String, CreateClubPayload, UpdateClubPayload, Association, String>>(
-                named<Club>()
-            ) {
+            single<IClubsController> {
                 ClubsController(
                     get(),
                     get(),
@@ -543,18 +573,31 @@ fun Application.configureKoin() {
                     get(named<Club>())
                 )
             }
+            single<IUsersInClubsController> {
+                UsersInClubsController(
+                    get(),
+                    get(),
+                    get(named<UserInClub>()),
+                    get(named<UserInClub>()),
+                    get(named<UserInClub>()),
+                    get(named<UserInClub>()),
+                    get(named<UserInClub>())
+                )
+            }
         }
         val routerModule = module {
-            single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get(named<Association>())) }
-            single { AssociationsRouter(get(named<Association>()), get(), get(), get()) }
-            single { DomainsInAssociationsRouter(get(named<DomainInAssociation>()), get(), get(), get(), get()) }
-            single { UsersRouter(get(named<User>()), get(), get(), get(), get(), get()) }
+            single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get()) }
+            single { AssociationsRouter(get(), get(), get(), get()) }
+            single { DomainsInAssociationsRouter(get(), get(), get(), get(), get()) }
+            single { UsersRouter(get(), get(), get(), get(), get(), get()) }
             single { AuthRouter(get(), get()) }
-            single { RolesRouter(get(named<Role>()), get(), get(), get(), get(), get()) }
+            single { RolesRouter(get(), get(), get(), get(), get(), get()) }
+            single { UsersInRolesRouter(get(), get()) }
             single { WebPagesRouter(get(), get(), get(), get(), get(), get(), get()) }
-            single { WebMenusRouter(get(named<WebMenu>()), get(), get(), get(), get(), get()) }
-            single { EventsRouter(get(named<Event>()), get(), get(), get(), get(), get()) }
-            single { ClubsRouter(get(named<Club>()), get(), get(), get(), get(), get()) }
+            single { WebMenusRouter(get(), get(), get(), get(), get(), get()) }
+            single { EventsRouter(get(), get(), get(), get(), get(), get()) }
+            single { ClubsRouter(get(), get(), get(), get(), get(), get()) }
+            single { UsersInClubsRouter(get(), get()) }
         }
 
         modules(

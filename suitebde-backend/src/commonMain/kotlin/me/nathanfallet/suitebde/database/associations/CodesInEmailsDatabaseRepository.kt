@@ -1,9 +1,9 @@
 package me.nathanfallet.suitebde.database.associations
 
 import kotlinx.datetime.Instant
-import me.nathanfallet.ktorx.database.IDatabase
 import me.nathanfallet.suitebde.models.associations.CodeInEmail
 import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
+import me.nathanfallet.surexposed.database.IDatabase
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 

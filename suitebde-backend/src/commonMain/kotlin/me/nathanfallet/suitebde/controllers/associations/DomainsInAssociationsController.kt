@@ -3,7 +3,6 @@ package me.nathanfallet.suitebde.controllers.associations
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
-import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.associations.Association
@@ -25,7 +24,7 @@ class DomainsInAssociationsController(
     private val getDomainUseCase: IGetChildModelSuspendUseCase<DomainInAssociation, String, String>,
     private val createDomainUseCase: ICreateChildModelSuspendUseCase<DomainInAssociation, CreateDomainInAssociationPayload, String>,
     private val deleteDomainUseCase: IDeleteChildModelSuspendUseCase<DomainInAssociation, String, String>,
-) : IChildModelController<DomainInAssociation, String, CreateDomainInAssociationPayload, Unit, Association, String> {
+) : IDomainsInAssociationsController {
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<DomainInAssociation> {
         if (call.request.path().contains("/admin/")) return getDomainsInAssociationsUseCase(parent.id)
@@ -48,7 +47,7 @@ class DomainsInAssociationsController(
         payload: CreateDomainInAssociationPayload,
     ): DomainInAssociation {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.DOMAINS_CREATE inAssociation parent)
+            checkPermissionUseCase(it, Permission.DOMAINS_CREATE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "domains_update_not_allowed"
         )
@@ -57,18 +56,9 @@ class DomainsInAssociationsController(
         )
     }
 
-    override suspend fun update(
-        call: ApplicationCall,
-        parent: Association,
-        id: String,
-        payload: Unit,
-    ): DomainInAssociation {
-        throw ControllerException(HttpStatusCode.MethodNotAllowed, "domains_update_not_allowed")
-    }
-
     override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.DOMAINS_DELETE inAssociation parent)
+            checkPermissionUseCase(it, Permission.DOMAINS_DELETE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "domains_delete_not_allowed"
         )
