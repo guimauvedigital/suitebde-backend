@@ -31,6 +31,7 @@ data class TicketConfigurationInEvent(
     val event: Event?,
 ) : IChildModel<String, Unit, Unit, String> {
 
-    override val parentId = eventId
+    override val parentId: String
+        get() = eventId
 
 }

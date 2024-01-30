@@ -12,7 +12,10 @@ data class PermissionInRole(
     val permission: Permission,
 ) : IChildModel<String, Unit, Unit, String> {
 
-    override val id = permission.name
-    override val parentId = roleId
+    override val id: String
+        get() = permission.name
+
+    override val parentId: String
+        get() = roleId
 
 }

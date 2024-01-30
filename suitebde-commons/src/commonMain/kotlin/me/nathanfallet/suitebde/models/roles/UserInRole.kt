@@ -12,7 +12,10 @@ data class UserInRole(
     val user: User?,
 ) : IChildModel<String, CreateUserInRole, Unit, String> {
 
-    override val id = userId
-    override val parentId = roleId
+    override val id: String
+        get() = userId
+
+    override val parentId: String
+        get() = roleId
 
 }

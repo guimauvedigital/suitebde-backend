@@ -29,6 +29,7 @@ data class Club(
     val validated: Boolean,
 ) : IChildModel<String, CreateClubPayload, UpdateClubPayload, String> {
 
-    override val parentId = associationId
+    override val parentId: String
+        get() = associationId
 
 }

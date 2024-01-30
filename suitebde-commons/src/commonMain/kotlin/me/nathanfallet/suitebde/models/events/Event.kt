@@ -33,6 +33,7 @@ data class Event(
     val validated: Boolean,
 ) : IChildModel<String, CreateEventPayload, UpdateEventPayload, String> {
 
-    override val parentId = associationId
+    override val parentId: String
+        get() = associationId
 
 }

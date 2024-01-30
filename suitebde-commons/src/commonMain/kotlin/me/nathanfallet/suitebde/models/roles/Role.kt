@@ -17,6 +17,7 @@ data class Role(
     val name: String,
 ) : IChildModel<String, CreateRolePayload, UpdateRolePayload, String> {
 
-    override val parentId = associationId
+    override val parentId: String
+        get() = associationId
 
 }

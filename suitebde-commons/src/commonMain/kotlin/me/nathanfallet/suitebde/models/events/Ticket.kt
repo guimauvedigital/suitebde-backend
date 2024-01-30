@@ -26,6 +26,7 @@ data class Ticket(
     val paid: String,
 ) : IChildModel<String, Unit, Unit, String> {
 
-    override val parentId = ticketConfigurationId
+    override val parentId: String
+        get() = ticketConfigurationId
 
 }

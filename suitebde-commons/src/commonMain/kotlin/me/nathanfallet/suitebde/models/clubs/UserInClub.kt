@@ -12,7 +12,10 @@ data class UserInClub(
     val user: User?,
 ) : IChildModel<String, CreateUserInClub, Unit, String> {
 
-    override val id = userId
-    override val parentId = clubId
+    override val id: String
+        get() = userId
+
+    override val parentId: String
+        get() = clubId
 
 }

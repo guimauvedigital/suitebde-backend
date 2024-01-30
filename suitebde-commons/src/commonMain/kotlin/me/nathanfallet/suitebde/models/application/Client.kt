@@ -14,7 +14,10 @@ data class Client(
     override val redirectUri: String,
 ) : IClient, IModel<String, Unit, Unit> {
 
-    override val clientId = id
-    override val clientSecret = secret
+    override val clientId: String
+        get() = id
+
+    override val clientSecret: String
+        get() = secret
 
 }

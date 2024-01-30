@@ -25,6 +25,7 @@ data class WebPage(
     val home: Boolean = false,
 ) : IChildModel<String, WebPagePayload, WebPagePayload, String> {
 
-    override val parentId = associationId
+    override val parentId: String
+        get() = associationId
 
 }
