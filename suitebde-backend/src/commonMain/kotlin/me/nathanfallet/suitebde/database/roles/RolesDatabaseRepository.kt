@@ -19,59 +19,53 @@ class RolesDatabaseRepository(
         }
     }
 
-    override suspend fun list(parentId: String, context: IContext?): List<Role> {
-        return database.suspendedTransaction {
+    override suspend fun list(parentId: String, context: IContext?): List<Role> =
+        database.suspendedTransaction {
             Roles
                 .selectAll()
                 .where { Roles.associationId eq parentId }
                 .map(Roles::toRole)
         }
-    }
 
-    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<Role> {
-        return database.suspendedTransaction {
+    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<Role> =
+        database.suspendedTransaction {
             Roles
                 .selectAll()
                 .where { Roles.associationId eq parentId }
                 .limit(limit.toInt(), offset)
                 .map(Roles::toRole)
         }
-    }
 
-    override suspend fun create(payload: CreateRolePayload, parentId: String, context: IContext?): Role? {
-        return database.suspendedTransaction {
+    override suspend fun create(payload: CreateRolePayload, parentId: String, context: IContext?): Role? =
+        database.suspendedTransaction {
             Roles.insert {
                 it[id] = generateId()
                 it[associationId] = parentId
                 it[name] = payload.name
             }.resultedValues?.map(Roles::toRole)?.singleOrNull()
         }
-    }
 
-    override suspend fun get(id: String, parentId: String, context: IContext?): Role? {
-        return database.suspendedTransaction {
+    override suspend fun get(id: String, parentId: String, context: IContext?): Role? =
+        database.suspendedTransaction {
             Roles
                 .selectAll()
                 .where { Roles.id eq id and (Roles.associationId eq parentId) }
                 .map(Roles::toRole)
                 .singleOrNull()
         }
-    }
 
-    override suspend fun update(id: String, payload: UpdateRolePayload, parentId: String, context: IContext?): Boolean {
-        return database.suspendedTransaction {
+    override suspend fun update(id: String, payload: UpdateRolePayload, parentId: String, context: IContext?): Boolean =
+        database.suspendedTransaction {
             Roles.update({ Roles.id eq id and (Roles.associationId eq parentId) }) {
                 it[name] = payload.name
             }
         } == 1
-    }
 
-    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
-        return database.suspendedTransaction {
+    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean =
+        database.suspendedTransaction {
             Roles.deleteWhere {
                 (Roles.id eq id) and (associationId eq parentId)
             }
         } == 1
-    }
 
 }

@@ -20,27 +20,25 @@ class ClubsDatabaseRepository(
         }
     }
 
-    override suspend fun list(parentId: String, context: IContext?): List<Club> {
-        return database.suspendedTransaction {
+    override suspend fun list(parentId: String, context: IContext?): List<Club> =
+        database.suspendedTransaction {
             Clubs
                 .selectAll()
                 .where { Clubs.associationId eq parentId }
                 .map(Clubs::toClub)
         }
-    }
 
-    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<Club> {
-        return database.suspendedTransaction {
+    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<Club> =
+        database.suspendedTransaction {
             Clubs
                 .selectAll()
                 .where { Clubs.associationId eq parentId }
                 .limit(limit.toInt(), offset)
                 .map(Clubs::toClub)
         }
-    }
 
-    override suspend fun create(payload: CreateClubPayload, parentId: String, context: IContext?): Club? {
-        return database.suspendedTransaction {
+    override suspend fun create(payload: CreateClubPayload, parentId: String, context: IContext?): Club? =
+        database.suspendedTransaction {
             Clubs.insert {
                 it[id] = generateId()
                 it[associationId] = parentId
@@ -51,20 +49,18 @@ class ClubsDatabaseRepository(
                 it[validated] = payload.validated ?: false
             }.resultedValues?.map(Clubs::toClub)?.singleOrNull()
         }
-    }
 
-    override suspend fun get(id: String, parentId: String, context: IContext?): Club? {
-        return database.suspendedTransaction {
+    override suspend fun get(id: String, parentId: String, context: IContext?): Club? =
+        database.suspendedTransaction {
             Clubs
                 .selectAll()
                 .where { Clubs.id eq id and (Clubs.associationId eq parentId) }
                 .map(Clubs::toClub)
                 .singleOrNull()
         }
-    }
 
-    override suspend fun update(id: String, payload: UpdateClubPayload, parentId: String, context: IContext?): Boolean {
-        return database.suspendedTransaction {
+    override suspend fun update(id: String, payload: UpdateClubPayload, parentId: String, context: IContext?): Boolean =
+        database.suspendedTransaction {
             Clubs.update({ Clubs.id eq id and (Clubs.associationId eq parentId) }) {
                 payload.name?.let { name -> it[Clubs.name] = name }
                 payload.description?.let { description -> it[Clubs.description] = description }
@@ -72,14 +68,12 @@ class ClubsDatabaseRepository(
                 payload.validated?.let { validated -> it[Clubs.validated] = validated }
             }
         } == 1
-    }
 
-    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
-        return database.suspendedTransaction {
+    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean =
+        database.suspendedTransaction {
             Clubs.deleteWhere {
                 Clubs.id eq id and (associationId eq parentId)
             }
         } == 1
-    }
 
 }

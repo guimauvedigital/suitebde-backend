@@ -18,27 +18,25 @@ class WebPagesDatabaseRepository(
         }
     }
 
-    override suspend fun list(parentId: String, context: IContext?): List<WebPage> {
-        return database.suspendedTransaction {
+    override suspend fun list(parentId: String, context: IContext?): List<WebPage> =
+        database.suspendedTransaction {
             WebPages
                 .selectAll()
                 .where { WebPages.associationId eq parentId }
                 .map(WebPages::toWebPage)
         }
-    }
 
-    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<WebPage> {
-        return database.suspendedTransaction {
+    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<WebPage> =
+        database.suspendedTransaction {
             WebPages
                 .selectAll()
                 .where { WebPages.associationId eq parentId }
                 .limit(limit.toInt(), offset)
                 .map(WebPages::toWebPage)
         }
-    }
 
-    override suspend fun create(payload: WebPagePayload, parentId: String, context: IContext?): WebPage? {
-        return database.suspendedTransaction {
+    override suspend fun create(payload: WebPagePayload, parentId: String, context: IContext?): WebPage? =
+        database.suspendedTransaction {
             WebPages.insert {
                 it[id] = generateId()
                 it[associationId] = parentId
@@ -48,53 +46,48 @@ class WebPagesDatabaseRepository(
                 it[home] = payload.home
             }.resultedValues?.map(WebPages::toWebPage)?.singleOrNull()
         }
-    }
 
-    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
-        return database.suspendedTransaction {
+    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean =
+        database.suspendedTransaction {
             WebPages.deleteWhere {
                 WebPages.id eq id and (associationId eq parentId)
             }
         } == 1
-    }
 
-    override suspend fun get(id: String, parentId: String, context: IContext?): WebPage? {
-        return database.suspendedTransaction {
+    override suspend fun get(id: String, parentId: String, context: IContext?): WebPage? =
+        database.suspendedTransaction {
             WebPages
                 .selectAll()
                 .where { WebPages.id eq id and (WebPages.associationId eq parentId) }
                 .map(WebPages::toWebPage)
                 .singleOrNull()
         }
-    }
 
-    override suspend fun getByUrl(url: String, associationId: String): WebPage? {
-        return database.suspendedTransaction {
+    override suspend fun getByUrl(url: String, associationId: String): WebPage? =
+        database.suspendedTransaction {
             WebPages
                 .selectAll()
                 .where { WebPages.associationId eq associationId and (WebPages.url eq url) }
                 .map(WebPages::toWebPage)
                 .singleOrNull()
         }
-    }
 
-    override suspend fun getHome(associationId: String): WebPage? {
-        return database.suspendedTransaction {
+    override suspend fun getHome(associationId: String): WebPage? =
+        database.suspendedTransaction {
             WebPages
                 .selectAll()
                 .where { WebPages.associationId eq associationId and (WebPages.home eq true) }
                 .map(WebPages::toWebPage)
                 .singleOrNull()
         }
-    }
 
     override suspend fun update(
         id: String,
         payload: WebPagePayload,
         parentId: String,
         context: IContext?,
-    ): Boolean {
-        return database.suspendedTransaction {
+    ): Boolean =
+        database.suspendedTransaction {
             WebPages.update({ WebPages.id eq id and (WebPages.associationId eq parentId) }) {
                 it[url] = payload.url
                 it[title] = payload.title
@@ -102,6 +95,5 @@ class WebPagesDatabaseRepository(
                 it[home] = payload.home
             }
         } == 1
-    }
 
 }

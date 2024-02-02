@@ -18,23 +18,21 @@ class PermissionsInRolesDatabaseRepository(
         }
     }
 
-    override suspend fun list(parentId: String, context: IContext?): List<PermissionInRole> {
-        return database.suspendedTransaction {
+    override suspend fun list(parentId: String, context: IContext?): List<PermissionInRole> =
+        database.suspendedTransaction {
             PermissionsInRoles
                 .selectAll()
                 .where { PermissionsInRoles.roleId eq parentId }
                 .map(PermissionsInRoles::toPermissionInRole)
         }
-    }
 
-    override suspend fun listForUser(userId: String): List<PermissionInRole> {
-        return database.suspendedTransaction {
+    override suspend fun listForUser(userId: String): List<PermissionInRole> =
+        database.suspendedTransaction {
             PermissionsInRoles
                 .join(UsersInRoles, JoinType.INNER, PermissionsInRoles.roleId, UsersInRoles.roleId)
                 .selectAll()
                 .where { UsersInRoles.userId eq userId }
                 .map(PermissionsInRoles::toPermissionInRole)
         }
-    }
 
 }

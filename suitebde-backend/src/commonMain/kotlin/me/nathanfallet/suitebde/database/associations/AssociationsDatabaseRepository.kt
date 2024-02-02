@@ -36,8 +36,8 @@ class AssociationsDatabaseRepository(
         }
     }
 
-    override suspend fun update(id: String, payload: UpdateAssociationPayload, context: IContext?): Boolean {
-        return database.suspendedTransaction {
+    override suspend fun update(id: String, payload: UpdateAssociationPayload, context: IContext?): Boolean =
+        database.suspendedTransaction {
             Associations.update({ Associations.id eq id }) {
                 it[name] = payload.name
                 it[school] = payload.school
@@ -45,71 +45,63 @@ class AssociationsDatabaseRepository(
                 it[validated] = payload.validated
             }
         } == 1
-    }
 
-    override suspend fun updateExpiresAt(id: String, expiresAt: Instant): Boolean {
-        return database.suspendedTransaction {
+    override suspend fun updateExpiresAt(id: String, expiresAt: Instant): Boolean =
+        database.suspendedTransaction {
             Associations.update({ Associations.id eq id }) {
                 it[Associations.expiresAt] = expiresAt.toString()
             }
         } == 1
-    }
 
-    override suspend fun delete(id: String, context: IContext?): Boolean {
-        return database.suspendedTransaction {
+    override suspend fun delete(id: String, context: IContext?): Boolean =
+        database.suspendedTransaction {
             Associations.deleteWhere {
                 Associations.id eq id
             }
         } == 1
-    }
 
-    override suspend fun get(id: String, context: IContext?): Association? {
-        return database.suspendedTransaction {
+    override suspend fun get(id: String, context: IContext?): Association? =
+        database.suspendedTransaction {
             Associations
                 .selectAll()
                 .where { Associations.id eq id }
                 .map(Associations::toAssociation)
                 .singleOrNull()
         }
-    }
 
-    override suspend fun list(context: IContext?): List<Association> {
-        return database.suspendedTransaction {
+    override suspend fun list(context: IContext?): List<Association> =
+        database.suspendedTransaction {
             Associations
                 .selectAll()
                 .map(Associations::toAssociation)
         }
-    }
 
-    override suspend fun list(limit: Long, offset: Long, context: IContext?): List<Association> {
-        return database.suspendedTransaction {
+    override suspend fun list(limit: Long, offset: Long, context: IContext?): List<Association> =
+        database.suspendedTransaction {
             Associations
                 .selectAll()
                 .limit(limit.toInt(), offset)
                 .map(Associations::toAssociation)
         }
-    }
 
-    override suspend fun getValidatedAssociations(): List<Association> {
-        return database.suspendedTransaction {
+    override suspend fun getValidatedAssociations(): List<Association> =
+        database.suspendedTransaction {
             Associations
                 .selectAll()
                 .where { Associations.validated eq true }
                 .map(Associations::toAssociation)
         }
-    }
 
-    override suspend fun getAssociationsExpiringBefore(date: Instant): List<Association> {
-        return database.suspendedTransaction {
+    override suspend fun getAssociationsExpiringBefore(date: Instant): List<Association> =
+        database.suspendedTransaction {
             Associations
                 .selectAll()
                 .where { Associations.expiresAt less date.toString() }
                 .map(Associations::toAssociation)
         }
-    }
 
-    override suspend fun getAssociationForDomain(domain: String): Association? {
-        return database.suspendedTransaction {
+    override suspend fun getAssociationForDomain(domain: String): Association? =
+        database.suspendedTransaction {
             DomainsInAssociations
                 .join(Associations, JoinType.INNER, DomainsInAssociations.associationId, Associations.id)
                 .selectAll()
@@ -117,6 +109,5 @@ class AssociationsDatabaseRepository(
                 .map(Associations::toAssociation)
                 .singleOrNull()
         }
-    }
 
 }

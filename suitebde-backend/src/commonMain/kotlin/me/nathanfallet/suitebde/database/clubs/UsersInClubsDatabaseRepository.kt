@@ -19,8 +19,8 @@ class UsersInClubsDatabaseRepository(
         }
     }
 
-    override suspend fun list(parentId: String, context: IContext?): List<UserInClub> {
-        return database.suspendedTransaction {
+    override suspend fun list(parentId: String, context: IContext?): List<UserInClub> =
+        database.suspendedTransaction {
             UsersInClubs
                 .join(Users, JoinType.INNER, UsersInClubs.userId, Users.id)
                 .selectAll()
@@ -29,10 +29,9 @@ class UsersInClubsDatabaseRepository(
                     UsersInClubs.toUserInClub(it, user = Users.toUser(it))
                 }
         }
-    }
 
-    override suspend fun listForUser(userId: String): List<UserInClub> {
-        return database.suspendedTransaction {
+    override suspend fun listForUser(userId: String): List<UserInClub> =
+        database.suspendedTransaction {
             UsersInClubs
                 .join(Clubs, JoinType.INNER, UsersInClubs.clubId, Clubs.id)
                 .selectAll()
@@ -41,10 +40,9 @@ class UsersInClubsDatabaseRepository(
                     UsersInClubs.toUserInClub(it, club = Clubs.toClub(it))
                 }
         }
-    }
 
-    override suspend fun get(id: String, parentId: String, context: IContext?): UserInClub? {
-        return database.suspendedTransaction {
+    override suspend fun get(id: String, parentId: String, context: IContext?): UserInClub? =
+        database.suspendedTransaction {
             UsersInClubs
                 .join(Users, JoinType.INNER, UsersInClubs.userId, Users.id)
                 .selectAll()
@@ -54,21 +52,18 @@ class UsersInClubsDatabaseRepository(
                 }
                 .singleOrNull()
         }
-    }
 
-    override suspend fun create(payload: CreateUserInClub, parentId: String, context: IContext?): UserInClub? {
-        return database.suspendedTransaction {
+    override suspend fun create(payload: CreateUserInClub, parentId: String, context: IContext?): UserInClub? =
+        database.suspendedTransaction {
             UsersInClubs.insert {
                 it[clubId] = parentId
                 it[userId] = payload.userId
             }.resultedValues?.map(UsersInClubs::toUserInClub)?.singleOrNull()
         }
-    }
 
-    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
-        return database.suspendedTransaction {
+    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean =
+        database.suspendedTransaction {
             UsersInClubs.deleteWhere { clubId eq parentId and (userId eq id) }
         } == 1
-    }
 
 }

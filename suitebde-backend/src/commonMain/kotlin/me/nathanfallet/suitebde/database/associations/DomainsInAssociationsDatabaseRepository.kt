@@ -18,59 +18,54 @@ class DomainsInAssociationsDatabaseRepository(
         }
     }
 
-    override suspend fun list(parentId: String, context: IContext?): List<DomainInAssociation> {
-        return database.suspendedTransaction {
+    override suspend fun list(parentId: String, context: IContext?): List<DomainInAssociation> =
+        database.suspendedTransaction {
             DomainsInAssociations
                 .selectAll()
                 .where { DomainsInAssociations.associationId eq parentId }
                 .map(DomainsInAssociations::toDomainInAssociation)
         }
-    }
 
     override suspend fun list(
         limit: Long,
         offset: Long,
         parentId: String,
         context: IContext?,
-    ): List<DomainInAssociation> {
-        return database.suspendedTransaction {
+    ): List<DomainInAssociation> =
+        database.suspendedTransaction {
             DomainsInAssociations
                 .selectAll()
                 .where { DomainsInAssociations.associationId eq parentId }
                 .limit(limit.toInt(), offset)
                 .map(DomainsInAssociations::toDomainInAssociation)
         }
-    }
 
     override suspend fun create(
         payload: CreateDomainInAssociationPayload,
         parentId: String,
         context: IContext?,
-    ): DomainInAssociation? {
-        return database.suspendedTransaction {
+    ): DomainInAssociation? =
+        database.suspendedTransaction {
             DomainsInAssociations.insert {
                 it[domain] = payload.domain
                 it[associationId] = parentId
             }.resultedValues?.map(DomainsInAssociations::toDomainInAssociation)?.singleOrNull()
         }
-    }
 
-    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
-        return database.suspendedTransaction {
+    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean =
+        database.suspendedTransaction {
             DomainsInAssociations.deleteWhere {
                 domain eq id and (associationId eq parentId)
             }
         } == 1
-    }
 
-    override suspend fun get(id: String, parentId: String, context: IContext?): DomainInAssociation? {
-        return database.suspendedTransaction {
+    override suspend fun get(id: String, parentId: String, context: IContext?): DomainInAssociation? =
+        database.suspendedTransaction {
             DomainsInAssociations
                 .selectAll()
                 .where { DomainsInAssociations.domain eq id and (DomainsInAssociations.associationId eq parentId) }
                 .map(DomainsInAssociations::toDomainInAssociation)
                 .firstOrNull()
         }
-    }
 
 }

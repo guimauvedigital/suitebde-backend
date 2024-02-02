@@ -19,37 +19,34 @@ class EventsDatabaseRepository(
         }
     }
 
-    override suspend fun list(parentId: String, context: IContext?): List<Event> {
-        return database.suspendedTransaction {
+    override suspend fun list(parentId: String, context: IContext?): List<Event> =
+        database.suspendedTransaction {
             Events
                 .selectAll()
                 .where { Events.associationId eq parentId }
                 .map(Events::toEvent)
         }
-    }
 
-    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<Event> {
-        return database.suspendedTransaction {
+    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<Event> =
+        database.suspendedTransaction {
             Events
                 .selectAll()
                 .where { Events.associationId eq parentId }
                 .limit(limit.toInt(), offset)
                 .map(Events::toEvent)
         }
-    }
 
-    override suspend fun get(id: String, parentId: String, context: IContext?): Event? {
-        return database.suspendedTransaction {
+    override suspend fun get(id: String, parentId: String, context: IContext?): Event? =
+        database.suspendedTransaction {
             Events
                 .selectAll()
                 .where { Events.id eq id and (Events.associationId eq parentId) }
                 .map(Events::toEvent)
                 .singleOrNull()
         }
-    }
 
-    override suspend fun create(payload: CreateEventPayload, parentId: String, context: IContext?): Event? {
-        return database.suspendedTransaction {
+    override suspend fun create(payload: CreateEventPayload, parentId: String, context: IContext?): Event? =
+        database.suspendedTransaction {
             Events.insert {
                 it[id] = generateId()
                 it[associationId] = parentId
@@ -61,15 +58,14 @@ class EventsDatabaseRepository(
                 it[validated] = payload.validated ?: false
             }.resultedValues?.map(Events::toEvent)?.singleOrNull()
         }
-    }
 
     override suspend fun update(
         id: String,
         payload: UpdateEventPayload,
         parentId: String,
         context: IContext?,
-    ): Boolean {
-        return database.suspendedTransaction {
+    ): Boolean =
+        database.suspendedTransaction {
             Events.update({ Events.id eq id and (Events.associationId eq parentId) }) {
                 payload.name?.let { name -> it[Events.name] = name }
                 payload.description?.let { description -> it[Events.description] = description }
@@ -79,14 +75,12 @@ class EventsDatabaseRepository(
                 payload.validated?.let { validated -> it[Events.validated] = validated }
             }
         } == 1
-    }
 
-    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
-        return database.suspendedTransaction {
+    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean =
+        database.suspendedTransaction {
             Events.deleteWhere {
                 Events.id eq id and (associationId eq parentId)
             }
         } == 1
-    }
 
 }

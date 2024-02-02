@@ -19,37 +19,34 @@ class WebMenusDatabaseRepository(
         }
     }
 
-    override suspend fun list(parentId: String, context: IContext?): List<WebMenu> {
-        return database.suspendedTransaction {
+    override suspend fun list(parentId: String, context: IContext?): List<WebMenu> =
+        database.suspendedTransaction {
             WebMenus
                 .selectAll()
                 .where { WebMenus.associationId eq parentId }
                 .map(WebMenus::toWebMenu)
         }
-    }
 
-    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<WebMenu> {
-        return database.suspendedTransaction {
+    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<WebMenu> =
+        database.suspendedTransaction {
             WebMenus
                 .selectAll()
                 .where { WebMenus.associationId eq parentId }
                 .limit(limit.toInt(), offset)
                 .map(WebMenus::toWebMenu)
         }
-    }
 
-    override suspend fun get(id: String, parentId: String, context: IContext?): WebMenu? {
-        return database.suspendedTransaction {
+    override suspend fun get(id: String, parentId: String, context: IContext?): WebMenu? =
+        database.suspendedTransaction {
             WebMenus
                 .selectAll()
                 .where { WebMenus.id eq id and (WebMenus.associationId eq parentId) }
                 .map(WebMenus::toWebMenu)
                 .singleOrNull()
         }
-    }
 
-    override suspend fun create(payload: CreateWebMenuPayload, parentId: String, context: IContext?): WebMenu? {
-        return database.suspendedTransaction {
+    override suspend fun create(payload: CreateWebMenuPayload, parentId: String, context: IContext?): WebMenu? =
+        database.suspendedTransaction {
             WebMenus.insert {
                 it[id] = generateId()
                 it[associationId] = parentId
@@ -58,28 +55,26 @@ class WebMenusDatabaseRepository(
                 it[position] = payload.position ?: (WebMenus.selectAll().count().toInt() + 1)
             }.resultedValues?.map(WebMenus::toWebMenu)?.singleOrNull()
         }
-    }
 
     override suspend fun update(
         id: String,
         payload: UpdateWebMenuPayload,
         parentId: String,
         context: IContext?,
-    ): Boolean {
-        return database.suspendedTransaction {
+    ): Boolean =
+        database.suspendedTransaction {
             WebMenus.update({ WebMenus.id eq id and (WebMenus.associationId eq parentId) }) {
                 it[title] = payload.title
                 it[url] = payload.url
                 it[position] = payload.position
             }
         } == 1
-    }
 
-    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
-        return database.suspendedTransaction {
+    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean =
+        database.suspendedTransaction {
             WebMenus.deleteWhere {
                 WebMenus.id eq id and (associationId eq parentId)
             }
         } == 1
-    }
+
 }

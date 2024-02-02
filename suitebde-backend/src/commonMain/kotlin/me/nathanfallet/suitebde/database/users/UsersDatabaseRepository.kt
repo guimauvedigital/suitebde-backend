@@ -19,8 +19,8 @@ class UsersDatabaseRepository(
         }
     }
 
-    override suspend fun create(payload: CreateUserPayload, parentId: String, context: IContext?): User? {
-        return database.suspendedTransaction {
+    override suspend fun create(payload: CreateUserPayload, parentId: String, context: IContext?): User? =
+        database.suspendedTransaction {
             Users.insert {
                 it[id] = generateId()
                 it[associationId] = parentId
@@ -31,33 +31,30 @@ class UsersDatabaseRepository(
                 it[superuser] = payload.superuser
             }
         }.resultedValues?.map(Users::toUser)?.singleOrNull()
-    }
 
-    override suspend fun get(id: String): User? {
-        return database.suspendedTransaction {
+    override suspend fun get(id: String): User? =
+        database.suspendedTransaction {
             Users
                 .selectAll()
                 .where { Users.id eq id }
                 .map(Users::toUser)
                 .singleOrNull()
         }
-    }
 
-    override suspend fun get(id: String, parentId: String, context: IContext?): User? {
-        return database.suspendedTransaction {
+    override suspend fun get(id: String, parentId: String, context: IContext?): User? =
+        database.suspendedTransaction {
             Users
                 .selectAll()
                 .where { Users.id eq id and (Users.associationId eq parentId) }
                 .map(Users::toUser)
                 .singleOrNull()
         }
-    }
 
     override suspend fun getForEmail(
         email: String,
         includePassword: Boolean,
-    ): User? {
-        return database.suspendedTransaction {
+    ): User? =
+        database.suspendedTransaction {
             Users
                 .selectAll()
                 .where { Users.email eq email }
@@ -66,29 +63,27 @@ class UsersDatabaseRepository(
                 }
                 .singleOrNull()
         }
-    }
 
-    override suspend fun list(parentId: String, context: IContext?): List<User> {
-        return database.suspendedTransaction {
+    override suspend fun list(parentId: String, context: IContext?): List<User> =
+        database.suspendedTransaction {
             Users
                 .selectAll()
                 .where { Users.associationId eq parentId }
                 .map(Users::toUser)
         }
-    }
 
-    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<User> {
-        return database.suspendedTransaction {
+    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<User> =
+        database.suspendedTransaction {
             Users
                 .selectAll()
                 .where { Users.associationId eq parentId }
                 .limit(limit.toInt(), offset)
                 .map(Users::toUser)
         }
-    }
 
-    override suspend fun update(id: String, payload: UpdateUserPayload, parentId: String, context: IContext?): Boolean {
-        return database.suspendedTransaction {
+
+    override suspend fun update(id: String, payload: UpdateUserPayload, parentId: String, context: IContext?): Boolean =
+        database.suspendedTransaction {
             Users.update({ Users.id eq id and (Users.associationId eq parentId) }) {
                 payload.firstName?.let { firstName ->
                     it[Users.firstName] = firstName
@@ -101,14 +96,12 @@ class UsersDatabaseRepository(
                 }
             }
         } == 1
-    }
 
-    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean {
-        return database.suspendedTransaction {
+    override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean =
+        database.suspendedTransaction {
             Users.deleteWhere {
                 Users.id eq id and (associationId eq parentId)
             }
         } == 1
-    }
 
 }
