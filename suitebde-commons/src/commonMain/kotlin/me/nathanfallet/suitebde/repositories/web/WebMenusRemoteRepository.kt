@@ -23,24 +23,19 @@ class WebMenusRemoteRepository(
     prefix = "/api/v1"
 ), IWebMenusRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long, associationId: String): List<WebMenu> {
-        return list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun list(limit: Long, offset: Long, associationId: String): List<WebMenu> =
+        list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun get(id: String, associationId: String): WebMenu? {
-        return get(id, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun get(id: String, associationId: String): WebMenu? =
+        get(id, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun create(payload: CreateWebMenuPayload, associationId: String): WebMenu? {
-        return create(payload, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun create(payload: CreateWebMenuPayload, associationId: String): WebMenu? =
+        create(payload, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun update(id: String, payload: UpdateWebMenuPayload, associationId: String): WebMenu? {
-        return update(id, payload, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun update(id: String, payload: UpdateWebMenuPayload, associationId: String): WebMenu? =
+        update(id, payload, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun delete(id: String, associationId: String): Boolean {
-        return delete(id, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun delete(id: String, associationId: String): Boolean =
+        delete(id, RecursiveId<Association, String, Unit>(associationId), null)
 
 }

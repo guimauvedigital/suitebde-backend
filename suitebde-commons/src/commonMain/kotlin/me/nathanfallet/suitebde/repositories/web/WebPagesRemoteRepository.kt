@@ -22,24 +22,19 @@ class WebPagesRemoteRepository(
     prefix = "/api/v1"
 ), IWebPagesRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long, associationId: String): List<WebPage> {
-        return list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun list(limit: Long, offset: Long, associationId: String): List<WebPage> =
+        list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun get(id: String, associationId: String): WebPage? {
-        return get(id, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun get(id: String, associationId: String): WebPage? =
+        get(id, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun create(payload: WebPagePayload, associationId: String): WebPage? {
-        return create(payload, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun create(payload: WebPagePayload, associationId: String): WebPage? =
+        create(payload, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun update(id: String, payload: WebPagePayload, associationId: String): WebPage? {
-        return update(id, payload, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun update(id: String, payload: WebPagePayload, associationId: String): WebPage? =
+        update(id, payload, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun delete(id: String, associationId: String): Boolean {
-        return delete(id, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun delete(id: String, associationId: String): Boolean =
+        delete(id, RecursiveId<Association, String, Unit>(associationId), null)
 
 }

@@ -23,37 +23,33 @@ class UsersInRolesRemoteRepository(
     prefix = "/api/v1"
 ), IUsersInRolesRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long, roleId: String, associationId: String): List<UserInRole> {
-        return list(
+    override suspend fun list(limit: Long, offset: Long, roleId: String, associationId: String): List<UserInRole> =
+        list(
             limit,
             offset,
             RecursiveId<Role, String, String>(roleId, RecursiveId<Association, String, Unit>(associationId)),
             null
         )
-    }
 
-    override suspend fun get(userId: String, roleId: String, associationId: String): UserInRole? {
-        return get(
+    override suspend fun get(userId: String, roleId: String, associationId: String): UserInRole? =
+        get(
             userId,
             RecursiveId<Role, String, String>(roleId, RecursiveId<Association, String, Unit>(associationId)),
             null
         )
-    }
 
-    override suspend fun create(payload: CreateUserInRole, roleId: String, associationId: String): UserInRole? {
-        return create(
+    override suspend fun create(payload: CreateUserInRole, roleId: String, associationId: String): UserInRole? =
+        create(
             payload,
             RecursiveId<Role, String, String>(roleId, RecursiveId<Association, String, Unit>(associationId)),
             null
         )
-    }
 
-    override suspend fun delete(userId: String, roleId: String, associationId: String): Boolean {
-        return delete(
+    override suspend fun delete(userId: String, roleId: String, associationId: String): Boolean =
+        delete(
             userId,
             RecursiveId<Role, String, String>(roleId, RecursiveId<Association, String, Unit>(associationId)),
             null
         )
-    }
 
 }

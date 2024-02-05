@@ -23,16 +23,13 @@ class UsersRemoteRepository(
     prefix = "/api/v1"
 ), IUsersRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long, associationId: String): List<User> {
-        return list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun list(limit: Long, offset: Long, associationId: String): List<User> =
+        list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun get(id: String, associationId: String): User? {
-        return get(id, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun get(id: String, associationId: String): User? =
+        get(id, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun update(id: String, payload: UpdateUserPayload, associationId: String): User? {
-        return update(id, payload, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun update(id: String, payload: UpdateUserPayload, associationId: String): User? =
+        update(id, payload, RecursiveId<Association, String, Unit>(associationId), null)
 
 }

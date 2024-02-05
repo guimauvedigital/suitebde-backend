@@ -17,6 +17,9 @@ import me.nathanfallet.suitebde.controllers.auth.AuthController
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
 import me.nathanfallet.suitebde.controllers.auth.IAuthController
 import me.nathanfallet.suitebde.controllers.clubs.*
+import me.nathanfallet.suitebde.controllers.dashboard.DashboardController
+import me.nathanfallet.suitebde.controllers.dashboard.DashboardRouter
+import me.nathanfallet.suitebde.controllers.dashboard.IDashboardController
 import me.nathanfallet.suitebde.controllers.events.EventsController
 import me.nathanfallet.suitebde.controllers.events.EventsRouter
 import me.nathanfallet.suitebde.controllers.events.IEventsController
@@ -454,6 +457,7 @@ fun Application.configureKoin() {
                     get(named<DomainInAssociation>())
                 )
             }
+            single<IDashboardController> { DashboardController() }
 
             // Auth
             single<IAuthController> {
@@ -587,6 +591,7 @@ fun Application.configureKoin() {
         }
         val routerModule = module {
             single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get()) }
+            single { DashboardRouter(get(), get(), get(), get()) }
             single { AssociationsRouter(get(), get(), get(), get()) }
             single { DomainsInAssociationsRouter(get(), get(), get(), get(), get()) }
             single { UsersRouter(get(), get(), get(), get(), get(), get()) }

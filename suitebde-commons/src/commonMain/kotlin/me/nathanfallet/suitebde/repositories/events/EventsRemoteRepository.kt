@@ -23,24 +23,19 @@ class EventsRemoteRepository(
     prefix = "/api/v1"
 ), IEventsRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long, associationId: String): List<Event> {
-        return list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun list(limit: Long, offset: Long, associationId: String): List<Event> =
+        list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun get(id: String, associationId: String): Event? {
-        return get(id, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun get(id: String, associationId: String): Event? =
+        get(id, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun create(payload: CreateEventPayload, associationId: String): Event? {
-        return create(payload, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun create(payload: CreateEventPayload, associationId: String): Event? =
+        create(payload, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun update(id: String, payload: UpdateEventPayload, associationId: String): Event? {
-        return update(id, payload, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun update(id: String, payload: UpdateEventPayload, associationId: String): Event? =
+        update(id, payload, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun delete(id: String, associationId: String): Boolean {
-        return delete(id, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun delete(id: String, associationId: String): Boolean =
+        delete(id, RecursiveId<Association, String, Unit>(associationId), null)
 
 }

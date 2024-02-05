@@ -23,23 +23,19 @@ class DomainsInAssociationsRemoteRepository(
     prefix = "/api/v1"
 ), IDomainsInAssociationsRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long, associationId: String): List<DomainInAssociation> {
-        return list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun list(limit: Long, offset: Long, associationId: String): List<DomainInAssociation> =
+        list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun get(domain: String, associationId: String): DomainInAssociation? {
-        return get(domain, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun get(domain: String, associationId: String): DomainInAssociation? =
+        get(domain, RecursiveId<Association, String, Unit>(associationId), null)
 
     override suspend fun create(
         payload: CreateDomainInAssociationPayload,
         associationId: String,
-    ): DomainInAssociation? {
-        return create(payload, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    ): DomainInAssociation? =
+        create(payload, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun delete(domain: String, associationId: String): Boolean {
-        return delete(domain, RecursiveId<Association, String, Unit>(associationId), null)
-    }
+    override suspend fun delete(domain: String, associationId: String): Boolean =
+        delete(domain, RecursiveId<Association, String, Unit>(associationId), null)
 
 }

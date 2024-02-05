@@ -13,6 +13,7 @@ import me.nathanfallet.suitebde.controllers.associations.DomainsInAssociationsRo
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
 import me.nathanfallet.suitebde.controllers.clubs.ClubsRouter
 import me.nathanfallet.suitebde.controllers.clubs.UsersInClubsRouter
+import me.nathanfallet.suitebde.controllers.dashboard.DashboardRouter
 import me.nathanfallet.suitebde.controllers.events.EventsRouter
 import me.nathanfallet.suitebde.controllers.roles.RolesRouter
 import me.nathanfallet.suitebde.controllers.roles.UsersInRolesRouter
@@ -37,6 +38,7 @@ fun Application.configureRouting() {
             )
         )
 
+        val dashboardRouter by inject<DashboardRouter>()
         val associationsRouter by inject<AssociationsRouter>()
         val domainsInAssociationsRouter by inject<DomainsInAssociationsRouter>()
         val authRouter by inject<AuthRouter>()
@@ -52,6 +54,7 @@ fun Application.configureRouting() {
         val openAPIRouter = OpenAPIRouter()
 
         authenticate("api-v1-jwt", optional = true) {
+            dashboardRouter.createRoutes(this, openAPI)
             associationsRouter.createRoutes(this, openAPI)
             domainsInAssociationsRouter.createRoutes(this, openAPI)
             authRouter.createRoutes(this, openAPI)

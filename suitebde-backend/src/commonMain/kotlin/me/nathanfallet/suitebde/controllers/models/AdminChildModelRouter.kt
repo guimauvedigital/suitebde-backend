@@ -35,7 +35,10 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
         val flatpickr = (model["keys"] as? List<*>)?.any { (it as? PayloadKey)?.type == "date" } == true
         respondTemplate(
             template, model + mapOf(
-                "title" to translateUseCase(getLocaleForCallUseCase(this), "admin_menu_${model["route"]}"),
+                "title" to translateUseCase(
+                    getLocaleForCallUseCase(this),
+                    ((model["route"] as String).takeIf { it.isNotEmpty() } ?: "dashboard").let { "admin_menu_$it" }
+                ),
                 "menu" to getAdminMenuForCallUseCase(this),
                 "flatpickr" to flatpickr,
             )
