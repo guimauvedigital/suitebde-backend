@@ -10,7 +10,7 @@ data class PermissionInRole(
     val roleId: String,
     @Schema("Permission name", "USERS_UPDATE")
     val permission: Permission,
-) : IChildModel<String, Unit, Unit, String> {
+) : IChildModel<String, CreatePermissionInRole, Unit, String> {
 
     override val id: String
         get() = permission.name

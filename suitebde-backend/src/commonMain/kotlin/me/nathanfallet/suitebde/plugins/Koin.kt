@@ -334,6 +334,18 @@ fun Application.configureKoin() {
             single<IDeleteChildModelSuspendUseCase<UserInRole, String, String>>(named<UserInRole>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get<IUsersInRolesRepository>())
             }
+            single<IListChildModelSuspendUseCase<PermissionInRole, String>>(named<PermissionInRole>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<IPermissionsInRolesRepository>())
+            }
+            single<IGetChildModelSuspendUseCase<PermissionInRole, String, String>>(named<PermissionInRole>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<IPermissionsInRolesRepository>())
+            }
+            single<ICreateChildModelSuspendUseCase<PermissionInRole, CreatePermissionInRole, String>>(named<PermissionInRole>()) {
+                CreateChildModelFromRepositorySuspendUseCase(get<IPermissionsInRolesRepository>())
+            }
+            single<IDeleteChildModelSuspendUseCase<PermissionInRole, String, String>>(named<PermissionInRole>()) {
+                DeleteChildModelFromRepositorySuspendUseCase(get<IPermissionsInRolesRepository>())
+            }
 
             // Web
             single<IListChildModelSuspendUseCase<WebPage, String>>(named<WebPage>()) {
@@ -521,6 +533,16 @@ fun Application.configureKoin() {
                     get(named<UserInRole>())
                 )
             }
+            single<IPermissionsInRolesController> {
+                PermissionsInRolesController(
+                    get(),
+                    get(),
+                    get(named<PermissionInRole>()),
+                    get(named<PermissionInRole>()),
+                    get(named<PermissionInRole>()),
+                    get(named<PermissionInRole>())
+                )
+            }
 
             // Web
             single<IWebPagesController> {
@@ -598,6 +620,7 @@ fun Application.configureKoin() {
             single { AuthRouter(get(), get()) }
             single { RolesRouter(get(), get(), get(), get(), get(), get()) }
             single { UsersInRolesRouter(get(), get()) }
+            single { PermissionsInRolesRouter(get(), get()) }
             single { WebPagesRouter(get(), get(), get(), get(), get(), get(), get()) }
             single { WebMenusRouter(get(), get(), get(), get(), get(), get()) }
             single { EventsRouter(get(), get(), get(), get(), get(), get()) }

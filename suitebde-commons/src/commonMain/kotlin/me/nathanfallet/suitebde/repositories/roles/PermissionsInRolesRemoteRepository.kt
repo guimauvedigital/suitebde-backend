@@ -5,26 +5,31 @@ import me.nathanfallet.ktorx.repositories.api.APIChildModelRemoteRepository
 import me.nathanfallet.ktorx.repositories.api.IAPIChildModelRemoteRepository
 import me.nathanfallet.suitebde.client.ISuiteBDEClient
 import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.roles.CreateUserInRole
+import me.nathanfallet.suitebde.models.roles.CreatePermissionInRole
+import me.nathanfallet.suitebde.models.roles.PermissionInRole
 import me.nathanfallet.suitebde.models.roles.Role
-import me.nathanfallet.suitebde.models.roles.UserInRole
 import me.nathanfallet.usecases.models.id.RecursiveId
 
-class UsersInRolesRemoteRepository(
+class PermissionsInRolesRemoteRepository(
     client: ISuiteBDEClient,
     parentRepository: IAPIChildModelRemoteRepository<Role, String, *, *, *>,
-) : APIChildModelRemoteRepository<UserInRole, String, CreateUserInRole, Unit, String>(
-    typeInfo<UserInRole>(),
-    typeInfo<CreateUserInRole>(),
+) : APIChildModelRemoteRepository<PermissionInRole, String, CreatePermissionInRole, Unit, String>(
+    typeInfo<PermissionInRole>(),
+    typeInfo<CreatePermissionInRole>(),
     typeInfo<Unit>(),
-    typeInfo<List<UserInRole>>(),
+    typeInfo<List<PermissionInRole>>(),
     client,
     parentRepository,
     prefix = "/api/v1",
-    route = "users"
-), IUsersInRolesRemoteRepository {
+    route = "permissions"
+), IPermissionsInRolesRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long, roleId: String, associationId: String): List<UserInRole> =
+    override suspend fun list(
+        limit: Long,
+        offset: Long,
+        roleId: String,
+        associationId: String,
+    ): List<PermissionInRole> =
         list(
             limit,
             offset,
@@ -32,7 +37,11 @@ class UsersInRolesRemoteRepository(
             null
         )
 
-    override suspend fun create(payload: CreateUserInRole, roleId: String, associationId: String): UserInRole? =
+    override suspend fun create(
+        payload: CreatePermissionInRole,
+        roleId: String,
+        associationId: String,
+    ): PermissionInRole? =
         create(
             payload,
             RecursiveId<Role, String, String>(roleId, RecursiveId<Association, String, Unit>(associationId)),

@@ -7,13 +7,13 @@ import me.nathanfallet.suitebde.models.roles.Role
 import me.nathanfallet.suitebde.models.roles.UserInRole
 
 class UsersInRolesRouter(
-    rolesController: IUsersInRolesController,
+    controller: IUsersInRolesController,
     rolesRouter: RolesRouter,
 ) : APIChildModelRouter<UserInRole, String, CreateUserInRole, Unit, Role, String>(
     typeInfo<UserInRole>(),
     typeInfo<CreateUserInRole>(),
     typeInfo<Unit>(),
-    rolesController,
+    controller,
     IUsersInRolesController::class,
     rolesRouter,
     route = "users",

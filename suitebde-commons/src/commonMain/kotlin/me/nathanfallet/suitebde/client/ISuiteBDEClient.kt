@@ -7,6 +7,7 @@ import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociations
 import me.nathanfallet.suitebde.repositories.clubs.IClubsRemoteRepository
 import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRemoteRepository
 import me.nathanfallet.suitebde.repositories.events.IEventsRemoteRepository
+import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.IRolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.users.IUsersRemoteRepository
@@ -24,6 +25,7 @@ interface ISuiteBDEClient : IAPIClient {
     val events: IEventsRemoteRepository
     val roles: IRolesRemoteRepository
     val usersInRoles: IUsersInRolesRemoteRepository
+    val permissionsInRoles: IPermissionsInRolesRemoteRepository
     val clubs: IClubsRemoteRepository
     val usersInClubs: IUsersInClubsRemoteRepository
 

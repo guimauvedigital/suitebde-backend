@@ -26,9 +26,6 @@ class DomainsInAssociationsRemoteRepository(
     override suspend fun list(limit: Long, offset: Long, associationId: String): List<DomainInAssociation> =
         list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
 
-    override suspend fun get(domain: String, associationId: String): DomainInAssociation? =
-        get(domain, RecursiveId<Association, String, Unit>(associationId), null)
-
     override suspend fun create(
         payload: CreateDomainInAssociationPayload,
         associationId: String,

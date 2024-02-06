@@ -15,6 +15,7 @@ import me.nathanfallet.suitebde.controllers.clubs.ClubsRouter
 import me.nathanfallet.suitebde.controllers.clubs.UsersInClubsRouter
 import me.nathanfallet.suitebde.controllers.dashboard.DashboardRouter
 import me.nathanfallet.suitebde.controllers.events.EventsRouter
+import me.nathanfallet.suitebde.controllers.roles.PermissionsInRolesRouter
 import me.nathanfallet.suitebde.controllers.roles.RolesRouter
 import me.nathanfallet.suitebde.controllers.roles.UsersInRolesRouter
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
@@ -45,6 +46,7 @@ fun Application.configureRouting() {
         val usersRouter by inject<UsersRouter>()
         val rolesRouter by inject<RolesRouter>()
         val usersInRolesRouter by inject<UsersInRolesRouter>()
+        val permissionsInRolesRouter by inject<PermissionsInRolesRouter>()
         val webPagesRouter by inject<WebPagesRouter>()
         val webMenusRouter by inject<WebMenusRouter>()
         val eventsRouter by inject<EventsRouter>()
@@ -61,6 +63,7 @@ fun Application.configureRouting() {
             usersRouter.createRoutes(this, openAPI)
             rolesRouter.createRoutes(this, openAPI)
             usersInRolesRouter.createRoutes(this, openAPI)
+            permissionsInRolesRouter.createRoutes(this, openAPI)
             webPagesRouter.createRoutes(this, openAPI)
             webMenusRouter.createRoutes(this, openAPI)
             eventsRouter.createRoutes(this, openAPI)

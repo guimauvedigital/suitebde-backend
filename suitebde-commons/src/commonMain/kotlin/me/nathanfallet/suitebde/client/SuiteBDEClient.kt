@@ -10,6 +10,7 @@ import me.nathanfallet.suitebde.repositories.associations.DomainsInAssociationsR
 import me.nathanfallet.suitebde.repositories.clubs.ClubsRemoteRepository
 import me.nathanfallet.suitebde.repositories.clubs.UsersInClubsRemoteRepository
 import me.nathanfallet.suitebde.repositories.events.EventsRemoteRepository
+import me.nathanfallet.suitebde.repositories.roles.PermissionsInRolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.RolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.UsersInRolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.users.UsersRemoteRepository
@@ -34,6 +35,7 @@ class SuiteBDEClient(
     override val events = EventsRemoteRepository(this, associations)
     override val roles = RolesRemoteRepository(this, associations)
     override val usersInRoles = UsersInRolesRemoteRepository(this, roles)
+    override val permissionsInRoles = PermissionsInRolesRemoteRepository(this, roles)
     override val clubs = ClubsRemoteRepository(this, associations)
     override val usersInClubs = UsersInClubsRemoteRepository(this, clubs)
 

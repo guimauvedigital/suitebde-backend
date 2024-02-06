@@ -31,13 +31,6 @@ class UsersInClubsRemoteRepository(
             null
         )
 
-    override suspend fun get(userId: String, clubId: String, associationId: String): UserInClub? =
-        get(
-            userId,
-            RecursiveId<Club, String, String>(clubId, RecursiveId<Association, String, Unit>(associationId)),
-            null
-        )
-
     override suspend fun create(payload: CreateUserInClub, clubId: String, associationId: String): UserInClub? =
         create(
             payload,
