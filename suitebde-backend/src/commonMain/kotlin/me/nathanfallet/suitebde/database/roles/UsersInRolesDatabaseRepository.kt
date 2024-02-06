@@ -1,7 +1,7 @@
 package me.nathanfallet.suitebde.database.roles
 
 import me.nathanfallet.suitebde.database.users.Users
-import me.nathanfallet.suitebde.models.roles.CreateUserInRole
+import me.nathanfallet.suitebde.models.roles.CreateUserInRolePayload
 import me.nathanfallet.suitebde.models.roles.UserInRole
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRepository
 import me.nathanfallet.surexposed.database.IDatabase
@@ -53,7 +53,7 @@ class UsersInRolesDatabaseRepository(
                 .singleOrNull()
         }
 
-    override suspend fun create(payload: CreateUserInRole, parentId: String, context: IContext?): UserInRole? =
+    override suspend fun create(payload: CreateUserInRolePayload, parentId: String, context: IContext?): UserInRole? =
         database.suspendedTransaction {
             UsersInRoles.insert {
                 it[roleId] = parentId

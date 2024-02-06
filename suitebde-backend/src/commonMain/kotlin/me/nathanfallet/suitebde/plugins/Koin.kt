@@ -33,6 +33,7 @@ import me.nathanfallet.suitebde.database.application.ClientsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.AssociationsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.CodesInEmailsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.DomainsInAssociationsDatabaseRepository
+import me.nathanfallet.suitebde.database.associations.SubscriptionsInAssociationsDatabaseRepository
 import me.nathanfallet.suitebde.database.clubs.ClubsDatabaseRepository
 import me.nathanfallet.suitebde.database.clubs.UsersInClubsDatabaseRepository
 import me.nathanfallet.suitebde.database.events.EventsDatabaseRepository
@@ -60,6 +61,7 @@ import me.nathanfallet.suitebde.models.web.*
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.ISubscriptionsInAssociationsRepository
 import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRepository
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRepository
@@ -151,6 +153,7 @@ fun Application.configureKoin() {
             single<IAssociationsRepository> { AssociationsDatabaseRepository(get()) }
             single<ICodesInEmailsRepository> { CodesInEmailsDatabaseRepository(get()) }
             single<IDomainsInAssociationsRepository> { DomainsInAssociationsDatabaseRepository(get()) }
+            single<ISubscriptionsInAssociationsRepository> { SubscriptionsInAssociationsDatabaseRepository(get()) }
 
             // Users
             single<IUsersRepository> { UsersDatabaseRepository(get()) }
@@ -328,7 +331,7 @@ fun Application.configureKoin() {
             single<IGetChildModelSuspendUseCase<UserInRole, String, String>>(named<UserInRole>()) {
                 GetChildModelFromRepositorySuspendUseCase(get<IUsersInRolesRepository>())
             }
-            single<ICreateChildModelSuspendUseCase<UserInRole, CreateUserInRole, String>>(named<UserInRole>()) {
+            single<ICreateChildModelSuspendUseCase<UserInRole, CreateUserInRolePayload, String>>(named<UserInRole>()) {
                 CreateChildModelFromRepositorySuspendUseCase(get<IUsersInRolesRepository>())
             }
             single<IDeleteChildModelSuspendUseCase<UserInRole, String, String>>(named<UserInRole>()) {
@@ -340,7 +343,7 @@ fun Application.configureKoin() {
             single<IGetChildModelSuspendUseCase<PermissionInRole, String, String>>(named<PermissionInRole>()) {
                 GetChildModelFromRepositorySuspendUseCase(get<IPermissionsInRolesRepository>())
             }
-            single<ICreateChildModelSuspendUseCase<PermissionInRole, CreatePermissionInRole, String>>(named<PermissionInRole>()) {
+            single<ICreateChildModelSuspendUseCase<PermissionInRole, CreatePermissionInRolePayload, String>>(named<PermissionInRole>()) {
                 CreateChildModelFromRepositorySuspendUseCase(get<IPermissionsInRolesRepository>())
             }
             single<IDeleteChildModelSuspendUseCase<PermissionInRole, String, String>>(named<PermissionInRole>()) {

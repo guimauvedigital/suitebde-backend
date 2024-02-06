@@ -3,11 +3,12 @@ package me.nathanfallet.suitebde.controllers.roles
 import io.ktor.server.application.*
 import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.annotations.*
-import me.nathanfallet.suitebde.models.roles.CreateUserInRole
+import me.nathanfallet.suitebde.models.roles.CreateUserInRolePayload
 import me.nathanfallet.suitebde.models.roles.Role
 import me.nathanfallet.suitebde.models.roles.UserInRole
 
-interface IUsersInRolesController : IChildModelController<UserInRole, String, CreateUserInRole, Unit, Role, String> {
+interface IUsersInRolesController :
+    IChildModelController<UserInRole, String, CreateUserInRolePayload, Unit, Role, String> {
 
     @APIMapping
     @AdminTemplateMapping
@@ -18,7 +19,7 @@ interface IUsersInRolesController : IChildModelController<UserInRole, String, Cr
     suspend fun create(
         call: ApplicationCall,
         @ParentModel parent: Role,
-        @Payload payload: CreateUserInRole,
+        @Payload payload: CreateUserInRolePayload,
     ): UserInRole
 
     @APIMapping

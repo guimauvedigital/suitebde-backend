@@ -1,6 +1,6 @@
 package me.nathanfallet.suitebde.database.roles
 
-import me.nathanfallet.suitebde.models.roles.CreatePermissionInRole
+import me.nathanfallet.suitebde.models.roles.CreatePermissionInRolePayload
 import me.nathanfallet.suitebde.models.roles.PermissionInRole
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
 import me.nathanfallet.surexposed.database.IDatabase
@@ -36,7 +36,7 @@ class PermissionsInRolesDatabaseRepository(
         }
 
     override suspend fun create(
-        payload: CreatePermissionInRole,
+        payload: CreatePermissionInRolePayload,
         parentId: String,
         context: IContext?,
     ): PermissionInRole? =

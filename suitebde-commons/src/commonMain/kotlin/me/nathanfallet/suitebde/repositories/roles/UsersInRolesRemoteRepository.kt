@@ -5,7 +5,7 @@ import me.nathanfallet.ktorx.repositories.api.APIChildModelRemoteRepository
 import me.nathanfallet.ktorx.repositories.api.IAPIChildModelRemoteRepository
 import me.nathanfallet.suitebde.client.ISuiteBDEClient
 import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.roles.CreateUserInRole
+import me.nathanfallet.suitebde.models.roles.CreateUserInRolePayload
 import me.nathanfallet.suitebde.models.roles.Role
 import me.nathanfallet.suitebde.models.roles.UserInRole
 import me.nathanfallet.usecases.models.id.RecursiveId
@@ -13,9 +13,9 @@ import me.nathanfallet.usecases.models.id.RecursiveId
 class UsersInRolesRemoteRepository(
     client: ISuiteBDEClient,
     parentRepository: IAPIChildModelRemoteRepository<Role, String, *, *, *>,
-) : APIChildModelRemoteRepository<UserInRole, String, CreateUserInRole, Unit, String>(
+) : APIChildModelRemoteRepository<UserInRole, String, CreateUserInRolePayload, Unit, String>(
     typeInfo<UserInRole>(),
-    typeInfo<CreateUserInRole>(),
+    typeInfo<CreateUserInRolePayload>(),
     typeInfo<Unit>(),
     typeInfo<List<UserInRole>>(),
     client,
@@ -32,7 +32,7 @@ class UsersInRolesRemoteRepository(
             null
         )
 
-    override suspend fun create(payload: CreateUserInRole, roleId: String, associationId: String): UserInRole? =
+    override suspend fun create(payload: CreateUserInRolePayload, roleId: String, associationId: String): UserInRole? =
         create(
             payload,
             RecursiveId<Role, String, String>(roleId, RecursiveId<Association, String, Unit>(associationId)),
