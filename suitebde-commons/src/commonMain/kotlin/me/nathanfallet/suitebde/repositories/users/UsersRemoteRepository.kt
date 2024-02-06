@@ -1,10 +1,13 @@
 package me.nathanfallet.suitebde.repositories.users
 
+import io.ktor.client.call.*
+import io.ktor.http.*
 import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.repositories.api.APIChildModelRemoteRepository
 import me.nathanfallet.ktorx.repositories.api.IAPIModelRemoteRepository
 import me.nathanfallet.suitebde.client.ISuiteBDEClient
 import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
@@ -31,5 +34,13 @@ class UsersRemoteRepository(
 
     override suspend fun update(id: String, payload: UpdateUserPayload, associationId: String): User? =
         update(id, payload, RecursiveId<Association, String, Unit>(associationId), null)
+
+    override suspend fun listPermissions(id: String, associationId: String): List<Permission> =
+        client
+            .request(
+                HttpMethod.Get,
+                "${constructFullRoute(RecursiveId<Association, String, Unit>(associationId))}/$id/permissions"
+            )
+            .body()
 
 }

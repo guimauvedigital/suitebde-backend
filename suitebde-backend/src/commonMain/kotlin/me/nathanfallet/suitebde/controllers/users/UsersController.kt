@@ -9,6 +9,7 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
+import me.nathanfallet.suitebde.usecases.roles.IGetPermissionsForUserUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
@@ -22,6 +23,7 @@ class UsersController(
     private val getUsersInAssociationSlicedUseCase: IListSliceChildModelSuspendUseCase<User, String>,
     private val getUserUseCase: IGetChildModelSuspendUseCase<User, String, String>,
     private val updateUserUseCase: IUpdateChildModelSuspendUseCase<User, String, UpdateUserPayload, String>,
+    private val getPermissionsForUserUseCase: IGetPermissionsForUserUseCase,
 ) : IUsersController {
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<User> {
@@ -68,6 +70,18 @@ class UsersController(
         ) ?: throw ControllerException(
             HttpStatusCode.InternalServerError, "error_internal"
         )
+    }
+
+    override suspend fun listPermissions(call: ApplicationCall, parent: Association, id: String): List<Permission> {
+        (requireUserForCallUseCase(call) as User).takeIf {
+            it.id == id || checkPermissionUseCase(it, Permission.USERS_VIEW inAssociation parent.id)
+        } ?: throw ControllerException(
+            HttpStatusCode.Forbidden, "users_view_not_allowed"
+        )
+        val targetUser = getUserUseCase(id, parent.id) ?: throw ControllerException(
+            HttpStatusCode.NotFound, "users_not_found"
+        )
+        return getPermissionsForUserUseCase(targetUser).toList()
     }
 
 }

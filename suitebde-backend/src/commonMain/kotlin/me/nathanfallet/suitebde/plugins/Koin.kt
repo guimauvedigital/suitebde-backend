@@ -505,7 +505,8 @@ fun Application.configureKoin() {
                     get(named<User>()),
                     get(named<User>()),
                     get(named<User>()),
-                    get(named<User>())
+                    get(named<User>()),
+                    get()
                 )
             }
 
