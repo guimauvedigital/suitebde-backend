@@ -50,7 +50,7 @@ class SubscriptionsInAssociationsController(
         payload: CreateSubscriptionInAssociationPayload,
     ): SubscriptionInAssociation {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.ASSOCIATIONS_SUBSCRIPTIONS_CREATE inAssociation parent.id)
+            checkPermissionUseCase(it, Permission.SUBSCRIPTIONS_CREATE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "subscriptions_in_associations_update_not_allowed"
         )
@@ -61,7 +61,7 @@ class SubscriptionsInAssociationsController(
 
     override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.ASSOCIATIONS_SUBSCRIPTIONS_DELETE inAssociation parent.id)
+            checkPermissionUseCase(it, Permission.SUBSCRIPTIONS_DELETE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "subscriptions_in_associations_delete_not_allowed"
         )
@@ -80,7 +80,7 @@ class SubscriptionsInAssociationsController(
         payload: UpdateSubscriptionInAssociationPayload,
     ): SubscriptionInAssociation {
         requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.ASSOCIATIONS_SUBSCRIPTIONS_UPDATE inAssociation parent.id)
+            checkPermissionUseCase(it, Permission.SUBSCRIPTIONS_UPDATE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "subscriptions_in_associations_update_not_allowed"
         )

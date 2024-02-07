@@ -58,6 +58,15 @@ class SubscriptionsInAssociationsDatabaseRepository(
             }.resultedValues?.map(SubscriptionsInAssociations::toSubscriptionInAssociation)?.singleOrNull()
         }
 
+    override suspend fun get(id: String, parentId: String, context: IContext?): SubscriptionInAssociation? =
+        database.suspendedTransaction {
+            SubscriptionsInAssociations
+                .selectAll()
+                .where { SubscriptionsInAssociations.id eq id and (SubscriptionsInAssociations.associationId eq parentId) }
+                .map(SubscriptionsInAssociations::toSubscriptionInAssociation)
+                .singleOrNull()
+        }
+
     override suspend fun update(
         id: String,
         payload: UpdateSubscriptionInAssociationPayload,
