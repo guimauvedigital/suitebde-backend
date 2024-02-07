@@ -10,6 +10,7 @@ import me.nathanfallet.ktorx.extensions.info
 import me.nathanfallet.ktorx.routers.openapi.OpenAPIRouter
 import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
 import me.nathanfallet.suitebde.controllers.associations.DomainsInAssociationsRouter
+import me.nathanfallet.suitebde.controllers.associations.SubscriptionsInAssociationsRouter
 import me.nathanfallet.suitebde.controllers.auth.AuthRouter
 import me.nathanfallet.suitebde.controllers.clubs.ClubsRouter
 import me.nathanfallet.suitebde.controllers.clubs.UsersInClubsRouter
@@ -42,6 +43,7 @@ fun Application.configureRouting() {
         val dashboardRouter by inject<DashboardRouter>()
         val associationsRouter by inject<AssociationsRouter>()
         val domainsInAssociationsRouter by inject<DomainsInAssociationsRouter>()
+        val subscriptionsInAssociationsRouter by inject<SubscriptionsInAssociationsRouter>()
         val authRouter by inject<AuthRouter>()
         val usersRouter by inject<UsersRouter>()
         val rolesRouter by inject<RolesRouter>()
@@ -59,6 +61,7 @@ fun Application.configureRouting() {
             dashboardRouter.createRoutes(this, openAPI)
             associationsRouter.createRoutes(this, openAPI)
             domainsInAssociationsRouter.createRoutes(this, openAPI)
+            subscriptionsInAssociationsRouter.createRoutes(this, openAPI)
             authRouter.createRoutes(this, openAPI)
             usersRouter.createRoutes(this, openAPI)
             rolesRouter.createRoutes(this, openAPI)

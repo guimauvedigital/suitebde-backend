@@ -7,6 +7,7 @@ import me.nathanfallet.suitebde.models.application.SuiteBDEEnvironment
 import me.nathanfallet.suitebde.models.application.SuiteBDEJson
 import me.nathanfallet.suitebde.repositories.associations.AssociationsRemoteRepository
 import me.nathanfallet.suitebde.repositories.associations.DomainsInAssociationsRemoteRepository
+import me.nathanfallet.suitebde.repositories.associations.SubscriptionsInAssociationsRemoteRepository
 import me.nathanfallet.suitebde.repositories.clubs.ClubsRemoteRepository
 import me.nathanfallet.suitebde.repositories.clubs.UsersInClubsRemoteRepository
 import me.nathanfallet.suitebde.repositories.events.EventsRemoteRepository
@@ -29,6 +30,7 @@ class SuiteBDEClient(
     override val auth = AuthAPIRemoteRepository(this, prefix = "/api/v1")
     override val associations = AssociationsRemoteRepository(this)
     override val domainsInAssociations = DomainsInAssociationsRemoteRepository(this, associations)
+    override val subscriptionsInAssociations = SubscriptionsInAssociationsRemoteRepository(this, associations)
     override val users = UsersRemoteRepository(this, associations)
     override val webMenus = WebMenusRemoteRepository(this, associations)
     override val webPages = WebPagesRemoteRepository(this, associations)

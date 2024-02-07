@@ -247,6 +247,30 @@ fun Application.configureKoin() {
                 DeleteDomainInAssociationUseCase(get(), get())
             }
 
+            // Subscriptions in associations
+            single<IListChildModelSuspendUseCase<SubscriptionInAssociation, String>>(named<SubscriptionInAssociation>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<ISubscriptionsInAssociationsRepository>())
+            }
+            single<IListSliceChildModelSuspendUseCase<SubscriptionInAssociation, String>>(named<SubscriptionInAssociation>()) {
+                ListSliceChildModelFromRepositorySuspendUseCase(get<ISubscriptionsInAssociationsRepository>())
+            }
+            single<IGetChildModelSuspendUseCase<SubscriptionInAssociation, String, String>>(named<SubscriptionInAssociation>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<ISubscriptionsInAssociationsRepository>())
+            }
+            single<ICreateChildModelSuspendUseCase<SubscriptionInAssociation, CreateSubscriptionInAssociationPayload, String>>(
+                named<SubscriptionInAssociation>()
+            ) {
+                CreateChildModelFromRepositorySuspendUseCase(get<ISubscriptionsInAssociationsRepository>())
+            }
+            single<IDeleteChildModelSuspendUseCase<SubscriptionInAssociation, String, String>>(named<SubscriptionInAssociation>()) {
+                DeleteChildModelFromRepositorySuspendUseCase(get<ISubscriptionsInAssociationsRepository>())
+            }
+            single<IUpdateChildModelSuspendUseCase<SubscriptionInAssociation, String, UpdateSubscriptionInAssociationPayload, String>>(
+                named<SubscriptionInAssociation>()
+            ) {
+                UpdateChildModelFromRepositorySuspendUseCase(get<ISubscriptionsInAssociationsRepository>())
+            }
+
             // Auth
             single<IHashPasswordUseCase> { HashPasswordUseCase() }
             single<IVerifyPasswordUseCase> { VerifyPasswordUseCase() }
@@ -322,6 +346,8 @@ fun Application.configureKoin() {
             single<IDeleteChildModelSuspendUseCase<Role, String, String>>(named<Role>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get(named<Role>()))
             }
+
+            // Users in roles
             single<IListChildModelSuspendUseCase<UserInRole, String>>(named<UserInRole>()) {
                 ListChildModelFromRepositorySuspendUseCase(get<IUsersInRolesRepository>())
             }
@@ -337,6 +363,8 @@ fun Application.configureKoin() {
             single<IDeleteChildModelSuspendUseCase<UserInRole, String, String>>(named<UserInRole>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get<IUsersInRolesRepository>())
             }
+
+            // Permissions
             single<IListChildModelSuspendUseCase<PermissionInRole, String>>(named<PermissionInRole>()) {
                 ListChildModelFromRepositorySuspendUseCase(get<IPermissionsInRolesRepository>())
             }
@@ -433,6 +461,8 @@ fun Application.configureKoin() {
             single<IDeleteChildModelSuspendUseCase<Club, String, String>>(named<Club>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get(named<Club>()))
             }
+
+            // Users in clubs
             single<IListChildModelSuspendUseCase<UserInClub, String>>(named<UserInClub>()) {
                 ListChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
             }
@@ -470,6 +500,18 @@ fun Application.configureKoin() {
                     get(named<DomainInAssociation>()),
                     get(named<DomainInAssociation>()),
                     get(named<DomainInAssociation>())
+                )
+            }
+            single<ISubscriptionsInAssociationsController> {
+                SubscriptionsInAssociationsController(
+                    get(),
+                    get(),
+                    get(named<SubscriptionInAssociation>()),
+                    get(named<SubscriptionInAssociation>()),
+                    get(named<SubscriptionInAssociation>()),
+                    get(named<SubscriptionInAssociation>()),
+                    get(named<SubscriptionInAssociation>()),
+                    get(named<SubscriptionInAssociation>())
                 )
             }
             single<IDashboardController> { DashboardController() }
@@ -620,6 +662,7 @@ fun Application.configureKoin() {
             single { DashboardRouter(get(), get(), get(), get()) }
             single { AssociationsRouter(get(), get(), get(), get()) }
             single { DomainsInAssociationsRouter(get(), get(), get(), get(), get()) }
+            single { SubscriptionsInAssociationsRouter(get(), get(), get(), get(), get(), get()) }
             single { UsersRouter(get(), get(), get(), get(), get(), get()) }
             single { AuthRouter(get(), get()) }
             single { RolesRouter(get(), get(), get(), get(), get(), get()) }
