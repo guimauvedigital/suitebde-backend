@@ -24,6 +24,7 @@ class EventsDatabaseRepository(
             Events
                 .selectAll()
                 .where { Events.associationId eq parentId }
+                .orderBy(Events.startsAt, SortOrder.ASC)
                 .map(Events::toEvent)
         }
 
@@ -32,6 +33,7 @@ class EventsDatabaseRepository(
             Events
                 .selectAll()
                 .where { Events.associationId eq parentId }
+                .orderBy(Events.startsAt, SortOrder.ASC)
                 .limit(limit.toInt(), offset)
                 .map(Events::toEvent)
         }
@@ -52,7 +54,7 @@ class EventsDatabaseRepository(
                 it[associationId] = parentId
                 it[name] = payload.name
                 it[description] = payload.description
-                it[icon] = payload.icon
+                it[image] = payload.image
                 it[startsAt] = payload.startsAt.toString()
                 it[endsAt] = payload.endsAt.toString()
                 it[validated] = payload.validated ?: false
@@ -69,7 +71,7 @@ class EventsDatabaseRepository(
             Events.update({ Events.id eq id and (Events.associationId eq parentId) }) {
                 payload.name?.let { name -> it[Events.name] = name }
                 payload.description?.let { description -> it[Events.description] = description }
-                payload.icon?.let { icon -> it[Events.icon] = icon }
+                payload.image?.let { image -> it[Events.image] = image }
                 payload.startsAt?.let { startsAt -> it[Events.startsAt] = startsAt.toString() }
                 payload.endsAt?.let { endsAt -> it[Events.endsAt] = endsAt.toString() }
                 payload.validated?.let { validated -> it[Events.validated] = validated }

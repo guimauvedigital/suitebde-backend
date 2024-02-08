@@ -13,7 +13,7 @@ object Events : Table() {
     val associationId = varchar("association_id", 32).index()
     val name = text("name")
     val description = text("description")
-    val icon = text("icon").nullable()
+    val image = text("image").nullable()
     val startsAt = varchar("starts_at", 255)
     val endsAt = varchar("ends_at", 255)
     val validated = bool("validated")
@@ -32,7 +32,7 @@ object Events : Table() {
         row[associationId],
         row[name],
         row[description],
-        row[icon],
+        row[image],
         row[startsAt].toInstant(),
         row[endsAt].toInstant(),
         row[validated]
