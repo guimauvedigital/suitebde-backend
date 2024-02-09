@@ -11,6 +11,7 @@ import me.nathanfallet.suitebde.repositories.events.IEventsRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.IRolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRemoteRepository
+import me.nathanfallet.suitebde.repositories.users.ISubscriptionsInUsersRemoteRepository
 import me.nathanfallet.suitebde.repositories.users.IUsersRemoteRepository
 import me.nathanfallet.suitebde.repositories.web.IWebMenusRemoteRepository
 import me.nathanfallet.suitebde.repositories.web.IWebPagesRemoteRepository
@@ -22,6 +23,7 @@ interface ISuiteBDEClient : IAPIClient {
     val domainsInAssociations: IDomainsInAssociationsRemoteRepository
     val subscriptionsInAssociations: ISubscriptionsInAssociationsRemoteRepository
     val users: IUsersRemoteRepository
+    val subscriptionsInUsers: ISubscriptionsInUsersRemoteRepository
     val webMenus: IWebMenusRemoteRepository
     val webPages: IWebPagesRemoteRepository
     val events: IEventsRemoteRepository

@@ -16,10 +16,10 @@ data class SubscriptionInUser(
     @Schema("Id of the subscription", "123abc")
     val subscriptionId: String,
     @Schema("Date the subscription starts at", "2023-12-13T09:41:00Z")
-    val createdAt: Instant,
+    val startsAt: Instant,
     @Schema("Date the subscription ends at", "2023-12-13T09:41:00Z")
-    val expiresAt: Instant,
-) : IChildModel<String, Unit, Unit, String> {
+    val endsAt: Instant,
+) : IChildModel<String, CreateSubscriptionInUserPayload, UpdateSubscriptionInUserPayload, String> {
 
     override val parentId: String
         get() = userId

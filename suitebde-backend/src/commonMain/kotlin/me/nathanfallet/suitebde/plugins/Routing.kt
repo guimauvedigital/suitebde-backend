@@ -19,11 +19,12 @@ import me.nathanfallet.suitebde.controllers.events.EventsRouter
 import me.nathanfallet.suitebde.controllers.roles.PermissionsInRolesRouter
 import me.nathanfallet.suitebde.controllers.roles.RolesRouter
 import me.nathanfallet.suitebde.controllers.roles.UsersInRolesRouter
+import me.nathanfallet.suitebde.controllers.users.SubscriptionsInUsersRouter
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
 import me.nathanfallet.suitebde.controllers.web.WebMenusRouter
 import me.nathanfallet.suitebde.controllers.web.WebPagesRouter
 import me.nathanfallet.suitebde.models.application.SuiteBDEEnvironment
-import org.koin.ktor.ext.inject
+import org.koin.ktor.ext.get
 
 fun Application.configureRouting() {
     install(IgnoreTrailingSlash)
@@ -40,40 +41,27 @@ fun Application.configureRouting() {
             )
         )
 
-        val dashboardRouter by inject<DashboardRouter>()
-        val associationsRouter by inject<AssociationsRouter>()
-        val domainsInAssociationsRouter by inject<DomainsInAssociationsRouter>()
-        val subscriptionsInAssociationsRouter by inject<SubscriptionsInAssociationsRouter>()
-        val authRouter by inject<AuthRouter>()
-        val usersRouter by inject<UsersRouter>()
-        val rolesRouter by inject<RolesRouter>()
-        val usersInRolesRouter by inject<UsersInRolesRouter>()
-        val permissionsInRolesRouter by inject<PermissionsInRolesRouter>()
-        val webPagesRouter by inject<WebPagesRouter>()
-        val webMenusRouter by inject<WebMenusRouter>()
-        val eventsRouter by inject<EventsRouter>()
-        val clubsRouter by inject<ClubsRouter>()
-        val usersInClubsRouter by inject<UsersInClubsRouter>()
-
-        val openAPIRouter = OpenAPIRouter()
-
         authenticate("api-v1-jwt", optional = true) {
-            dashboardRouter.createRoutes(this, openAPI)
-            associationsRouter.createRoutes(this, openAPI)
-            domainsInAssociationsRouter.createRoutes(this, openAPI)
-            subscriptionsInAssociationsRouter.createRoutes(this, openAPI)
-            authRouter.createRoutes(this, openAPI)
-            usersRouter.createRoutes(this, openAPI)
-            rolesRouter.createRoutes(this, openAPI)
-            usersInRolesRouter.createRoutes(this, openAPI)
-            permissionsInRolesRouter.createRoutes(this, openAPI)
-            webPagesRouter.createRoutes(this, openAPI)
-            webMenusRouter.createRoutes(this, openAPI)
-            eventsRouter.createRoutes(this, openAPI)
-            clubsRouter.createRoutes(this, openAPI)
-            usersInClubsRouter.createRoutes(this, openAPI)
-
-            openAPIRouter.createRoutes(this, openAPI)
+            listOf(
+                get<DashboardRouter>(),
+                get<AssociationsRouter>(),
+                get<DomainsInAssociationsRouter>(),
+                get<SubscriptionsInAssociationsRouter>(),
+                get<AuthRouter>(),
+                get<UsersRouter>(),
+                get<SubscriptionsInUsersRouter>(),
+                get<RolesRouter>(),
+                get<UsersInRolesRouter>(),
+                get<PermissionsInRolesRouter>(),
+                get<WebPagesRouter>(),
+                get<WebMenusRouter>(),
+                get<EventsRouter>(),
+                get<ClubsRouter>(),
+                get<UsersInClubsRouter>(),
+                OpenAPIRouter() // OpenAPI should be last
+            ).forEach {
+                it.createRoutes(this, openAPI)
+            }
         }
 
         staticResources("", "static")

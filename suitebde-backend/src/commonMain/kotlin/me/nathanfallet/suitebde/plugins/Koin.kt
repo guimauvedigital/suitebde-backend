@@ -24,9 +24,7 @@ import me.nathanfallet.suitebde.controllers.events.EventsController
 import me.nathanfallet.suitebde.controllers.events.EventsRouter
 import me.nathanfallet.suitebde.controllers.events.IEventsController
 import me.nathanfallet.suitebde.controllers.roles.*
-import me.nathanfallet.suitebde.controllers.users.IUsersController
-import me.nathanfallet.suitebde.controllers.users.UsersController
-import me.nathanfallet.suitebde.controllers.users.UsersRouter
+import me.nathanfallet.suitebde.controllers.users.*
 import me.nathanfallet.suitebde.controllers.web.*
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.database.application.ClientsDatabaseRepository
@@ -41,6 +39,7 @@ import me.nathanfallet.suitebde.database.roles.PermissionsInRolesDatabaseReposit
 import me.nathanfallet.suitebde.database.roles.RolesDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.UsersInRolesDatabaseRepository
 import me.nathanfallet.suitebde.database.users.ClientsInUsersDatabaseRepository
+import me.nathanfallet.suitebde.database.users.SubscriptionsInUsersDatabaseRepository
 import me.nathanfallet.suitebde.database.users.UsersDatabaseRepository
 import me.nathanfallet.suitebde.database.web.WebMenusDatabaseRepository
 import me.nathanfallet.suitebde.database.web.WebPagesDatabaseRepository
@@ -54,9 +53,7 @@ import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
 import me.nathanfallet.suitebde.models.events.UpdateEventPayload
 import me.nathanfallet.suitebde.models.roles.*
-import me.nathanfallet.suitebde.models.users.CreateUserPayload
-import me.nathanfallet.suitebde.models.users.UpdateUserPayload
-import me.nathanfallet.suitebde.models.users.User
+import me.nathanfallet.suitebde.models.users.*
 import me.nathanfallet.suitebde.models.web.*
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
@@ -66,6 +63,7 @@ import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRepository
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRepository
 import me.nathanfallet.suitebde.repositories.users.IClientsInUsersRepository
+import me.nathanfallet.suitebde.repositories.users.ISubscriptionsInUsersRepository
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
 import me.nathanfallet.suitebde.repositories.web.IWebMenusRepository
 import me.nathanfallet.suitebde.repositories.web.IWebPagesRepository
@@ -158,6 +156,7 @@ fun Application.configureKoin() {
             // Users
             single<IUsersRepository> { UsersDatabaseRepository(get()) }
             single<IClientsInUsersRepository> { ClientsInUsersDatabaseRepository(get()) }
+            single<ISubscriptionsInUsersRepository> { SubscriptionsInUsersDatabaseRepository(get()) }
 
             // Roles
             single<IChildModelSuspendRepository<Role, String, CreateRolePayload, UpdateRolePayload, String>>(named<Role>()) {
@@ -323,6 +322,25 @@ fun Application.configureKoin() {
                     get(),
                     get()
                 )
+            }
+
+            // Subscriptions in users
+            single<IListChildModelSuspendUseCase<SubscriptionInUser, String>>(named<SubscriptionInUser>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<ISubscriptionsInUsersRepository>())
+            }
+            single<IGetChildModelSuspendUseCase<SubscriptionInUser, String, String>>(named<SubscriptionInUser>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<ISubscriptionsInUsersRepository>())
+            }
+            single<ICreateChildModelSuspendUseCase<SubscriptionInUser, CreateSubscriptionInUserPayload, String>>(named<SubscriptionInUser>()) {
+                CreateChildModelFromRepositorySuspendUseCase(get<ISubscriptionsInUsersRepository>())
+            }
+            single<IUpdateChildModelSuspendUseCase<SubscriptionInUser, String, UpdateSubscriptionInUserPayload, String>>(
+                named<SubscriptionInUser>()
+            ) {
+                UpdateChildModelFromRepositorySuspendUseCase(get<ISubscriptionsInUsersRepository>())
+            }
+            single<IDeleteChildModelSuspendUseCase<SubscriptionInUser, String, String>>(named<SubscriptionInUser>()) {
+                DeleteChildModelFromRepositorySuspendUseCase(get<ISubscriptionsInUsersRepository>())
             }
 
             // Roles
@@ -554,6 +572,13 @@ fun Application.configureKoin() {
                     get()
                 )
             }
+            single<ISubscriptionsInUsersController> {
+                SubscriptionsInUsersController(
+                    get(),
+                    get(),
+                    get(named<SubscriptionInUser>())
+                )
+            }
 
             // Roles
             single<IRolesController> {
@@ -664,6 +689,7 @@ fun Application.configureKoin() {
             single { DomainsInAssociationsRouter(get(), get(), get(), get(), get()) }
             single { SubscriptionsInAssociationsRouter(get(), get(), get(), get(), get(), get()) }
             single { UsersRouter(get(), get(), get(), get(), get(), get()) }
+            single { SubscriptionsInUsersRouter(get(), get()) }
             single { AuthRouter(get(), get()) }
             single { RolesRouter(get(), get(), get(), get(), get(), get()) }
             single { UsersInRolesRouter(get(), get()) }
