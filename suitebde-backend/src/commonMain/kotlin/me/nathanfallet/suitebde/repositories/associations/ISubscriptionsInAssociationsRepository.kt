@@ -1,0 +1,9 @@
+package me.nathanfallet.suitebde.repositories.associations
+
+import me.nathanfallet.suitebde.models.associations.CreateSubscriptionInAssociationPayload
+import me.nathanfallet.suitebde.models.associations.SubscriptionInAssociation
+import me.nathanfallet.suitebde.models.associations.UpdateSubscriptionInAssociationPayload
+import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
+
+interface ISubscriptionsInAssociationsRepository :
+    IChildModelSuspendRepository<SubscriptionInAssociation, String, CreateSubscriptionInAssociationPayload, UpdateSubscriptionInAssociationPayload, String>

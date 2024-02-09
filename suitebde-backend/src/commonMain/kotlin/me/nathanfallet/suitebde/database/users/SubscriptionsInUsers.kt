@@ -1,22 +1,19 @@
-package me.nathanfallet.suitebde.database.events
+package me.nathanfallet.suitebde.database.users
 
 import kotlinx.datetime.toInstant
 import me.nathanfallet.suitebde.extensions.generateId
-import me.nathanfallet.suitebde.models.events.Event
+import me.nathanfallet.suitebde.models.users.SubscriptionInUser
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.selectAll
 
-object Events : Table() {
+object SubscriptionsInUsers : Table() {
 
     val id = varchar("id", 32)
-    val associationId = varchar("association_id", 32).index()
-    val name = text("name")
-    val description = text("description")
-    val image = text("image").nullable()
+    val userId = varchar("user_id", 32).index()
+    val subscriptionId = varchar("subscription_id", 32).index()
     val startsAt = varchar("starts_at", 255)
     val endsAt = varchar("ends_at", 255)
-    val validated = bool("validated")
 
     override val primaryKey = PrimaryKey(id)
 
@@ -25,17 +22,14 @@ object Events : Table() {
         return if (selectAll().where { id eq candidate }.count() > 0) generateId() else candidate
     }
 
-    fun toEvent(
+    fun toSubscriptionInUser(
         row: ResultRow,
-    ) = Event(
+    ) = SubscriptionInUser(
         row[id],
-        row[associationId],
-        row[name],
-        row[description],
-        row[image],
+        row[userId],
+        row[subscriptionId],
         row[startsAt].toInstant(),
-        row[endsAt].toInstant(),
-        row[validated]
+        row[endsAt].toInstant()
     )
 
 }

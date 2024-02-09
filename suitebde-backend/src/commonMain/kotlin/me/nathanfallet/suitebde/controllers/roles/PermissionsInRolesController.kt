@@ -4,7 +4,7 @@ import io.ktor.http.*
 import io.ktor.server.application.*
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
-import me.nathanfallet.suitebde.models.roles.CreatePermissionInRole
+import me.nathanfallet.suitebde.models.roles.CreatePermissionInRolePayload
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.roles.PermissionInRole
 import me.nathanfallet.suitebde.models.roles.Role
@@ -18,7 +18,7 @@ class PermissionsInRolesController(
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
     private val getPermissionsInRolesUseCase: IListChildModelSuspendUseCase<PermissionInRole, String>,
-    private val createPermissionInRolesUseCase: ICreateChildModelSuspendUseCase<PermissionInRole, CreatePermissionInRole, String>,
+    private val createPermissionInRolesUseCase: ICreateChildModelSuspendUseCase<PermissionInRole, CreatePermissionInRolePayload, String>,
     private val getPermissionInRoleUseCase: IGetChildModelSuspendUseCase<PermissionInRole, String, String>,
     private val deletePermissionInRoleUseCase: IDeleteChildModelSuspendUseCase<PermissionInRole, String, String>,
 ) : IPermissionsInRolesController {
@@ -26,7 +26,7 @@ class PermissionsInRolesController(
     override suspend fun create(
         call: ApplicationCall,
         parent: Role,
-        payload: CreatePermissionInRole,
+        payload: CreatePermissionInRolePayload,
     ): PermissionInRole {
         requireUserForCallUseCase(call).takeIf {
             checkPermissionUseCase(it, Permission.ROLES_USERS inAssociation parent.associationId)

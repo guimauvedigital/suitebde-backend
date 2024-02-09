@@ -5,7 +5,7 @@ import me.nathanfallet.ktorx.repositories.api.APIChildModelRemoteRepository
 import me.nathanfallet.ktorx.repositories.api.IAPIChildModelRemoteRepository
 import me.nathanfallet.suitebde.client.ISuiteBDEClient
 import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.roles.CreatePermissionInRole
+import me.nathanfallet.suitebde.models.roles.CreatePermissionInRolePayload
 import me.nathanfallet.suitebde.models.roles.PermissionInRole
 import me.nathanfallet.suitebde.models.roles.Role
 import me.nathanfallet.usecases.models.id.RecursiveId
@@ -13,9 +13,9 @@ import me.nathanfallet.usecases.models.id.RecursiveId
 class PermissionsInRolesRemoteRepository(
     client: ISuiteBDEClient,
     parentRepository: IAPIChildModelRemoteRepository<Role, String, *, *, *>,
-) : APIChildModelRemoteRepository<PermissionInRole, String, CreatePermissionInRole, Unit, String>(
+) : APIChildModelRemoteRepository<PermissionInRole, String, CreatePermissionInRolePayload, Unit, String>(
     typeInfo<PermissionInRole>(),
-    typeInfo<CreatePermissionInRole>(),
+    typeInfo<CreatePermissionInRolePayload>(),
     typeInfo<Unit>(),
     typeInfo<List<PermissionInRole>>(),
     client,
@@ -38,7 +38,7 @@ class PermissionsInRolesRemoteRepository(
         )
 
     override suspend fun create(
-        payload: CreatePermissionInRole,
+        payload: CreatePermissionInRolePayload,
         roleId: String,
         associationId: String,
     ): PermissionInRole? =

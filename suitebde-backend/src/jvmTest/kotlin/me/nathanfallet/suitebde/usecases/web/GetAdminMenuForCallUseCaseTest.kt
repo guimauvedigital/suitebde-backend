@@ -50,6 +50,9 @@ class GetAdminMenuForCallUseCaseTest {
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { checkPermissionUseCase(user, Permission.ADMIN inAssociation association.id) } returns true
+        coEvery {
+            checkPermissionUseCase(user, Permission.SUBSCRIPTIONS_VIEW inAssociation association.id)
+        } returns true
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association.id) } returns true
         coEvery { checkPermissionUseCase(user, Permission.ROLES_VIEW inAssociation association.id) } returns true
         coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_VIEW inAssociation association.id) } returns true
@@ -65,6 +68,12 @@ class GetAdminMenuForCallUseCaseTest {
                     "associationId",
                     "t:admin_menu_dashboard",
                     "/admin"
+                ),
+                WebMenu(
+                    "subscriptions",
+                    "associationId",
+                    "t:admin_menu_subscriptions",
+                    "/admin/subscriptions"
                 ),
                 WebMenu(
                     "users",
@@ -122,6 +131,9 @@ class GetAdminMenuForCallUseCaseTest {
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { checkPermissionUseCase(user, Permission.ADMIN inAssociation association.id) } returns true
+        coEvery {
+            checkPermissionUseCase(user, Permission.SUBSCRIPTIONS_VIEW inAssociation association.id)
+        } returns false
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association.id) } returns false
         coEvery { checkPermissionUseCase(user, Permission.ROLES_VIEW inAssociation association.id) } returns false
         coEvery { checkPermissionUseCase(user, Permission.WEBPAGES_VIEW inAssociation association.id) } returns false

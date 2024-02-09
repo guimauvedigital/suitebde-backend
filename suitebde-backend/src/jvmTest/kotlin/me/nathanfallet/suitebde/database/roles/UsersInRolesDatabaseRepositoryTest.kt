@@ -3,7 +3,7 @@ package me.nathanfallet.suitebde.database.roles
 import kotlinx.coroutines.runBlocking
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.database.users.UsersDatabaseRepository
-import me.nathanfallet.suitebde.models.roles.CreateUserInRole
+import me.nathanfallet.suitebde.models.roles.CreateUserInRolePayload
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import org.jetbrains.exposed.sql.selectAll
 import kotlin.test.Test
@@ -25,7 +25,7 @@ class UsersInRolesDatabaseRepositoryTest {
             "associationId"
         ) ?: fail("Unable to create user")
         val userInRole = repository.create(
-            CreateUserInRole(
+            CreateUserInRolePayload(
                 user.id
             ), "roleId"
         ) ?: fail("Unable to create user in role")
@@ -48,7 +48,7 @@ class UsersInRolesDatabaseRepositoryTest {
             "associationId"
         ) ?: fail("Unable to create user")
         repository.create(
-            CreateUserInRole(
+            CreateUserInRolePayload(
                 user.id
             ), "roleId"
         ) ?: fail("Unable to create user in role")
@@ -61,7 +61,7 @@ class UsersInRolesDatabaseRepositoryTest {
         val database = Database(protocol = "h2", name = "createUserInRole")
         val repository = UsersInRolesDatabaseRepository(database)
         val userInRole = repository.create(
-            CreateUserInRole(
+            CreateUserInRolePayload(
                 "userId"
             ), "roleId"
         )
@@ -85,7 +85,7 @@ class UsersInRolesDatabaseRepositoryTest {
             "associationId"
         ) ?: fail("Unable to create user")
         val userInRole = repository.create(
-            CreateUserInRole(
+            CreateUserInRolePayload(
                 user.id
             ), "roleId"
         ) ?: fail("Unable to create user in role")
@@ -100,7 +100,7 @@ class UsersInRolesDatabaseRepositoryTest {
         val repository = UsersInRolesDatabaseRepository(database)
         UsersDatabaseRepository(database)
         repository.create(
-            CreateUserInRole(
+            CreateUserInRolePayload(
                 "userId"
             ), "roleId"
         ) ?: fail("Unable to create user in role")
@@ -130,7 +130,7 @@ class UsersInRolesDatabaseRepositoryTest {
             "associationId"
         ) ?: fail("Unable to create user")
         repository.create(
-            CreateUserInRole(
+            CreateUserInRolePayload(
                 user.id
             ), "roleId"
         ) ?: fail("Unable to create role")
@@ -144,7 +144,7 @@ class UsersInRolesDatabaseRepositoryTest {
         val database = Database(protocol = "h2", name = "deleteUserInRoleNotInRole")
         val repository = UsersInRolesDatabaseRepository(database)
         repository.create(
-            CreateUserInRole(
+            CreateUserInRolePayload(
                 "userId"
             ), "roleId"
         ) ?: fail("Unable to create role")

@@ -47,7 +47,7 @@ class GetAdminMenuForCallUseCase(
         )
 
         val locale = getLocaleForCallUseCase(input)
-        return listOf("dashboard", "users", "roles", "webpages", "webmenus", "events", "clubs")
+        return listOf("dashboard", "subscriptions", "users", "roles", "webpages", "webmenus", "events", "clubs")
             .filter {
                 it == "dashboard" || Permission.entries.firstOrNull { p -> p.name == "${it.uppercase()}_VIEW" }
                     ?.let { permission ->

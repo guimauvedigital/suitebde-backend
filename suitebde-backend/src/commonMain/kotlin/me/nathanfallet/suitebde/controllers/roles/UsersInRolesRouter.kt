@@ -2,16 +2,16 @@ package me.nathanfallet.suitebde.controllers.roles
 
 import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
-import me.nathanfallet.suitebde.models.roles.CreateUserInRole
+import me.nathanfallet.suitebde.models.roles.CreateUserInRolePayload
 import me.nathanfallet.suitebde.models.roles.Role
 import me.nathanfallet.suitebde.models.roles.UserInRole
 
 class UsersInRolesRouter(
     controller: IUsersInRolesController,
     rolesRouter: RolesRouter,
-) : APIChildModelRouter<UserInRole, String, CreateUserInRole, Unit, Role, String>(
+) : APIChildModelRouter<UserInRole, String, CreateUserInRolePayload, Unit, Role, String>(
     typeInfo<UserInRole>(),
-    typeInfo<CreateUserInRole>(),
+    typeInfo<CreateUserInRolePayload>(),
     typeInfo<Unit>(),
     controller,
     IUsersInRolesController::class,

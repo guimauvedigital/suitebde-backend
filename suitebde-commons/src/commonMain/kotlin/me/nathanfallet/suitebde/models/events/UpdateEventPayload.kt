@@ -14,8 +14,8 @@ data class UpdateEventPayload(
     @Schema("Description of the event", "Venez fêter Noël avec nous !")
     val description: String? = null,
     @PayloadProperty("string")
-    @Schema("Icon of the event", "https://example.com/icon.png")
-    val icon: String? = null,
+    @Schema("Image of the event", "https://example.com/event.png")
+    val image: String? = null,
     @PayloadProperty("date", "6")
     @Schema("Date the event starts at", "2023-12-13T09:41:00Z")
     val startsAt: Instant? = null,

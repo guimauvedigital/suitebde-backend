@@ -29,7 +29,7 @@ interface IDomainsInAssociationsController :
     @AdminTemplateMapping
     @CreateModelPath
     @DocumentedError(401, "auth_invalid_credentials")
-    @DocumentedError(403, "domains_update_not_allowed")
+    @DocumentedError(403, "domains_create_not_allowed")
     @DocumentedError(500, "error_internal")
     suspend fun create(
         call: ApplicationCall,

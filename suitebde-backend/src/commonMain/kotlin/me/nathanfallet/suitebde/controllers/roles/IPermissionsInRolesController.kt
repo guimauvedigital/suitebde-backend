@@ -3,12 +3,12 @@ package me.nathanfallet.suitebde.controllers.roles
 import io.ktor.server.application.*
 import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.annotations.*
-import me.nathanfallet.suitebde.models.roles.CreatePermissionInRole
+import me.nathanfallet.suitebde.models.roles.CreatePermissionInRolePayload
 import me.nathanfallet.suitebde.models.roles.PermissionInRole
 import me.nathanfallet.suitebde.models.roles.Role
 
 interface IPermissionsInRolesController :
-    IChildModelController<PermissionInRole, String, CreatePermissionInRole, Unit, Role, String> {
+    IChildModelController<PermissionInRole, String, CreatePermissionInRolePayload, Unit, Role, String> {
 
     @APIMapping
     @CreateModelPath
@@ -18,7 +18,7 @@ interface IPermissionsInRolesController :
     suspend fun create(
         call: ApplicationCall,
         @ParentModel parent: Role,
-        @Payload payload: CreatePermissionInRole,
+        @Payload payload: CreatePermissionInRolePayload,
     ): PermissionInRole
 
     @APIMapping
