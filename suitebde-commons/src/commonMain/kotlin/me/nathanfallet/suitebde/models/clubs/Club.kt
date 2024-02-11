@@ -20,13 +20,15 @@ data class Club(
     @Schema("Description of the club", "Le club informatique est un club qui s'occupe de tout ce qui est informatique.")
     val description: String,
     @ModelProperty("string")
-    @Schema("Icon of the club", "https://example.com/icon.png")
-    val icon: String?,
+    @Schema("Logo of the club", "https://example.com/logo.png")
+    val logo: String?,
     @Schema("Creation date of the club", "2023-12-14T09:41:00Z")
     val createdAt: Instant,
     @ModelProperty("boolean")
     @Schema("Is the event validated?", "true")
     val validated: Boolean,
+    @Schema("Number of members in the club", "42")
+    val usersCount: Long,
 ) : IChildModel<String, CreateClubPayload, UpdateClubPayload, String> {
 
     override val parentId: String

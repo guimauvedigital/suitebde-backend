@@ -59,6 +59,7 @@ import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepositor
 import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
 import me.nathanfallet.suitebde.repositories.associations.ISubscriptionsInAssociationsRepository
+import me.nathanfallet.suitebde.repositories.clubs.IClubsRepository
 import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRepository
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRepository
@@ -175,12 +176,8 @@ fun Application.configureKoin() {
             }
 
             // Clubs
-            single<IChildModelSuspendRepository<Club, String, CreateClubPayload, UpdateClubPayload, String>>(named<Club>()) {
-                ClubsDatabaseRepository(get())
-            }
-            single<IUsersInClubsRepository> {
-                UsersInClubsDatabaseRepository(get())
-            }
+            single<IClubsRepository> { ClubsDatabaseRepository(get()) }
+            single<IUsersInClubsRepository> { UsersInClubsDatabaseRepository(get()) }
         }
         val useCaseModule = module {
             // Application
@@ -462,22 +459,22 @@ fun Application.configureKoin() {
 
             // Clubs
             single<IListChildModelSuspendUseCase<Club, String>>(named<Club>()) {
-                ListChildModelFromRepositorySuspendUseCase(get(named<Club>()))
+                ListChildModelFromRepositorySuspendUseCase(get<IClubsRepository>())
             }
             single<IListSliceChildModelSuspendUseCase<Club, String>>(named<Club>()) {
-                ListSliceChildModelFromRepositorySuspendUseCase(get(named<Club>()))
+                ListSliceChildModelFromRepositorySuspendUseCase(get<IClubsRepository>())
             }
             single<IGetChildModelSuspendUseCase<Club, String, String>>(named<Club>()) {
-                GetChildModelFromRepositorySuspendUseCase(get(named<Club>()))
+                GetChildModelFromRepositorySuspendUseCase(get<IClubsRepository>())
             }
             single<ICreateChildModelSuspendUseCase<Club, CreateClubPayload, String>>(named<Club>()) {
-                CreateChildModelFromRepositorySuspendUseCase(get(named<Club>()))
+                CreateChildModelFromRepositorySuspendUseCase(get<IClubsRepository>())
             }
             single<IUpdateChildModelSuspendUseCase<Club, String, UpdateClubPayload, String>>(named<Club>()) {
-                UpdateChildModelFromRepositorySuspendUseCase(get(named<Club>()))
+                UpdateChildModelFromRepositorySuspendUseCase(get<IClubsRepository>())
             }
             single<IDeleteChildModelSuspendUseCase<Club, String, String>>(named<Club>()) {
-                DeleteChildModelFromRepositorySuspendUseCase(get(named<Club>()))
+                DeleteChildModelFromRepositorySuspendUseCase(get<IClubsRepository>())
             }
 
             // Users in clubs

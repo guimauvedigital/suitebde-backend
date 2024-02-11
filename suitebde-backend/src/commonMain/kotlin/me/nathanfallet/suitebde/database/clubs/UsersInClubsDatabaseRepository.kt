@@ -16,6 +16,8 @@ class UsersInClubsDatabaseRepository(
     init {
         database.transaction {
             SchemaUtils.create(UsersInClubs)
+            SchemaUtils.create(Users)
+            SchemaUtils.create(Clubs)
         }
     }
 

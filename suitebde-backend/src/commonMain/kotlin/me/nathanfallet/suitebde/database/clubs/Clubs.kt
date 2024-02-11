@@ -5,6 +5,7 @@ import me.nathanfallet.suitebde.extensions.generateId
 import me.nathanfallet.suitebde.models.clubs.Club
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
+import org.jetbrains.exposed.sql.countDistinct
 import org.jetbrains.exposed.sql.selectAll
 
 object Clubs : Table() {
@@ -13,9 +14,10 @@ object Clubs : Table() {
     val associationId = varchar("association_id", 32).index()
     val name = text("name")
     val description = text("description")
-    val icon = text("icon").nullable()
+    val logo = text("logo").nullable()
     val createdAt = varchar("created_at", 255)
     val validated = bool("validated")
+    val usersCount = UsersInClubs.userId.countDistinct()
 
     override val primaryKey = PrimaryKey(id)
 
@@ -31,9 +33,10 @@ object Clubs : Table() {
         row[associationId],
         row[name],
         row[description],
-        row[icon],
+        row[logo],
         row[createdAt].toInstant(),
-        row[validated]
+        row[validated],
+        row[usersCount]
     )
 
 }
