@@ -193,7 +193,7 @@ fun Application.configureKoin() {
         val useCaseModule = module {
             // Application
             single<ISendEmailUseCase> { SendEmailUseCase(get()) }
-            single<IExpireUseCase> { ExpireUseCase(get(), get(), get(), get(named<Association>())) }
+            single<IExpireUseCase> { ExpireUseCase(get(), get()) }
             single<ITranslateUseCase> { TranslateUseCase() }
             single<IGetLocaleForCallUseCase> { GetLocaleForCallUseCase() }
             single<IGetZoneForDomainUseCase> {
@@ -230,7 +230,15 @@ fun Application.configureKoin() {
             single<IUpdateModelSuspendUseCase<Association, String, UpdateAssociationPayload>>(named<Association>()) {
                 UpdateModelFromRepositorySuspendUseCase(get<IAssociationsRepository>())
             }
-            single<IDeleteModelSuspendUseCase<Association, String>>(named<Association>()) { DeleteAssociationUseCase(get()) }
+            single<IDeleteModelSuspendUseCase<Association, String>>(named<Association>()) {
+                DeleteAssociationUseCase(
+                    get(),
+                    get(named<User>()),
+                    get(named<User>()),
+                    get(named<Club>()),
+                    get(named<Club>())
+                )
+            }
 
             // Codes in emails
             single<IGetCodeInEmailUseCase> { GetCodeInEmailUseCase(get()) }
