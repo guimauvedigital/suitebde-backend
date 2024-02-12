@@ -90,6 +90,7 @@ import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.create.CreateChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateModelSuspendUseCase
+import me.nathanfallet.usecases.models.create.context.CreateChildModelWithContextFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.create.context.ICreateChildModelWithContextSuspendUseCase
 import me.nathanfallet.usecases.models.delete.DeleteChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
@@ -190,8 +191,8 @@ fun Application.configureKoin() {
 
             // Clubs
             single<IClubsRepository> { ClubsDatabaseRepository(get()) }
-            single<IUsersInClubsRepository> { UsersInClubsDatabaseRepository(get()) }
             single<IRolesInClubsRepository> { RolesInClubsDatabaseRepository(get()) }
+            single<IUsersInClubsRepository> { UsersInClubsDatabaseRepository(get(), get()) }
         }
         val useCaseModule = module {
             // Application
@@ -517,6 +518,9 @@ fun Application.configureKoin() {
             }
             single<ICreateChildModelSuspendUseCase<UserInClub, CreateUserInClubPayload, String>>(named<UserInClub>()) {
                 CreateChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
+            }
+            single<ICreateChildModelWithContextSuspendUseCase<UserInClub, CreateUserInClubPayload, String>>(named<UserInClub>()) {
+                CreateChildModelWithContextFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
             }
             single<IDeleteChildModelSuspendUseCase<UserInClub, String, String>>(named<UserInClub>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())

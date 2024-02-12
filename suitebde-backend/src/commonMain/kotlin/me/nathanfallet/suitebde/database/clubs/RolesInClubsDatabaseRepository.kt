@@ -36,6 +36,15 @@ class RolesInClubsDatabaseRepository(
                 .singleOrNull()
         }
 
+    override suspend fun getDefault(parentId: String): RoleInClub? =
+        database.suspendedTransaction {
+            RolesInClubs
+                .selectAll()
+                .where { (RolesInClubs.clubId eq parentId) and (RolesInClubs.default eq true) }
+                .map(RolesInClubs::toRoleInClub)
+                .singleOrNull()
+        }
+
     override suspend fun create(payload: CreateRoleInClubPayload, parentId: String, context: IContext?): RoleInClub? =
         database.suspendedTransaction {
             RolesInClubs.insert {

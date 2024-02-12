@@ -9,6 +9,7 @@ import me.nathanfallet.suitebde.models.clubs.*
 import me.nathanfallet.suitebde.models.users.OptionalUserContext
 import me.nathanfallet.suitebde.repositories.clubs.IClubsRepository
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
+import me.nathanfallet.usecases.models.create.context.ICreateChildModelWithContextSuspendUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -31,7 +32,7 @@ class CreateClubUseCaseTest {
         val createRoleInClubUseCase =
             mockk<ICreateChildModelSuspendUseCase<RoleInClub, CreateRoleInClubPayload, String>>()
         val createUserInClubUseCase =
-            mockk<ICreateChildModelSuspendUseCase<UserInClub, CreateUserInClubPayload, String>>()
+            mockk<ICreateChildModelWithContextSuspendUseCase<UserInClub, CreateUserInClubPayload, String>>()
         val createClubUseCase = CreateClubUseCase(repository, createRoleInClubUseCase, createUserInClubUseCase)
         val payload = CreateClubPayload("name", "description", "image", "member", "admin")
         coEvery { repository.create(payload, "associationId", OptionalUserContext("userId")) } returns club
@@ -51,9 +52,21 @@ class CreateClubUseCaseTest {
         } returns RoleInClub(
             "adminRoleId", club.id, "admin", admin = true
         )
-        coEvery { createUserInClubUseCase(CreateUserInClubPayload("userId"), club.id) } returns userInClub
+        coEvery {
+            createUserInClubUseCase(
+                CreateUserInClubPayload("userId"),
+                club.id,
+                OptionalRoleInClubContext("adminRoleId")
+            )
+        } returns userInClub
         assertEquals(club, createClubUseCase(payload, "associationId", OptionalUserContext("userId")))
-        coVerify { createUserInClubUseCase(CreateUserInClubPayload("userId"), club.id) }
+        coVerify {
+            createUserInClubUseCase(
+                CreateUserInClubPayload("userId"),
+                club.id,
+                OptionalRoleInClubContext("adminRoleId")
+            )
+        }
         coVerify { createRoleInClubUseCase(CreateRoleInClubPayload("member", admin = false, default = true), club.id) }
         coVerify { createRoleInClubUseCase(CreateRoleInClubPayload("admin", admin = true), club.id) }
     }
