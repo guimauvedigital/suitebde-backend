@@ -16,6 +16,7 @@ class PermissionsInRolesDatabaseRepository(
         database.transaction {
             SchemaUtils.create(PermissionsInRoles)
             SchemaUtils.create(UsersInRoles)
+            SchemaUtils.create(Roles)
         }
     }
 
@@ -27,12 +28,13 @@ class PermissionsInRolesDatabaseRepository(
                 .map(PermissionsInRoles::toPermissionInRole)
         }
 
-    override suspend fun listForUser(userId: String): List<PermissionInRole> =
+    override suspend fun listForUser(userId: String, associationId: String): List<PermissionInRole> =
         database.suspendedTransaction {
             PermissionsInRoles
                 .join(UsersInRoles, JoinType.INNER, PermissionsInRoles.roleId, UsersInRoles.roleId)
+                .join(Roles, JoinType.INNER, PermissionsInRoles.roleId, Roles.id)
                 .selectAll()
-                .where { UsersInRoles.userId eq userId }
+                .where { UsersInRoles.userId eq userId and (Roles.associationId eq associationId) }
                 .map(PermissionsInRoles::toPermissionInRole)
         }
 

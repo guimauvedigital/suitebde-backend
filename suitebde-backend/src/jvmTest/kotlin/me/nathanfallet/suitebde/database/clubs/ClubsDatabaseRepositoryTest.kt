@@ -69,7 +69,7 @@ class ClubsDatabaseRepositoryTest {
             ),
             "associationId",
         )
-        val clubsFromDatabase = database.transaction {
+        val clubsFromDatabase = database.suspendedTransaction {
             Clubs
                 .join(UsersInClubs, JoinType.LEFT, Clubs.id, UsersInClubs.clubId)
                 .select(Clubs.columns + Clubs.usersCount)

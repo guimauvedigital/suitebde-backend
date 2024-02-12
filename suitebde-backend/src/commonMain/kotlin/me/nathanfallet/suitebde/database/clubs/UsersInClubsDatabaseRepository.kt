@@ -37,13 +37,26 @@ class UsersInClubsDatabaseRepository(
                 }
         }
 
-    override suspend fun listForUser(userId: String): List<UserInClub> =
+    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<UserInClub> =
+        database.suspendedTransaction {
+            UsersInClubs
+                .join(RolesInClubs, JoinType.INNER, UsersInClubs.roleId, RolesInClubs.id)
+                .join(Users, JoinType.INNER, UsersInClubs.userId, Users.id)
+                .selectAll()
+                .where { UsersInClubs.clubId eq parentId }
+                .limit(limit.toInt(), offset)
+                .map {
+                    UsersInClubs.toUserInClub(it, user = Users.toUser(it), role = RolesInClubs.toRoleInClub(it))
+                }
+        }
+
+    override suspend fun listForUser(userId: String, associationId: String): List<UserInClub> =
         database.suspendedTransaction {
             UsersInClubs
                 .join(RolesInClubs, JoinType.INNER, UsersInClubs.roleId, RolesInClubs.id)
                 .join(Clubs, JoinType.INNER, UsersInClubs.clubId, Clubs.id)
                 .selectAll()
-                .where { UsersInClubs.userId eq userId }
+                .where { UsersInClubs.userId eq userId and (Clubs.associationId eq associationId) }
                 .map {
                     UsersInClubs.toUserInClub(it, club = Clubs.toClub(it), role = RolesInClubs.toRoleInClub(it))
                 }
