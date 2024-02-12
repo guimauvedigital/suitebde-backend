@@ -17,6 +17,7 @@ class AssociationsDatabaseRepository(
     init {
         database.transaction {
             SchemaUtils.create(Associations)
+            SchemaUtils.create(DomainsInAssociations)
         }
     }
 

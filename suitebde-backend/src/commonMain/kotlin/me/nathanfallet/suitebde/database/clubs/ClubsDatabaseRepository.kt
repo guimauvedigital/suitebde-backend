@@ -4,57 +4,65 @@ import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.clubs.Club
 import me.nathanfallet.suitebde.models.clubs.CreateClubPayload
 import me.nathanfallet.suitebde.models.clubs.UpdateClubPayload
+import me.nathanfallet.suitebde.models.users.OptionalUserContext
+import me.nathanfallet.suitebde.repositories.clubs.IClubsRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
-import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class ClubsDatabaseRepository(
     private val database: IDatabase,
-) : IChildModelSuspendRepository<Club, String, CreateClubPayload, UpdateClubPayload, String> {
+) : IClubsRepository {
 
     init {
         database.transaction {
             SchemaUtils.create(Clubs)
+            SchemaUtils.create(UsersInClubs)
         }
     }
 
     override suspend fun list(parentId: String, context: IContext?): List<Club> =
         database.suspendedTransaction {
-            Clubs
-                .selectAll()
+            customJoin((context as? OptionalUserContext)?.userId)
                 .where { Clubs.associationId eq parentId }
+                .groupBy(Clubs.id)
+                .orderByMemberAndName((context as? OptionalUserContext)?.userId)
                 .map(Clubs::toClub)
         }
 
     override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<Club> =
         database.suspendedTransaction {
-            Clubs
-                .selectAll()
+            customJoin((context as? OptionalUserContext)?.userId)
                 .where { Clubs.associationId eq parentId }
+                .groupBy(Clubs.id)
+                .orderByMemberAndName((context as? OptionalUserContext)?.userId)
                 .limit(limit.toInt(), offset)
                 .map(Clubs::toClub)
         }
 
-    override suspend fun create(payload: CreateClubPayload, parentId: String, context: IContext?): Club? =
-        database.suspendedTransaction {
+    override suspend fun create(payload: CreateClubPayload, parentId: String, context: IContext?): Club? {
+        val id = database.suspendedTransaction {
+            val id = Clubs.generateId()
             Clubs.insert {
-                it[id] = generateId()
+                it[Clubs.id] = id
                 it[associationId] = parentId
                 it[name] = payload.name
                 it[description] = payload.description
-                it[icon] = payload.icon
+                it[logo] = payload.logo
                 it[createdAt] = Clock.System.now().toString()
                 it[validated] = payload.validated ?: false
-            }.resultedValues?.map(Clubs::toClub)?.singleOrNull()
+            }
+            id
         }
+        return get(id, parentId, context)
+    }
 
     override suspend fun get(id: String, parentId: String, context: IContext?): Club? =
         database.suspendedTransaction {
-            Clubs
-                .selectAll()
+            customJoin((context as? OptionalUserContext)?.userId)
                 .where { Clubs.id eq id and (Clubs.associationId eq parentId) }
+                .groupBy(Clubs.id)
                 .map(Clubs::toClub)
                 .singleOrNull()
         }
@@ -64,7 +72,7 @@ class ClubsDatabaseRepository(
             Clubs.update({ Clubs.id eq id and (Clubs.associationId eq parentId) }) {
                 payload.name?.let { name -> it[Clubs.name] = name }
                 payload.description?.let { description -> it[Clubs.description] = description }
-                payload.icon?.let { icon -> it[Clubs.icon] = icon }
+                payload.logo?.let { logo -> it[Clubs.logo] = logo }
                 payload.validated?.let { validated -> it[Clubs.validated] = validated }
             }
         } == 1
@@ -75,5 +83,30 @@ class ClubsDatabaseRepository(
                 Clubs.id eq id and (associationId eq parentId)
             }
         } == 1
+
+    private fun customJoin(viewedBy: String?): Query {
+        val columns = Clubs
+            .join(UsersInClubs, JoinType.LEFT, Clubs.id, UsersInClubs.clubId)
+        val selectedColumns = Clubs.columns + Clubs.usersCount
+
+        val columnsWithMember = viewedBy?.let {
+            columns.join(
+                UsersInClubs.isMember,
+                JoinType.LEFT,
+                Clubs.id,
+                UsersInClubs.isMember[UsersInClubs.clubId]
+            ) { UsersInClubs.isMember[UsersInClubs.userId] eq viewedBy }
+        } ?: columns
+        val selectedColumnsWithMember = viewedBy?.let {
+            selectedColumns + Clubs.isMember
+        } ?: selectedColumns
+
+        return columnsWithMember.select(selectedColumnsWithMember)
+    }
+
+    private fun Query.orderByMemberAndName(viewedBy: String?): Query =
+        viewedBy?.let {
+            orderBy(Pair(Clubs.isMember, SortOrder.DESC), Pair(Clubs.name, SortOrder.ASC))
+        } ?: orderBy(Clubs.name, SortOrder.ASC)
 
 }

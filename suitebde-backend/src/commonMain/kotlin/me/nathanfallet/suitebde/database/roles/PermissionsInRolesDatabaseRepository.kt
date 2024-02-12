@@ -15,6 +15,7 @@ class PermissionsInRolesDatabaseRepository(
     init {
         database.transaction {
             SchemaUtils.create(PermissionsInRoles)
+            SchemaUtils.create(UsersInRoles)
         }
     }
 

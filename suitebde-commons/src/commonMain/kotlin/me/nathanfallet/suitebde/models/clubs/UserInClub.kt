@@ -6,11 +6,11 @@ import me.nathanfallet.usecases.models.IChildModel
 
 @Serializable
 data class UserInClub(
-    val clubId: String,
     val userId: String,
-    val club: Club?,
-    val user: User?,
-) : IChildModel<String, CreateUserInClub, Unit, String> {
+    val clubId: String,
+    val user: User? = null,
+    val club: Club? = null,
+) : IChildModel<String, CreateUserInClubPayload, Unit, String> {
 
     override val id: String
         get() = userId
