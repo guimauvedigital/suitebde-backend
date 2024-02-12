@@ -18,50 +18,56 @@ class UsersInClubsDatabaseRepository(
             SchemaUtils.create(UsersInClubs)
             SchemaUtils.create(Users)
             SchemaUtils.create(Clubs)
+            SchemaUtils.create(RolesInClubs)
         }
     }
 
     override suspend fun list(parentId: String, context: IContext?): List<UserInClub> =
         database.suspendedTransaction {
             UsersInClubs
+                .join(RolesInClubs, JoinType.INNER, UsersInClubs.roleId, RolesInClubs.id)
                 .join(Users, JoinType.INNER, UsersInClubs.userId, Users.id)
                 .selectAll()
                 .where { UsersInClubs.clubId eq parentId }
                 .map {
-                    UsersInClubs.toUserInClub(it, user = Users.toUser(it))
+                    UsersInClubs.toUserInClub(it, user = Users.toUser(it), role = RolesInClubs.toRoleInClub(it))
                 }
         }
 
     override suspend fun listForUser(userId: String): List<UserInClub> =
         database.suspendedTransaction {
             UsersInClubs
+                .join(RolesInClubs, JoinType.INNER, UsersInClubs.roleId, RolesInClubs.id)
                 .join(Clubs, JoinType.INNER, UsersInClubs.clubId, Clubs.id)
                 .selectAll()
                 .where { UsersInClubs.userId eq userId }
                 .map {
-                    UsersInClubs.toUserInClub(it, club = Clubs.toClub(it))
+                    UsersInClubs.toUserInClub(it, club = Clubs.toClub(it), role = RolesInClubs.toRoleInClub(it))
                 }
         }
 
     override suspend fun get(id: String, parentId: String, context: IContext?): UserInClub? =
         database.suspendedTransaction {
             UsersInClubs
+                .join(RolesInClubs, JoinType.INNER, UsersInClubs.roleId, RolesInClubs.id)
                 .join(Users, JoinType.INNER, UsersInClubs.userId, Users.id)
                 .selectAll()
                 .where { UsersInClubs.clubId eq parentId and (UsersInClubs.userId eq id) }
                 .map {
-                    UsersInClubs.toUserInClub(it, user = Users.toUser(it))
+                    UsersInClubs.toUserInClub(it, user = Users.toUser(it), role = RolesInClubs.toRoleInClub(it))
                 }
                 .singleOrNull()
         }
 
-    override suspend fun create(payload: CreateUserInClubPayload, parentId: String, context: IContext?): UserInClub? =
+    override suspend fun create(payload: CreateUserInClubPayload, parentId: String, context: IContext?): UserInClub? {
         database.suspendedTransaction {
             UsersInClubs.insert {
                 it[clubId] = parentId
                 it[userId] = payload.userId
-            }.resultedValues?.map(UsersInClubs::toUserInClub)?.singleOrNull()
+            }
         }
+        return get(payload.userId, parentId, context)
+    }
 
     override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean =
         database.suspendedTransaction {

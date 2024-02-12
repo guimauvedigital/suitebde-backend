@@ -33,6 +33,7 @@ import me.nathanfallet.suitebde.database.associations.CodesInEmailsDatabaseRepos
 import me.nathanfallet.suitebde.database.associations.DomainsInAssociationsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.SubscriptionsInAssociationsDatabaseRepository
 import me.nathanfallet.suitebde.database.clubs.ClubsDatabaseRepository
+import me.nathanfallet.suitebde.database.clubs.RolesInClubsDatabaseRepository
 import me.nathanfallet.suitebde.database.clubs.UsersInClubsDatabaseRepository
 import me.nathanfallet.suitebde.database.events.EventsDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.PermissionsInRolesDatabaseRepository
@@ -60,6 +61,7 @@ import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsReposito
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
 import me.nathanfallet.suitebde.repositories.associations.ISubscriptionsInAssociationsRepository
 import me.nathanfallet.suitebde.repositories.clubs.IClubsRepository
+import me.nathanfallet.suitebde.repositories.clubs.IRolesInClubsRepository
 import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRepository
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRepository
@@ -189,6 +191,7 @@ fun Application.configureKoin() {
             // Clubs
             single<IClubsRepository> { ClubsDatabaseRepository(get()) }
             single<IUsersInClubsRepository> { UsersInClubsDatabaseRepository(get()) }
+            single<IRolesInClubsRepository> { RolesInClubsDatabaseRepository(get()) }
         }
         val useCaseModule = module {
             // Application
@@ -487,13 +490,19 @@ fun Application.configureKoin() {
                 GetChildModelWithContextFromRepositorySuspendUseCase(get<IClubsRepository>())
             }
             single<ICreateChildModelWithContextSuspendUseCase<Club, CreateClubPayload, String>>(named<Club>()) {
-                CreateClubUseCase(get(), get(named<UserInClub>()))
+                CreateClubUseCase(get(), get(named<RoleInClub>()), get(named<UserInClub>()))
             }
             single<IUpdateChildModelWithContextSuspendUseCase<Club, String, UpdateClubPayload, String>>(named<Club>()) {
                 UpdateChildModelWithContextFromRepositorySuspendUseCase(get<IClubsRepository>())
             }
             single<IDeleteChildModelSuspendUseCase<Club, String, String>>(named<Club>()) {
-                DeleteClubUseCase(get(), get(named<UserInClub>()), get(named<UserInClub>()))
+                DeleteClubUseCase(
+                    get(),
+                    get(named<UserInClub>()),
+                    get(named<UserInClub>()),
+                    get(named<RoleInClub>()),
+                    get(named<RoleInClub>())
+                )
             }
 
             // Users in clubs
@@ -511,6 +520,23 @@ fun Application.configureKoin() {
             }
             single<IDeleteChildModelSuspendUseCase<UserInClub, String, String>>(named<UserInClub>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
+            }
+
+            // Roles in clubs
+            single<IListChildModelSuspendUseCase<RoleInClub, String>>(named<RoleInClub>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<IRolesInClubsRepository>())
+            }
+            single<IGetChildModelSuspendUseCase<RoleInClub, String, String>>(named<RoleInClub>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<IRolesInClubsRepository>())
+            }
+            single<ICreateChildModelSuspendUseCase<RoleInClub, CreateRoleInClubPayload, String>>(named<RoleInClub>()) {
+                CreateChildModelFromRepositorySuspendUseCase(get<IRolesInClubsRepository>())
+            }
+            single<IUpdateChildModelSuspendUseCase<RoleInClub, String, UpdateRoleInClubPayload, String>>(named<RoleInClub>()) {
+                UpdateChildModelFromRepositorySuspendUseCase(get<IRolesInClubsRepository>())
+            }
+            single<IDeleteChildModelSuspendUseCase<RoleInClub, String, String>>(named<RoleInClub>()) {
+                DeleteChildModelFromRepositorySuspendUseCase(get<IRolesInClubsRepository>())
             }
         }
         val controllerModule = module {
