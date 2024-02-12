@@ -8,8 +8,10 @@ import me.nathanfallet.usecases.models.IChildModel
 data class UserInClub(
     val userId: String,
     val clubId: String,
+    val roleId: String,
     val user: User? = null,
     val club: Club? = null,
+    val role: RoleInClub,
 ) : IChildModel<String, CreateUserInClubPayload, Unit, String> {
 
     override val id: String

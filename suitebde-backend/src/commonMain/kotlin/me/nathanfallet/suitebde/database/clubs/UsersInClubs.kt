@@ -1,6 +1,7 @@
 package me.nathanfallet.suitebde.database.clubs
 
 import me.nathanfallet.suitebde.models.clubs.Club
+import me.nathanfallet.suitebde.models.clubs.RoleInClub
 import me.nathanfallet.suitebde.models.clubs.UserInClub
 import me.nathanfallet.suitebde.models.users.User
 import org.jetbrains.exposed.sql.ResultRow
@@ -11,6 +12,7 @@ object UsersInClubs : Table() {
 
     val userId = varchar("user_id", 32).index()
     val clubId = varchar("club_id", 32).index()
+    val roleId = varchar("role_id", 32).index()
 
     val isMember = alias("IsMember")
 
@@ -20,11 +22,14 @@ object UsersInClubs : Table() {
         row: ResultRow,
         user: User? = null,
         club: Club? = null,
+        role: RoleInClub,
     ) = UserInClub(
         row[userId],
         row[clubId],
+        row[roleId],
         user,
-        club
+        club,
+        role
     )
 
 }

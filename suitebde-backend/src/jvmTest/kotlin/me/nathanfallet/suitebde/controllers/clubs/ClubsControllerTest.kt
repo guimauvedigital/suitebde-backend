@@ -195,7 +195,7 @@ class ClubsControllerTest {
             mockk(),
             mockk()
         )
-        val payload = CreateClubPayload("name", "description", "image")
+        val payload = CreateClubPayload("name", "description", "image", "member", "admin")
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { createClubUseCase(payload, club.associationId, OptionalUserContext(user.id)) } returns club
         assertEquals(club, controller.create(mockk(), association, payload))
@@ -217,7 +217,7 @@ class ClubsControllerTest {
             mockk(),
             mockk()
         )
-        val payload = CreateClubPayload("name", "description", "image", true)
+        val payload = CreateClubPayload("name", "description", "image", "member", "admin", true)
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { checkPermissionUseCase(user, Permission.CLUBS_CREATE inAssociation association.id) } returns false
         val exception = assertFailsWith(ControllerException::class) {
@@ -242,7 +242,7 @@ class ClubsControllerTest {
             mockk(),
             mockk()
         )
-        val payload = CreateClubPayload("name", "description", "image")
+        val payload = CreateClubPayload("name", "description", "image", "member", "admin")
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { createClubUseCase(payload, club.associationId, OptionalUserContext(user.id)) } returns null
         val exception = assertFailsWith(ControllerException::class) {

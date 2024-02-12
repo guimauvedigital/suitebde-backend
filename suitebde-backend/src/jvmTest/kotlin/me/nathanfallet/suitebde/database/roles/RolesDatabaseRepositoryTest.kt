@@ -49,7 +49,7 @@ class RolesDatabaseRepositoryTest {
                 "name"
             ), "associationId"
         )
-        val rolesFromDatabase = database.transaction {
+        val rolesFromDatabase = database.suspendedTransaction {
             Roles.selectAll().map(Roles::toRole).singleOrNull()
         }
         assertEquals(rolesFromDatabase?.id, role?.id)

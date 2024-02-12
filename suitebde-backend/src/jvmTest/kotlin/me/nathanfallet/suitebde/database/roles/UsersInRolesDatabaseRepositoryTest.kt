@@ -65,11 +65,13 @@ class UsersInRolesDatabaseRepositoryTest {
                 "userId"
             ), "roleId"
         )
-        val usersInRolesFromDatabase = database.transaction {
+        val usersInRolesFromDatabase = database.suspendedTransaction {
             UsersInRoles.selectAll().map(UsersInRoles::toUserInRole).singleOrNull()
         }
         assertEquals(usersInRolesFromDatabase?.userId, userInRole?.userId)
         assertEquals(usersInRolesFromDatabase?.roleId, userInRole?.roleId)
+        assertEquals("userId", userInRole?.userId)
+        assertEquals("roleId", userInRole?.roleId)
     }
 
     @Test

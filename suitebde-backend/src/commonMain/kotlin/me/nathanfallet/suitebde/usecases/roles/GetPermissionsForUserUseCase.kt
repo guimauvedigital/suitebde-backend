@@ -20,7 +20,7 @@ class GetPermissionsForUserUseCase(
         return cachedPermissions[input.id]?.takeIf {
             it.expiresAt > Clock.System.now()
         }?.permissions ?: run {
-            repository.listForUser(input.id).map { it.permission }.toSet().also {
+            repository.listForUser(input.id, input.associationId).map { it.permission }.toSet().also {
                 // Cache permissions for 5 seconds (we only fetch them once)
                 cachedPermissions[input.id] = PermissionsForUser(
                     it,

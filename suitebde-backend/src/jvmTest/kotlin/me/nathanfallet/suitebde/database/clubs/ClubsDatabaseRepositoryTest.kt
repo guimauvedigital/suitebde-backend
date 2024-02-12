@@ -20,7 +20,9 @@ class ClubsDatabaseRepositoryTest {
             CreateClubPayload(
                 "name",
                 "description",
-                "logo"
+                "logo",
+                "member",
+                "admin"
             ),
             "associationId",
         ) ?: fail("Unable to create club")
@@ -43,7 +45,9 @@ class ClubsDatabaseRepositoryTest {
             CreateClubPayload(
                 "name",
                 "description",
-                "logo"
+                "logo",
+                "member",
+                "admin"
             ),
             "associationId",
         ) ?: fail("Unable to create club")
@@ -59,11 +63,13 @@ class ClubsDatabaseRepositoryTest {
             CreateClubPayload(
                 "name",
                 "description",
-                "logo"
+                "logo",
+                "member",
+                "admin"
             ),
             "associationId",
         )
-        val clubsFromDatabase = database.transaction {
+        val clubsFromDatabase = database.suspendedTransaction {
             Clubs
                 .join(UsersInClubs, JoinType.LEFT, Clubs.id, UsersInClubs.clubId)
                 .select(Clubs.columns + Clubs.usersCount)
@@ -94,7 +100,9 @@ class ClubsDatabaseRepositoryTest {
             CreateClubPayload(
                 "name",
                 "description",
-                "logo"
+                "logo",
+                "member",
+                "admin"
             ),
             "associationId",
         ) ?: fail("Unable to create club")
@@ -116,7 +124,9 @@ class ClubsDatabaseRepositoryTest {
             CreateClubPayload(
                 "name",
                 "description",
-                "logo"
+                "logo",
+                "member",
+                "admin"
             ),
             "associationId",
             OptionalUserContext("userId")
@@ -134,7 +144,9 @@ class ClubsDatabaseRepositoryTest {
             CreateClubPayload(
                 "name",
                 "description",
-                "logo"
+                "logo",
+                "member",
+                "admin"
             ),
             "associationId",
         ) ?: fail("Unable to create club")
@@ -158,7 +170,9 @@ class ClubsDatabaseRepositoryTest {
             CreateClubPayload(
                 "name",
                 "description",
-                "logo"
+                "logo",
+                "member",
+                "admin"
             ),
             "associationId",
         ) ?: fail("Unable to create club")
@@ -178,7 +192,9 @@ class ClubsDatabaseRepositoryTest {
             CreateClubPayload(
                 "name",
                 "description",
-                "logo"
+                "logo",
+                "member",
+                "admin"
             ),
             "associationId",
         ) ?: fail("Unable to create club")
@@ -202,7 +218,9 @@ class ClubsDatabaseRepositoryTest {
             CreateClubPayload(
                 "name",
                 "description",
-                "logo"
+                "logo",
+                "member",
+                "admin"
             ),
             "associationId",
         ) ?: fail("Unable to create club")
@@ -219,7 +237,9 @@ class ClubsDatabaseRepositoryTest {
             CreateClubPayload(
                 "name",
                 "description",
-                "logo"
+                "logo",
+                "member",
+                "admin"
             ),
             "associationId",
         ) ?: fail("Unable to create club")

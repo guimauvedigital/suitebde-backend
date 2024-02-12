@@ -7,6 +7,6 @@ import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 interface IUsersInRolesRepository :
     IChildModelSuspendRepository<UserInRole, String, CreateUserInRolePayload, Unit, String> {
 
-    suspend fun listForUser(userId: String): List<UserInRole>
+    suspend fun listForUser(userId: String, associationId: String): List<UserInRole>
 
 }

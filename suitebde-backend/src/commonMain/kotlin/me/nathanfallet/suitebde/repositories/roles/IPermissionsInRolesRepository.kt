@@ -7,6 +7,6 @@ import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 interface IPermissionsInRolesRepository :
     IChildModelSuspendRepository<PermissionInRole, String, CreatePermissionInRolePayload, Unit, String> {
 
-    suspend fun listForUser(userId: String): List<PermissionInRole>
+    suspend fun listForUser(userId: String, associationId: String): List<PermissionInRole>
 
 }

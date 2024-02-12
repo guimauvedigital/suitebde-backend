@@ -32,12 +32,12 @@ class UsersInRolesDatabaseRepository(
                 }
         }
 
-    override suspend fun listForUser(userId: String): List<UserInRole> =
+    override suspend fun listForUser(userId: String, associationId: String): List<UserInRole> =
         database.suspendedTransaction {
             UsersInRoles
                 .join(Roles, JoinType.INNER, UsersInRoles.roleId, Roles.id)
                 .selectAll()
-                .where { UsersInRoles.userId eq userId }
+                .where { UsersInRoles.userId eq userId and (Roles.associationId eq associationId) }
                 .map {
                     UsersInRoles.toUserInRole(it, role = Roles.toRole(it))
                 }
