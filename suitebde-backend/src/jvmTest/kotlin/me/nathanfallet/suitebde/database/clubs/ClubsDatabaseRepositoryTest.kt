@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.models.clubs.CreateClubPayload
 import me.nathanfallet.suitebde.models.clubs.UpdateClubPayload
+import me.nathanfallet.suitebde.models.users.OptionalUserContext
 import org.jetbrains.exposed.sql.JoinType
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -105,6 +106,24 @@ class ClubsDatabaseRepositoryTest {
         assertEquals(clubFromDatabase?.logo, club.logo)
         assertEquals(clubFromDatabase?.validated, club.validated)
         assertEquals(clubFromDatabase?.usersCount, club.usersCount)
+    }
+
+    @Test
+    fun getClubWithUserContext() = runBlocking {
+        val database = Database(protocol = "h2", name = "getClubWithUserContext")
+        val repository = ClubsDatabaseRepository(database)
+        val club = repository.create(
+            CreateClubPayload(
+                "name",
+                "description",
+                "logo"
+            ),
+            "associationId",
+            OptionalUserContext("userId")
+        ) ?: fail("Unable to create club")
+        val clubFromDatabase = repository.get(club.id, "associationId", OptionalUserContext("userId"))
+        assertEquals(clubFromDatabase?.isMember, club.isMember)
+        assertEquals(false, club.isMember)
     }
 
     @Test

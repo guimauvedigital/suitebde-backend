@@ -4,6 +4,7 @@ import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.clubs.Club
 import me.nathanfallet.suitebde.models.clubs.CreateClubPayload
 import me.nathanfallet.suitebde.models.clubs.UpdateClubPayload
+import me.nathanfallet.suitebde.models.users.OptionalUserContext
 import me.nathanfallet.suitebde.repositories.clubs.IClubsRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
@@ -23,7 +24,7 @@ class ClubsDatabaseRepository(
 
     override suspend fun list(parentId: String, context: IContext?): List<Club> =
         database.suspendedTransaction {
-            customJoin()
+            customJoin((context as? OptionalUserContext)?.userId)
                 .where { Clubs.associationId eq parentId }
                 .groupBy(Clubs.id)
                 .map(Clubs::toClub)
@@ -31,7 +32,7 @@ class ClubsDatabaseRepository(
 
     override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<Club> =
         database.suspendedTransaction {
-            customJoin()
+            customJoin((context as? OptionalUserContext)?.userId)
                 .where { Clubs.associationId eq parentId }
                 .groupBy(Clubs.id)
                 .limit(limit.toInt(), offset)
@@ -57,7 +58,7 @@ class ClubsDatabaseRepository(
 
     override suspend fun get(id: String, parentId: String, context: IContext?): Club? =
         database.suspendedTransaction {
-            customJoin()
+            customJoin((context as? OptionalUserContext)?.userId)
                 .where { Clubs.id eq id and (Clubs.associationId eq parentId) }
                 .groupBy(Clubs.id)
                 .map(Clubs::toClub)
@@ -81,9 +82,25 @@ class ClubsDatabaseRepository(
             }
         } == 1
 
-    private fun customJoin(): Query =
-        Clubs
+    private fun customJoin(viewedBy: String?): Query {
+        val columns = Clubs
             .join(UsersInClubs, JoinType.LEFT, Clubs.id, UsersInClubs.clubId)
-            .select(Clubs.columns + Clubs.usersCount)
+        val selectedColumns = Clubs.columns + Clubs.usersCount
+
+        val columnsWithMember = viewedBy?.let {
+            columns.join(
+                UsersInClubs.isMember,
+                JoinType.LEFT,
+                Clubs.id,
+                UsersInClubs.isMember[UsersInClubs.clubId]
+            ) { UsersInClubs.isMember[UsersInClubs.userId] eq viewedBy }
+        } ?: columns
+        val selectedColumnsWithMember = viewedBy?.let {
+            selectedColumns + Clubs.isMember
+        } ?: selectedColumns
+
+        return columnsWithMember.select(selectedColumnsWithMember)
+    }
+
 
 }

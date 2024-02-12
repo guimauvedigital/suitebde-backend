@@ -86,6 +86,8 @@ import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.create.CreateChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateModelSuspendUseCase
+import me.nathanfallet.usecases.models.create.context.CreateChildModelWithContextFromRepositorySuspendUseCase
+import me.nathanfallet.usecases.models.create.context.ICreateChildModelWithContextSuspendUseCase
 import me.nathanfallet.usecases.models.delete.DeleteChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteModelSuspendUseCase
@@ -93,16 +95,24 @@ import me.nathanfallet.usecases.models.get.GetChildModelFromRepositorySuspendUse
 import me.nathanfallet.usecases.models.get.GetModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
+import me.nathanfallet.usecases.models.get.context.GetChildModelWithContextFromRepositorySuspendUseCase
+import me.nathanfallet.usecases.models.get.context.IGetChildModelWithContextSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.ListChildModelFromRepositorySuspendUseCase
+import me.nathanfallet.usecases.models.list.context.IListChildModelWithContextSuspendUseCase
+import me.nathanfallet.usecases.models.list.context.ListChildModelWithContextFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.ListSliceChildModelFromRepositorySuspendUseCase
+import me.nathanfallet.usecases.models.list.slice.context.IListSliceChildModelWithContextSuspendUseCase
+import me.nathanfallet.usecases.models.list.slice.context.ListSliceChildModelWithContextFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 import me.nathanfallet.usecases.models.repositories.IModelSuspendRepository
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.UpdateChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.update.UpdateModelFromRepositorySuspendUseCase
+import me.nathanfallet.usecases.models.update.context.IUpdateChildModelWithContextSuspendUseCase
+import me.nathanfallet.usecases.models.update.context.UpdateChildModelWithContextFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
@@ -458,20 +468,20 @@ fun Application.configureKoin() {
             }
 
             // Clubs
-            single<IListChildModelSuspendUseCase<Club, String>>(named<Club>()) {
-                ListChildModelFromRepositorySuspendUseCase(get<IClubsRepository>())
+            single<IListChildModelWithContextSuspendUseCase<Club, String>>(named<Club>()) {
+                ListChildModelWithContextFromRepositorySuspendUseCase(get<IClubsRepository>())
             }
-            single<IListSliceChildModelSuspendUseCase<Club, String>>(named<Club>()) {
-                ListSliceChildModelFromRepositorySuspendUseCase(get<IClubsRepository>())
+            single<IListSliceChildModelWithContextSuspendUseCase<Club, String>>(named<Club>()) {
+                ListSliceChildModelWithContextFromRepositorySuspendUseCase(get<IClubsRepository>())
             }
-            single<IGetChildModelSuspendUseCase<Club, String, String>>(named<Club>()) {
-                GetChildModelFromRepositorySuspendUseCase(get<IClubsRepository>())
+            single<IGetChildModelWithContextSuspendUseCase<Club, String, String>>(named<Club>()) {
+                GetChildModelWithContextFromRepositorySuspendUseCase(get<IClubsRepository>())
             }
-            single<ICreateChildModelSuspendUseCase<Club, CreateClubPayload, String>>(named<Club>()) {
-                CreateChildModelFromRepositorySuspendUseCase(get<IClubsRepository>())
+            single<ICreateChildModelWithContextSuspendUseCase<Club, CreateClubPayload, String>>(named<Club>()) {
+                CreateChildModelWithContextFromRepositorySuspendUseCase(get<IClubsRepository>())
             }
-            single<IUpdateChildModelSuspendUseCase<Club, String, UpdateClubPayload, String>>(named<Club>()) {
-                UpdateChildModelFromRepositorySuspendUseCase(get<IClubsRepository>())
+            single<IUpdateChildModelWithContextSuspendUseCase<Club, String, UpdateClubPayload, String>>(named<Club>()) {
+                UpdateChildModelWithContextFromRepositorySuspendUseCase(get<IClubsRepository>())
             }
             single<IDeleteChildModelSuspendUseCase<Club, String, String>>(named<Club>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get<IClubsRepository>())
@@ -657,6 +667,7 @@ fun Application.configureKoin() {
             // Clubs
             single<IClubsController> {
                 ClubsController(
+                    get(),
                     get(),
                     get(),
                     get(named<Club>()),

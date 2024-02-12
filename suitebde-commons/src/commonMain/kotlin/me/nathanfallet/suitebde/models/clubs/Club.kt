@@ -29,6 +29,8 @@ data class Club(
     val validated: Boolean,
     @Schema("Number of members in the club", "42")
     val usersCount: Long,
+    @Schema("Is current user a member of the club?", "true")
+    val isMember: Boolean?,
 ) : IChildModel<String, CreateClubPayload, UpdateClubPayload, String> {
 
     override val parentId: String

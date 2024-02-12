@@ -18,6 +18,7 @@ object Clubs : Table() {
     val createdAt = varchar("created_at", 255)
     val validated = bool("validated")
     val usersCount = UsersInClubs.userId.countDistinct()
+    val isMember = UsersInClubs.isMember[UsersInClubs.userId].countDistinct()
 
     override val primaryKey = PrimaryKey(id)
 
@@ -36,7 +37,8 @@ object Clubs : Table() {
         row[logo],
         row[createdAt].toInstant(),
         row[validated],
-        row[usersCount]
+        row[usersCount],
+        row.getOrNull(isMember)?.let { it >= 1L }
     )
 
 }
