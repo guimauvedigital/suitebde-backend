@@ -75,6 +75,8 @@ import me.nathanfallet.suitebde.services.jwt.JWTService
 import me.nathanfallet.suitebde.usecases.application.*
 import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.*
+import me.nathanfallet.suitebde.usecases.clubs.CreateClubUseCase
+import me.nathanfallet.suitebde.usecases.clubs.DeleteClubUseCase
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.roles.GetPermissionsForUserUseCase
 import me.nathanfallet.suitebde.usecases.roles.IGetPermissionsForUserUseCase
@@ -86,7 +88,6 @@ import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.create.CreateChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.create.ICreateModelSuspendUseCase
-import me.nathanfallet.usecases.models.create.context.CreateChildModelWithContextFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.create.context.ICreateChildModelWithContextSuspendUseCase
 import me.nathanfallet.usecases.models.delete.DeleteChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
@@ -478,13 +479,13 @@ fun Application.configureKoin() {
                 GetChildModelWithContextFromRepositorySuspendUseCase(get<IClubsRepository>())
             }
             single<ICreateChildModelWithContextSuspendUseCase<Club, CreateClubPayload, String>>(named<Club>()) {
-                CreateChildModelWithContextFromRepositorySuspendUseCase(get<IClubsRepository>())
+                CreateClubUseCase(get(), get(named<UserInClub>()))
             }
             single<IUpdateChildModelWithContextSuspendUseCase<Club, String, UpdateClubPayload, String>>(named<Club>()) {
                 UpdateChildModelWithContextFromRepositorySuspendUseCase(get<IClubsRepository>())
             }
             single<IDeleteChildModelSuspendUseCase<Club, String, String>>(named<Club>()) {
-                DeleteChildModelFromRepositorySuspendUseCase(get<IClubsRepository>())
+                DeleteClubUseCase(get(), get(named<UserInClub>()), get(named<UserInClub>()))
             }
 
             // Users in clubs
@@ -497,7 +498,7 @@ fun Application.configureKoin() {
             single<IGetChildModelSuspendUseCase<UserInClub, String, String>>(named<UserInClub>()) {
                 GetChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
             }
-            single<ICreateChildModelSuspendUseCase<UserInClub, CreateUserInClub, String>>(named<UserInClub>()) {
+            single<ICreateChildModelSuspendUseCase<UserInClub, CreateUserInClubPayload, String>>(named<UserInClub>()) {
                 CreateChildModelFromRepositorySuspendUseCase(get<IUsersInClubsRepository>())
             }
             single<IDeleteChildModelSuspendUseCase<UserInClub, String, String>>(named<UserInClub>()) {

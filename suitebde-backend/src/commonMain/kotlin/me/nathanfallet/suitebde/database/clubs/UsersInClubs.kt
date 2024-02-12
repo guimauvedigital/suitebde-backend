@@ -9,8 +9,8 @@ import org.jetbrains.exposed.sql.alias
 
 object UsersInClubs : Table() {
 
-    val clubId = varchar("club_id", 32).index()
     val userId = varchar("user_id", 32).index()
+    val clubId = varchar("club_id", 32).index()
 
     val isMember = alias("IsMember")
 
@@ -18,13 +18,13 @@ object UsersInClubs : Table() {
 
     fun toUserInClub(
         row: ResultRow,
-        club: Club? = null,
         user: User? = null,
+        club: Club? = null,
     ) = UserInClub(
-        row[clubId],
         row[userId],
-        club,
-        user
+        row[clubId],
+        user,
+        club
     )
 
 }

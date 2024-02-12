@@ -4,10 +4,11 @@ import io.ktor.server.application.*
 import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.annotations.*
 import me.nathanfallet.suitebde.models.clubs.Club
-import me.nathanfallet.suitebde.models.clubs.CreateUserInClub
+import me.nathanfallet.suitebde.models.clubs.CreateUserInClubPayload
 import me.nathanfallet.suitebde.models.clubs.UserInClub
 
-interface IUsersInClubsController : IChildModelController<UserInClub, String, CreateUserInClub, Unit, Club, String> {
+interface IUsersInClubsController :
+    IChildModelController<UserInClub, String, CreateUserInClubPayload, Unit, Club, String> {
 
     @APIMapping
     @AdminTemplateMapping
@@ -18,7 +19,7 @@ interface IUsersInClubsController : IChildModelController<UserInClub, String, Cr
     suspend fun create(
         call: ApplicationCall,
         @ParentModel parent: Club,
-        @Payload payload: CreateUserInClub,
+        @Payload payload: CreateUserInClubPayload,
     ): UserInClub
 
     @APIMapping

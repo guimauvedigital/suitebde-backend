@@ -1,7 +1,7 @@
 package me.nathanfallet.suitebde.database.clubs
 
 import me.nathanfallet.suitebde.database.users.Users
-import me.nathanfallet.suitebde.models.clubs.CreateUserInClub
+import me.nathanfallet.suitebde.models.clubs.CreateUserInClubPayload
 import me.nathanfallet.suitebde.models.clubs.UserInClub
 import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRepository
 import me.nathanfallet.surexposed.database.IDatabase
@@ -55,7 +55,7 @@ class UsersInClubsDatabaseRepository(
                 .singleOrNull()
         }
 
-    override suspend fun create(payload: CreateUserInClub, parentId: String, context: IContext?): UserInClub? =
+    override suspend fun create(payload: CreateUserInClubPayload, parentId: String, context: IContext?): UserInClub? =
         database.suspendedTransaction {
             UsersInClubs.insert {
                 it[clubId] = parentId

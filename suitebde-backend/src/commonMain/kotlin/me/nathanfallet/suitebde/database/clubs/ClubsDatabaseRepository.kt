@@ -27,6 +27,7 @@ class ClubsDatabaseRepository(
             customJoin((context as? OptionalUserContext)?.userId)
                 .where { Clubs.associationId eq parentId }
                 .groupBy(Clubs.id)
+                .orderByMemberAndName((context as? OptionalUserContext)?.userId)
                 .map(Clubs::toClub)
         }
 
@@ -35,6 +36,7 @@ class ClubsDatabaseRepository(
             customJoin((context as? OptionalUserContext)?.userId)
                 .where { Clubs.associationId eq parentId }
                 .groupBy(Clubs.id)
+                .orderByMemberAndName((context as? OptionalUserContext)?.userId)
                 .limit(limit.toInt(), offset)
                 .map(Clubs::toClub)
         }
@@ -102,5 +104,9 @@ class ClubsDatabaseRepository(
         return columnsWithMember.select(selectedColumnsWithMember)
     }
 
+    private fun Query.orderByMemberAndName(viewedBy: String?): Query =
+        viewedBy?.let {
+            orderBy(Pair(Clubs.isMember, SortOrder.DESC), Pair(Clubs.name, SortOrder.ASC))
+        } ?: orderBy(Clubs.name, SortOrder.ASC)
 
 }

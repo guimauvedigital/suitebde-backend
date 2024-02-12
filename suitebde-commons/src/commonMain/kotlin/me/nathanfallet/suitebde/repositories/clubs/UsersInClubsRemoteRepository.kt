@@ -6,16 +6,16 @@ import me.nathanfallet.ktorx.repositories.api.IAPIChildModelRemoteRepository
 import me.nathanfallet.suitebde.client.ISuiteBDEClient
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.clubs.Club
-import me.nathanfallet.suitebde.models.clubs.CreateUserInClub
+import me.nathanfallet.suitebde.models.clubs.CreateUserInClubPayload
 import me.nathanfallet.suitebde.models.clubs.UserInClub
 import me.nathanfallet.usecases.models.id.RecursiveId
 
 class UsersInClubsRemoteRepository(
     client: ISuiteBDEClient,
     parentRepository: IAPIChildModelRemoteRepository<Club, String, *, *, *>,
-) : APIChildModelRemoteRepository<UserInClub, String, CreateUserInClub, Unit, String>(
+) : APIChildModelRemoteRepository<UserInClub, String, CreateUserInClubPayload, Unit, String>(
     typeInfo<UserInClub>(),
-    typeInfo<CreateUserInClub>(),
+    typeInfo<CreateUserInClubPayload>(),
     typeInfo<Unit>(),
     typeInfo<List<UserInClub>>(),
     client,
@@ -31,7 +31,7 @@ class UsersInClubsRemoteRepository(
             null
         )
 
-    override suspend fun create(payload: CreateUserInClub, clubId: String, associationId: String): UserInClub? =
+    override suspend fun create(payload: CreateUserInClubPayload, clubId: String, associationId: String): UserInClub? =
         create(
             payload,
             RecursiveId<Club, String, String>(clubId, RecursiveId<Association, String, Unit>(associationId)),

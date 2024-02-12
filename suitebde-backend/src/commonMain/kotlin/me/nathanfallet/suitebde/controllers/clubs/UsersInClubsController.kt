@@ -6,7 +6,7 @@ import io.ktor.server.request.*
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.clubs.Club
-import me.nathanfallet.suitebde.models.clubs.CreateUserInClub
+import me.nathanfallet.suitebde.models.clubs.CreateUserInClubPayload
 import me.nathanfallet.suitebde.models.clubs.UserInClub
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
@@ -21,12 +21,12 @@ class UsersInClubsController(
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
     private val getUsersInClubsUseCase: IListChildModelSuspendUseCase<UserInClub, String>,
     private val getUsersInClubsSlicedUseCase: IListSliceChildModelSuspendUseCase<UserInClub, String>,
-    private val createUserInClubsUseCase: ICreateChildModelSuspendUseCase<UserInClub, CreateUserInClub, String>,
+    private val createUserInClubsUseCase: ICreateChildModelSuspendUseCase<UserInClub, CreateUserInClubPayload, String>,
     private val getUserInClubUseCase: IGetChildModelSuspendUseCase<UserInClub, String, String>,
     private val deleteUserInClubUseCase: IDeleteChildModelSuspendUseCase<UserInClub, String, String>,
 ) : IUsersInClubsController {
 
-    override suspend fun create(call: ApplicationCall, parent: Club, payload: CreateUserInClub): UserInClub {
+    override suspend fun create(call: ApplicationCall, parent: Club, payload: CreateUserInClubPayload): UserInClub {
         requireUserForCallUseCase(call).takeIf {
             checkPermissionUseCase(it, Permission.CLUBS_USERS inAssociation parent.associationId)
         } ?: throw ControllerException(
