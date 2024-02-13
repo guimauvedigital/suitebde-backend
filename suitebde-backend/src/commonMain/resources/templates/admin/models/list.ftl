@@ -1,60 +1,79 @@
 <#import "../template.ftl" as template>
 <@template.page>
-    <div class="container-fluid py-4">
-        <div class="d-sm-flex justify-content-between">
-            <div>
-                <a href="${route}/create" class="btn btn-icon btn-outline-primary" id="admin_create">
-                    <@t key="admin_" + route + "_create" />
-                </a>
-            </div>
+    <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
+        <!-- Breadcrumb Start -->
+        <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <h2 class="text-title-md2 font-bold text-black dark:text-white">
+                <@t key="admin_menu_" + route />
+            </h2>
+
+            <nav>
+                <ol class="flex items-center gap-2">
+                    <a href="${route}/create"
+                       class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray"
+                       id="admin_create">
+                        <@t key="admin_" + route + "_create" />
+                    </a>
+                </ol>
+            </nav>
         </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="table-responsive">
-                        <table class="table table-flush" id="datatable-search">
-                            <thead class="thead-light">
+        <!-- Breadcrumb End -->
+
+        <div class="flex flex-col gap-5 md:gap-7 2xl:gap-10">
+            <!-- ====== Data Table Two Start -->
+            <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                <div class="data-table-common data-table-one max-w-full overflow-x-auto">
+                    <table class="table w-full table-auto" id="dataTableTwo">
+                        <thead>
+                        <tr>
+                            <#list keys as key>
+                                <th id="th_${key.key}">
+                                    <div class="flex items-center justify-between gap-1.5">
+                                        <p><@t key="admin_${route}_${key.key}" /></p>
+                                        <div class="inline-flex flex-col space-y-[2px]">
+                                            <span class="inline-block">
+                                                <svg class="fill-current" width="10" height="5" viewBox="0 0 10 5"
+                                                     fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M5 0L0 5H10L5 0Z" fill=""/>
+                                                </svg>
+                                            </span>
+                                            <span class="inline-block">
+                                                <svg class="fill-current" width="10" height="5" viewBox="0 0 10 5"
+                                                     fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path d="M5 5L10 0L-4.37114e-07 8.74228e-07L5 5Z" fill=""/>
+                                                </svg>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </th>
+                            </#list>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <#list items as item>
                             <tr>
                                 <#list keys as key>
-                                    <th id="th_${key.key}"><@t key="admin_${route}_${key.key}" /></th>
+                                    <@cell item key />
                                 </#list>
                             </tr>
-                            </thead>
-                            <tbody>
-                            <#list items as item>
-                                <tr>
-                                    <#list keys as key>
-                                        <@cell item key />
-                                    </#list>
-                                </tr>
-                            </#list>
-                            </tbody>
-                        </table>
-                    </div>
+                        </#list>
+                        </tbody>
+                    </table>
                 </div>
             </div>
+            <!-- ====== Data Table Two End -->
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/simple-datatables@3.0.2/dist/umd/simple-datatables.js"></script>
-    <script>
-        const dataTableSearch = new simpleDatatables.DataTable("#datatable-search", {
-            searchable: true,
-            fixedHeight: false,
-            perPageSelect: false
-        });
-    </script>
 </@template.page>
 
 <#macro cell item key>
-    <td class="font-weight-bold">
+    <td>
         <#switch key.type>
             <#case "id">
-                <span class="my-2 text-xs">
-                    <a href="${route}/${item[key.key]}/update">${item[key.key]}</a>
-                </span>
+                <a href="${route}/${item[key.key]}/update">${item[key.key]}</a>
                 <#break>
             <#case "password">
-                <span class="my-2 text-xs">********</span>
+                ********
                 <#break>
             <#case "boolean">
                 <div class="text-xs d-flex align-items-center">
@@ -71,12 +90,10 @@
                 </div>
                 <#break>
             <#case "url_webpages">
-                <span class="my-2 text-xs">
-                    <a href="/pages/${item[key.key]}">/pages/${item[key.key]}</a>
-                </span>
+                <a href="/pages/${item[key.key]}">/pages/${item[key.key]}</a>
                 <#break>
             <#default>
-                <span class="my-2 text-xs">${item[key.key]}</span>
+                ${item[key.key]}
         </#switch>
     </td>
 </#macro>

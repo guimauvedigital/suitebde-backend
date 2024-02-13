@@ -4,6 +4,7 @@ import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.controllers.IModelController
 import me.nathanfallet.ktorx.routers.IModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.IModel
@@ -18,6 +19,7 @@ open class AdminModelRouter<Model : IModel<Id, CreatePayload, UpdatePayload>, Id
     controllerClass: KClass<out IModelController<Model, Id, CreatePayload, UpdatePayload>>,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
+    requireUserForCallUseCase: IRequireUserForCallUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     route: String? = null,
     id: String? = null,
@@ -30,6 +32,7 @@ open class AdminModelRouter<Model : IModel<Id, CreatePayload, UpdatePayload>, Id
     null,
     getLocaleForCallUseCase,
     translateUseCase,
+    requireUserForCallUseCase,
     getAdminMenuForCallUseCase,
     route,
     id,

@@ -6,6 +6,7 @@ import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.routers.IChildModelRouter
 import me.nathanfallet.ktorx.routers.admin.LocalizedAdminChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.IChildModel
@@ -21,6 +22,7 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
     parentRouter: IChildModelRouter<ParentModel, ParentId, *, *, *, *>?,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
+    requireUserForCallUseCase: IRequireUserForCallUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     route: String? = null,
     id: String? = null,
@@ -39,6 +41,7 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
                     getLocaleForCallUseCase(this),
                     ((model["route"] as String).takeIf { it.isNotEmpty() } ?: "dashboard").let { "admin_menu_$it" }
                 ),
+                "user" to requireUserForCallUseCase(this),
                 "menu" to getAdminMenuForCallUseCase(this),
                 "flatpickr" to flatpickr,
             )

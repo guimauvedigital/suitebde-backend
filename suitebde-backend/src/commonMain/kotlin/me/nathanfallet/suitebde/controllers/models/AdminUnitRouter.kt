@@ -4,6 +4,7 @@ import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.controllers.IUnitController
 import me.nathanfallet.ktorx.routers.IUnitRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 import me.nathanfallet.usecases.models.UnitModel
@@ -14,6 +15,7 @@ open class AdminUnitRouter(
     controllerClass: KClass<out IUnitController>,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
+    requireUserForCallUseCase: IRequireUserForCallUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     route: String? = null,
 ) : AdminModelRouter<UnitModel, Unit, Unit, Unit>(
@@ -24,6 +26,7 @@ open class AdminUnitRouter(
     controllerClass,
     getLocaleForCallUseCase,
     translateUseCase,
+    requireUserForCallUseCase,
     getAdminMenuForCallUseCase,
     route ?: "",
 ), IUnitRouter

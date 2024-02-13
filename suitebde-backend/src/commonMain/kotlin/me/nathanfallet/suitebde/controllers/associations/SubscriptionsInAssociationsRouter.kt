@@ -4,6 +4,7 @@ import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
 import me.nathanfallet.ktorx.routers.concat.ConcatChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.controllers.models.AdminChildModelRouter
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateSubscriptionInAssociationPayload
@@ -16,6 +17,7 @@ class SubscriptionsInAssociationsRouter(
     controller: ISubscriptionsInAssociationsController,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
+    requireUserForCallUseCase: IRequireUserForCallUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     associationForCallRouter: IAssociationForCallRouter,
     associationsRouter: AssociationsRouter,
@@ -39,6 +41,7 @@ class SubscriptionsInAssociationsRouter(
         associationForCallRouter,
         getLocaleForCallUseCase,
         translateUseCase,
+        requireUserForCallUseCase,
         getAdminMenuForCallUseCase,
         route = "subscriptions"
     )

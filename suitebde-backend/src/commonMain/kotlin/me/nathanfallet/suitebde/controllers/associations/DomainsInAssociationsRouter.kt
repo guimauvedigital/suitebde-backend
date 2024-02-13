@@ -4,6 +4,7 @@ import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
 import me.nathanfallet.ktorx.routers.concat.ConcatChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.controllers.models.AdminChildModelRouter
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateDomainInAssociationPayload
@@ -15,6 +16,7 @@ class DomainsInAssociationsRouter(
     domainsInAssociationsController: IDomainsInAssociationsController,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
+    requireUserForCallUseCase: IRequireUserForCallUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     associationsRouter: AssociationsRouter,
 ) : ConcatChildModelRouter<DomainInAssociation, String, CreateDomainInAssociationPayload, Unit, Association, String>(
@@ -37,6 +39,7 @@ class DomainsInAssociationsRouter(
         associationsRouter.routerOf(),
         getLocaleForCallUseCase,
         translateUseCase,
+        requireUserForCallUseCase,
         getAdminMenuForCallUseCase,
         route = "domains"
     )

@@ -5,6 +5,7 @@ import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
 import me.nathanfallet.ktorx.routers.concat.ConcatChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
 import me.nathanfallet.suitebde.controllers.associations.IAssociationForCallRouter
 import me.nathanfallet.suitebde.controllers.models.AdminChildModelRouter
@@ -20,6 +21,7 @@ class WebPagesRouter(
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
     getPublicMenuForCallUseCase: IGetPublicMenuForCallUseCase,
+    requireUserForCallUseCase: IRequireUserForCallUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     associationForCallRouter: IAssociationForCallRouter,
     associationsRouter: AssociationsRouter,
@@ -42,6 +44,7 @@ class WebPagesRouter(
         associationForCallRouter,
         getLocaleForCallUseCase,
         translateUseCase,
+        requireUserForCallUseCase,
         getAdminMenuForCallUseCase
     ),
     WebPagesPublicRouter(
