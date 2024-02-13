@@ -14,11 +14,13 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.datetime.Clock
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.AssociationForCallRouter
 import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
 import me.nathanfallet.suitebde.controllers.associations.IAssociationsController
 import me.nathanfallet.suitebde.models.application.SuiteBDEJson
 import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.suitebde.plugins.configureI18n
 import me.nathanfallet.suitebde.plugins.configureSecurity
@@ -36,6 +38,10 @@ class WebMenusRouterTest {
 
     private val association = Association(
         "associationId", "name", "school", "city", true, Clock.System.now(), Clock.System.now()
+    )
+    private val user = User(
+        "id", "associationId", "email", null,
+        "firstname", "lastname", false
     )
     private val menu = WebMenu(
         "id", "associationId", "title", "url", 1
@@ -69,8 +75,9 @@ class WebMenusRouterTest {
             mockk(),
             mockk(),
             mockk(),
+            mockk(),
             AssociationForCallRouter(mockk(), mockk()),
-            AssociationsRouter(associationController, mockk(), mockk(), mockk())
+            AssociationsRouter(associationController, mockk(), mockk(), mockk(), mockk())
         )
         coEvery { associationController.get(any(), "id") } returns association
         coEvery { controller.list(any(), association) } returns listOf(menu)
@@ -87,17 +94,20 @@ class WebMenusRouterTest {
         val controller = mockk<IWebMenusController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = WebMenusRouter(
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
+            requireUserForCallUseCase,
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
-            AssociationsRouter(mockk(), mockk(), mockk(), mockk())
+            AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.list(any(), association) } returns listOf(menu)
+        coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
@@ -117,17 +127,20 @@ class WebMenusRouterTest {
         val controller = mockk<IWebMenusController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = WebMenusRouter(
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
+            requireUserForCallUseCase,
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
-            AssociationsRouter(mockk(), mockk(), mockk(), mockk())
+            AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.get(any(), association, "id") } returns menu
+        coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
@@ -137,7 +150,7 @@ class WebMenusRouterTest {
         val response = client.get("/en/admin/webmenus/id/update")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
-        assertEquals(true, document.getElementById("admin_update")?.`is`("h6"))
+        assertEquals(true, document.getElementById("admin_update")?.`is`("h2"))
     }
 
 }

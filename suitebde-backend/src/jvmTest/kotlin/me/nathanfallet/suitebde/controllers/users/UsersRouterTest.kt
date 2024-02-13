@@ -14,6 +14,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.datetime.Clock
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.AssociationForCallRouter
 import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
 import me.nathanfallet.suitebde.controllers.associations.IAssociationsController
@@ -69,8 +70,9 @@ class UsersRouterTest {
             mockk(),
             mockk(),
             mockk(),
+            mockk(),
             AssociationForCallRouter(mockk(), mockk()),
-            AssociationsRouter(associationController, mockk(), mockk(), mockk())
+            AssociationsRouter(associationController, mockk(), mockk(), mockk(), mockk())
         )
         coEvery { associationController.get(any(), "id") } returns association
         coEvery { controller.list(any(), association) } returns listOf(user)
@@ -87,17 +89,20 @@ class UsersRouterTest {
         val controller = mockk<IUsersController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = UsersRouter(
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
+            requireUserForCallUseCase,
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
-            AssociationsRouter(mockk(), mockk(), mockk(), mockk())
+            AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.list(any(), association) } returns listOf(user)
+        coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
@@ -117,17 +122,20 @@ class UsersRouterTest {
         val controller = mockk<IUsersController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = UsersRouter(
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
+            requireUserForCallUseCase,
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
-            AssociationsRouter(mockk(), mockk(), mockk(), mockk())
+            AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.get(any(), association, "id") } returns user
+        coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
@@ -137,7 +145,7 @@ class UsersRouterTest {
         val response = client.get("/en/admin/users/id/update")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
-        assertEquals(true, document.getElementById("admin_update")?.`is`("h6"))
+        assertEquals(true, document.getElementById("admin_update")?.`is`("h2"))
     }
 
 }

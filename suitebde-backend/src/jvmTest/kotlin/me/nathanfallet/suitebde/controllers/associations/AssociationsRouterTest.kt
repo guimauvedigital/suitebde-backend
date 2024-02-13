@@ -14,8 +14,10 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.datetime.Clock
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.application.SuiteBDEJson
 import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.plugins.configureI18n
 import me.nathanfallet.suitebde.plugins.configureSecurity
 import me.nathanfallet.suitebde.plugins.configureSerialization
@@ -32,6 +34,10 @@ class AssociationsRouterTest {
     private val association = Association(
         "associationId", "name", "school", "city",
         true, Clock.System.now(), Clock.System.now()
+    )
+    private val user = User(
+        "id", "associationId", "email", null,
+        "firstname", "lastname", false
     )
 
     private fun installApp(application: ApplicationTestBuilder): HttpClient {
@@ -56,7 +62,7 @@ class AssociationsRouterTest {
     fun testGetAllAPIv1() = testApplication {
         val client = installApp(this)
         val controller = mockk<IAssociationsController>()
-        val router = AssociationsRouter(controller, mockk(), mockk(), mockk())
+        val router = AssociationsRouter(controller, mockk(), mockk(), mockk(), mockk())
         coEvery { controller.list(any()) } returns listOf(association)
         routing {
             router.createRoutes(this)
@@ -70,10 +76,17 @@ class AssociationsRouterTest {
         val controller = mockk<IAssociationsController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
-        val router =
-            AssociationsRouter(controller, getLocaleForCallUseCase, translateUseCase, getAdminMenuForCallUseCase)
+        val router = AssociationsRouter(
+            controller,
+            getLocaleForCallUseCase,
+            translateUseCase,
+            requireUserForCallUseCase,
+            getAdminMenuForCallUseCase,
+        )
         coEvery { controller.list(any()) } returns listOf(association)
+        coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
@@ -92,11 +105,17 @@ class AssociationsRouterTest {
         val controller = mockk<IAssociationsController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
+        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = AssociationsRouter(
-            controller, getLocaleForCallUseCase, translateUseCase, getAdminMenuForCallUseCase
+            controller,
+            getLocaleForCallUseCase,
+            translateUseCase,
+            requireUserForCallUseCase,
+            getAdminMenuForCallUseCase,
         )
         coEvery { controller.get(any(), "id") } returns association
+        coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
@@ -106,7 +125,7 @@ class AssociationsRouterTest {
         val response = client.get("/en/admin/associations/id/update")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
-        assertEquals(true, document.getElementById("admin_update")?.`is`("h6"))
+        assertEquals(true, document.getElementById("admin_update")?.`is`("h2"))
     }
 
 }
