@@ -1,9 +1,18 @@
 <#import "../../template.ftl" as template>
 <@template.page>
-    <div class="container-fluid py-4">
-        <div class="card card-body">
-            <h1 class="mb-4" id="webpages_title">${item.title}</h1>
-            ${item.content}
+    <section class="pt-35 lg:pt-45 xl:pt-50 pb-20 lg:pb-25 xl:pb-30">
+        <div class="mx-auto max-w-1390 px-4 md:px-8 2xl:px-0">
+            <div class="flex flex-col lg:flex-row gap-7.5 xl:gap-17.5">
+                <div class="lg:w-[70%]">
+                    <div class="animate_top rounded-md shadow-solid-13 bg-white dark:bg-blacksection border border-stroke dark:border-strokedark p-7.5 md:p-10">
+                        <h2 class="font-medium text-3xl 2xl:text-title-lg text-black dark:text-white mt-11 mb-5">${item.title}</h2>
+
+                        <p>
+                            ${item.content}
+                        </p>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
+    </section>
 </@template.page>
