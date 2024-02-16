@@ -79,7 +79,9 @@ class UsersRouterTest {
         routing {
             router.createRoutes(this)
         }
-        assertEquals(listOf(user), client.get("/api/v1/associations/id/users").body())
+        val response = client.get("/api/v1/associations/id/users")
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(listOf(user), response.body())
     }
 
     @Test

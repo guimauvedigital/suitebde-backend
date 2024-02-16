@@ -67,7 +67,9 @@ class AssociationsRouterTest {
         routing {
             router.createRoutes(this)
         }
-        assertEquals(listOf(association), client.get("/api/v1/associations").body())
+        val response = client.get("/api/v1/associations")
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(listOf(association), response.body())
     }
 
     @Test

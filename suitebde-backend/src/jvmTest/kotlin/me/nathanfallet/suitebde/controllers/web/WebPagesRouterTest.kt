@@ -87,7 +87,9 @@ class WebPagesRouterTest {
         routing {
             router.createRoutes(this)
         }
-        assertEquals(listOf(page), client.get("/api/v1/associations/id/webpages").body())
+        val response = client.get("/api/v1/associations/id/webpages")
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(listOf(page), response.body())
     }
 
     @Test
@@ -103,8 +105,8 @@ class WebPagesRouterTest {
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
-            mockk(),
             requireUserForCallUseCase,
+            mockk(),
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
             AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
@@ -137,8 +139,8 @@ class WebPagesRouterTest {
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
-            mockk(),
             requireUserForCallUseCase,
+            mockk(),
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
             AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
@@ -170,8 +172,8 @@ class WebPagesRouterTest {
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
-            getPublicMenuForCallUseCase,
             mockk(),
+            getPublicMenuForCallUseCase,
             mockk(),
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
             AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
@@ -202,8 +204,8 @@ class WebPagesRouterTest {
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
-            getPublicMenuForCallUseCase,
             mockk(),
+            getPublicMenuForCallUseCase,
             mockk(),
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
             AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
@@ -234,8 +236,8 @@ class WebPagesRouterTest {
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
-            getPublicMenuForCallUseCase,
             mockk(),
+            getPublicMenuForCallUseCase,
             mockk(),
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
             AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())

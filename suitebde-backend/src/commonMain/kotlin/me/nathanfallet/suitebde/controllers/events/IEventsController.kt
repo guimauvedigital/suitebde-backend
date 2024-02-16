@@ -40,6 +40,7 @@ interface IEventsController :
 
     @APIMapping
     @AdminTemplateMapping
+    @TemplateMapping("public/events/list.ftl")
     @ListModelPath
     suspend fun list(call: ApplicationCall, @ParentModel parent: Association): List<Event>
 

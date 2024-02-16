@@ -84,7 +84,9 @@ class WebMenusRouterTest {
         routing {
             router.createRoutes(this)
         }
-        assertEquals(listOf(menu), client.get("/api/v1/associations/id/webmenus").body())
+        val response = client.get("/api/v1/associations/id/webmenus")
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(listOf(menu), response.body())
     }
 
     @Test
