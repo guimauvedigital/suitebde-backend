@@ -24,6 +24,9 @@ import me.nathanfallet.suitebde.controllers.events.EventsController
 import me.nathanfallet.suitebde.controllers.events.EventsRouter
 import me.nathanfallet.suitebde.controllers.events.IEventsController
 import me.nathanfallet.suitebde.controllers.roles.*
+import me.nathanfallet.suitebde.controllers.root.IRootController
+import me.nathanfallet.suitebde.controllers.root.RootController
+import me.nathanfallet.suitebde.controllers.root.RootRouter
 import me.nathanfallet.suitebde.controllers.users.*
 import me.nathanfallet.suitebde.controllers.web.*
 import me.nathanfallet.suitebde.database.Database
@@ -578,6 +581,7 @@ fun Application.configureKoin() {
                     get(named<SubscriptionInAssociation>())
                 )
             }
+            single<IRootController> { RootController(get(), get()) }
             single<IDashboardController> { DashboardController() }
 
             // Auth
@@ -669,7 +673,6 @@ fun Application.configureKoin() {
                     get(named<WebPage>()),
                     get(named<WebPage>()),
                     get(),
-                    get(),
                     get(named<WebPage>()),
                     get(named<WebPage>()),
                     get(named<WebPage>()),
@@ -731,6 +734,7 @@ fun Application.configureKoin() {
         }
         val routerModule = module {
             single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get()) }
+            single { RootRouter(get(), get()) }
             single { DashboardRouter(get(), get(), get(), get(), get()) }
             single { AssociationsRouter(get(), get(), get(), get(), get()) }
             single { DomainsInAssociationsRouter(get(), get(), get(), get(), get(), get()) }

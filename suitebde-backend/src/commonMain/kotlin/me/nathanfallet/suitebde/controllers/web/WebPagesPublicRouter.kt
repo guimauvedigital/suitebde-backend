@@ -27,7 +27,7 @@ class WebPagesPublicRouter(
     getPublicMenuForCallUseCase,
     getLocaleForCallUseCase,
     respondTemplate,
-    ""
+    "pages"
 ) {
 
     override suspend fun get(call: ApplicationCall): WebPage {

@@ -19,6 +19,7 @@ import me.nathanfallet.suitebde.controllers.events.EventsRouter
 import me.nathanfallet.suitebde.controllers.roles.PermissionsInRolesRouter
 import me.nathanfallet.suitebde.controllers.roles.RolesRouter
 import me.nathanfallet.suitebde.controllers.roles.UsersInRolesRouter
+import me.nathanfallet.suitebde.controllers.root.RootRouter
 import me.nathanfallet.suitebde.controllers.users.SubscriptionsInUsersRouter
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
 import me.nathanfallet.suitebde.controllers.web.WebMenusRouter
@@ -58,7 +59,8 @@ fun Application.configureRouting() {
                 get<EventsRouter>(),
                 get<ClubsRouter>(),
                 get<UsersInClubsRouter>(),
-                OpenAPIRouter() // OpenAPI should be last
+                OpenAPIRouter(), // OpenAPI should be last
+                get<RootRouter>(), // Except for WebRouter which are root web pages
             ).forEach {
                 it.createRoutes(this, openAPI)
             }

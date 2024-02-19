@@ -161,38 +161,6 @@ class WebPagesRouterTest {
     }
 
     @Test
-    fun testGetHomePublic() = testApplication {
-        val client = installApp(this)
-        val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()
-        val controller = mockk<IWebPagesController>()
-        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val translateUseCase = mockk<ITranslateUseCase>()
-        val getPublicMenuForCallUseCase = mockk<IGetPublicMenuForCallUseCase>()
-        val router = WebPagesRouter(
-            controller,
-            getLocaleForCallUseCase,
-            translateUseCase,
-            mockk(),
-            getPublicMenuForCallUseCase,
-            mockk(),
-            AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
-            AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
-        )
-        coEvery { requireAssociationForCallUseCase(any()) } returns association
-        coEvery { controller.getHome(any(), association) } returns page
-        coEvery { getPublicMenuForCallUseCase(any()) } returns listOf()
-        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
-        routing {
-            router.createRoutes(this)
-        }
-        val response = client.get("/en")
-        assertEquals(HttpStatusCode.OK, response.status)
-        val document = Jsoup.parse(response.bodyAsText())
-        assertEquals(page.title, document.getElementById("webpages_title")?.text())
-    }
-
-    @Test
     fun testGetByUrlPublic() = testApplication {
         val client = installApp(this)
         val requireAssociationForCallUseCase = mockk<IRequireAssociationForCallUseCase>()

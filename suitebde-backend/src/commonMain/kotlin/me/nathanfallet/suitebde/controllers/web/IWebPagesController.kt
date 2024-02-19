@@ -22,11 +22,7 @@ interface IWebPagesController :
     suspend fun get(call: ApplicationCall, @ParentModel parent: Association, @Id id: String): WebPage
 
     @TemplateMapping("public/web/page.ftl")
-    @Path("GET", "/")
-    suspend fun getHome(call: ApplicationCall, @ParentModel parent: Association): WebPage
-
-    @TemplateMapping("public/web/page.ftl")
-    @Path("GET", "/pages/{webpageId}")
+    @Path("GET", "/{webpageId}")
     suspend fun getByUrl(call: ApplicationCall, @ParentModel parent: Association, @Id url: String): WebPage
 
     @APIMapping

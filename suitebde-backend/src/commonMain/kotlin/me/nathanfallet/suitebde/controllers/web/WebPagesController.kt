@@ -9,7 +9,6 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.web.WebPage
 import me.nathanfallet.suitebde.models.web.WebPagePayload
-import me.nathanfallet.suitebde.usecases.web.IGetHomeWebPageUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetWebPageByUrlUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
@@ -25,7 +24,6 @@ class WebPagesController(
     private val getWebPagesUseCase: IListChildModelSuspendUseCase<WebPage, String>,
     private val getWebPagesSlicedUseCase: IListSliceChildModelSuspendUseCase<WebPage, String>,
     private val getWebPageByUrlUseCase: IGetWebPageByUrlUseCase,
-    private val getHomeWebPageUseCase: IGetHomeWebPageUseCase,
     private val getWebPageUseCase: IGetChildModelSuspendUseCase<WebPage, String, String>,
     private val createWebPageUseCase: ICreateChildModelSuspendUseCase<WebPage, WebPagePayload, String>,
     private val updateWebPageUseCase: IUpdateChildModelSuspendUseCase<WebPage, String, WebPagePayload, String>,
@@ -49,12 +47,6 @@ class WebPagesController(
 
     override suspend fun getByUrl(call: ApplicationCall, parent: Association, url: String): WebPage {
         return getWebPageByUrlUseCase(url, parent.id) ?: throw ControllerException(
-            HttpStatusCode.NotFound, "webpages_not_found"
-        )
-    }
-
-    override suspend fun getHome(call: ApplicationCall, parent: Association): WebPage {
-        return getHomeWebPageUseCase(parent.id) ?: throw ControllerException(
             HttpStatusCode.NotFound, "webpages_not_found"
         )
     }
