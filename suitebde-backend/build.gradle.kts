@@ -69,8 +69,8 @@ kotlin {
                 implementation("ch.qos.logback:logback-core:$logbackVersion")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
-                implementation("me.nathanfallet.i18n:i18n:1.0.9")
-                implementation("me.nathanfallet.surexposed:surexposed:1.0.0")
+                implementation("me.nathanfallet.i18n:i18n:1.0.10")
+                implementation("me.nathanfallet.surexposed:surexposed:1.0.1")
                 implementation("me.nathanfallet.ktorx:ktor-database-sessions:$ktorxVersion")
                 implementation("me.nathanfallet.ktorx:ktor-i18n:$ktorxVersion")
                 implementation("me.nathanfallet.ktorx:ktor-i18n-freemarker:$ktorxVersion")
@@ -81,7 +81,7 @@ kotlin {
                 implementation("me.nathanfallet.ktorx:ktor-routers-auth:$ktorxVersion")
                 implementation("me.nathanfallet.ktorx:ktor-routers-auth-locale:$ktorxVersion")
                 implementation("me.nathanfallet.ktorx:ktor-sentry:$ktorxVersion")
-                implementation("me.nathanfallet.cloudflare:cloudflare-api-client:4.2.1")
+                implementation("me.nathanfallet.cloudflare:cloudflare-api-client:4.2.2")
 
                 implementation("com.mysql:mysql-connector-j:8.0.33")
                 implementation("at.favre.lib:bcrypt:0.9.0")
