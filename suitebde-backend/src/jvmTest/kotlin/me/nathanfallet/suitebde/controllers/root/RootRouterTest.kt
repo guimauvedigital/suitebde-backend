@@ -12,6 +12,7 @@ import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.plugins.configureI18n
 import me.nathanfallet.suitebde.plugins.configureSecurity
 import me.nathanfallet.suitebde.plugins.configureTemplating
+import me.nathanfallet.suitebde.usecases.web.IGetRootMenuUseCase
 import java.util.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -35,12 +36,15 @@ class RootRouterTest {
         val client = installApp(this)
         val controller = mockk<IRootController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
+        val getRootMenuUseCase = mockk<IGetRootMenuUseCase>()
         val router = RootRouter(
             controller,
-            getLocaleForCallUseCase
+            getLocaleForCallUseCase,
+            getRootMenuUseCase
         )
         coEvery { controller.home() } returns Unit
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
+        coEvery { getRootMenuUseCase(any()) } returns listOf()
         routing {
             router.createRoutes(this)
         }
