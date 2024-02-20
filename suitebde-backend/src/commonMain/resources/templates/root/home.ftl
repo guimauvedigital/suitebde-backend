@@ -4,7 +4,7 @@
     <section class="pt-35 md:pt-40 xl:pt-52 pb-20 lg:pb-30 xl:pb-59 relative overflow-hidden">
         <!-- Hero Images -->
         <div class="hidden md:block w-1/2 2xl:w-187.5 h-auto 2xl:h-171.5 absolute right-0 top-0">
-            <img src="img/hero.png" alt="Hero" class="absolute right-0 top-0 z-1"/>
+            <img src="/img/hero.png" alt="Hero" class="absolute right-0 top-0 z-1"/>
         </div>
 
         <!-- Hero Content -->
@@ -19,7 +19,7 @@
                     </p>
 
                     <div class="flex flex-col-reverse lg:flex-row gap-7.5 mt-10">
-                        <a href="${locale}/auth/join"
+                        <a href="/${locale}/auth/join"
                            class="font-medium leading-7 text-white bg-primary py-3 px-7.5 rounded-full ease-in-out duration-300 inline-flex w-fit hover:shadow-1">
                             <@t key="auth_field_join"/>
                         </a>
