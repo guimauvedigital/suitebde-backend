@@ -447,6 +447,7 @@ fun Application.configureKoin() {
                 ListSliceChildModelFromRepositorySuspendUseCase(get<IWebMenusRepository>())
             }
             single<IGetPublicMenuForCallUseCase> { GetPublicMenuForCallUseCase(get(), get(named<WebMenu>())) }
+            single<IGetRootMenuUseCase> { GetRootMenuUseCase(get()) }
             single<IGetAdminMenuForCallUseCase> {
                 GetAdminMenuForCallUseCase(get(), get(), get(named<Association>()), get(), get(), get())
             }
@@ -734,7 +735,7 @@ fun Application.configureKoin() {
         }
         val routerModule = module {
             single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get()) }
-            single { RootRouter(get(), get()) }
+            single { RootRouter(get(), get(), get()) }
             single { DashboardRouter(get(), get(), get(), get(), get()) }
             single { AssociationsRouter(get(), get(), get(), get(), get()) }
             single { DomainsInAssociationsRouter(get(), get(), get(), get(), get(), get()) }

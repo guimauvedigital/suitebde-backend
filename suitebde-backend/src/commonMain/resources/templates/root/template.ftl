@@ -1,3 +1,0 @@
-<#macro page>
-    <#nested>
-</#macro>
