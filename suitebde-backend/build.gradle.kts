@@ -3,7 +3,7 @@ plugins {
     kotlin("plugin.serialization")
     id("org.jetbrains.kotlinx.kover")
     id("com.google.devtools.ksp")
-    id("io.ktor.plugin") version "2.3.7"
+    id("io.ktor.plugin") version "2.3.8"
 }
 
 application {
@@ -39,7 +39,7 @@ kotlin {
     applyDefaultHierarchyTemplate()
 
     val coroutinesVersion = "1.7.3"
-    val ktorVersion = "2.3.7"
+    val ktorVersion = "2.3.8"
     val koinVersion = "3.5.0"
     val logbackVersion = "0.9.30"
     val ktorxVersion = "2.2.2"
