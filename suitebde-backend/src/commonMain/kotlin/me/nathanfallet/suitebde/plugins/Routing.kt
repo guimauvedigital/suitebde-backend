@@ -44,6 +44,7 @@ fun Application.configureRouting() {
 
         authenticate("api-v1-jwt", optional = true) {
             listOf(
+                get<RootRouter>(),
                 get<DashboardRouter>(),
                 get<AssociationsRouter>(),
                 get<DomainsInAssociationsRouter>(),
@@ -60,7 +61,6 @@ fun Application.configureRouting() {
                 get<ClubsRouter>(),
                 get<UsersInClubsRouter>(),
                 OpenAPIRouter(), // OpenAPI should be last
-                get<RootRouter>(), // Except for WebRouter which are root web pages
             ).forEach {
                 it.createRoutes(this, openAPI)
             }
