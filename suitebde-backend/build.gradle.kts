@@ -42,7 +42,7 @@ kotlin {
     val ktorVersion = "2.3.7"
     val koinVersion = "3.5.0"
     val logbackVersion = "0.9.30"
-    val ktorxVersion = "2.2.0"
+    val ktorxVersion = "2.2.1"
 
     sourceSets {
         val commonMain by getting {
@@ -72,6 +72,7 @@ kotlin {
                 implementation("me.nathanfallet.i18n:i18n:1.0.10")
                 implementation("me.nathanfallet.surexposed:surexposed:1.0.1")
                 implementation("me.nathanfallet.ktorx:ktor-database-sessions:$ktorxVersion")
+                implementation("me.nathanfallet.ktorx:ktor-health:$ktorxVersion")
                 implementation("me.nathanfallet.ktorx:ktor-i18n:$ktorxVersion")
                 implementation("me.nathanfallet.ktorx:ktor-i18n-freemarker:$ktorxVersion")
                 implementation("me.nathanfallet.ktorx:ktor-routers:$ktorxVersion")
