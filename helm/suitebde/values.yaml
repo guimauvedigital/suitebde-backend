@@ -152,6 +152,9 @@ cloudflare:
   account: ''
   token: ''
 
+stripe:
+  key: ''
+
 # MySQL configuration
 
 mysql:
