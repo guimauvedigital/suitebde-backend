@@ -326,6 +326,12 @@ fun Application.configureKoin() {
                     get(named<StripeAccountInAssociation>())
                 )
             }
+            single<ICreateCheckoutSessionUseCase> {
+                CreateCheckoutSessionUseCase(
+                    get(),
+                    get(named<StripeAccountInAssociation>())
+                )
+            }
 
             // Auth
             single<IHashPasswordUseCase> { HashPasswordUseCase() }
