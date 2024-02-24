@@ -1,55 +1,53 @@
 <#import "../template.ftl" as template>
 <@template.page>
-    <div class="mx-auto max-w-screen-2xl p-4 md:p-6 2xl:p-10">
-        <!-- Breadcrumb Start -->
-        <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <#if item??>
-                <h2 class="text-title-md2 font-bold text-black dark:text-white" id="admin_update">
-                    <@t key="admin_" + route + "_update" />
-                </h2>
-            <#else>
-                <h2 class="text-title-md2 font-bold text-black dark:text-white" id="admin_create">
-                    <@t key="admin_" + route + "_create" />
-                </h2>
-            </#if>
-        </div>
-        <!-- Breadcrumb End -->
+    <!-- Breadcrumb Start -->
+    <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <#if item??>
+            <h2 class="text-title-md2 font-bold text-black dark:text-white" id="admin_update">
+                <@t key="admin_" + route + "_update" />
+            </h2>
+        <#else>
+            <h2 class="text-title-md2 font-bold text-black dark:text-white" id="admin_create">
+                <@t key="admin_" + route + "_create" />
+            </h2>
+        </#if>
+    </div>
+    <!-- Breadcrumb End -->
 
-        <!-- ====== Form Layout Section Start -->
-        <div class="grid grid-cols-1 gap-9">
-            <div class="flex flex-col gap-9">
-                <!-- Contact Form -->
-                <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
-                    <form method="post" id="form">
-                        <div class="p-6.5 grid grid-flow-col gap-6">
-                            <div class="mb-4.5 grid xl:grid-cols-12 grid-cols-6 gap-6">
-                                <#list keys as key>
-                                    <@field key />
-                                </#list>
-                            </div>
-
-                            <div class="mb-4.5 flex flex-col gap-6 xl:flex-row">
-                                <a class="flex w-full justify-center rounded bg-black p-3 font-medium text-gray"
-                                   href="../<#if item??>../</#if>${route}">
-                                    <@t key="admin_cancel" />
-                                </a>
-                                <#if item??>
-                                    <a class="flex w-full justify-center rounded bg-danger p-3 font-medium text-gray"
-                                       href="delete">
-                                        <@t key="admin_delete" />
-                                    </a>
-                                </#if>
-                                <input type="submit"
-                                       class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray"
-                                       value="<@t key="admin_save" />"/>
-                            </div>
+    <!-- ====== Form Layout Section Start -->
+    <div class="grid grid-cols-1 gap-9">
+        <div class="flex flex-col gap-9">
+            <!-- Contact Form -->
+            <div class="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
+                <form method="post" id="form">
+                    <div class="p-6.5 grid grid-flow-col gap-6">
+                        <div class="mb-4.5 grid xl:grid-cols-12 grid-cols-6 gap-6">
+                            <#list keys as key>
+                                <@field key />
+                            </#list>
                         </div>
-                    </form>
-                </div>
+
+                        <div class="mb-4.5 flex flex-col gap-6 xl:flex-row">
+                            <a class="flex w-full justify-center rounded bg-black p-3 font-medium text-gray"
+                               href="../<#if item??>../</#if>${route}">
+                                <@t key="admin_cancel" />
+                            </a>
+                            <#if item??>
+                                <a class="flex w-full justify-center rounded bg-danger p-3 font-medium text-gray"
+                                   href="delete">
+                                    <@t key="admin_delete" />
+                                </a>
+                            </#if>
+                            <input type="submit"
+                                   class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray"
+                                   value="<@t key="admin_save" />"/>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
-        <!-- ====== Form Layout Section End -->
     </div>
+    <!-- ====== Form Layout Section End -->
 
     <#if flatpickr?? && flatpickr>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>

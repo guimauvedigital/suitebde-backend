@@ -88,6 +88,7 @@ kotlin {
                 implementation("at.favre.lib:bcrypt:0.9.0")
                 implementation("org.apache.commons:commons-email:1.5")
                 implementation("io.sentry:sentry:6.34.0")
+                implementation("com.stripe:stripe-java:24.17.0")
 
                 api(project(":suitebde-commons"))
             }

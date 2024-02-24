@@ -113,6 +113,15 @@ spec:
                   name: {{ .Values.existingSecret }}
                   {{- end }}
                   key: cloudflare-token
+            - name: STRIPE_KEY
+              valueFrom:
+                secretKeyRef:
+                  {{ if not .Values.existingSecret -}}
+                  name: {{ include "suitebde.fullname" . }}
+                  {{- else }}
+                  name: {{ .Values.existingSecret }}
+                  {{- end }}
+                  key: stripe-key
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:

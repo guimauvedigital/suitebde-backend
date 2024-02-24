@@ -31,10 +31,7 @@ import me.nathanfallet.suitebde.controllers.users.*
 import me.nathanfallet.suitebde.controllers.web.*
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.database.application.ClientsDatabaseRepository
-import me.nathanfallet.suitebde.database.associations.AssociationsDatabaseRepository
-import me.nathanfallet.suitebde.database.associations.CodesInEmailsDatabaseRepository
-import me.nathanfallet.suitebde.database.associations.DomainsInAssociationsDatabaseRepository
-import me.nathanfallet.suitebde.database.associations.SubscriptionsInAssociationsDatabaseRepository
+import me.nathanfallet.suitebde.database.associations.*
 import me.nathanfallet.suitebde.database.clubs.ClubsDatabaseRepository
 import me.nathanfallet.suitebde.database.clubs.RolesInClubsDatabaseRepository
 import me.nathanfallet.suitebde.database.clubs.UsersInClubsDatabaseRepository
@@ -59,10 +56,7 @@ import me.nathanfallet.suitebde.models.events.UpdateEventPayload
 import me.nathanfallet.suitebde.models.roles.*
 import me.nathanfallet.suitebde.models.users.*
 import me.nathanfallet.suitebde.models.web.*
-import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
-import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
-import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
-import me.nathanfallet.suitebde.repositories.associations.ISubscriptionsInAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.*
 import me.nathanfallet.suitebde.repositories.clubs.IClubsRepository
 import me.nathanfallet.suitebde.repositories.clubs.IRolesInClubsRepository
 import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRepository
@@ -77,6 +71,8 @@ import me.nathanfallet.suitebde.services.emails.EmailsService
 import me.nathanfallet.suitebde.services.emails.IEmailsService
 import me.nathanfallet.suitebde.services.jwt.IJWTService
 import me.nathanfallet.suitebde.services.jwt.JWTService
+import me.nathanfallet.suitebde.services.stripe.IStripeService
+import me.nathanfallet.suitebde.services.stripe.StripeService
 import me.nathanfallet.suitebde.usecases.application.*
 import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.*
@@ -152,6 +148,11 @@ fun Application.configureKoin() {
                     environment.config.property("jwt.issuer").getString()
                 )
             }
+            single<IStripeService> {
+                StripeService(
+                    environment.config.property("stripe.key").getString()
+                )
+            }
             single<ICloudflareClient> {
                 CloudflareClient(
                     environment.config.property("cloudflare.token").getString()
@@ -170,6 +171,7 @@ fun Application.configureKoin() {
             single<ICodesInEmailsRepository> { CodesInEmailsDatabaseRepository(get()) }
             single<IDomainsInAssociationsRepository> { DomainsInAssociationsDatabaseRepository(get()) }
             single<ISubscriptionsInAssociationsRepository> { SubscriptionsInAssociationsDatabaseRepository(get()) }
+            single<IStripeAccountsInAssociationsRepository> { StripeAccountsInAssociationsDatabaseRepository(get()) }
 
             // Users
             single<IUsersRepository> { UsersDatabaseRepository(get()) }
@@ -291,6 +293,38 @@ fun Application.configureKoin() {
                 named<SubscriptionInAssociation>()
             ) {
                 UpdateChildModelFromRepositorySuspendUseCase(get<ISubscriptionsInAssociationsRepository>())
+            }
+
+            // Stripe accounts in associations
+            single<IListChildModelSuspendUseCase<StripeAccountInAssociation, String>>(named<StripeAccountInAssociation>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<IStripeAccountsInAssociationsRepository>())
+            }
+            single<IGetChildModelSuspendUseCase<StripeAccountInAssociation, String, String>>(named<StripeAccountInAssociation>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<IStripeAccountsInAssociationsRepository>())
+            }
+            single<ICreateChildModelSuspendUseCase<StripeAccountInAssociation, CreateStripeAccountInAssociationPayload, String>>(
+                named<StripeAccountInAssociation>()
+            ) {
+                CreateChildModelFromRepositorySuspendUseCase(get<IStripeAccountsInAssociationsRepository>())
+            }
+            single<IUpdateChildModelSuspendUseCase<StripeAccountInAssociation, String, UpdateStripeAccountInAssociationPayload, String>>(
+                named<StripeAccountInAssociation>()
+            ) {
+                UpdateChildModelFromRepositorySuspendUseCase(get<IStripeAccountsInAssociationsRepository>())
+            }
+            single<IRefreshStripeAccountUseCase> {
+                RefreshStripeAccountUseCase(
+                    get(),
+                    get(named<StripeAccountInAssociation>()),
+                    get(named<StripeAccountInAssociation>())
+                )
+            }
+            single<ICreateStripeAccountLinkUseCase> {
+                CreateStripeAccountLinkUseCase(
+                    get(),
+                    get(named<StripeAccountInAssociation>()),
+                    get(named<StripeAccountInAssociation>())
+                )
             }
 
             // Auth
@@ -583,7 +617,7 @@ fun Application.configureKoin() {
                 )
             }
             single<IRootController> { RootController(get(), get()) }
-            single<IDashboardController> { DashboardController() }
+            single<IDashboardController> { DashboardController(get(), get(), get()) }
 
             // Auth
             single<IAuthController> {
