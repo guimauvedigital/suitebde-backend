@@ -11,14 +11,14 @@ class CreateCheckoutSessionUseCase(
     private val listStripeAccountsInAssociationsUseCase: IListChildModelSuspendUseCase<StripeAccountInAssociation, String>,
 ) : ICreateCheckoutSessionUseCase {
 
-    override suspend fun invoke(input1: Association, input2: String, input3: Long): Session? {
+    override suspend fun invoke(input1: Association, input2: String, input3: Long, input4: String): Session? {
         val account = listStripeAccountsInAssociationsUseCase(input1.id).firstOrNull { it.chargesEnabled }
             ?: return null
         return stripeService.createCheckoutSession(
             account.accountId,
             input2,
             input3,
-            ""
+            input4
         )
     }
 

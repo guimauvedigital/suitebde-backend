@@ -32,6 +32,20 @@ class StripeService(
                         .setName(association.name)
                         .build()
                 )
+                .setCapabilities(
+                    AccountCreateParams.Capabilities.builder()
+                        .setCardPayments(
+                            AccountCreateParams.Capabilities.CardPayments.builder()
+                                .setRequested(true)
+                                .build()
+                        )
+                        .setTransfers(
+                            AccountCreateParams.Capabilities.Transfers.builder()
+                                .setRequested(true)
+                                .build()
+                        )
+                        .build()
+                )
                 .build()
         )
 
@@ -79,7 +93,6 @@ class StripeService(
                         .build()
                 )
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setReturnUrl(returnUrl)
                 .setSuccessUrl(returnUrl)
                 .build(),
             RequestOptions.builder()
