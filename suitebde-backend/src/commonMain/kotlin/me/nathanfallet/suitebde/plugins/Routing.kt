@@ -24,6 +24,7 @@ import me.nathanfallet.suitebde.controllers.users.SubscriptionsInUsersRouter
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
 import me.nathanfallet.suitebde.controllers.web.WebMenusRouter
 import me.nathanfallet.suitebde.controllers.web.WebPagesRouter
+import me.nathanfallet.suitebde.controllers.webhooks.WebhooksRouter
 import me.nathanfallet.suitebde.models.application.SuiteBDEEnvironment
 import org.koin.ktor.ext.get
 
@@ -45,6 +46,7 @@ fun Application.configureRouting() {
         authenticate("api-v1-jwt", optional = true) {
             listOf(
                 get<RootRouter>(),
+                get<WebhooksRouter>(),
                 get<DashboardRouter>(),
                 get<AssociationsRouter>(),
                 get<DomainsInAssociationsRouter>(),

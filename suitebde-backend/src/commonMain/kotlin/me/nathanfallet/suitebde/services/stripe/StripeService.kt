@@ -8,7 +8,11 @@ import com.stripe.net.RequestOptions
 import com.stripe.param.AccountCreateParams
 import com.stripe.param.AccountLinkCreateParams
 import com.stripe.param.checkout.SessionCreateParams
+import com.stripe.param.checkout.SessionRetrieveParams
 import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.stripe.CheckoutItem
+import me.nathanfallet.suitebde.models.stripe.ICustomer
+import me.nathanfallet.suitebde.models.stripe.StripeAccount
 
 class StripeService(
     private val apiKey: String,
@@ -19,7 +23,7 @@ class StripeService(
         Stripe.apiKey = apiKey
     }
 
-    override suspend fun getAccount(accountId: String): Account? =
+    override suspend fun getAccount(accountId: String): Account =
         Account.retrieve(accountId)
 
     override suspend fun createAccount(association: Association): Account =
@@ -63,40 +67,61 @@ class StripeService(
                 .build()
         )
 
+    override suspend fun getCheckoutSession(accountId: String, sessionId: String): Session =
+        Session.retrieve(
+            sessionId,
+            SessionRetrieveParams.builder()
+                .addAllExpand(listOf("line_items", "line_items.data.price", "line_items.data.price.product"))
+                .build(),
+            RequestOptions.builder()
+                .setStripeAccount(accountId)
+                .build()
+        )
+
     override suspend fun createCheckoutSession(
-        accountId: String,
-        name: String,
-        amount: Long,
+        account: StripeAccount,
+        customer: ICustomer?,
+        items: List<CheckoutItem>,
         returnUrl: String,
     ): Session =
         Session.create(
             SessionCreateParams.builder()
-                .addLineItem(
-                    SessionCreateParams.LineItem.builder()
-                        .setPriceData(
-                            SessionCreateParams.LineItem.PriceData.builder()
-                                .setCurrency("eur")
-                                .setProductData(
-                                    SessionCreateParams.LineItem.PriceData.ProductData.builder()
-                                        .setName(name)
-                                        .build()
-                                )
-                                .setUnitAmount(amount)
-                                .build()
-                        )
-                        .setQuantity(1)
-                        .build()
+                .setCustomerEmail(customer?.email)
+                .addAllLineItem(
+                    items.map {
+                        SessionCreateParams.LineItem.builder()
+                            .setPriceData(
+                                SessionCreateParams.LineItem.PriceData.builder()
+                                    .setCurrency(it.currency)
+                                    .setProductData(
+                                        SessionCreateParams.LineItem.PriceData.ProductData.builder()
+                                            .setName(it.name)
+                                            .setDescription(it.description)
+                                            .putMetadata("itemType", it.itemType)
+                                            .putMetadata("itemId", it.itemId)
+                                            .build()
+                                    )
+                                    .setUnitAmount(it.unitAmount)
+                                    .build()
+                            )
+                            .setQuantity(it.quantity)
+                            .build()
+                    }
                 )
                 .setPaymentIntentData(
                     SessionCreateParams.PaymentIntentData.builder()
-                        .setApplicationFeeAmount((amount * 0.05).toLong())
+                        .setApplicationFeeAmount(
+                            (items.fold(0L) { acc, item -> acc + item.unitAmount } * 0.05).toLong()
+                        )
                         .build()
                 )
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl(returnUrl)
+                .putMetadata("associationId", account.associationId)
+                .putMetadata("accountId", account.accountId)
                 .build(),
             RequestOptions.builder()
-                .setStripeAccount(accountId)
+                .setStripeAccount(account.accountId)
                 .build()
         )
 

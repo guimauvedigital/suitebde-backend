@@ -29,9 +29,15 @@ import me.nathanfallet.suitebde.controllers.root.RootController
 import me.nathanfallet.suitebde.controllers.root.RootRouter
 import me.nathanfallet.suitebde.controllers.users.*
 import me.nathanfallet.suitebde.controllers.web.*
+import me.nathanfallet.suitebde.controllers.webhooks.IWebhooksController
+import me.nathanfallet.suitebde.controllers.webhooks.WebhooksController
+import me.nathanfallet.suitebde.controllers.webhooks.WebhooksRouter
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.database.application.ClientsDatabaseRepository
-import me.nathanfallet.suitebde.database.associations.*
+import me.nathanfallet.suitebde.database.associations.AssociationsDatabaseRepository
+import me.nathanfallet.suitebde.database.associations.CodesInEmailsDatabaseRepository
+import me.nathanfallet.suitebde.database.associations.DomainsInAssociationsDatabaseRepository
+import me.nathanfallet.suitebde.database.associations.SubscriptionsInAssociationsDatabaseRepository
 import me.nathanfallet.suitebde.database.clubs.ClubsDatabaseRepository
 import me.nathanfallet.suitebde.database.clubs.RolesInClubsDatabaseRepository
 import me.nathanfallet.suitebde.database.clubs.UsersInClubsDatabaseRepository
@@ -39,6 +45,8 @@ import me.nathanfallet.suitebde.database.events.EventsDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.PermissionsInRolesDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.RolesDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.UsersInRolesDatabaseRepository
+import me.nathanfallet.suitebde.database.stripe.StripeAccountsDatabaseRepository
+import me.nathanfallet.suitebde.database.stripe.StripeOrdersDatabaseRepository
 import me.nathanfallet.suitebde.database.users.ClientsInUsersDatabaseRepository
 import me.nathanfallet.suitebde.database.users.SubscriptionsInUsersDatabaseRepository
 import me.nathanfallet.suitebde.database.users.UsersDatabaseRepository
@@ -54,14 +62,20 @@ import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
 import me.nathanfallet.suitebde.models.events.UpdateEventPayload
 import me.nathanfallet.suitebde.models.roles.*
+import me.nathanfallet.suitebde.models.stripe.*
 import me.nathanfallet.suitebde.models.users.*
 import me.nathanfallet.suitebde.models.web.*
-import me.nathanfallet.suitebde.repositories.associations.*
+import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.ICodesInEmailsRepository
+import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
+import me.nathanfallet.suitebde.repositories.associations.ISubscriptionsInAssociationsRepository
 import me.nathanfallet.suitebde.repositories.clubs.IClubsRepository
 import me.nathanfallet.suitebde.repositories.clubs.IRolesInClubsRepository
 import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRepository
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRepository
+import me.nathanfallet.suitebde.repositories.stripe.IStripeAccountsRepository
+import me.nathanfallet.suitebde.repositories.stripe.IStripeOrdersRepository
 import me.nathanfallet.suitebde.repositories.users.IClientsInUsersRepository
 import me.nathanfallet.suitebde.repositories.users.ISubscriptionsInUsersRepository
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
@@ -81,6 +95,7 @@ import me.nathanfallet.suitebde.usecases.clubs.DeleteClubUseCase
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.roles.GetPermissionsForUserUseCase
 import me.nathanfallet.suitebde.usecases.roles.IGetPermissionsForUserUseCase
+import me.nathanfallet.suitebde.usecases.stripe.*
 import me.nathanfallet.suitebde.usecases.users.*
 import me.nathanfallet.suitebde.usecases.web.*
 import me.nathanfallet.surexposed.database.IDatabase
@@ -171,7 +186,10 @@ fun Application.configureKoin() {
             single<ICodesInEmailsRepository> { CodesInEmailsDatabaseRepository(get()) }
             single<IDomainsInAssociationsRepository> { DomainsInAssociationsDatabaseRepository(get()) }
             single<ISubscriptionsInAssociationsRepository> { SubscriptionsInAssociationsDatabaseRepository(get()) }
-            single<IStripeAccountsInAssociationsRepository> { StripeAccountsInAssociationsDatabaseRepository(get()) }
+
+            // Stripe
+            single<IStripeAccountsRepository> { StripeAccountsDatabaseRepository(get()) }
+            single<IStripeOrdersRepository> { StripeOrdersDatabaseRepository(get()) }
 
             // Users
             single<IUsersRepository> { UsersDatabaseRepository(get()) }
@@ -295,41 +313,56 @@ fun Application.configureKoin() {
                 UpdateChildModelFromRepositorySuspendUseCase(get<ISubscriptionsInAssociationsRepository>())
             }
 
-            // Stripe accounts in associations
-            single<IListChildModelSuspendUseCase<StripeAccountInAssociation, String>>(named<StripeAccountInAssociation>()) {
-                ListChildModelFromRepositorySuspendUseCase(get<IStripeAccountsInAssociationsRepository>())
+            // Stripe
+            single<IListChildModelSuspendUseCase<StripeAccount, String>>(named<StripeAccount>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<IStripeAccountsRepository>())
             }
-            single<IGetChildModelSuspendUseCase<StripeAccountInAssociation, String, String>>(named<StripeAccountInAssociation>()) {
-                GetChildModelFromRepositorySuspendUseCase(get<IStripeAccountsInAssociationsRepository>())
+            single<IGetChildModelSuspendUseCase<StripeAccount, String, String>>(named<StripeAccount>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<IStripeAccountsRepository>())
             }
-            single<ICreateChildModelSuspendUseCase<StripeAccountInAssociation, CreateStripeAccountInAssociationPayload, String>>(
-                named<StripeAccountInAssociation>()
+            single<ICreateChildModelSuspendUseCase<StripeAccount, CreateStripeAccountPayload, String>>(
+                named<StripeAccount>()
             ) {
-                CreateChildModelFromRepositorySuspendUseCase(get<IStripeAccountsInAssociationsRepository>())
+                CreateChildModelFromRepositorySuspendUseCase(get<IStripeAccountsRepository>())
             }
-            single<IUpdateChildModelSuspendUseCase<StripeAccountInAssociation, String, UpdateStripeAccountInAssociationPayload, String>>(
-                named<StripeAccountInAssociation>()
+            single<IUpdateChildModelSuspendUseCase<StripeAccount, String, UpdateStripeAccountPayload, String>>(
+                named<StripeAccount>()
             ) {
-                UpdateChildModelFromRepositorySuspendUseCase(get<IStripeAccountsInAssociationsRepository>())
+                UpdateChildModelFromRepositorySuspendUseCase(get<IStripeAccountsRepository>())
             }
             single<IRefreshStripeAccountUseCase> {
                 RefreshStripeAccountUseCase(
                     get(),
-                    get(named<StripeAccountInAssociation>()),
-                    get(named<StripeAccountInAssociation>())
+                    get(named<StripeAccount>()),
+                    get(named<StripeAccount>())
                 )
             }
             single<ICreateStripeAccountLinkUseCase> {
                 CreateStripeAccountLinkUseCase(
                     get(),
-                    get(named<StripeAccountInAssociation>()),
-                    get(named<StripeAccountInAssociation>())
+                    get(named<StripeAccount>()),
+                    get(named<StripeAccount>())
                 )
             }
             single<ICreateCheckoutSessionUseCase> {
                 CreateCheckoutSessionUseCase(
                     get(),
-                    get(named<StripeAccountInAssociation>())
+                    get(named<StripeAccount>())
+                )
+            }
+            single<IGetChildModelSuspendUseCase<StripeOrder, String, String>>(named<StripeOrder>()) {
+                GetChildModelFromRepositorySuspendUseCase(get<IStripeOrdersRepository>())
+            }
+            single<ICreateChildModelSuspendUseCase<StripeOrder, CreateStripeOrderPayload, String>>(named<StripeOrder>()) {
+                CreateChildModelFromRepositorySuspendUseCase(get<IStripeOrdersRepository>())
+            }
+            single<IUpdateChildModelSuspendUseCase<StripeOrder, String, UpdateStripeOrderPayload, String>>(named<StripeOrder>()) {
+                UpdateStripeOrderUseCase(get())
+            }
+            single<ICreateStripeOrderForSessionUseCase> {
+                CreateStripeOrderForSessionUseCase(
+                    get(),
+                    get(named<StripeOrder>())
                 )
             }
 
@@ -588,6 +621,15 @@ fun Application.configureKoin() {
             }
         }
         val controllerModule = module {
+            // Webhooks
+            single<IWebhooksController> {
+                WebhooksController(
+                    environment.config.property("stripe.secret").getString(),
+                    get(),
+                    get(named<StripeOrder>()),
+                )
+            }
+
             // Associations
             single<IAssociationsController> {
                 AssociationsController(
@@ -775,6 +817,7 @@ fun Application.configureKoin() {
         }
         val routerModule = module {
             single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get()) }
+            single { WebhooksRouter(get()) }
             single { RootRouter(get(), get(), get()) }
             single { DashboardRouter(get(), get(), get(), get(), get()) }
             single { AssociationsRouter(get(), get(), get(), get(), get()) }
