@@ -29,6 +29,9 @@ import me.nathanfallet.suitebde.controllers.root.RootController
 import me.nathanfallet.suitebde.controllers.root.RootRouter
 import me.nathanfallet.suitebde.controllers.users.*
 import me.nathanfallet.suitebde.controllers.web.*
+import me.nathanfallet.suitebde.controllers.webhooks.IWebhooksController
+import me.nathanfallet.suitebde.controllers.webhooks.WebhooksController
+import me.nathanfallet.suitebde.controllers.webhooks.WebhooksRouter
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.database.application.ClientsDatabaseRepository
 import me.nathanfallet.suitebde.database.associations.*
@@ -81,6 +84,7 @@ import me.nathanfallet.suitebde.usecases.clubs.DeleteClubUseCase
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.roles.GetPermissionsForUserUseCase
 import me.nathanfallet.suitebde.usecases.roles.IGetPermissionsForUserUseCase
+import me.nathanfallet.suitebde.usecases.stripe.*
 import me.nathanfallet.suitebde.usecases.users.*
 import me.nathanfallet.suitebde.usecases.web.*
 import me.nathanfallet.surexposed.database.IDatabase
@@ -588,6 +592,13 @@ fun Application.configureKoin() {
             }
         }
         val controllerModule = module {
+            // Webhooks
+            single<IWebhooksController> {
+                WebhooksController(
+                    environment.config.property("stripe.secret").getString()
+                )
+            }
+
             // Associations
             single<IAssociationsController> {
                 AssociationsController(
@@ -775,6 +786,7 @@ fun Application.configureKoin() {
         }
         val routerModule = module {
             single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get()) }
+            single { WebhooksRouter(get()) }
             single { RootRouter(get(), get(), get()) }
             single { DashboardRouter(get(), get(), get(), get(), get()) }
             single { AssociationsRouter(get(), get(), get(), get(), get()) }

@@ -3,9 +3,9 @@ package me.nathanfallet.suitebde.controllers.dashboard
 import io.ktor.server.application.*
 import io.ktor.server.request.*
 import me.nathanfallet.ktorx.models.responses.RedirectResponse
-import me.nathanfallet.suitebde.usecases.associations.ICreateStripeAccountLinkUseCase
-import me.nathanfallet.suitebde.usecases.associations.IRefreshStripeAccountUseCase
 import me.nathanfallet.suitebde.usecases.associations.IRequireAssociationForCallUseCase
+import me.nathanfallet.suitebde.usecases.stripe.ICreateStripeAccountLinkUseCase
+import me.nathanfallet.suitebde.usecases.stripe.IRefreshStripeAccountUseCase
 
 class DashboardController(
     private val requireAssociationForCallUseCase: IRequireAssociationForCallUseCase,

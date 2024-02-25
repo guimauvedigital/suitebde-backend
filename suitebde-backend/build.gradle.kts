@@ -89,6 +89,7 @@ kotlin {
                 implementation("org.apache.commons:commons-email:1.5")
                 implementation("io.sentry:sentry:6.34.0")
                 implementation("com.stripe:stripe-java:24.17.0")
+                implementation("com.google.code.gson:gson:2.10.1")
 
                 api(project(":suitebde-commons"))
             }

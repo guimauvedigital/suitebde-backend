@@ -1,6 +1,7 @@
 package me.nathanfallet.suitebde.models.users
 
 import kotlinx.serialization.Serializable
+import me.nathanfallet.suitebde.models.stripe.ICustomer
 import me.nathanfallet.usecases.models.IChildModel
 import me.nathanfallet.usecases.models.annotations.ModelProperty
 import me.nathanfallet.usecases.models.annotations.Schema
@@ -15,7 +16,7 @@ data class User(
     val associationId: String,
     @ModelProperty("email", "12", visibleOnUpdate = true)
     @Schema("Email of the User", "nathan.fallet@uha.fr")
-    val email: String,
+    override val email: String,
     val password: String?,
     @ModelProperty("string", "6")
     @Schema("First name of the User", "Nathan")
@@ -25,7 +26,7 @@ data class User(
     val lastName: String,
     @Schema("Is the user a super user in the association?", "true")
     val superuser: Boolean,
-) : IChildModel<String, CreateUserPayload, UpdateUserPayload, String>, IUser {
+) : IChildModel<String, CreateUserPayload, UpdateUserPayload, String>, IUser, ICustomer {
 
     override val parentId: String
         get() = associationId
