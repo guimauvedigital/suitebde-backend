@@ -4,9 +4,16 @@ import com.stripe.model.checkout.Session
 import com.stripe.net.Webhook
 import io.ktor.server.application.*
 import io.ktor.server.request.*
+import kotlinx.datetime.Clock
+import me.nathanfallet.suitebde.models.stripe.StripeOrder
+import me.nathanfallet.suitebde.models.stripe.UpdateStripeOrderPayload
+import me.nathanfallet.suitebde.usecases.stripe.ICreateStripeOrderForSessionUseCase
+import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 
 class WebhooksController(
     private val stripeSecret: String,
+    private val createStripeOrderForSessionUseCase: ICreateStripeOrderForSessionUseCase,
+    private val updateStripeOrderUseCase: IUpdateChildModelSuspendUseCase<StripeOrder, String, UpdateStripeOrderPayload, String>,
 ) : IWebhooksController {
 
     override suspend fun stripe(call: ApplicationCall) {
@@ -20,15 +27,21 @@ class WebhooksController(
         when (event.type) {
             "checkout.session.completed" -> {
                 val session = stripeObject as Session
-                // Create order
-                if (session.paymentStatus == "paid") {
-                    // Payment succeeded
-                }
+                createStripeOrderForSessionUseCase(session) ?: return
+                if (session.paymentStatus == "paid") updateStripeOrderUseCase(
+                    session.id,
+                    UpdateStripeOrderPayload(Clock.System.now()),
+                    session.metadata["associationId"]!!
+                )
             }
 
             "checkout.session.async_payment_succeeded" -> {
                 val session = stripeObject as Session
-                // Payment succeeded
+                updateStripeOrderUseCase(
+                    session.id,
+                    UpdateStripeOrderPayload(Clock.System.now()),
+                    session.metadata["associationId"]!!
+                )
             }
 
             "checkout.session.async_payment_failed" -> {

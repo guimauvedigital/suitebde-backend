@@ -8,9 +8,11 @@ import com.stripe.net.RequestOptions
 import com.stripe.param.AccountCreateParams
 import com.stripe.param.AccountLinkCreateParams
 import com.stripe.param.checkout.SessionCreateParams
+import com.stripe.param.checkout.SessionRetrieveParams
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.stripe.CheckoutItem
 import me.nathanfallet.suitebde.models.stripe.ICustomer
+import me.nathanfallet.suitebde.models.stripe.StripeAccount
 
 class StripeService(
     private val apiKey: String,
@@ -21,7 +23,7 @@ class StripeService(
         Stripe.apiKey = apiKey
     }
 
-    override suspend fun getAccount(accountId: String): Account? =
+    override suspend fun getAccount(accountId: String): Account =
         Account.retrieve(accountId)
 
     override suspend fun createAccount(association: Association): Account =
@@ -65,8 +67,19 @@ class StripeService(
                 .build()
         )
 
+    override suspend fun getCheckoutSession(accountId: String, sessionId: String): Session =
+        Session.retrieve(
+            sessionId,
+            SessionRetrieveParams.builder()
+                .addAllExpand(listOf("line_items", "line_items.data.price", "line_items.data.price.product"))
+                .build(),
+            RequestOptions.builder()
+                .setStripeAccount(accountId)
+                .build()
+        )
+
     override suspend fun createCheckoutSession(
-        accountId: String,
+        account: StripeAccount,
         customer: ICustomer?,
         items: List<CheckoutItem>,
         returnUrl: String,
@@ -104,9 +117,11 @@ class StripeService(
                 )
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .setSuccessUrl(returnUrl)
+                .putMetadata("associationId", account.associationId)
+                .putMetadata("accountId", account.accountId)
                 .build(),
             RequestOptions.builder()
-                .setStripeAccount(accountId)
+                .setStripeAccount(account.accountId)
                 .build()
         )
 

@@ -1,9 +1,9 @@
-package me.nathanfallet.suitebde.models.associations
+package me.nathanfallet.suitebde.models.stripe
 
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class CreateStripeAccountInAssociationPayload(
+data class CreateStripeAccountPayload(
     val accountId: String,
     val chargesEnabled: Boolean,
 )

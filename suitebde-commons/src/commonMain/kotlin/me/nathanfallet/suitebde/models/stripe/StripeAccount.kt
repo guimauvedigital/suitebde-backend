@@ -1,14 +1,14 @@
-package me.nathanfallet.suitebde.models.associations
+package me.nathanfallet.suitebde.models.stripe
 
 import kotlinx.serialization.Serializable
 import me.nathanfallet.usecases.models.IChildModel
 
 @Serializable
-data class StripeAccountInAssociation(
+data class StripeAccount(
     val associationId: String,
     val accountId: String,
     val chargesEnabled: Boolean,
-) : IChildModel<String, CreateStripeAccountInAssociationPayload, UpdateStripeAccountInAssociationPayload, String> {
+) : IChildModel<String, CreateStripeAccountPayload, UpdateStripeAccountPayload, String> {
 
     override val id: String
         get() = accountId

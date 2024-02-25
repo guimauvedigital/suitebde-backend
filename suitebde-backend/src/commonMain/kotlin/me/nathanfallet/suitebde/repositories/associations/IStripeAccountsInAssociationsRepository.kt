@@ -1,9 +1,0 @@
-package me.nathanfallet.suitebde.repositories.associations
-
-import me.nathanfallet.suitebde.models.associations.CreateStripeAccountInAssociationPayload
-import me.nathanfallet.suitebde.models.associations.StripeAccountInAssociation
-import me.nathanfallet.suitebde.models.associations.UpdateStripeAccountInAssociationPayload
-import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
-
-interface IStripeAccountsInAssociationsRepository :
-    IChildModelSuspendRepository<StripeAccountInAssociation, String, CreateStripeAccountInAssociationPayload, UpdateStripeAccountInAssociationPayload, String>
