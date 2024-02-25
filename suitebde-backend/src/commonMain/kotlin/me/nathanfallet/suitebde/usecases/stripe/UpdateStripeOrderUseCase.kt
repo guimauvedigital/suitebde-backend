@@ -16,6 +16,7 @@ class UpdateStripeOrderUseCase(
         // Here we actually update the order
         if (!repository.update(input1, input2, input3)) return null
         val updatedOrder = repository.get(input1, input3) ?: return null
+        if (updatedOrder.paidAt == null) return updatedOrder // We stop here if the order is not paid
 
         // Create items to fulfill the order
         updatedOrder.items.forEach {
