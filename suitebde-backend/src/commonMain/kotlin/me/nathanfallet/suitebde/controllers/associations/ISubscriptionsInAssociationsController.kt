@@ -65,7 +65,7 @@ interface ISubscriptionsInAssociationsController :
         @Payload payload: UpdateSubscriptionInAssociationPayload,
     ): SubscriptionInAssociation
 
-    @APIMapping
+    @APIMapping("checkoutSubscriptionInAssociation")
     @DocumentedError(401, "auth_invalid_credentials")
     @DocumentedError(404, "subscriptions_in_associations_not_found")
     @Path("POST", "/{subscriptionId}/checkout")
