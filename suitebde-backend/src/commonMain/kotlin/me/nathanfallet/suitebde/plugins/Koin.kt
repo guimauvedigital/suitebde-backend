@@ -661,7 +661,8 @@ fun Application.configureKoin() {
                     get(named<SubscriptionInAssociation>()),
                     get(named<SubscriptionInAssociation>()),
                     get(named<SubscriptionInAssociation>()),
-                    get(named<SubscriptionInAssociation>())
+                    get(named<SubscriptionInAssociation>()),
+                    get()
                 )
             }
             single<IRootController> { RootController(get(), get()) }

@@ -7,6 +7,7 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateSubscriptionInAssociationPayload
 import me.nathanfallet.suitebde.models.associations.SubscriptionInAssociation
 import me.nathanfallet.suitebde.models.associations.UpdateSubscriptionInAssociationPayload
+import me.nathanfallet.suitebde.models.stripe.CheckoutSession
 
 interface ISubscriptionsInAssociationsController :
     IChildModelController<SubscriptionInAssociation, String, CreateSubscriptionInAssociationPayload, UpdateSubscriptionInAssociationPayload, Association, String> {
@@ -63,5 +64,15 @@ interface ISubscriptionsInAssociationsController :
         @Id id: String,
         @Payload payload: UpdateSubscriptionInAssociationPayload,
     ): SubscriptionInAssociation
+
+    @APIMapping
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(404, "subscriptions_in_associations_not_found")
+    @Path("POST", "/{subscriptionId}/checkout")
+    suspend fun checkout(
+        call: ApplicationCall,
+        @ParentModel parent: Association,
+        @Id id: String,
+    ): CheckoutSession
 
 }

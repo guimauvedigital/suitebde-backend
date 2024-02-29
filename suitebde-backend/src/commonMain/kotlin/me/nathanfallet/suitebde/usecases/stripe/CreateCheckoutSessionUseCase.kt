@@ -1,8 +1,8 @@
 package me.nathanfallet.suitebde.usecases.stripe
 
-import com.stripe.model.checkout.Session
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.stripe.CheckoutItem
+import me.nathanfallet.suitebde.models.stripe.CheckoutSession
 import me.nathanfallet.suitebde.models.stripe.ICustomer
 import me.nathanfallet.suitebde.models.stripe.StripeAccount
 import me.nathanfallet.suitebde.services.stripe.IStripeService
@@ -18,7 +18,7 @@ class CreateCheckoutSessionUseCase(
         input2: ICustomer?,
         input3: List<CheckoutItem>,
         input4: String,
-    ): Session? {
+    ): CheckoutSession? {
         val account = listStripeAccountsUseCase(input1.id).firstOrNull { it.chargesEnabled }
             ?: return null
         return stripeService.createCheckoutSession(
@@ -26,7 +26,12 @@ class CreateCheckoutSessionUseCase(
             input2,
             input3,
             input4
-        )
+        ).let {
+            CheckoutSession(
+                it.id,
+                it.url
+            )
+        }
     }
 
 }
