@@ -68,7 +68,7 @@ interface ISubscriptionsInAssociationsController :
     @APIMapping("checkoutSubscriptionInAssociation")
     @DocumentedError(401, "auth_invalid_credentials")
     @DocumentedError(404, "subscriptions_in_associations_not_found")
-    @Path("POST", "/{subscriptionId}/checkout")
+    @Path("POST", "/{subscriptioninassociationId}/checkout")
     suspend fun checkout(
         call: ApplicationCall,
         @ParentModel parent: Association,
