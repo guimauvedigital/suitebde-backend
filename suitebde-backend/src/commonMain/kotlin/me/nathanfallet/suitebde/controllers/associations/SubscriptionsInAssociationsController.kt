@@ -10,6 +10,10 @@ import me.nathanfallet.suitebde.models.associations.CreateSubscriptionInAssociat
 import me.nathanfallet.suitebde.models.associations.SubscriptionInAssociation
 import me.nathanfallet.suitebde.models.associations.UpdateSubscriptionInAssociationPayload
 import me.nathanfallet.suitebde.models.roles.Permission
+import me.nathanfallet.suitebde.models.stripe.CheckoutItem
+import me.nathanfallet.suitebde.models.stripe.CheckoutSession
+import me.nathanfallet.suitebde.models.users.User
+import me.nathanfallet.suitebde.usecases.stripe.ICreateCheckoutSessionUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
@@ -27,6 +31,7 @@ class SubscriptionsInAssociationsController(
     private val createSubscriptionUseCase: ICreateChildModelSuspendUseCase<SubscriptionInAssociation, CreateSubscriptionInAssociationPayload, String>,
     private val updateSubscriptionUseCase: IUpdateChildModelSuspendUseCase<SubscriptionInAssociation, String, UpdateSubscriptionInAssociationPayload, String>,
     private val deleteSubscriptionUseCase: IDeleteChildModelSuspendUseCase<SubscriptionInAssociation, String, String>,
+    private val createCheckoutSessionUseCase: ICreateCheckoutSessionUseCase,
 ) : ISubscriptionsInAssociationsController {
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<SubscriptionInAssociation> {
@@ -88,6 +93,30 @@ class SubscriptionsInAssociationsController(
             HttpStatusCode.NotFound, "subscriptions_in_associations_not_found"
         )
         return updateSubscriptionUseCase(subscription.id, payload, parent.id) ?: throw ControllerException(
+            HttpStatusCode.InternalServerError, "error_internal"
+        )
+    }
+
+    override suspend fun checkout(call: ApplicationCall, parent: Association, id: String): CheckoutSession {
+        val user = requireUserForCallUseCase(call) as User
+        val subscription = getSubscriptionUseCase(id, parent.id) ?: throw ControllerException(
+            HttpStatusCode.NotFound, "subscriptions_in_associations_not_found"
+        )
+        return createCheckoutSessionUseCase(
+            parent,
+            user,
+            listOf(
+                CheckoutItem(
+                    SubscriptionInAssociation::class.simpleName!!,
+                    subscription.id,
+                    subscription.name,
+                    subscription.description,
+                    1,
+                    (subscription.price * 100).toLong()
+                )
+            ),
+            "https://${call.request.host()}"
+        ) ?: throw ControllerException(
             HttpStatusCode.InternalServerError, "error_internal"
         )
     }

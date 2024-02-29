@@ -1,5 +1,7 @@
 package me.nathanfallet.suitebde.repositories.associations
 
+import io.ktor.client.call.*
+import io.ktor.http.*
 import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.repositories.api.APIChildModelRemoteRepository
 import me.nathanfallet.ktorx.repositories.api.IAPIModelRemoteRepository
@@ -8,6 +10,7 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateSubscriptionInAssociationPayload
 import me.nathanfallet.suitebde.models.associations.SubscriptionInAssociation
 import me.nathanfallet.suitebde.models.associations.UpdateSubscriptionInAssociationPayload
+import me.nathanfallet.suitebde.models.stripe.CheckoutSession
 import me.nathanfallet.usecases.models.id.RecursiveId
 
 class SubscriptionsInAssociationsRemoteRepository(
@@ -45,5 +48,13 @@ class SubscriptionsInAssociationsRemoteRepository(
 
     override suspend fun delete(id: String, associationId: String): Boolean =
         delete(id, RecursiveId<Association, String, Unit>(associationId), null)
+
+    override suspend fun checkout(id: String, associationId: String): CheckoutSession? =
+        client
+            .request(
+                HttpMethod.Post,
+                "${constructFullRoute(RecursiveId<Association, String, Unit>(associationId))}/$id/checkout"
+            )
+            .body()
 
 }

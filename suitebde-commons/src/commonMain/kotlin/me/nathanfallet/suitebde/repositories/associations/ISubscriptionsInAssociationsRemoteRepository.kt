@@ -3,6 +3,7 @@ package me.nathanfallet.suitebde.repositories.associations
 import me.nathanfallet.suitebde.models.associations.CreateSubscriptionInAssociationPayload
 import me.nathanfallet.suitebde.models.associations.SubscriptionInAssociation
 import me.nathanfallet.suitebde.models.associations.UpdateSubscriptionInAssociationPayload
+import me.nathanfallet.suitebde.models.stripe.CheckoutSession
 
 interface ISubscriptionsInAssociationsRemoteRepository {
 
@@ -20,5 +21,7 @@ interface ISubscriptionsInAssociationsRemoteRepository {
     ): SubscriptionInAssociation?
 
     suspend fun delete(id: String, associationId: String): Boolean
+
+    suspend fun checkout(id: String, associationId: String): CheckoutSession?
 
 }

@@ -357,12 +357,19 @@ fun Application.configureKoin() {
                 CreateChildModelFromRepositorySuspendUseCase(get<IStripeOrdersRepository>())
             }
             single<IUpdateChildModelSuspendUseCase<StripeOrder, String, UpdateStripeOrderPayload, String>>(named<StripeOrder>()) {
-                UpdateStripeOrderUseCase(get())
+                UpdateStripeOrderUseCase(get(), get(named<Association>()), get())
             }
             single<ICreateStripeOrderForSessionUseCase> {
                 CreateStripeOrderForSessionUseCase(
                     get(),
                     get(named<StripeOrder>())
+                )
+            }
+            single<IFulfillCheckoutItemUseCase> {
+                FulfillCheckoutItemUseCase(
+                    get(),
+                    get(named<SubscriptionInAssociation>()),
+                    get(named<SubscriptionInUser>())
                 )
             }
 
@@ -396,6 +403,7 @@ fun Application.configureKoin() {
 
             // Users
             single<IGetUserUseCase> { GetUserUseCase(get()) }
+            single<IGetUserForEmailUseCase> { GetUserForEmailUseCase(get()) }
             single<IGetUserForCallUseCase> { GetUserForCallUseCase(get(), get(), get()) }
             single<IRequireUserForCallUseCase> { RequireUserForCallUseCase(get()) }
             single<IListChildModelSuspendUseCase<User, String>>(named<User>()) {
@@ -661,7 +669,8 @@ fun Application.configureKoin() {
                     get(named<SubscriptionInAssociation>()),
                     get(named<SubscriptionInAssociation>()),
                     get(named<SubscriptionInAssociation>()),
-                    get(named<SubscriptionInAssociation>())
+                    get(named<SubscriptionInAssociation>()),
+                    get()
                 )
             }
             single<IRootController> { RootController(get(), get()) }
