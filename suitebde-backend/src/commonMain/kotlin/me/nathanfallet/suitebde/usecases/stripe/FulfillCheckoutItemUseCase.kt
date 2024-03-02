@@ -6,13 +6,14 @@ import me.nathanfallet.suitebde.models.associations.SubscriptionInAssociation
 import me.nathanfallet.suitebde.models.stripe.CheckoutItem
 import me.nathanfallet.suitebde.models.users.CreateSubscriptionInUserPayload
 import me.nathanfallet.suitebde.models.users.SubscriptionInUser
+import me.nathanfallet.suitebde.usecases.application.IAddDurationUseCase
 import me.nathanfallet.suitebde.usecases.users.IGetUserForEmailUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
-import kotlin.time.Duration
 
 class FulfillCheckoutItemUseCase(
     private val getUserForEmailUseCase: IGetUserForEmailUseCase,
+    private val addDurationUseCase: IAddDurationUseCase,
     private val getSubscriptionInAssociationUseCase: IGetChildModelSuspendUseCase<SubscriptionInAssociation, String, String>,
     private val createSubscriptionInUserUseCase: ICreateChildModelSuspendUseCase<SubscriptionInUser, CreateSubscriptionInUserPayload, String>,
 ) : IFulfillCheckoutItemUseCase {
@@ -26,7 +27,7 @@ class FulfillCheckoutItemUseCase(
                     CreateSubscriptionInUserPayload(
                         subscription.id,
                         Clock.System.now(),
-                        Clock.System.now().plus(Duration.parse(subscription.duration))
+                        addDurationUseCase(Clock.System.now(), subscription.duration)
                     ),
                     user.id
                 )

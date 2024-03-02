@@ -180,6 +180,7 @@ fun Application.configureKoin() {
                 ClientsDatabaseRepository(get())
             }
             single<ISessionsRepository> { SessionsDatabaseRepository(get()) }
+            single<IAddDurationUseCase> { AddDurationUseCase() }
 
             // Associations
             single<IAssociationsRepository> { AssociationsDatabaseRepository(get()) }
@@ -368,6 +369,7 @@ fun Application.configureKoin() {
             single<IFulfillCheckoutItemUseCase> {
                 FulfillCheckoutItemUseCase(
                     get(),
+                    get(),
                     get(named<SubscriptionInAssociation>()),
                     get(named<SubscriptionInUser>())
                 )
@@ -402,7 +404,7 @@ fun Application.configureKoin() {
             }
 
             // Users
-            single<IGetUserUseCase> { GetUserUseCase(get()) }
+            single<IGetUserUseCase> { GetUserUseCase(get(), get(named<SubscriptionInUser>())) }
             single<IGetUserForEmailUseCase> { GetUserForEmailUseCase(get()) }
             single<IGetUserForCallUseCase> { GetUserForCallUseCase(get(), get(), get()) }
             single<IRequireUserForCallUseCase> { RequireUserForCallUseCase(get()) }
@@ -416,16 +418,10 @@ fun Application.configureKoin() {
                 GetChildModelFromRepositorySuspendUseCase(get<IUsersRepository>())
             }
             single<ICreateChildModelSuspendUseCase<User, CreateUserPayload, String>>(named<User>()) {
-                CreateUserUseCase(
-                    get(),
-                    get()
-                )
+                CreateUserUseCase(get(), get())
             }
             single<IUpdateChildModelSuspendUseCase<User, String, UpdateUserPayload, String>>(named<User>()) {
-                UpdateUserUseCase(
-                    get(),
-                    get()
-                )
+                UpdateUserUseCase(get(), get(), get())
             }
 
             // Subscriptions in users

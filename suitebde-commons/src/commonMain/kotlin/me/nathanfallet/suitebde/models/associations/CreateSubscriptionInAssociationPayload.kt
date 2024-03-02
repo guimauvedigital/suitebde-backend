@@ -1,8 +1,10 @@
 package me.nathanfallet.suitebde.models.associations
 
 import kotlinx.serialization.Serializable
+import me.nathanfallet.suitebde.usecases.application.AddDurationUseCase
 import me.nathanfallet.usecases.models.annotations.PayloadProperty
 import me.nathanfallet.usecases.models.annotations.Schema
+import me.nathanfallet.usecases.models.annotations.validators.StringPropertyValidator
 
 @Serializable
 data class CreateSubscriptionInAssociationPayload(
@@ -17,6 +19,7 @@ data class CreateSubscriptionInAssociationPayload(
     val price: Double,
     @PayloadProperty("duration")
     @Schema("Duration of the subscription", "1y")
+    @StringPropertyValidator(AddDurationUseCase.DURATION_REGEX)
     val duration: String,
     @PayloadProperty("boolean")
     @Schema("Is the subscription auto renewable?", "false")

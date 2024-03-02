@@ -16,14 +16,15 @@ class UpdateUserUseCaseTest {
     @Test
     fun invoke() = runBlocking {
         val usersRepository = mockk<IUsersRepository>()
-        val useCase = UpdateUserUseCase(usersRepository, mockk())
+        val getUserUseCase = mockk<IGetUserUseCase>()
+        val useCase = UpdateUserUseCase(usersRepository, mockk(), getUserUseCase)
         val user = User(
             "id", "associationId", "email", null,
             "first", "last", false
         )
         val payload = UpdateUserPayload("first", "last", null)
         coEvery { usersRepository.update(user.id, payload, "associationId") } returns true
-        coEvery { usersRepository.get(user.id, "associationId") } returns user
+        coEvery { getUserUseCase(user.id) } returns user
         assertEquals(user, useCase(user.id, payload, "associationId"))
     }
 
@@ -31,7 +32,8 @@ class UpdateUserUseCaseTest {
     fun invokeWithPassword() = runBlocking {
         val usersRepository = mockk<IUsersRepository>()
         val hashPasswordUseCase = mockk<IHashPasswordUseCase>()
-        val useCase = UpdateUserUseCase(usersRepository, hashPasswordUseCase)
+        val getUserUseCase = mockk<IGetUserUseCase>()
+        val useCase = UpdateUserUseCase(usersRepository, hashPasswordUseCase, getUserUseCase)
         val user = User(
             "id", "associationId", "email", "password",
             "first", "last", false
@@ -41,14 +43,14 @@ class UpdateUserUseCaseTest {
         val hashedPayload = payload.copy(password = "hash")
         every { hashPasswordUseCase("password") } returns "hash"
         coEvery { usersRepository.update(user.id, hashedPayload, "associationId") } returns true
-        coEvery { usersRepository.get(user.id, "associationId") } returns hashedUser
+        coEvery { getUserUseCase(user.id) } returns hashedUser
         assertEquals(hashedUser, useCase(user.id, payload, "associationId"))
     }
 
     @Test
     fun invokeError() = runBlocking {
         val usersRepository = mockk<IUsersRepository>()
-        val useCase = UpdateUserUseCase(usersRepository, mockk())
+        val useCase = UpdateUserUseCase(usersRepository, mockk(), mockk())
         val user = User(
             "id", "associationId", "email", null,
             "first", "last", false
