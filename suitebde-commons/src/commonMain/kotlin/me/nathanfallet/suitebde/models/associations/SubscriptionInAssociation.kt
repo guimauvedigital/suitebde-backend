@@ -15,7 +15,6 @@ data class SubscriptionInAssociation(
     @ModelProperty("string")
     @Schema("Name of the subscription", "Cotisation annuelle")
     val name: String,
-    @ModelProperty("string")
     @Schema("Description of the subscription", "Une cotisation annuelle pour l'association")
     val description: String,
     @ModelProperty("price")

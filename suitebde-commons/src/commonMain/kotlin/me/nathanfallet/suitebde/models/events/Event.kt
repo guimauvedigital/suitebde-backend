@@ -16,10 +16,9 @@ data class Event(
     @ModelProperty("string")
     @Schema("Name of the event", "Soirée de Noël")
     val name: String,
-    @ModelProperty("string")
     @Schema("Description of the event", "Venez fêter Noël avec nous !")
     val description: String,
-    @ModelProperty("string")
+    @ModelProperty("image")
     @Schema("Image of the event", "https://example.com/event.png")
     val image: String?,
     @ModelProperty("date")

@@ -16,10 +16,9 @@ data class Club(
     @ModelProperty("string")
     @Schema("Name of the club", "Club Informatique")
     val name: String,
-    @ModelProperty("string")
     @Schema("Description of the club", "Le club informatique est un club qui s'occupe de tout ce qui est informatique.")
     val description: String,
-    @ModelProperty("string")
+    @ModelProperty("image")
     @Schema("Logo of the club", "https://example.com/logo.png")
     val logo: String?,
     @Schema("Creation date of the club", "2023-12-14T09:41:00Z")
