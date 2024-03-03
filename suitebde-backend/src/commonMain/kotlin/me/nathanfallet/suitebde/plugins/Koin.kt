@@ -404,7 +404,7 @@ fun Application.configureKoin() {
             }
 
             // Users
-            single<IGetUserUseCase> { GetUserUseCase(get(), get(named<SubscriptionInUser>())) }
+            single<IGetUserUseCase> { GetUserUseCase(get()) }
             single<IGetUserForEmailUseCase> { GetUserForEmailUseCase(get()) }
             single<IGetUserForCallUseCase> { GetUserForCallUseCase(get(), get(), get()) }
             single<IRequireUserForCallUseCase> { RequireUserForCallUseCase(get()) }

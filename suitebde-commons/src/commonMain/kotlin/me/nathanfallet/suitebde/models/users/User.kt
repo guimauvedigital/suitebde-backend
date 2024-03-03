@@ -26,8 +26,6 @@ data class User(
     val lastName: String,
     @Schema("Is the user a super user in the association?", "true")
     val superuser: Boolean,
-    @Schema("Active subscriptions for the user", "[]")
-    val subscriptions: List<SubscriptionInUser>? = null,
 ) : IChildModel<String, CreateUserPayload, UpdateUserPayload, String>, IUser, ICustomer {
 
     override val parentId: String
