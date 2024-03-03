@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.database.users
 
 import kotlinx.datetime.toInstant
 import me.nathanfallet.suitebde.extensions.generateId
+import me.nathanfallet.suitebde.models.associations.SubscriptionInAssociation
 import me.nathanfallet.suitebde.models.users.SubscriptionInUser
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
@@ -24,12 +25,14 @@ object SubscriptionsInUsers : Table() {
 
     fun toSubscriptionInUser(
         row: ResultRow,
+        subscriptionInAssociation: SubscriptionInAssociation?,
     ) = SubscriptionInUser(
         row[id],
         row[userId],
         row[subscriptionId],
         row[startsAt].toInstant(),
-        row[endsAt].toInstant()
+        row[endsAt].toInstant(),
+        subscriptionInAssociation
     )
 
 }

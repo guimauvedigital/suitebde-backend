@@ -1,5 +1,6 @@
 package me.nathanfallet.suitebde.database.users
 
+import me.nathanfallet.suitebde.database.associations.SubscriptionsInAssociations
 import me.nathanfallet.suitebde.models.users.CreateSubscriptionInUserPayload
 import me.nathanfallet.suitebde.models.users.SubscriptionInUser
 import me.nathanfallet.suitebde.models.users.UpdateSubscriptionInUserPayload
@@ -16,24 +17,47 @@ class SubscriptionsInUsersDatabaseRepository(
     init {
         database.transaction {
             SchemaUtils.create(SubscriptionsInUsers)
+            SchemaUtils.create(SubscriptionsInAssociations)
         }
     }
 
     override suspend fun list(parentId: String, context: IContext?): List<SubscriptionInUser> =
         database.suspendedTransaction {
             SubscriptionsInUsers
+                .join(
+                    SubscriptionsInAssociations,
+                    JoinType.INNER,
+                    SubscriptionsInUsers.subscriptionId,
+                    SubscriptionsInAssociations.id
+                )
                 .selectAll()
                 .where { SubscriptionsInUsers.userId eq parentId }
-                .map(SubscriptionsInUsers::toSubscriptionInUser)
+                .map {
+                    SubscriptionsInUsers.toSubscriptionInUser(
+                        it,
+                        SubscriptionsInAssociations.toSubscriptionInAssociation(it)
+                    )
+                }
         }
 
     override suspend fun get(id: String, parentId: String, context: IContext?): SubscriptionInUser? =
         database.suspendedTransaction {
             SubscriptionsInUsers
+                .join(
+                    SubscriptionsInAssociations,
+                    JoinType.INNER,
+                    SubscriptionsInUsers.subscriptionId,
+                    SubscriptionsInAssociations.id
+                )
                 .selectAll()
                 .where { SubscriptionsInUsers.id eq id and (SubscriptionsInUsers.userId eq parentId) }
-                .map(SubscriptionsInUsers::toSubscriptionInUser)
-                .firstOrNull()
+                .map {
+                    SubscriptionsInUsers.toSubscriptionInUser(
+                        it,
+                        SubscriptionsInAssociations.toSubscriptionInAssociation(it)
+                    )
+                }
+                .singleOrNull()
         }
 
     override suspend fun create(
@@ -42,14 +66,16 @@ class SubscriptionsInUsersDatabaseRepository(
         context: IContext?,
     ): SubscriptionInUser? =
         database.suspendedTransaction {
+            val id = SubscriptionsInUsers.generateId()
             SubscriptionsInUsers.insert {
-                it[id] = generateId()
+                it[SubscriptionsInUsers.id] = id
                 it[userId] = parentId
                 it[subscriptionId] = payload.subscriptionId
                 it[startsAt] = payload.startsAt.toString()
                 it[endsAt] = payload.endsAt.toString()
-            }.resultedValues?.map(SubscriptionsInUsers::toSubscriptionInUser)?.singleOrNull()
-        }
+            }
+            id
+        }.let { id -> get(id, parentId, context) }
 
     override suspend fun update(
         id: String,

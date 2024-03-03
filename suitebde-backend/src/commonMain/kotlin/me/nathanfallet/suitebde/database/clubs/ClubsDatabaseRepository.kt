@@ -41,8 +41,8 @@ class ClubsDatabaseRepository(
                 .map(Clubs::toClub)
         }
 
-    override suspend fun create(payload: CreateClubPayload, parentId: String, context: IContext?): Club? {
-        val id = database.suspendedTransaction {
+    override suspend fun create(payload: CreateClubPayload, parentId: String, context: IContext?): Club? =
+        database.suspendedTransaction {
             val id = Clubs.generateId()
             Clubs.insert {
                 it[Clubs.id] = id
@@ -54,9 +54,7 @@ class ClubsDatabaseRepository(
                 it[validated] = payload.validated ?: false
             }
             id
-        }
-        return get(id, parentId, context)
-    }
+        }.let { id -> get(id, parentId, context) }
 
     override suspend fun get(id: String, parentId: String, context: IContext?): Club? =
         database.suspendedTransaction {
