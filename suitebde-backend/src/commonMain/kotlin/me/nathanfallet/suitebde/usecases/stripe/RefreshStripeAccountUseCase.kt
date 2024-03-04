@@ -13,17 +13,17 @@ class RefreshStripeAccountUseCase(
     private val updateStripeAccountUseCase: IUpdateChildModelSuspendUseCase<StripeAccount, String, UpdateStripeAccountPayload, String>,
 ) : IRefreshStripeAccountUseCase {
 
-    override suspend fun invoke(input: Association) {
-        listStripeAccountsUseCase(input.id).forEach {
-            if (!it.chargesEnabled && stripeService.getAccount(it.accountId)?.chargesEnabled == true)
+    override suspend fun invoke(input: Association): List<StripeAccount> =
+        listStripeAccountsUseCase(input.id).map {
+            if (!it.chargesEnabled && stripeService.getAccount(it.accountId).chargesEnabled == true)
                 updateStripeAccountUseCase(
                     it.accountId,
                     UpdateStripeAccountPayload(
                         chargesEnabled = true
                     ),
                     input.id
-                )
+                ) ?: it
+            else it
         }
-    }
 
 }

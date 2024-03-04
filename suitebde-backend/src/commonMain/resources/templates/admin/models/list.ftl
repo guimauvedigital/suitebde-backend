@@ -1,4 +1,5 @@
 <#import "../template.ftl" as template>
+<#import "../../components/dashboard.ftl" as dashboard>
 <@template.page>
     <!-- Breadcrumb Start -->
     <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -17,6 +18,12 @@
         </nav>
     </div>
     <!-- Breadcrumb End -->
+
+    <!-- Stripe alert (if needed) -->
+    <#if stripe?? && !stripe>
+        <@dashboard.stripeAlert />
+    </#if>
+    <!-- Stripe alert end -->
 
     <div class="flex flex-col gap-5 md:gap-7 2xl:gap-10">
         <!-- ====== Data Table Two Start -->

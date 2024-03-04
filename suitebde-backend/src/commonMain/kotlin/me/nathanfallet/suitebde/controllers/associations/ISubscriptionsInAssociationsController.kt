@@ -13,12 +13,18 @@ interface ISubscriptionsInAssociationsController :
     IChildModelController<SubscriptionInAssociation, String, CreateSubscriptionInAssociationPayload, UpdateSubscriptionInAssociationPayload, Association, String> {
 
     @APIMapping
-    @AdminTemplateMapping
     @ListModelPath
     suspend fun list(
         call: ApplicationCall,
         @ParentModel parent: Association,
     ): List<SubscriptionInAssociation>
+
+    @AdminTemplateMapping
+    @ListModelPath
+    suspend fun listAdmin(
+        call: ApplicationCall,
+        @ParentModel parent: Association,
+    ): Map<String, Any>
 
     @APIMapping
     @GetModelPath

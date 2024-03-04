@@ -315,6 +315,7 @@ fun Application.configureKoin() {
             }
 
             // Stripe
+            single<IHasStripeAccountLinkedUseCase> { HasStripeAccountLinkedUseCase(get()) }
             single<IListChildModelSuspendUseCase<StripeAccount, String>>(named<StripeAccount>()) {
                 ListChildModelFromRepositorySuspendUseCase(get<IStripeAccountsRepository>())
             }
@@ -660,6 +661,7 @@ fun Application.configureKoin() {
                 SubscriptionsInAssociationsController(
                     get(),
                     get(),
+                    get(),
                     get(named<SubscriptionInAssociation>()),
                     get(named<SubscriptionInAssociation>()),
                     get(named<SubscriptionInAssociation>()),
@@ -670,7 +672,7 @@ fun Application.configureKoin() {
                 )
             }
             single<IRootController> { RootController(get(), get()) }
-            single<IDashboardController> { DashboardController(get(), get(), get()) }
+            single<IDashboardController> { DashboardController(get(), get(), get(), get()) }
 
             // Auth
             single<IAuthController> {

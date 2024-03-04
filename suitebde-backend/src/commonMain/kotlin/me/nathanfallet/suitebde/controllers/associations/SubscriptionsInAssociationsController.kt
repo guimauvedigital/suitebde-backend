@@ -14,6 +14,7 @@ import me.nathanfallet.suitebde.models.stripe.CheckoutItem
 import me.nathanfallet.suitebde.models.stripe.CheckoutSession
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.stripe.ICreateCheckoutSessionUseCase
+import me.nathanfallet.suitebde.usecases.stripe.IHasStripeAccountLinkedUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
@@ -25,6 +26,7 @@ import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 class SubscriptionsInAssociationsController(
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
+    private val hasStripeAccountLinkedUseCase: IHasStripeAccountLinkedUseCase,
     private val getSubscriptionsInAssociationsUseCase: IListChildModelSuspendUseCase<SubscriptionInAssociation, String>,
     private val getSubscriptionsInAssociationsSlicedUseCase: IListSliceChildModelSuspendUseCase<SubscriptionInAssociation, String>,
     private val getSubscriptionUseCase: IGetChildModelSuspendUseCase<SubscriptionInAssociation, String, String>,
@@ -35,11 +37,17 @@ class SubscriptionsInAssociationsController(
 ) : ISubscriptionsInAssociationsController {
 
     override suspend fun list(call: ApplicationCall, parent: Association): List<SubscriptionInAssociation> {
-        if (call.request.path().contains("/admin/")) return getSubscriptionsInAssociationsUseCase(parent.id)
         return getSubscriptionsInAssociationsSlicedUseCase(
             call.parameters["limit"]?.toLongOrNull() ?: 25,
             call.parameters["offset"]?.toLongOrNull() ?: 0,
             parent.id
+        )
+    }
+
+    override suspend fun listAdmin(call: ApplicationCall, parent: Association): Map<String, Any> {
+        return mapOf(
+            "items" to getSubscriptionsInAssociationsUseCase(parent.id),
+            "stripe" to hasStripeAccountLinkedUseCase(parent)
         )
     }
 

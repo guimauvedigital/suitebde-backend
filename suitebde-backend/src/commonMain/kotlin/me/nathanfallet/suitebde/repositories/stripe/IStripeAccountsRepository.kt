@@ -6,4 +6,8 @@ import me.nathanfallet.suitebde.models.stripe.UpdateStripeAccountPayload
 import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 
 interface IStripeAccountsRepository :
-    IChildModelSuspendRepository<StripeAccount, String, CreateStripeAccountPayload, UpdateStripeAccountPayload, String>
+    IChildModelSuspendRepository<StripeAccount, String, CreateStripeAccountPayload, UpdateStripeAccountPayload, String> {
+
+    suspend fun count(parentId: String): Long
+
+}

@@ -14,11 +14,11 @@ interface IDashboardController :
 
     @AdminTemplateMapping("admin/dashboard/dashboard.ftl")
     @Path("GET", "/")
-    suspend fun dashboard()
+    suspend fun dashboard(call: ApplicationCall): Map<String, Any>
 
     @AdminTemplateMapping("admin/dashboard/settings.ftl")
     @Path("GET", "/settings")
-    suspend fun settings(call: ApplicationCall)
+    suspend fun settings(call: ApplicationCall): Map<String, Any>
 
     @AdminTemplateMapping("admin/dashboard/settings.ftl")
     @Path("GET", "/settings/stripe")

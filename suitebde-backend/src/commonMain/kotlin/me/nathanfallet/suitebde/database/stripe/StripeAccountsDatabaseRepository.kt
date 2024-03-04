@@ -70,4 +70,12 @@ class StripeAccountsDatabaseRepository(
             } == 1
         }
 
+    override suspend fun count(parentId: String): Long =
+        database.suspendedTransaction {
+            StripeAccounts
+                .selectAll()
+                .where { StripeAccounts.associationId eq parentId }
+                .count()
+        }
+
 }
