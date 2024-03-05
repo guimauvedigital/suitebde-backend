@@ -68,7 +68,7 @@ class DomainsInAssociationsRouterTest {
         val controller = mockk<IDomainsInAssociationsController>()
         val router = DomainsInAssociationsRouter(controller, mockk(), mockk(), mockk(), mockk(), associationRouter)
         coEvery { associationController.get(any(), "id") } returns association
-        coEvery { controller.list(any(), association) } returns listOf(domain)
+        coEvery { controller.list(any(), association, null, null) } returns listOf(domain)
         routing {
             router.createRoutes(this)
         }
@@ -96,7 +96,7 @@ class DomainsInAssociationsRouterTest {
             associationRouter
         )
         coEvery { associationController.get(any(), "id") } returns association
-        coEvery { controller.list(any(), association) } returns listOf(domain)
+        coEvery { controller.list(any(), association, null, null) } returns listOf(domain)
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH

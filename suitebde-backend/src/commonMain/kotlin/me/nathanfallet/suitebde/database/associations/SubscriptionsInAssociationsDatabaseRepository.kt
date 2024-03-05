@@ -6,6 +6,7 @@ import me.nathanfallet.suitebde.models.associations.UpdateSubscriptionInAssociat
 import me.nathanfallet.suitebde.repositories.associations.ISubscriptionsInAssociationsRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
+import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -28,8 +29,7 @@ class SubscriptionsInAssociationsDatabaseRepository(
         }
 
     override suspend fun list(
-        limit: Long,
-        offset: Long,
+        pagination: Pagination,
         parentId: String,
         context: IContext?,
     ): List<SubscriptionInAssociation> =
@@ -37,7 +37,7 @@ class SubscriptionsInAssociationsDatabaseRepository(
             SubscriptionsInAssociations
                 .selectAll()
                 .where { SubscriptionsInAssociations.associationId eq parentId }
-                .limit(limit.toInt(), offset)
+                .limit(pagination.limit.toInt(), pagination.offset)
                 .map(SubscriptionsInAssociations::toSubscriptionInAssociation)
         }
 

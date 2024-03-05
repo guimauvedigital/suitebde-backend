@@ -4,10 +4,11 @@ import me.nathanfallet.suitebde.models.associations.CreateSubscriptionInAssociat
 import me.nathanfallet.suitebde.models.associations.SubscriptionInAssociation
 import me.nathanfallet.suitebde.models.associations.UpdateSubscriptionInAssociationPayload
 import me.nathanfallet.suitebde.models.stripe.CheckoutSession
+import me.nathanfallet.usecases.pagination.Pagination
 
 interface ISubscriptionsInAssociationsRemoteRepository {
 
-    suspend fun list(limit: Long, offset: Long, associationId: String): List<SubscriptionInAssociation>
+    suspend fun list(pagination: Pagination, associationId: String): List<SubscriptionInAssociation>
     suspend fun get(id: String, associationId: String): SubscriptionInAssociation?
     suspend fun create(
         payload: CreateSubscriptionInAssociationPayload,

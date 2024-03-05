@@ -7,6 +7,7 @@ import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
+import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -77,11 +78,11 @@ class AssociationsDatabaseRepository(
                 .map(Associations::toAssociation)
         }
 
-    override suspend fun list(limit: Long, offset: Long, context: IContext?): List<Association> =
+    override suspend fun list(pagination: Pagination, context: IContext?): List<Association> =
         database.suspendedTransaction {
             Associations
                 .selectAll()
-                .limit(limit.toInt(), offset)
+                .limit(pagination.limit.toInt(), pagination.offset)
                 .map(Associations::toAssociation)
         }
 

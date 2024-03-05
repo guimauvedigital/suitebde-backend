@@ -23,6 +23,7 @@ import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
+import me.nathanfallet.usecases.pagination.Pagination
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -46,45 +47,26 @@ class RolesControllerTest {
     fun testList() = runBlocking {
         val getRolesInAssociationUseCase = mockk<IListSliceChildModelSuspendUseCase<Role, String>>()
         val call = mockk<ApplicationCall>()
-        coEvery { getRolesInAssociationUseCase(10, 5, association.id) } returns listOf(role)
+        coEvery { getRolesInAssociationUseCase(Pagination(10, 5), association.id) } returns listOf(role)
         val controller = RolesController(
             mockk(), mockk(), mockk(), getRolesInAssociationUseCase,
             mockk(), mockk(), mockk(), mockk()
         )
         every { call.request.path() } returns "/api/v1/associations/id/roles"
-        every { call.parameters["limit"] } returns "10"
-        every { call.parameters["offset"] } returns "5"
-        assertEquals(listOf(role), controller.list(call, association))
+        assertEquals(listOf(role), controller.list(call, association, 10, 5))
     }
 
     @Test
     fun testListDefaultLimitOffset() = runBlocking {
         val getRolesInAssociationUseCase = mockk<IListSliceChildModelSuspendUseCase<Role, String>>()
         val call = mockk<ApplicationCall>()
-        coEvery { getRolesInAssociationUseCase(25, 0, association.id) } returns listOf(role)
+        coEvery { getRolesInAssociationUseCase(Pagination(25, 0), association.id) } returns listOf(role)
         val controller = RolesController(
             mockk(), mockk(), mockk(), getRolesInAssociationUseCase,
             mockk(), mockk(), mockk(), mockk()
         )
         every { call.request.path() } returns "/api/v1/associations/id/roles"
-        every { call.parameters["limit"] } returns null
-        every { call.parameters["offset"] } returns null
-        assertEquals(listOf(role), controller.list(call, association))
-    }
-
-    @Test
-    fun testListInvalidLimitOffset() = runBlocking {
-        val getRolesInAssociationUseCase = mockk<IListSliceChildModelSuspendUseCase<Role, String>>()
-        val call = mockk<ApplicationCall>()
-        coEvery { getRolesInAssociationUseCase(25, 0, association.id) } returns listOf(role)
-        val controller = RolesController(
-            mockk(), mockk(), mockk(), getRolesInAssociationUseCase,
-            mockk(), mockk(), mockk(), mockk()
-        )
-        every { call.request.path() } returns "/api/v1/associations/id/roles"
-        every { call.parameters["limit"] } returns "a"
-        every { call.parameters["offset"] } returns "b"
-        assertEquals(listOf(role), controller.list(call, association))
+        assertEquals(listOf(role), controller.list(call, association, null, null))
     }
 
     @Test
@@ -97,7 +79,7 @@ class RolesControllerTest {
             mockk(), mockk(), mockk(), mockk()
         )
         every { call.request.path() } returns "/admin/roles"
-        assertEquals(listOf(role), controller.list(call, association))
+        assertEquals(listOf(role), controller.list(call, association, null, null))
     }
 
     @Test

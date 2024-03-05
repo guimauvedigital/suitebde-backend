@@ -6,6 +6,7 @@ import me.nathanfallet.suitebde.models.roles.UpdateRolePayload
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
 import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
+import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -27,12 +28,12 @@ class RolesDatabaseRepository(
                 .map(Roles::toRole)
         }
 
-    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<Role> =
+    override suspend fun list(pagination: Pagination, parentId: String, context: IContext?): List<Role> =
         database.suspendedTransaction {
             Roles
                 .selectAll()
                 .where { Roles.associationId eq parentId }
-                .limit(limit.toInt(), offset)
+                .limit(pagination.limit.toInt(), pagination.offset)
                 .map(Roles::toRole)
         }
 

@@ -8,6 +8,7 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateDomainInAssociationPayload
 import me.nathanfallet.suitebde.models.associations.DomainInAssociation
 import me.nathanfallet.usecases.models.id.RecursiveId
+import me.nathanfallet.usecases.pagination.Pagination
 
 class DomainsInAssociationsRemoteRepository(
     client: ISuiteBDEClient,
@@ -23,8 +24,8 @@ class DomainsInAssociationsRemoteRepository(
     prefix = "/api/v1"
 ), IDomainsInAssociationsRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long, associationId: String): List<DomainInAssociation> =
-        list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
+    override suspend fun list(pagination: Pagination, associationId: String): List<DomainInAssociation> =
+        list(pagination, RecursiveId<Association, String, Unit>(associationId), null)
 
     override suspend fun create(
         payload: CreateDomainInAssociationPayload,

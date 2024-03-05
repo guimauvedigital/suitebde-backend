@@ -14,7 +14,12 @@ interface IRolesController :
     @APIMapping
     @AdminTemplateMapping
     @ListModelPath
-    suspend fun list(call: ApplicationCall, @ParentModel parent: Association): List<Role>
+    suspend fun list(
+        call: ApplicationCall,
+        @ParentModel parent: Association,
+        @QueryParameter limit: Long?,
+        @QueryParameter offset: Long?,
+    ): List<Role>
 
     @APIMapping
     @AdminTemplateMapping

@@ -9,6 +9,7 @@ import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
 import me.nathanfallet.suitebde.models.events.UpdateEventPayload
 import me.nathanfallet.usecases.models.id.RecursiveId
+import me.nathanfallet.usecases.pagination.Pagination
 
 class EventsRemoteRepository(
     client: ISuiteBDEClient,
@@ -23,8 +24,8 @@ class EventsRemoteRepository(
     prefix = "/api/v1"
 ), IEventsRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long, associationId: String): List<Event> =
-        list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
+    override suspend fun list(pagination: Pagination, associationId: String): List<Event> =
+        list(pagination, RecursiveId<Association, String, Unit>(associationId), null)
 
     override suspend fun get(id: String, associationId: String): Event? =
         get(id, RecursiveId<Association, String, Unit>(associationId), null)

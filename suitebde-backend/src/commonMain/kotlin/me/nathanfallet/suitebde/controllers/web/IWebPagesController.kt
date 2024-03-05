@@ -13,7 +13,12 @@ interface IWebPagesController :
     @APIMapping
     @AdminTemplateMapping
     @ListModelPath
-    suspend fun list(call: ApplicationCall, @ParentModel parent: Association): List<WebPage>
+    suspend fun list(
+        call: ApplicationCall,
+        @ParentModel parent: Association,
+        @QueryParameter limit: Long?,
+        @QueryParameter offset: Long?,
+    ): List<WebPage>
 
     @APIMapping
     @AdminTemplateMapping

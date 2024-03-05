@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
+import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.selectAll
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -176,7 +177,7 @@ class UsersDatabaseRepositoryTest {
             ),
             "associationId"
         ) ?: fail("Unable to create user")
-        val result = repository.list(1, 2, "associationId")
+        val result = repository.list(Pagination(1, 2), "associationId")
         assertEquals(1, result.size)
     }
 

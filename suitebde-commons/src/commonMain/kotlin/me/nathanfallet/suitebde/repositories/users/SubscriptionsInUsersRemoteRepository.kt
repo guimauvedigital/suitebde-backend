@@ -10,6 +10,7 @@ import me.nathanfallet.suitebde.models.users.SubscriptionInUser
 import me.nathanfallet.suitebde.models.users.UpdateSubscriptionInUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.usecases.models.id.RecursiveId
+import me.nathanfallet.usecases.pagination.Pagination
 
 class SubscriptionsInUsersRemoteRepository(
     client: ISuiteBDEClient,
@@ -26,14 +27,12 @@ class SubscriptionsInUsersRemoteRepository(
 ), ISubscriptionsInUsersRemoteRepository {
 
     override suspend fun list(
-        limit: Long,
-        offset: Long,
+        pagination: Pagination,
         userId: String,
         associationId: String,
     ): List<SubscriptionInUser> =
         list(
-            limit,
-            offset,
+            pagination,
             RecursiveId<User, String, String>(userId, RecursiveId<Association, String, Unit>(associationId)),
             null
         )

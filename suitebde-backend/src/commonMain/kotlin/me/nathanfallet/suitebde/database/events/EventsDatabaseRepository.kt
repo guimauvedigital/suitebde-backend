@@ -6,6 +6,7 @@ import me.nathanfallet.suitebde.models.events.UpdateEventPayload
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
 import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
+import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -28,13 +29,13 @@ class EventsDatabaseRepository(
                 .map(Events::toEvent)
         }
 
-    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<Event> =
+    override suspend fun list(pagination: Pagination, parentId: String, context: IContext?): List<Event> =
         database.suspendedTransaction {
             Events
                 .selectAll()
                 .where { Events.associationId eq parentId }
                 .orderBy(Events.startsAt, SortOrder.ASC)
-                .limit(limit.toInt(), offset)
+                .limit(pagination.limit.toInt(), pagination.offset)
                 .map(Events::toEvent)
         }
 

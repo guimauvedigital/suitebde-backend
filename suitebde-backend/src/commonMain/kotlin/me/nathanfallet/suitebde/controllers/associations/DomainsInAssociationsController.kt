@@ -14,6 +14,7 @@ import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
+import me.nathanfallet.usecases.pagination.Pagination
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class DomainsInAssociationsController(
@@ -26,11 +27,18 @@ class DomainsInAssociationsController(
     private val deleteDomainUseCase: IDeleteChildModelSuspendUseCase<DomainInAssociation, String, String>,
 ) : IDomainsInAssociationsController {
 
-    override suspend fun list(call: ApplicationCall, parent: Association): List<DomainInAssociation> {
+    override suspend fun list(
+        call: ApplicationCall,
+        parent: Association,
+        limit: Long?,
+        offset: Long?,
+    ): List<DomainInAssociation> {
         if (call.request.path().contains("/admin/")) return getDomainsInAssociationsUseCase(parent.id)
         return getDomainsInAssociationsSlicedUseCase(
-            call.parameters["limit"]?.toLongOrNull() ?: 25,
-            call.parameters["offset"]?.toLongOrNull() ?: 0,
+            Pagination(
+                limit ?: 25,
+                offset ?: 0,
+            ),
             parent.id
         )
     }

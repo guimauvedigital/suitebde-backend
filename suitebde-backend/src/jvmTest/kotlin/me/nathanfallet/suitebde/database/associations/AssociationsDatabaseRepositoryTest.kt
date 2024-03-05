@@ -6,6 +6,7 @@ import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.associations.CreateDomainInAssociationPayload
 import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
+import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.selectAll
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -214,7 +215,7 @@ class AssociationsDatabaseRepositoryTest {
                 "email", "password", "firstname", "lastname"
             )
         )
-        val associations = repository.list(1, 2)
+        val associations = repository.list(Pagination(1, 2))
         assertEquals(associations.size, 1)
     }
 

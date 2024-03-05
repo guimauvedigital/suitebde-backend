@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.models.web.CreateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.UpdateWebMenuPayload
+import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.selectAll
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -38,7 +39,7 @@ class WebMenusDatabaseRepositoryTest {
                 "title $i", "url", 42
             ), "associationId"
         )
-        val menuFromDatabase = repository.list(1, 2, "associationId")
+        val menuFromDatabase = repository.list(Pagination(1, 2), "associationId")
         assertEquals(1, menuFromDatabase.size)
     }
 

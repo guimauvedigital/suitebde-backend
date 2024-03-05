@@ -5,6 +5,7 @@ import me.nathanfallet.suitebde.models.associations.DomainInAssociation
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
+import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -27,8 +28,7 @@ class DomainsInAssociationsDatabaseRepository(
         }
 
     override suspend fun list(
-        limit: Long,
-        offset: Long,
+        pagination: Pagination,
         parentId: String,
         context: IContext?,
     ): List<DomainInAssociation> =
@@ -36,7 +36,7 @@ class DomainsInAssociationsDatabaseRepository(
             DomainsInAssociations
                 .selectAll()
                 .where { DomainsInAssociations.associationId eq parentId }
-                .limit(limit.toInt(), offset)
+                .limit(pagination.limit.toInt(), pagination.offset)
                 .map(DomainsInAssociations::toDomainInAssociation)
         }
 

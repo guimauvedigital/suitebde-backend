@@ -21,6 +21,7 @@ import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
+import me.nathanfallet.usecases.pagination.Pagination
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -44,7 +45,7 @@ class DomainsInAssociationsControllerTest {
     fun testList() = runBlocking {
         val getDomainsInAssociationsUseCase = mockk<IListSliceChildModelSuspendUseCase<DomainInAssociation, String>>()
         val call = mockk<ApplicationCall>()
-        coEvery { getDomainsInAssociationsUseCase(10, 5, association.id) } returns listOf(domain)
+        coEvery { getDomainsInAssociationsUseCase(Pagination(10, 5), association.id) } returns listOf(domain)
         val controller = DomainsInAssociationsController(
             mockk(),
             mockk(),
@@ -55,16 +56,14 @@ class DomainsInAssociationsControllerTest {
             mockk()
         )
         every { call.request.path() } returns "/api/v1/associations/id/domains"
-        every { call.parameters["limit"] } returns "10"
-        every { call.parameters["offset"] } returns "5"
-        assertEquals(listOf(domain), controller.list(call, association))
+        assertEquals(listOf(domain), controller.list(call, association, 10, 5))
     }
 
     @Test
     fun testListDefaultLimitOffset() = runBlocking {
         val getDomainsInAssociationsUseCase = mockk<IListSliceChildModelSuspendUseCase<DomainInAssociation, String>>()
         val call = mockk<ApplicationCall>()
-        coEvery { getDomainsInAssociationsUseCase(25, 0, association.id) } returns listOf(domain)
+        coEvery { getDomainsInAssociationsUseCase(Pagination(25, 0), association.id) } returns listOf(domain)
         val controller = DomainsInAssociationsController(
             mockk(),
             mockk(),
@@ -75,29 +74,7 @@ class DomainsInAssociationsControllerTest {
             mockk()
         )
         every { call.request.path() } returns "/api/v1/associations/id/domains"
-        every { call.parameters["limit"] } returns null
-        every { call.parameters["offset"] } returns null
-        assertEquals(listOf(domain), controller.list(call, association))
-    }
-
-    @Test
-    fun testListInvalidLimitOffset() = runBlocking {
-        val getDomainsInAssociationsUseCase = mockk<IListSliceChildModelSuspendUseCase<DomainInAssociation, String>>()
-        val call = mockk<ApplicationCall>()
-        coEvery { getDomainsInAssociationsUseCase(25, 0, association.id) } returns listOf(domain)
-        val controller = DomainsInAssociationsController(
-            mockk(),
-            mockk(),
-            mockk(),
-            getDomainsInAssociationsUseCase,
-            mockk(),
-            mockk(),
-            mockk()
-        )
-        every { call.request.path() } returns "/api/v1/associations/id/domains"
-        every { call.parameters["limit"] } returns "a"
-        every { call.parameters["offset"] } returns "b"
-        assertEquals(listOf(domain), controller.list(call, association))
+        assertEquals(listOf(domain), controller.list(call, association, null, null))
     }
 
     @Test
@@ -115,7 +92,7 @@ class DomainsInAssociationsControllerTest {
             mockk()
         )
         every { call.request.path() } returns "/admin/associations/id/domains"
-        assertEquals(listOf(domain), controller.list(call, association))
+        assertEquals(listOf(domain), controller.list(call, association, null, null))
     }
 
     @Test

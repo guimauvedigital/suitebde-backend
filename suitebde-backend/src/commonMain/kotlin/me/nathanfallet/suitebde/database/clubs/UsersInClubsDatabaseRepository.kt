@@ -8,6 +8,7 @@ import me.nathanfallet.suitebde.repositories.clubs.IRolesInClubsRepository
 import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
+import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -37,14 +38,14 @@ class UsersInClubsDatabaseRepository(
                 }
         }
 
-    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<UserInClub> =
+    override suspend fun list(pagination: Pagination, parentId: String, context: IContext?): List<UserInClub> =
         database.suspendedTransaction {
             UsersInClubs
                 .join(RolesInClubs, JoinType.INNER, UsersInClubs.roleId, RolesInClubs.id)
                 .join(Users, JoinType.INNER, UsersInClubs.userId, Users.id)
                 .selectAll()
                 .where { UsersInClubs.clubId eq parentId }
-                .limit(limit.toInt(), offset)
+                .limit(pagination.limit.toInt(), pagination.offset)
                 .map {
                     UsersInClubs.toUserInClub(it, user = Users.toUser(it), role = RolesInClubs.toRoleInClub(it))
                 }

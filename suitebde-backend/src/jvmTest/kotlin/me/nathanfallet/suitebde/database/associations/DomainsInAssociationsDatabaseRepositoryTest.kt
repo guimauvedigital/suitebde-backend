@@ -3,6 +3,7 @@ package me.nathanfallet.suitebde.database.associations
 import kotlinx.coroutines.runBlocking
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.models.associations.CreateDomainInAssociationPayload
+import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.selectAll
 import kotlin.test.Test
@@ -86,7 +87,7 @@ class DomainsInAssociationsDatabaseRepositoryTest {
         val database = Database(protocol = "h2", name = "getDomainsLimitOffset")
         val repository = DomainsInAssociationsDatabaseRepository(database)
         for (i in 1..4) repository.create(CreateDomainInAssociationPayload("domain $i"), "associationId")
-        val domains = repository.list(1, 2, "associationId")
+        val domains = repository.list(Pagination(1, 2), "associationId")
         assertEquals(domains.size, 1)
         assertEquals(domains.first().domain, "domain 3")
     }

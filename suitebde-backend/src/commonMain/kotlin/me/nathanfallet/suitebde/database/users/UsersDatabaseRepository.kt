@@ -6,6 +6,7 @@ import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
+import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -72,12 +73,12 @@ class UsersDatabaseRepository(
                 .map(Users::toUser)
         }
 
-    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<User> =
+    override suspend fun list(pagination: Pagination, parentId: String, context: IContext?): List<User> =
         database.suspendedTransaction {
             Users
                 .selectAll()
                 .where { Users.associationId eq parentId }
-                .limit(limit.toInt(), offset)
+                .limit(pagination.limit.toInt(), pagination.offset)
                 .map(Users::toUser)
         }
 

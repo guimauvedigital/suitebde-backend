@@ -18,6 +18,7 @@ import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
+import me.nathanfallet.usecases.pagination.Pagination
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -50,7 +51,7 @@ class UsersControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association.id) } returns true
-        coEvery { getUsersInAssociationUseCase(10, 5, association.id) } returns listOf(targetUser)
+        coEvery { getUsersInAssociationUseCase(Pagination(10, 5), association.id) } returns listOf(targetUser)
         val controller = UsersController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
@@ -61,9 +62,7 @@ class UsersControllerTest {
             mockk()
         )
         every { call.request.path() } returns "/api/v1/associations/id/users"
-        every { call.parameters["limit"] } returns "10"
-        every { call.parameters["offset"] } returns "5"
-        assertEquals(listOf(targetUser), controller.list(call, association))
+        assertEquals(listOf(targetUser), controller.list(call, association, 10, 5, null))
     }
 
     @Test
@@ -74,7 +73,7 @@ class UsersControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association.id) } returns true
-        coEvery { getUsersInAssociationUseCase(25, 0, association.id) } returns listOf(targetUser)
+        coEvery { getUsersInAssociationUseCase(Pagination(25, 0), association.id) } returns listOf(targetUser)
         val controller = UsersController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
@@ -85,33 +84,7 @@ class UsersControllerTest {
             mockk()
         )
         every { call.request.path() } returns "/api/v1/associations/id/users"
-        every { call.parameters["limit"] } returns null
-        every { call.parameters["offset"] } returns null
-        assertEquals(listOf(targetUser), controller.list(call, association))
-    }
-
-    @Test
-    fun testListInvalidLimitOffset() = runBlocking {
-        val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
-        val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
-        val getUsersInAssociationUseCase = mockk<IListSliceChildModelSuspendUseCase<User, String>>()
-        val call = mockk<ApplicationCall>()
-        coEvery { requireUserForCallUseCase(call) } returns user
-        coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association.id) } returns true
-        coEvery { getUsersInAssociationUseCase(25, 0, association.id) } returns listOf(targetUser)
-        val controller = UsersController(
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            mockk(),
-            getUsersInAssociationUseCase,
-            mockk(),
-            mockk(),
-            mockk()
-        )
-        every { call.request.path() } returns "/api/v1/associations/id/users"
-        every { call.parameters["limit"] } returns "a"
-        every { call.parameters["offset"] } returns "b"
-        assertEquals(listOf(targetUser), controller.list(call, association))
+        assertEquals(listOf(targetUser), controller.list(call, association, null, null, null))
     }
 
     @Test
@@ -133,7 +106,7 @@ class UsersControllerTest {
             mockk()
         )
         every { call.request.path() } returns "/admin/users"
-        assertEquals(listOf(targetUser), controller.list(call, association))
+        assertEquals(listOf(targetUser), controller.list(call, association, null, null, null))
     }
 
     @Test
@@ -153,7 +126,7 @@ class UsersControllerTest {
             mockk()
         )
         val exception = assertFailsWith(ControllerException::class) {
-            controller.list(call, association)
+            controller.list(call, association, null, null, null)
         }
         assertEquals(HttpStatusCode.Forbidden, exception.code)
         assertEquals("users_view_not_allowed", exception.key)

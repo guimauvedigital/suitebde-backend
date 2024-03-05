@@ -80,7 +80,7 @@ class WebMenusRouterTest {
             AssociationsRouter(associationController, mockk(), mockk(), mockk(), mockk())
         )
         coEvery { associationController.get(any(), "id") } returns association
-        coEvery { controller.list(any(), association) } returns listOf(menu)
+        coEvery { controller.list(any(), association, null, null) } returns listOf(menu)
         routing {
             router.createRoutes(this)
         }
@@ -108,7 +108,7 @@ class WebMenusRouterTest {
             AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
-        coEvery { controller.list(any(), association) } returns listOf(menu)
+        coEvery { controller.list(any(), association, null, null) } returns listOf(menu)
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH

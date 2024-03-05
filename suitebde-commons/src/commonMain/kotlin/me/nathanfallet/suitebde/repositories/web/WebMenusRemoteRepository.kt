@@ -9,6 +9,7 @@ import me.nathanfallet.suitebde.models.web.CreateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.UpdateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.WebMenu
 import me.nathanfallet.usecases.models.id.RecursiveId
+import me.nathanfallet.usecases.pagination.Pagination
 
 class WebMenusRemoteRepository(
     client: ISuiteBDEClient,
@@ -23,8 +24,8 @@ class WebMenusRemoteRepository(
     prefix = "/api/v1"
 ), IWebMenusRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long, associationId: String): List<WebMenu> =
-        list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
+    override suspend fun list(pagination: Pagination, associationId: String): List<WebMenu> =
+        list(pagination, RecursiveId<Association, String, Unit>(associationId), null)
 
     override suspend fun get(id: String, associationId: String): WebMenu? =
         get(id, RecursiveId<Association, String, Unit>(associationId), null)

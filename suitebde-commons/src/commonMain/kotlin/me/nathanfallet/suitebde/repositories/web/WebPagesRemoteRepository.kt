@@ -8,6 +8,7 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.web.WebPage
 import me.nathanfallet.suitebde.models.web.WebPagePayload
 import me.nathanfallet.usecases.models.id.RecursiveId
+import me.nathanfallet.usecases.pagination.Pagination
 
 class WebPagesRemoteRepository(
     client: ISuiteBDEClient,
@@ -22,8 +23,8 @@ class WebPagesRemoteRepository(
     prefix = "/api/v1"
 ), IWebPagesRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long, associationId: String): List<WebPage> =
-        list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
+    override suspend fun list(pagination: Pagination, associationId: String): List<WebPage> =
+        list(pagination, RecursiveId<Association, String, Unit>(associationId), null)
 
     override suspend fun get(id: String, associationId: String): WebPage? =
         get(id, RecursiveId<Association, String, Unit>(associationId), null)

@@ -21,6 +21,7 @@ import me.nathanfallet.usecases.models.create.context.ICreateChildModelWithConte
 import me.nathanfallet.usecases.models.get.context.IGetChildModelWithContextSuspendUseCase
 import me.nathanfallet.usecases.models.list.context.IListChildModelWithContextSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.context.IListSliceChildModelWithContextSuspendUseCase
+import me.nathanfallet.usecases.pagination.Pagination
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -48,16 +49,14 @@ class ClubsControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getUserForCallUseCase(call) } returns user
         coEvery {
-            getClubsInAssociationUseCase(10, 5, association.id, OptionalUserContext(user.id))
+            getClubsInAssociationUseCase(Pagination(10, 5), association.id, OptionalUserContext(user.id))
         } returns listOf(club)
         val controller = ClubsController(
             getUserForCallUseCase, mockk(), mockk(), mockk(), getClubsInAssociationUseCase,
             mockk(), mockk(), mockk(), mockk()
         )
         every { call.request.path() } returns "/api/v1/associations/id/clubs"
-        every { call.parameters["limit"] } returns "10"
-        every { call.parameters["offset"] } returns "5"
-        assertEquals(listOf(club), controller.list(call, association))
+        assertEquals(listOf(club), controller.list(call, association, 10, 5, null))
     }
 
     @Test
@@ -67,16 +66,14 @@ class ClubsControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getUserForCallUseCase(call) } returns null
         coEvery {
-            getClubsInAssociationUseCase(10, 5, association.id, OptionalUserContext())
+            getClubsInAssociationUseCase(Pagination(10, 5), association.id, OptionalUserContext())
         } returns listOf(club)
         val controller = ClubsController(
             getUserForCallUseCase, mockk(), mockk(), mockk(), getClubsInAssociationUseCase,
             mockk(), mockk(), mockk(), mockk()
         )
         every { call.request.path() } returns "/api/v1/associations/id/clubs"
-        every { call.parameters["limit"] } returns "10"
-        every { call.parameters["offset"] } returns "5"
-        assertEquals(listOf(club), controller.list(call, association))
+        assertEquals(listOf(club), controller.list(call, association, 10, 5, null))
     }
 
     @Test
@@ -86,35 +83,14 @@ class ClubsControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getUserForCallUseCase(call) } returns user
         coEvery {
-            getClubsInAssociationUseCase(25, 0, association.id, OptionalUserContext(user.id))
+            getClubsInAssociationUseCase(Pagination(25, 0), association.id, OptionalUserContext(user.id))
         } returns listOf(club)
         val controller = ClubsController(
             getUserForCallUseCase, mockk(), mockk(), mockk(), getClubsInAssociationUseCase,
             mockk(), mockk(), mockk(), mockk()
         )
         every { call.request.path() } returns "/api/v1/associations/id/clubs"
-        every { call.parameters["limit"] } returns null
-        every { call.parameters["offset"] } returns null
-        assertEquals(listOf(club), controller.list(call, association))
-    }
-
-    @Test
-    fun testListInvalidLimitOffset() = runBlocking {
-        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
-        val getClubsInAssociationUseCase = mockk<IListSliceChildModelWithContextSuspendUseCase<Club, String>>()
-        val call = mockk<ApplicationCall>()
-        coEvery { getUserForCallUseCase(call) } returns user
-        coEvery {
-            getClubsInAssociationUseCase(25, 0, association.id, OptionalUserContext(user.id))
-        } returns listOf(club)
-        val controller = ClubsController(
-            getUserForCallUseCase, mockk(), mockk(), mockk(), getClubsInAssociationUseCase,
-            mockk(), mockk(), mockk(), mockk()
-        )
-        every { call.request.path() } returns "/api/v1/associations/id/clubs"
-        every { call.parameters["limit"] } returns "a"
-        every { call.parameters["offset"] } returns "b"
-        assertEquals(listOf(club), controller.list(call, association))
+        assertEquals(listOf(club), controller.list(call, association, null, null, null))
     }
 
     @Test
@@ -131,7 +107,7 @@ class ClubsControllerTest {
             mockk(), mockk(), mockk(), mockk(), mockk()
         )
         every { call.request.path() } returns "/admin/clubs"
-        assertEquals(listOf(club), controller.list(call, association))
+        assertEquals(listOf(club), controller.list(call, association, null, null, null))
     }
 
     @Test

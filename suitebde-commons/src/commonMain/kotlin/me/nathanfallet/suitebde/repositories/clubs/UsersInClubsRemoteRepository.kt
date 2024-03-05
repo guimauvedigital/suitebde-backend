@@ -9,6 +9,7 @@ import me.nathanfallet.suitebde.models.clubs.Club
 import me.nathanfallet.suitebde.models.clubs.CreateUserInClubPayload
 import me.nathanfallet.suitebde.models.clubs.UserInClub
 import me.nathanfallet.usecases.models.id.RecursiveId
+import me.nathanfallet.usecases.pagination.Pagination
 
 class UsersInClubsRemoteRepository(
     client: ISuiteBDEClient,
@@ -23,10 +24,9 @@ class UsersInClubsRemoteRepository(
     prefix = "/api/v1"
 ), IUsersInClubsRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long, clubId: String, associationId: String): List<UserInClub> =
+    override suspend fun list(pagination: Pagination, clubId: String, associationId: String): List<UserInClub> =
         list(
-            limit,
-            offset,
+            pagination,
             RecursiveId<Club, String, String>(clubId, RecursiveId<Association, String, Unit>(associationId)),
             null
         )
