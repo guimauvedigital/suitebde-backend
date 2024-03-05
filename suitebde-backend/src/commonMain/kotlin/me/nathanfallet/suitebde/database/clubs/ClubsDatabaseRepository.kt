@@ -1,6 +1,7 @@
 package me.nathanfallet.suitebde.database.clubs
 
 import kotlinx.datetime.Clock
+import me.nathanfallet.suitebde.models.application.SearchOptions
 import me.nathanfallet.suitebde.models.clubs.Club
 import me.nathanfallet.suitebde.models.clubs.CreateClubPayload
 import me.nathanfallet.suitebde.models.clubs.UpdateClubPayload
@@ -8,6 +9,7 @@ import me.nathanfallet.suitebde.models.users.OptionalUserContext
 import me.nathanfallet.suitebde.repositories.clubs.IClubsRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
+import me.nathanfallet.usecases.pagination.IPaginationOptions
 import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -36,6 +38,7 @@ class ClubsDatabaseRepository(
         database.suspendedTransaction {
             customJoin((context as? OptionalUserContext)?.userId)
                 .where { Clubs.associationId eq parentId }
+                .andWhere(pagination.options)
                 .groupBy(Clubs.id)
                 .orderByMemberAndName((context as? OptionalUserContext)?.userId)
                 .limit(pagination.limit.toInt(), pagination.offset)
@@ -107,5 +110,17 @@ class ClubsDatabaseRepository(
         viewedBy?.let {
             orderBy(Pair(Clubs.isMember, SortOrder.DESC), Pair(Clubs.name, SortOrder.ASC))
         } ?: orderBy(Clubs.name, SortOrder.ASC)
+
+    private fun Query.andWhere(options: IPaginationOptions?): Query = when (options) {
+        is SearchOptions -> {
+            val likeString = options.search
+                .replace("%", "\\%")
+                .replace("_", "\\_")
+                .let { "%$it%" }
+            andWhere { Clubs.name like likeString or (Clubs.description like likeString) }
+        }
+
+        else -> this
+    }
 
 }
