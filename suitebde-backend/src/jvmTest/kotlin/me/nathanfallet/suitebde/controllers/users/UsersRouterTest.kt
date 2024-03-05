@@ -75,7 +75,7 @@ class UsersRouterTest {
             AssociationsRouter(associationController, mockk(), mockk(), mockk(), mockk())
         )
         coEvery { associationController.get(any(), "id") } returns association
-        coEvery { controller.list(any(), association) } returns listOf(user)
+        coEvery { controller.list(any(), association, null, null, null) } returns listOf(user)
         routing {
             router.createRoutes(this)
         }
@@ -103,7 +103,7 @@ class UsersRouterTest {
             AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
-        coEvery { controller.list(any(), association) } returns listOf(user)
+        coEvery { controller.list(any(), association, null, null, null) } returns listOf(user)
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH

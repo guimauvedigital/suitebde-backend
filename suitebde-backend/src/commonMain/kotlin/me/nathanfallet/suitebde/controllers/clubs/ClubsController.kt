@@ -6,6 +6,7 @@ import io.ktor.server.request.*
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
+import me.nathanfallet.suitebde.models.application.SearchOptions
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.clubs.Club
 import me.nathanfallet.suitebde.models.clubs.CreateClubPayload
@@ -19,6 +20,7 @@ import me.nathanfallet.usecases.models.get.context.IGetChildModelWithContextSusp
 import me.nathanfallet.usecases.models.list.context.IListChildModelWithContextSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.context.IListSliceChildModelWithContextSuspendUseCase
 import me.nathanfallet.usecases.models.update.context.IUpdateChildModelWithContextSuspendUseCase
+import me.nathanfallet.usecases.pagination.Pagination
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class ClubsController(
@@ -71,15 +73,24 @@ class ClubsController(
             )
     }
 
-    override suspend fun list(call: ApplicationCall, parent: Association): List<Club> {
+    override suspend fun list(
+        call: ApplicationCall,
+        parent: Association,
+        limit: Long?,
+        offset: Long?,
+        search: String?,
+    ): List<Club> {
         val user = (getUserForCallUseCase(call) as? User)
         if (call.request.path().contains("/admin/")) return getClubsInAssociationUseCase(
             parent.id,
             OptionalUserContext(user?.id)
         )
         return getClubsInAssociationSlicedUseCase(
-            call.parameters["limit"]?.toLongOrNull() ?: 25,
-            call.parameters["offset"]?.toLongOrNull() ?: 0,
+            Pagination(
+                limit ?: 25,
+                offset ?: 0,
+                search?.let { SearchOptions(it) }
+            ),
             parent.id,
             OptionalUserContext(user?.id)
         )

@@ -1,17 +1,21 @@
 package me.nathanfallet.suitebde.repositories.users
 
 import io.ktor.client.call.*
+import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.repositories.api.APIChildModelRemoteRepository
 import me.nathanfallet.ktorx.repositories.api.IAPIModelRemoteRepository
 import me.nathanfallet.suitebde.client.ISuiteBDEClient
+import me.nathanfallet.suitebde.models.application.SearchOptions
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.usecases.models.id.RecursiveId
+import me.nathanfallet.usecases.pagination.IPaginationOptions
+import me.nathanfallet.usecases.pagination.Pagination
 
 class UsersRemoteRepository(
     client: ISuiteBDEClient,
@@ -26,8 +30,13 @@ class UsersRemoteRepository(
     prefix = "/api/v1"
 ), IUsersRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long, associationId: String): List<User> =
-        list(limit, offset, RecursiveId<Association, String, Unit>(associationId), null)
+    override fun encodePaginationOptions(options: IPaginationOptions, builder: HttpRequestBuilder) = when (options) {
+        is SearchOptions -> builder.parameter("search", options.search)
+        else -> super.encodePaginationOptions(options, builder)
+    }
+
+    override suspend fun list(pagination: Pagination, associationId: String): List<User> =
+        list(pagination, RecursiveId<Association, String, Unit>(associationId), null)
 
     override suspend fun get(id: String, associationId: String): User? =
         get(id, RecursiveId<Association, String, Unit>(associationId), null)

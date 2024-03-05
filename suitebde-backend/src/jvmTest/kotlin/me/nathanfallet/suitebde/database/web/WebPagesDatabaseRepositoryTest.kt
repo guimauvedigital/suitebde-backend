@@ -3,6 +3,7 @@ package me.nathanfallet.suitebde.database.web
 import kotlinx.coroutines.runBlocking
 import me.nathanfallet.suitebde.database.Database
 import me.nathanfallet.suitebde.models.web.WebPagePayload
+import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.selectAll
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -38,7 +39,7 @@ class WebPagesDatabaseRepositoryTest {
                 "url", "title $i", "content", false
             ), "associationId"
         )
-        val pageFromDatabase = repository.list(1, 2, "associationId")
+        val pageFromDatabase = repository.list(Pagination(1, 2), "associationId")
         assertEquals(1, pageFromDatabase.size)
     }
 

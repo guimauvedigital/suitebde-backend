@@ -23,6 +23,7 @@ import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
+import me.nathanfallet.usecases.pagination.Pagination
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -51,11 +52,9 @@ class WebMenusControllerTest {
             mockk(), mockk(), mockk()
         )
         val call = mockk<ApplicationCall>()
-        coEvery { getWebMenusUseCase(10, 5, menu.associationId) } returns listOf(menu)
+        coEvery { getWebMenusUseCase(Pagination(10, 5), menu.associationId) } returns listOf(menu)
         every { call.request.path() } returns "/api/v1/associations/id/webmenus"
-        every { call.parameters["limit"] } returns "10"
-        every { call.parameters["offset"] } returns "5"
-        assertEquals(listOf(menu), controller.list(call, association))
+        assertEquals(listOf(menu), controller.list(call, association, 10, 5))
     }
 
     @Test
@@ -66,26 +65,9 @@ class WebMenusControllerTest {
             mockk(), mockk(), mockk()
         )
         val call = mockk<ApplicationCall>()
-        coEvery { getWebMenusUseCase(25, 0, menu.associationId) } returns listOf(menu)
+        coEvery { getWebMenusUseCase(Pagination(25, 0), menu.associationId) } returns listOf(menu)
         every { call.request.path() } returns "/api/v1/associations/id/webmenus"
-        every { call.parameters["limit"] } returns null
-        every { call.parameters["offset"] } returns null
-        assertEquals(listOf(menu), controller.list(call, association))
-    }
-
-    @Test
-    fun testListInvalidLimitOffset() = runBlocking {
-        val getWebMenusUseCase = mockk<IListSliceChildModelSuspendUseCase<WebMenu, String>>()
-        val controller = WebMenusController(
-            mockk(), mockk(), mockk(), getWebMenusUseCase, mockk(),
-            mockk(), mockk(), mockk()
-        )
-        val call = mockk<ApplicationCall>()
-        coEvery { getWebMenusUseCase(25, 0, menu.associationId) } returns listOf(menu)
-        every { call.request.path() } returns "/api/v1/associations/id/webmenus"
-        every { call.parameters["limit"] } returns "a"
-        every { call.parameters["offset"] } returns "b"
-        assertEquals(listOf(menu), controller.list(call, association))
+        assertEquals(listOf(menu), controller.list(call, association, null, null))
     }
 
     @Test
@@ -98,7 +80,7 @@ class WebMenusControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getWebMenusUseCase(menu.associationId) } returns listOf(menu)
         every { call.request.path() } returns "/admin/webmenus"
-        assertEquals(listOf(menu), controller.list(call, association))
+        assertEquals(listOf(menu), controller.list(call, association, null, null))
     }
 
     @Test

@@ -1,11 +1,14 @@
 package me.nathanfallet.suitebde.database.users
 
+import me.nathanfallet.suitebde.models.application.SearchOptions
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
+import me.nathanfallet.usecases.pagination.IPaginationOptions
+import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -72,12 +75,13 @@ class UsersDatabaseRepository(
                 .map(Users::toUser)
         }
 
-    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<User> =
+    override suspend fun list(pagination: Pagination, parentId: String, context: IContext?): List<User> =
         database.suspendedTransaction {
             Users
                 .selectAll()
                 .where { Users.associationId eq parentId }
-                .limit(limit.toInt(), offset)
+                .andWhere(pagination.options)
+                .limit(pagination.limit.toInt(), pagination.offset)
                 .map(Users::toUser)
         }
 
@@ -103,5 +107,17 @@ class UsersDatabaseRepository(
                 Users.id eq id and (associationId eq parentId)
             }
         } == 1
+
+    private fun Query.andWhere(options: IPaginationOptions?): Query = when (options) {
+        is SearchOptions -> {
+            val likeString = options.search
+                .replace("%", "\\%")
+                .replace("_", "\\_")
+                .let { "%$it%" }
+            andWhere { Users.firstName like likeString or (Users.lastName like likeString) or (Users.email like likeString) }
+        }
+
+        else -> this
+    }
 
 }

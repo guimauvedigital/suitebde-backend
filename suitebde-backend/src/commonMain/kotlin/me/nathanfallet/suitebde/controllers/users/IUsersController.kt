@@ -17,7 +17,13 @@ interface IUsersController :
     @ListModelPath
     @DocumentedError(401, "auth_invalid_credentials")
     @DocumentedError(403, "users_view_not_allowed")
-    suspend fun list(call: ApplicationCall, @ParentModel parent: Association): List<User>
+    suspend fun list(
+        call: ApplicationCall,
+        @ParentModel parent: Association,
+        @QueryParameter limit: Long?,
+        @QueryParameter offset: Long?,
+        @QueryParameter search: String?,
+    ): List<User>
 
     @APIMapping
     @GetModelPath

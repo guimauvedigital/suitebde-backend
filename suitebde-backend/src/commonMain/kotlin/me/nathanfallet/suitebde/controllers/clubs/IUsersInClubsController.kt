@@ -38,6 +38,11 @@ interface IUsersInClubsController :
     @APIMapping
     @AdminTemplateMapping
     @ListModelPath
-    suspend fun list(call: ApplicationCall, @ParentModel parent: Club): List<UserInClub>
+    suspend fun list(
+        call: ApplicationCall,
+        @ParentModel parent: Club,
+        @QueryParameter limit: Long?,
+        @QueryParameter offset: Long?,
+    ): List<UserInClub>
 
 }

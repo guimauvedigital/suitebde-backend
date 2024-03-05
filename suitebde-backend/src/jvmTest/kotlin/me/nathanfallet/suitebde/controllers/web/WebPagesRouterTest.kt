@@ -83,7 +83,7 @@ class WebPagesRouterTest {
             AssociationsRouter(associationController, mockk(), mockk(), mockk(), mockk())
         )
         coEvery { associationController.get(any(), "id") } returns association
-        coEvery { controller.list(any(), association) } returns listOf(page)
+        coEvery { controller.list(any(), association, null, null) } returns listOf(page)
         routing {
             router.createRoutes(this)
         }
@@ -112,7 +112,7 @@ class WebPagesRouterTest {
             AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
-        coEvery { controller.list(any(), association) } returns listOf(page)
+        coEvery { controller.list(any(), association, null, null) } returns listOf(page)
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH

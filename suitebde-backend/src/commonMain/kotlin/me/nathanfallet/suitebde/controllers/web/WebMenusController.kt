@@ -16,6 +16,7 @@ import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
+import me.nathanfallet.usecases.pagination.Pagination
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class WebMenusController(
@@ -29,11 +30,13 @@ class WebMenusController(
     private val deleteWebMenuUseCase: IDeleteChildModelSuspendUseCase<WebMenu, String, String>,
 ) : IWebMenusController {
 
-    override suspend fun list(call: ApplicationCall, parent: Association): List<WebMenu> {
+    override suspend fun list(call: ApplicationCall, parent: Association, limit: Long?, offset: Long?): List<WebMenu> {
         if (call.request.path().contains("/admin/")) return getWebMenusUseCase(parent.id)
         return getWebMenusSlicedUseCase(
-            call.parameters["limit"]?.toLongOrNull() ?: 25,
-            call.parameters["offset"]?.toLongOrNull() ?: 0,
+            Pagination(
+                limit ?: 25,
+                offset ?: 0,
+            ),
             parent.id
         )
     }

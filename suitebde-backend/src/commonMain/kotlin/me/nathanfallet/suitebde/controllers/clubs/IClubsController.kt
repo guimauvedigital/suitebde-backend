@@ -15,7 +15,13 @@ interface IClubsController :
     @AdminTemplateMapping
     @TemplateMapping("public/clubs/list.ftl")
     @ListModelPath
-    suspend fun list(call: ApplicationCall, @ParentModel parent: Association): List<Club>
+    suspend fun list(
+        call: ApplicationCall,
+        @ParentModel parent: Association,
+        @QueryParameter limit: Long?,
+        @QueryParameter offset: Long?,
+        @QueryParameter search: String?,
+    ): List<Club>
 
     @APIMapping
     @AdminTemplateMapping

@@ -5,6 +5,7 @@ import io.ktor.server.application.*
 import io.ktor.server.request.*
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
+import me.nathanfallet.suitebde.models.application.SearchOptions
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
@@ -14,6 +15,7 @@ import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
+import me.nathanfallet.usecases.pagination.Pagination
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class UsersController(
@@ -26,7 +28,13 @@ class UsersController(
     private val getPermissionsForUserUseCase: IGetPermissionsForUserUseCase,
 ) : IUsersController {
 
-    override suspend fun list(call: ApplicationCall, parent: Association): List<User> {
+    override suspend fun list(
+        call: ApplicationCall,
+        parent: Association,
+        limit: Long?,
+        offset: Long?,
+        search: String?,
+    ): List<User> {
         requireUserForCallUseCase(call).takeIf {
             checkPermissionUseCase(it, Permission.USERS_VIEW inAssociation parent.id)
         } ?: throw ControllerException(
@@ -34,8 +42,11 @@ class UsersController(
         )
         if (call.request.path().contains("/admin/")) return getUsersInAssociationUseCase(parent.id)
         return getUsersInAssociationSlicedUseCase(
-            call.parameters["limit"]?.toLongOrNull() ?: 25,
-            call.parameters["offset"]?.toLongOrNull() ?: 0,
+            Pagination(
+                limit ?: 25,
+                offset ?: 0,
+                search?.let { SearchOptions(it) }
+            ),
             parent.id
         )
     }

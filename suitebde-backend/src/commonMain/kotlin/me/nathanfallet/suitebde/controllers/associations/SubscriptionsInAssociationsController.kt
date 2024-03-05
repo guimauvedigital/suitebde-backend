@@ -21,6 +21,7 @@ import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
+import me.nathanfallet.usecases.pagination.Pagination
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class SubscriptionsInAssociationsController(
@@ -36,10 +37,17 @@ class SubscriptionsInAssociationsController(
     private val createCheckoutSessionUseCase: ICreateCheckoutSessionUseCase,
 ) : ISubscriptionsInAssociationsController {
 
-    override suspend fun list(call: ApplicationCall, parent: Association): List<SubscriptionInAssociation> {
+    override suspend fun list(
+        call: ApplicationCall,
+        parent: Association,
+        limit: Long?,
+        offset: Long?,
+    ): List<SubscriptionInAssociation> {
         return getSubscriptionsInAssociationsSlicedUseCase(
-            call.parameters["limit"]?.toLongOrNull() ?: 25,
-            call.parameters["offset"]?.toLongOrNull() ?: 0,
+            Pagination(
+                limit ?: 25,
+                offset ?: 0,
+            ),
             parent.id
         )
     }

@@ -14,6 +14,7 @@ import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
+import me.nathanfallet.usecases.pagination.Pagination
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class UsersInClubsController(
@@ -57,11 +58,13 @@ class UsersInClubsController(
         )
     }
 
-    override suspend fun list(call: ApplicationCall, parent: Club): List<UserInClub> {
+    override suspend fun list(call: ApplicationCall, parent: Club, limit: Long?, offset: Long?): List<UserInClub> {
         if (call.request.path().contains("/admin/")) return getUsersInClubsUseCase(parent.id)
         return getUsersInClubsSlicedUseCase(
-            call.parameters["limit"]?.toLongOrNull() ?: 25,
-            call.parameters["offset"]?.toLongOrNull() ?: 0,
+            Pagination(
+                limit ?: 25,
+                offset ?: 0,
+            ),
             parent.id
         )
     }

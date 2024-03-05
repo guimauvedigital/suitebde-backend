@@ -17,6 +17,8 @@ interface ISubscriptionsInAssociationsController :
     suspend fun list(
         call: ApplicationCall,
         @ParentModel parent: Association,
+        @QueryParameter limit: Long?,
+        @QueryParameter offset: Long?,
     ): List<SubscriptionInAssociation>
 
     @AdminTemplateMapping

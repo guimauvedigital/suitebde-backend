@@ -9,6 +9,7 @@ import me.nathanfallet.suitebde.models.roles.CreateUserInRolePayload
 import me.nathanfallet.suitebde.models.roles.Role
 import me.nathanfallet.suitebde.models.roles.UserInRole
 import me.nathanfallet.usecases.models.id.RecursiveId
+import me.nathanfallet.usecases.pagination.Pagination
 
 class UsersInRolesRemoteRepository(
     client: ISuiteBDEClient,
@@ -24,10 +25,9 @@ class UsersInRolesRemoteRepository(
     route = "users"
 ), IUsersInRolesRemoteRepository {
 
-    override suspend fun list(limit: Long, offset: Long, roleId: String, associationId: String): List<UserInRole> =
+    override suspend fun list(pagination: Pagination, roleId: String, associationId: String): List<UserInRole> =
         list(
-            limit,
-            offset,
+            pagination,
             RecursiveId<Role, String, String>(roleId, RecursiveId<Association, String, Unit>(associationId)),
             null
         )

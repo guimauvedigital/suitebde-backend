@@ -38,6 +38,11 @@ interface IUsersInRolesController :
     @APIMapping
     @AdminTemplateMapping
     @ListModelPath
-    suspend fun list(call: ApplicationCall, @ParentModel parent: Role): List<UserInRole>
+    suspend fun list(
+        call: ApplicationCall,
+        @ParentModel parent: Role,
+        @QueryParameter limit: Long?,
+        @QueryParameter offset: Long?,
+    ): List<UserInRole>
 
 }

@@ -16,6 +16,7 @@ import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
+import me.nathanfallet.usecases.pagination.Pagination
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class RolesController(
@@ -29,11 +30,13 @@ class RolesController(
     private val deleteRoleUseCase: IDeleteChildModelSuspendUseCase<Role, String, String>,
 ) : IRolesController {
 
-    override suspend fun list(call: ApplicationCall, parent: Association): List<Role> {
+    override suspend fun list(call: ApplicationCall, parent: Association, limit: Long?, offset: Long?): List<Role> {
         if (call.request.path().contains("/admin/")) return getRolesInAssociationUseCase(parent.id)
         return getRolesInAssociationSlicedUseCase(
-            call.parameters["limit"]?.toLongOrNull() ?: 25,
-            call.parameters["offset"]?.toLongOrNull() ?: 0,
+            Pagination(
+                limit ?: 25,
+                offset ?: 0,
+            ),
             parent.id
         )
     }

@@ -5,6 +5,7 @@ import me.nathanfallet.suitebde.models.web.WebPagePayload
 import me.nathanfallet.suitebde.repositories.web.IWebPagesRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
+import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -26,12 +27,12 @@ class WebPagesDatabaseRepository(
                 .map(WebPages::toWebPage)
         }
 
-    override suspend fun list(limit: Long, offset: Long, parentId: String, context: IContext?): List<WebPage> =
+    override suspend fun list(pagination: Pagination, parentId: String, context: IContext?): List<WebPage> =
         database.suspendedTransaction {
             WebPages
                 .selectAll()
                 .where { WebPages.associationId eq parentId }
-                .limit(limit.toInt(), offset)
+                .limit(pagination.limit.toInt(), pagination.offset)
                 .map(WebPages::toWebPage)
         }
 
