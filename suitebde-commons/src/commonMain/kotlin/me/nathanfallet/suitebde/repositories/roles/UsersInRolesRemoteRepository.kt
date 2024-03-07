@@ -21,8 +21,8 @@ class UsersInRolesRemoteRepository(
     typeInfo<List<UserInRole>>(),
     client,
     parentRepository,
+    route = "users",
     prefix = "/api/v1",
-    route = "users"
 ), IUsersInRolesRemoteRepository {
 
     override suspend fun list(pagination: Pagination, roleId: String, associationId: String): List<UserInRole> =

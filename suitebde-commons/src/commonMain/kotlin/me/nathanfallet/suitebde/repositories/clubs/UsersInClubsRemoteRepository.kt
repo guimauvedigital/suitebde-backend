@@ -21,6 +21,7 @@ class UsersInClubsRemoteRepository(
     typeInfo<List<UserInClub>>(),
     client,
     parentRepository,
+    route = "users",
     prefix = "/api/v1"
 ), IUsersInClubsRemoteRepository {
 
