@@ -5,6 +5,7 @@ import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.routers.api.APIChildModelRouter
 import me.nathanfallet.ktorx.routers.concat.ConcatChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
 import me.nathanfallet.suitebde.controllers.associations.IAssociationForCallRouter
@@ -22,6 +23,7 @@ class EventsRouter(
     controller: IEventsController,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
+    getUserForCallUseCase: IGetUserForCallUseCase,
     requireUserForCallUseCase: IRequireUserForCallUseCase,
     getPublicMenuForCallUseCase: IGetPublicMenuForCallUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
@@ -56,6 +58,7 @@ class EventsRouter(
         controller,
         IEventsController::class,
         associationForCallRouter,
+        getUserForCallUseCase,
         getPublicMenuForCallUseCase,
         getLocaleForCallUseCase,
         { template, model ->

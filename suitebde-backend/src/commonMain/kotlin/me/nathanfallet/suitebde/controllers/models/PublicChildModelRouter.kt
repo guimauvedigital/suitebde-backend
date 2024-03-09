@@ -7,6 +7,7 @@ import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.routers.IChildModelRouter
 import me.nathanfallet.ktorx.routers.templates.LocalizedTemplateChildModelRouter
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetPublicMenuForCallUseCase
 import me.nathanfallet.usecases.models.IChildModel
 import kotlin.reflect.KClass
@@ -18,7 +19,8 @@ open class PublicChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdateP
     controller: IChildModelController<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>,
     controllerClass: KClass<out IChildModelController<Model, Id, CreatePayload, UpdatePayload, ParentModel, ParentId>>,
     parentRouter: IChildModelRouter<ParentModel, ParentId, *, *, *, *>?,
-    private val getPublicMenuForCallUseCase: IGetPublicMenuForCallUseCase,
+    getUserForCallUseCase: IGetUserForCallUseCase,
+    getPublicMenuForCallUseCase: IGetPublicMenuForCallUseCase,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     respondTemplate: (suspend ApplicationCall.(String, Map<String, Any?>) -> Unit)? = null,
     route: String? = null,
@@ -33,6 +35,7 @@ open class PublicChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdateP
     parentRouter,
     { template, model ->
         val newModel = model + mapOf(
+            "user" to getUserForCallUseCase(this),
             "menu" to getPublicMenuForCallUseCase(this),
         )
         respondTemplate?.invoke(this, template, newModel) ?: respondTemplate(template, newModel)

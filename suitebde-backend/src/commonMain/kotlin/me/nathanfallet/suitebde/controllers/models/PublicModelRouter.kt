@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import io.ktor.util.reflect.*
 import me.nathanfallet.ktorx.controllers.IModelController
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetPublicMenuForCallUseCase
 import me.nathanfallet.usecases.models.IModel
 import me.nathanfallet.usecases.models.UnitModel
@@ -15,6 +16,7 @@ class PublicModelRouter<Model : IModel<Id, CreatePayload, UpdatePayload>, Id, Cr
     updatePayloadTypeInfo: TypeInfo,
     controller: IModelController<Model, Id, CreatePayload, UpdatePayload>,
     controllerClass: KClass<out IModelController<Model, Id, CreatePayload, UpdatePayload>>,
+    getUserForCallUseCase: IGetUserForCallUseCase,
     getPublicMenuForCallUseCase: IGetPublicMenuForCallUseCase,
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     respondTemplate: (suspend ApplicationCall.(String, Map<String, Any?>) -> Unit)? = null,
@@ -28,6 +30,7 @@ class PublicModelRouter<Model : IModel<Id, CreatePayload, UpdatePayload>, Id, Cr
     controller,
     controllerClass,
     null,
+    getUserForCallUseCase,
     getPublicMenuForCallUseCase,
     getLocaleForCallUseCase,
     respondTemplate,

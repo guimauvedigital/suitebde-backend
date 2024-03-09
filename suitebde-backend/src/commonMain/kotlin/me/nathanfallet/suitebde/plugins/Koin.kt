@@ -836,10 +836,10 @@ fun Application.configureKoin() {
             single { RolesRouter(get(), get(), get(), get(), get(), get(), get()) }
             single { UsersInRolesRouter(get(), get()) }
             single { PermissionsInRolesRouter(get(), get()) }
-            single { WebPagesRouter(get(), get(), get(), get(), get(), get(), get(), get()) }
+            single { WebPagesRouter(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             single { WebMenusRouter(get(), get(), get(), get(), get(), get(), get()) }
-            single { EventsRouter(get(), get(), get(), get(), get(), get(), get(), get()) }
-            single { ClubsRouter(get(), get(), get(), get(), get(), get(), get(), get()) }
+            single { EventsRouter(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+            single { ClubsRouter(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             single { UsersInClubsRouter(get(), get()) }
         }
 

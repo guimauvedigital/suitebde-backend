@@ -107,12 +107,23 @@
                         </label>
                     </div>
 
-                    <a href="/${locale}/auth/login"
-                       :class="{ '!text-white hover:text-white' : page === 'home', '!text-body' : page === 'home' && stickyMenu }"
-                       class="font-medium text-body hover:text-primary"><@t key="auth_field_login" /></a>
-                    <a href="/${locale}/auth/register"
-                       :class="{ 'bg-white/[0.15]' : page === 'home', '!bg-primary' : page === 'home' && stickyMenu }"
-                       class="text-white bg-primary text-regular rounded-full flex items-center justify-center hover:shadow-1 py-3 px-7.5"><@t key="auth_field_join" /></a>
+                    <#if user??>
+                        <span class="text-right">
+                            <span class="block text-sm font-medium text-black dark:text-white">${user.firstName} ${user.lastName}</span>
+                            <span class="block text-xs font-medium">${user.email}</span>
+                        </span>
+
+                        <span class="h-12 w-12 rounded-full">
+                            <img src="src/images/user/user-01.png" alt="User"/>
+                        </span>
+                    <#else>
+                        <a href="/${locale}/auth/login"
+                           :class="{ '!text-white hover:text-white' : page === 'home', '!text-body' : page === 'home' && stickyMenu }"
+                           class="font-medium text-body hover:text-primary"><@t key="auth_field_login" /></a>
+                        <a href="/${locale}/auth/register"
+                           :class="{ 'bg-white/[0.15]' : page === 'home', '!bg-primary' : page === 'home' && stickyMenu }"
+                           class="text-white bg-primary text-regular rounded-full flex items-center justify-center hover:shadow-1 py-3 px-7.5"><@t key="auth_field_join" /></a>
+                    </#if>
                 </div>
             </div>
         </div>

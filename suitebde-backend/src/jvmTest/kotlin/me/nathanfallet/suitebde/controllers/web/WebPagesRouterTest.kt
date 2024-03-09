@@ -15,6 +15,7 @@ import io.mockk.mockk
 import kotlinx.datetime.Clock
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.AssociationForCallRouter
 import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
@@ -79,6 +80,7 @@ class WebPagesRouterTest {
             mockk(),
             mockk(),
             mockk(),
+            mockk(),
             AssociationForCallRouter(mockk(), mockk()),
             AssociationsRouter(associationController, mockk(), mockk(), mockk(), mockk())
         )
@@ -105,6 +107,7 @@ class WebPagesRouterTest {
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
+            mockk(),
             requireUserForCallUseCase,
             mockk(),
             getAdminMenuForCallUseCase,
@@ -139,6 +142,7 @@ class WebPagesRouterTest {
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
+            mockk(),
             requireUserForCallUseCase,
             mockk(),
             getAdminMenuForCallUseCase,
@@ -167,11 +171,13 @@ class WebPagesRouterTest {
         val controller = mockk<IWebPagesController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
+        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val getPublicMenuForCallUseCase = mockk<IGetPublicMenuForCallUseCase>()
         val router = WebPagesRouter(
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
+            getUserForCallUseCase,
             mockk(),
             getPublicMenuForCallUseCase,
             mockk(),
@@ -179,6 +185,7 @@ class WebPagesRouterTest {
             AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
+        coEvery { getUserForCallUseCase(any()) } returns user
         coEvery { controller.getByUrl(any(), association, page.url) } returns page
         coEvery { getPublicMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
@@ -199,11 +206,13 @@ class WebPagesRouterTest {
         val controller = mockk<IWebPagesController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
+        val getUserForCallUseCase = mockk<IGetUserForCallUseCase>()
         val getPublicMenuForCallUseCase = mockk<IGetPublicMenuForCallUseCase>()
         val router = WebPagesRouter(
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
+            getUserForCallUseCase,
             mockk(),
             getPublicMenuForCallUseCase,
             mockk(),
@@ -211,6 +220,7 @@ class WebPagesRouterTest {
             AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
+        coEvery { getUserForCallUseCase(any()) } returns user
         coEvery { controller.getByUrl(any(), association, "bad") } throws ControllerException(
             HttpStatusCode.NotFound,
             "webpages_not_found"
