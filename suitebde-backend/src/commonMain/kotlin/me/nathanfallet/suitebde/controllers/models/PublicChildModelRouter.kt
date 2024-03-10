@@ -34,11 +34,13 @@ open class PublicChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdateP
     controllerClass,
     parentRouter,
     { template, model ->
-        val newModel = model + mapOf(
+        if (template == "root/error.ftl") respondTemplate(template, model)
+        else (model + mapOf(
             "user" to getUserForCallUseCase(this),
             "menu" to getPublicMenuForCallUseCase(this),
-        )
-        respondTemplate?.invoke(this, template, newModel) ?: respondTemplate(template, newModel)
+        )).let { newModel ->
+            respondTemplate?.invoke(this, template, newModel) ?: respondTemplate(template, newModel)
+        }
     },
     getLocaleForCallUseCase,
     "root/error.ftl",

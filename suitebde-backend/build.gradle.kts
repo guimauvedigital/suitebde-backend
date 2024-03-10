@@ -81,6 +81,7 @@ kotlin {
                 implementation("me.nathanfallet.ktorx:ktor-routers-admin-locale:$ktorxVersion")
                 implementation("me.nathanfallet.ktorx:ktor-routers-auth:$ktorxVersion")
                 implementation("me.nathanfallet.ktorx:ktor-routers-auth-locale:$ktorxVersion")
+                implementation("me.nathanfallet.ktorx:ktor-routers-websockets:$ktorxVersion")
                 implementation("me.nathanfallet.ktorx:ktor-sentry:$ktorxVersion")
                 implementation("me.nathanfallet.cloudflare:cloudflare-api-client:4.2.3")
 
@@ -88,6 +89,7 @@ kotlin {
                 implementation("at.favre.lib:bcrypt:0.9.0")
                 implementation("org.apache.commons:commons-email:1.5")
                 implementation("io.sentry:sentry:7.5.0")
+                implementation("io.github.g0dkar:qrcode-kotlin:3.3.0")
                 implementation("com.stripe:stripe-java:24.17.0")
                 implementation("com.google.code.gson:gson:2.10.1")
 

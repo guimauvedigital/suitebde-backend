@@ -34,8 +34,8 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
     controllerClass,
     parentRouter,
     { template, model ->
-        val flatpickr = (model["keys"] as? List<*>)?.any { (it as? PayloadKey)?.type == "date" } == true
-        respondTemplate(
+        if (template == "root/error.ftl") respondTemplate(template, model)
+        else respondTemplate(
             template, model + mapOf(
                 "title" to translateUseCase(
                     getLocaleForCallUseCase(this),
@@ -43,7 +43,7 @@ open class AdminChildModelRouter<Model : IChildModel<Id, CreatePayload, UpdatePa
                 ),
                 "user" to requireUserForCallUseCase(this),
                 "menu" to getAdminMenuForCallUseCase(this),
-                "flatpickr" to flatpickr,
+                "flatpickr" to ((model["keys"] as? List<*>)?.any { (it as? PayloadKey)?.type == "date" } == true),
             )
         )
     },
