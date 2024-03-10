@@ -5,13 +5,17 @@
             <div class="flex flex-col lg:flex-row gap-7.5 xl:gap-17.5">
                 <div class="lg:w-[70%]">
                     <div class="animate_top rounded-md shadow-solid-13">
+                        <img class="w-full aspect-21/9 object-cover"
+                             src="<#if item.logo??>${item.logo}<#else>/img/default_event_image.jpg</#if>"
+                             alt="${item.name}"/>
+
                         <h2 id="webpages_title"
                             class="font-medium text-3xl 2xl:text-title-lg text-black dark:text-white mt-11 mb-5">
-                            ${item.title}
+                            ${item.name}
                         </h2>
 
                         <p>
-                            ${item.content}
+                            ${item.description}
                         </p>
                     </div>
                 </div>
