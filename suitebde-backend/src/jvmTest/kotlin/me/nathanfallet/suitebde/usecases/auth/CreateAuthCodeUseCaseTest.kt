@@ -4,8 +4,8 @@ import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
-import me.nathanfallet.ktorx.models.auth.ClientForUser
 import me.nathanfallet.suitebde.models.application.Client
+import me.nathanfallet.suitebde.models.auth.ClientForUser
 import me.nathanfallet.suitebde.models.users.ClientInUser
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.users.IClientsInUsersRepository

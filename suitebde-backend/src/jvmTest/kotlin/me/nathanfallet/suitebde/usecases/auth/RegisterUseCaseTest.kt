@@ -1,8 +1,6 @@
 package me.nathanfallet.suitebde.usecases.auth
 
-import io.ktor.server.application.*
 import io.mockk.coEvery
-import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.Clock
@@ -20,7 +18,6 @@ class RegisterUseCaseTest {
     @Test
     fun testRegisterCodePayload() = runBlocking {
         val getCodeInEmailUseCase = mockk<IGetCodeInEmailUseCase>()
-        val call = mockk<ApplicationCall>()
         val createUserUseCase = mockk<ICreateChildModelSuspendUseCase<User, CreateUserPayload, String>>()
         val useCase = RegisterUseCase(getCodeInEmailUseCase, createUserUseCase)
         val payload = CreateUserPayload(
@@ -31,34 +28,29 @@ class RegisterUseCaseTest {
             "id", "associationId", "email", "password",
             "firstname", "lastname", false
         )
-        every { call.parameters["code"] } returns "code"
         coEvery { getCodeInEmailUseCase("code") } returns CodeInEmail(
             "email", "code", "associationId", Clock.System.now()
         )
         coEvery { createUserUseCase(payload, "associationId") } returns user
-        assertEquals(user, useCase(call, RegisterCodePayload("password", "firstname", "lastname")))
+        assertEquals(user, useCase("code", RegisterCodePayload("password", "firstname", "lastname")))
     }
 
     @Test
     fun testRegisterCodePayloadNotExists() = runBlocking {
         val getCodeInEmailUseCase = mockk<IGetCodeInEmailUseCase>()
-        val call = mockk<ApplicationCall>()
         val useCase = RegisterUseCase(getCodeInEmailUseCase, mockk())
-        every { call.parameters["code"] } returns "code"
         coEvery { getCodeInEmailUseCase("code") } returns null
-        assertEquals(null, useCase(call, RegisterCodePayload("password", "firstname", "lastname")))
+        assertEquals(null, useCase("code", RegisterCodePayload("password", "firstname", "lastname")))
     }
 
     @Test
     fun testRegisterCodePayloadNoAssociation() = runBlocking {
         val getCodeInEmailUseCase = mockk<IGetCodeInEmailUseCase>()
-        val call = mockk<ApplicationCall>()
         val useCase = RegisterUseCase(getCodeInEmailUseCase, mockk())
-        every { call.parameters["code"] } returns "code"
         coEvery { getCodeInEmailUseCase("code") } returns CodeInEmail(
             "email", "code", null, Clock.System.now()
         )
-        assertEquals(null, useCase(call, RegisterCodePayload("password", "firstname", "lastname")))
+        assertEquals(null, useCase("code", RegisterCodePayload("password", "firstname", "lastname")))
     }
 
 }

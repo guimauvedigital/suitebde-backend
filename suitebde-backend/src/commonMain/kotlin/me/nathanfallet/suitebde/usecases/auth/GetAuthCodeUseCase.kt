@@ -1,15 +1,15 @@
 package me.nathanfallet.suitebde.usecases.auth
 
 import kotlinx.datetime.Clock
-import me.nathanfallet.ktorx.models.auth.ClientForUser
-import me.nathanfallet.ktorx.usecases.auth.IGetAuthCodeUseCase
-import me.nathanfallet.ktorx.usecases.auth.IGetClientUseCase
+import me.nathanfallet.suitebde.models.application.Client
+import me.nathanfallet.suitebde.models.auth.ClientForUser
 import me.nathanfallet.suitebde.repositories.users.IClientsInUsersRepository
 import me.nathanfallet.suitebde.usecases.users.IGetUserUseCase
+import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
 
 class GetAuthCodeUseCase(
     private val repository: IClientsInUsersRepository,
-    private val getClientUseCase: IGetClientUseCase,
+    private val getClientUseCase: IGetModelSuspendUseCase<Client, String>,
     private val getUserUseCase: IGetUserUseCase,
 ) : IGetAuthCodeUseCase {
 
