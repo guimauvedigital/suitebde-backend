@@ -46,4 +46,12 @@ class ClientsInUsersDatabaseRepository(
             }
         } == 1
 
+    override suspend fun getExpiringBefore(date: Instant): List<ClientInUser> =
+        database.suspendedTransaction {
+            ClientsInUsers
+                .selectAll()
+                .where { ClientsInUsers.expiration less date.toString() }
+                .map(ClientsInUsers::toClientInUser)
+        }
+
 }

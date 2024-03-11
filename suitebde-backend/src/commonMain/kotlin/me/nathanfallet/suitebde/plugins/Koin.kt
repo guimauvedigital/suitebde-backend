@@ -217,7 +217,7 @@ fun Application.configureKoin() {
         val useCaseModule = module {
             // Application
             single<ISendEmailUseCase> { SendEmailUseCase(get()) }
-            single<IExpireUseCase> { ExpireUseCase(get(), get()) }
+            single<IExpireUseCase> { ExpireUseCase(get(), get(), get(), get()) }
             single<ITranslateUseCase> { TranslateUseCase() }
             single<IGetLocaleForCallUseCase> { GetLocaleForCallUseCase() }
             single<IGetZoneForDomainUseCase> {

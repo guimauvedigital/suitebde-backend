@@ -9,10 +9,9 @@ class LoginUseCase(
     private val verifyPasswordUseCase: IVerifyPasswordUseCase,
 ) : ILoginUseCase {
 
-    override suspend fun invoke(input: LoginPayload): User? {
-        return getUserForEmailUseCase(input.email, true)?.takeIf {
+    override suspend fun invoke(input: LoginPayload): User? =
+        getUserForEmailUseCase(input.email, true)?.takeIf {
             verifyPasswordUseCase(input.password, it.password ?: "")
         }
-    }
 
 }

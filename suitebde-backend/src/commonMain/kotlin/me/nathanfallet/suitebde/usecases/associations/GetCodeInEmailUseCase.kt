@@ -8,10 +8,9 @@ class GetCodeInEmailUseCase(
     private val repository: ICodesInEmailsRepository,
 ) : IGetCodeInEmailUseCase {
 
-    override suspend fun invoke(input: String): CodeInEmail? {
-        return repository.getCodeInEmail(input)?.takeIf {
+    override suspend fun invoke(input: String): CodeInEmail? =
+        repository.getCodeInEmail(input)?.takeIf {
             it.expiresAt > Clock.System.now()
         }
-    }
 
 }
