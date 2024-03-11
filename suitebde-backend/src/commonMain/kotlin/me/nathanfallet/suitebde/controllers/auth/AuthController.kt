@@ -27,6 +27,7 @@ class AuthController(
     private val loginUseCase: ILoginUseCase,
     private val registerUseCase: IRegisterUseCase,
     private val setSessionForCallUseCase: ISetSessionForCallUseCase,
+    private val clearSessionForCallUseCase: IClearSessionForCallUseCase,
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val getClientUseCase: IGetModelSuspendUseCase<Client, String>,
     private val getAuthCodeUseCase: IGetAuthCodeUseCase,
@@ -49,6 +50,11 @@ class AuthController(
             HttpStatusCode.Unauthorized, "auth_invalid_credentials"
         )
         setSessionForCallUseCase(call, SessionPayload(user.id))
+        return RedirectResponse(redirect ?: "/")
+    }
+
+    override suspend fun logout(call: ApplicationCall, redirect: String?): RedirectResponse {
+        clearSessionForCallUseCase(call)
         return RedirectResponse(redirect ?: "/")
     }
 

@@ -22,6 +22,13 @@ interface IAuthController : IUnitController {
         @QueryParameter redirect: String?,
     ): RedirectResponse
 
+    @TemplateMapping("auth/login.ftl")
+    @Path("GET", "/logout")
+    suspend fun logout(
+        call: ApplicationCall,
+        @QueryParameter redirect: String?,
+    ): RedirectResponse
+
     @TemplateMapping("auth/register.ftl")
     @Path("GET", "/register")
     fun register()

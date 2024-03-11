@@ -378,6 +378,7 @@ fun Application.configureKoin() {
             single<IGetJWTPrincipalForCallUseCase> { GetJWTPrincipalForCallUseCase() }
             single<IGetSessionForCallUseCase> { GetSessionForCallUseCase() }
             single<ISetSessionForCallUseCase> { SetSessionForCallUseCase() }
+            single<IClearSessionForCallUseCase> { ClearSessionForCallUseCase() }
             single<ILoginUseCase> { LoginUseCase(get(), get()) }
             single<IRegisterUseCase> { RegisterUseCase(get(), get(named<User>())) }
             single<ICreateAuthCodeUseCase> { CreateAuthCodeUseCase(get()) }
@@ -658,6 +659,7 @@ fun Application.configureKoin() {
             // Auth
             single<IAuthController> {
                 AuthController(
+                    get(),
                     get(),
                     get(),
                     get(),
