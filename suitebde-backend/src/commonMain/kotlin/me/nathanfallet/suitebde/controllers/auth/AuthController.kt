@@ -87,8 +87,7 @@ class AuthController(
         payload: RegisterCodePayload,
         redirect: String?,
     ): RedirectResponse {
-        val originalPayload = register(call, code)
-        val user = registerUseCase(call, payload) ?: throw ControllerException(
+        val user = registerUseCase(code, payload) ?: throw ControllerException(
             HttpStatusCode.InternalServerError, "error_internal"
         )
         setSessionForCallUseCase(call, SessionPayload(user.id))
