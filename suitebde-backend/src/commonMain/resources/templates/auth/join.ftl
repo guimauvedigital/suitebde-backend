@@ -14,7 +14,7 @@
         </#if>
     </#if>
 
-    <#if codePayload??>
+    <#if item??>
         <div class="form-floating">
             <input type="text" class="form-control" id="name" name="name" required>
             <label for="name"><@t key="auth_field_name" /></label>
@@ -34,20 +34,20 @@
             </div>
         </div>
         <div class="form-floating">
-            <input type="email" class="form-control" id="email" name="email" value="${codePayload.email}" disabled>
+            <input type="email" class="form-control" id="email" name="email" value="${item.email}" disabled>
             <label for="email"><@t key="auth_field_email" /></label>
         </div>
         <div class="row">
             <div class="col-md-6">
                 <div class="form-floating">
-                    <input type="text" class="form-control" id="last_name" name="last_name" required>
-                    <label for="last_name"><@t key="auth_field_last_name" /></label>
+                    <input type="text" class="form-control" id="lastName" name="lastName" required>
+                    <label for="lastName"><@t key="auth_field_last_name" /></label>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="form-floating">
-                    <input type="text" class="form-control" id="first_name" name="first_name" required>
-                    <label for="first_name"><@t key="auth_field_first_name" /></label>
+                    <input type="text" class="form-control" id="firstName" name="firstName" required>
+                    <label for="firstName"><@t key="auth_field_first_name" /></label>
                 </div>
             </div>
         </div>

@@ -1,13 +1,13 @@
 package me.nathanfallet.suitebde.client
 
 import me.nathanfallet.ktorx.models.api.AbstractAPIClient
-import me.nathanfallet.ktorx.repositories.auth.AuthAPIRemoteRepository
 import me.nathanfallet.ktorx.usecases.api.IGetTokenUseCase
 import me.nathanfallet.suitebde.models.application.SuiteBDEEnvironment
 import me.nathanfallet.suitebde.models.application.SuiteBDEJson
 import me.nathanfallet.suitebde.repositories.associations.AssociationsRemoteRepository
 import me.nathanfallet.suitebde.repositories.associations.DomainsInAssociationsRemoteRepository
 import me.nathanfallet.suitebde.repositories.associations.SubscriptionsInAssociationsRemoteRepository
+import me.nathanfallet.suitebde.repositories.auth.AuthAPIRemoteRepository
 import me.nathanfallet.suitebde.repositories.clubs.ClubsRemoteRepository
 import me.nathanfallet.suitebde.repositories.clubs.UsersInClubsRemoteRepository
 import me.nathanfallet.suitebde.repositories.events.EventsRemoteRepository
@@ -28,7 +28,7 @@ class SuiteBDEClient(
     SuiteBDEJson.json
 ), ISuiteBDEClient {
 
-    override val auth = AuthAPIRemoteRepository(this, prefix = "/api/v1")
+    override val auth = AuthAPIRemoteRepository(this)
     override val associations = AssociationsRemoteRepository(this)
     override val domainsInAssociations = DomainsInAssociationsRemoteRepository(this, associations)
     override val subscriptionsInAssociations = SubscriptionsInAssociationsRemoteRepository(this, associations)

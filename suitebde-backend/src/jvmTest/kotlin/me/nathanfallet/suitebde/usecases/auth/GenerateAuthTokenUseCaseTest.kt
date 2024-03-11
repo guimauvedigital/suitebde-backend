@@ -3,8 +3,8 @@ package me.nathanfallet.suitebde.usecases.auth
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
-import me.nathanfallet.ktorx.models.auth.ClientForUser
 import me.nathanfallet.suitebde.models.application.Client
+import me.nathanfallet.suitebde.models.auth.ClientForUser
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.services.jwt.IJWTService
 import me.nathanfallet.usecases.auth.AuthToken

@@ -49,8 +49,10 @@ class AuthRouterTest {
     @Test
     fun testGetLoginRoute() = testApplication {
         val client = installApp(this)
+        val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val router = AuthRouter(mockk(), getLocaleForCallUseCase)
+        val router = AuthRouter(controller, getLocaleForCallUseCase)
+        every { controller.login() } returns Unit
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)
@@ -73,8 +75,10 @@ class AuthRouterTest {
     @Test
     fun testGetRegisterRoute() = testApplication {
         val client = installApp(this)
+        val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val router = AuthRouter(mockk(), getLocaleForCallUseCase)
+        val router = AuthRouter(controller, getLocaleForCallUseCase)
+        every { controller.register() } returns Unit
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)
@@ -128,8 +132,10 @@ class AuthRouterTest {
     @Test
     fun testGetJoinRoute() = testApplication {
         val client = installApp(this)
+        val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val router = AuthRouter(mockk(), getLocaleForCallUseCase)
+        val router = AuthRouter(controller, getLocaleForCallUseCase)
+        every { controller.join() } returns Unit
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)
@@ -151,7 +157,7 @@ class AuthRouterTest {
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val router = AuthRouter(controller, getLocaleForCallUseCase)
-        coEvery { controller.join(any(), JoinPayload("email")) } returns Unit
+        coEvery { controller.join(any(), JoinPayload("email")) } returns mapOf("success" to "auth_join_email_sent")
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)
@@ -217,7 +223,7 @@ class AuthRouterTest {
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val router = AuthRouter(controller, getLocaleForCallUseCase)
-        coEvery { controller.join(any(), "code") } returns JoinPayload("email@email.com")
+        coEvery { controller.join("code") } returns JoinPayload("email@email.com")
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)
@@ -247,14 +253,14 @@ class AuthRouterTest {
         assertEquals("password", document.getElementById("password")?.attr("name"))
         assertEquals("password", document.getElementById("password")?.attr("type"))
         assertEquals(true, document.getElementById("password")?.hasAttr("required"))
-        assertEquals(true, document.getElementById("first_name")?.`is`("input"))
-        assertEquals("first_name", document.getElementById("first_name")?.attr("name"))
-        assertEquals("text", document.getElementById("first_name")?.attr("type"))
-        assertEquals(true, document.getElementById("first_name")?.hasAttr("required"))
-        assertEquals(true, document.getElementById("last_name")?.`is`("input"))
-        assertEquals("last_name", document.getElementById("last_name")?.attr("name"))
-        assertEquals("text", document.getElementById("last_name")?.attr("type"))
-        assertEquals(true, document.getElementById("last_name")?.hasAttr("required"))
+        assertEquals(true, document.getElementById("firstName")?.`is`("input"))
+        assertEquals("firstName", document.getElementById("firstName")?.attr("name"))
+        assertEquals("text", document.getElementById("firstName")?.attr("type"))
+        assertEquals(true, document.getElementById("firstName")?.hasAttr("required"))
+        assertEquals(true, document.getElementById("lastName")?.`is`("input"))
+        assertEquals("lastName", document.getElementById("lastName")?.attr("name"))
+        assertEquals("text", document.getElementById("lastName")?.attr("type"))
+        assertEquals(true, document.getElementById("lastName")?.hasAttr("required"))
         assertEquals(true, document.getElementsByAttributeValue("type", "submit").first()?.`is`("button"))
     }
 
@@ -264,7 +270,7 @@ class AuthRouterTest {
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val router = AuthRouter(controller, getLocaleForCallUseCase)
-        coEvery { controller.join(any(), "code") } throws ControllerException(
+        coEvery { controller.join("code") } throws ControllerException(
             HttpStatusCode.NotFound,
             "auth_code_invalid"
         )
@@ -285,17 +291,16 @@ class AuthRouterTest {
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val router = AuthRouter(controller, getLocaleForCallUseCase)
-        coEvery { controller.join(any(), "code") } returns JoinPayload("email")
+        coEvery { controller.join("code") } returns JoinPayload("email")
         coEvery {
             controller.join(
-                any(),
                 "code",
                 JoinCodePayload(
-                    "code", "email", "name", "school", "city",
+                    "name", "school", "city",
                     "password", "firstname", "lastname"
                 )
             )
-        } returns Unit
+        } returns mapOf("success" to "auth_join_submitted")
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)
@@ -308,8 +313,8 @@ class AuthRouterTest {
                     "school" to "school",
                     "city" to "city",
                     "password" to "password",
-                    "first_name" to "firstname",
-                    "last_name" to "lastname"
+                    "firstName" to "firstname",
+                    "lastName" to "lastname"
                 ).formUrlEncode()
             )
         }
@@ -328,7 +333,7 @@ class AuthRouterTest {
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val router = AuthRouter(controller, getLocaleForCallUseCase)
-        coEvery { controller.join(any(), "code") } returns JoinPayload("email")
+        coEvery { controller.join("code") } returns JoinPayload("email")
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)
@@ -340,27 +345,6 @@ class AuthRouterTest {
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("auth_join_title")?.`is`("h1"))
         assertEquals("Invalid body", document.getElementById("alert-error")?.text())
-    }
-
-    @Test
-    fun testPostJoinCodeRouteNotFound() = testApplication {
-        val client = installApp(this)
-        val controller = mockk<IAuthController>()
-        val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
-        val router = AuthRouter(controller, getLocaleForCallUseCase)
-        coEvery { controller.join(any(), "code") } throws ControllerException(
-            HttpStatusCode.NotFound,
-            "auth_code_invalid"
-        )
-        every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
-        routing {
-            router.createRoutes(this)
-        }
-        val response = client.post("/en/auth/join/code")
-        assertEquals(HttpStatusCode.NotFound, response.status)
-        val document = Jsoup.parse(response.bodyAsText())
-        assertEquals(true, document.getElementById("auth_join_title")?.`is`("h1"))
-        assertEquals("Invalid code", document.getElementById("alert-error")?.text())
     }
 
 }

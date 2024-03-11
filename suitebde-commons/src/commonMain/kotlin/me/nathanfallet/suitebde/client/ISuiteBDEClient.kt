@@ -1,10 +1,10 @@
 package me.nathanfallet.suitebde.client
 
 import me.nathanfallet.ktorx.models.api.IAPIClient
-import me.nathanfallet.ktorx.repositories.auth.IAuthAPIRemoteRepository
 import me.nathanfallet.suitebde.repositories.associations.IAssociationsRemoteRepository
 import me.nathanfallet.suitebde.repositories.associations.IDomainsInAssociationsRemoteRepository
 import me.nathanfallet.suitebde.repositories.associations.ISubscriptionsInAssociationsRemoteRepository
+import me.nathanfallet.suitebde.repositories.auth.IAuthAPIRemoteRepository
 import me.nathanfallet.suitebde.repositories.clubs.IClubsRemoteRepository
 import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRemoteRepository
 import me.nathanfallet.suitebde.repositories.events.IEventsRemoteRepository

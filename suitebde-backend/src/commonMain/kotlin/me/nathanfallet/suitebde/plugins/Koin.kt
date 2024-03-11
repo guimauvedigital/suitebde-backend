@@ -6,7 +6,6 @@ import me.nathanfallet.cloudflare.client.ICloudflareClient
 import me.nathanfallet.i18n.usecases.localization.TranslateUseCase
 import me.nathanfallet.ktorx.database.sessions.SessionsDatabaseRepository
 import me.nathanfallet.ktorx.repositories.sessions.ISessionsRepository
-import me.nathanfallet.ktorx.usecases.auth.*
 import me.nathanfallet.ktorx.usecases.localization.GetLocaleForCallUseCase
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.ktorx.usecases.users.IGetUserForCallUseCase
@@ -54,9 +53,6 @@ import me.nathanfallet.suitebde.database.web.WebMenusDatabaseRepository
 import me.nathanfallet.suitebde.database.web.WebPagesDatabaseRepository
 import me.nathanfallet.suitebde.models.application.Client
 import me.nathanfallet.suitebde.models.associations.*
-import me.nathanfallet.suitebde.models.auth.LoginPayload
-import me.nathanfallet.suitebde.models.auth.RegisterCodePayload
-import me.nathanfallet.suitebde.models.auth.RegisterPayload
 import me.nathanfallet.suitebde.models.clubs.*
 import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
@@ -380,29 +376,14 @@ fun Application.configureKoin() {
             single<IHashPasswordUseCase> { HashPasswordUseCase() }
             single<IVerifyPasswordUseCase> { VerifyPasswordUseCase() }
             single<IGetJWTPrincipalForCallUseCase> { GetJWTPrincipalForCallUseCase() }
-            single<ICreateSessionForUserUseCase> { CreateSessionForUserUseCase() }
             single<IGetSessionForCallUseCase> { GetSessionForCallUseCase() }
             single<ISetSessionForCallUseCase> { SetSessionForCallUseCase() }
-            single<ILoginUseCase<LoginPayload>> { LoginUseCase(get(), get()) }
-            single<IRegisterUseCase<RegisterCodePayload>> { RegisterUseCase(get(), get(named<User>())) }
-            single<ICreateCodeRegisterUseCase<RegisterPayload>> {
-                CreateCodeRegisterUseCase(
-                    get(),
-                    get(),
-                    get(),
-                    get(),
-                    get()
-                )
-            }
-            single<IGetCodeRegisterUseCase<RegisterPayload>> { GetCodeRegisterUseCase(get(), get()) }
-            single<IDeleteCodeRegisterUseCase> { DeleteCodeRegisterUseCase(get()) }
-            single<IGetClientUseCase> { GetClientFromModelUseCase<Client>(get(named<Client>())) }
+            single<ILoginUseCase> { LoginUseCase(get(), get()) }
+            single<IRegisterUseCase> { RegisterUseCase(get(), get(named<User>())) }
             single<ICreateAuthCodeUseCase> { CreateAuthCodeUseCase(get()) }
-            single<IGetAuthCodeUseCase> { GetAuthCodeUseCase(get(), get(), get()) }
+            single<IGetAuthCodeUseCase> { GetAuthCodeUseCase(get(), get(named<Client>()), get()) }
             single<IDeleteAuthCodeUseCase> { DeleteAuthCodeUseCase(get()) }
-            single<IGenerateAuthTokenUseCase> {
-                GenerateAuthTokenUseCase(get())
-            }
+            single<IGenerateAuthTokenUseCase> { GenerateAuthTokenUseCase(get()) }
 
             // Users
             single<IGetUserUseCase> { GetUserUseCase(get()) }
@@ -683,9 +664,7 @@ fun Application.configureKoin() {
                     get(),
                     get(),
                     get(),
-                    get(),
-                    get(),
-                    get(),
+                    get(named<Client>()),
                     get(),
                     get(),
                     get(),
