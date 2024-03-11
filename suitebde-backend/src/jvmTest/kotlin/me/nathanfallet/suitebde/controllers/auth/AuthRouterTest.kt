@@ -11,9 +11,11 @@ import io.ktor.server.testing.*
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.datetime.Clock
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.models.application.SuiteBDEJson
+import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.auth.JoinCodePayload
 import me.nathanfallet.suitebde.models.auth.JoinPayload
 import me.nathanfallet.suitebde.models.auth.RegisterPayload
@@ -27,6 +29,11 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class AuthRouterTest {
+
+    private val association = Association(
+        "associationId", "name", "school", "city",
+        true, Clock.System.now(), Clock.System.now()
+    )
 
     private fun installApp(application: ApplicationTestBuilder): HttpClient {
         application.environment {
@@ -78,7 +85,7 @@ class AuthRouterTest {
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val router = AuthRouter(controller, getLocaleForCallUseCase)
-        every { controller.register() } returns Unit
+        coEvery { controller.register(any(), null) } returns association
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)
@@ -100,7 +107,7 @@ class AuthRouterTest {
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val router = AuthRouter(controller, getLocaleForCallUseCase)
-        coEvery { controller.register(any(), "code") } returns RegisterPayload("email@email.com")
+        coEvery { controller.registerCode(any(), "code") } returns RegisterPayload("email@email.com")
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)
@@ -223,7 +230,7 @@ class AuthRouterTest {
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val router = AuthRouter(controller, getLocaleForCallUseCase)
-        coEvery { controller.join("code") } returns JoinPayload("email@email.com")
+        coEvery { controller.joinCode("code") } returns JoinPayload("email@email.com")
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)
@@ -270,7 +277,7 @@ class AuthRouterTest {
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val router = AuthRouter(controller, getLocaleForCallUseCase)
-        coEvery { controller.join("code") } throws ControllerException(
+        coEvery { controller.joinCode("code") } throws ControllerException(
             HttpStatusCode.NotFound,
             "auth_code_invalid"
         )
@@ -291,9 +298,9 @@ class AuthRouterTest {
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val router = AuthRouter(controller, getLocaleForCallUseCase)
-        coEvery { controller.join("code") } returns JoinPayload("email")
+        coEvery { controller.joinCode("code") } returns JoinPayload("email")
         coEvery {
-            controller.join(
+            controller.joinCode(
                 "code",
                 JoinCodePayload(
                     "name", "school", "city",
@@ -333,7 +340,7 @@ class AuthRouterTest {
         val controller = mockk<IAuthController>()
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val router = AuthRouter(controller, getLocaleForCallUseCase)
-        coEvery { controller.join("code") } returns JoinPayload("email")
+        coEvery { controller.joinCode("code") } returns JoinPayload("email")
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         routing {
             router.createRoutes(this)

@@ -660,6 +660,8 @@ fun Application.configureKoin() {
             single<IAuthController> {
                 AuthController(
                     get(),
+                    get(named<Association>()),
+                    get(),
                     get(),
                     get(),
                     get(),

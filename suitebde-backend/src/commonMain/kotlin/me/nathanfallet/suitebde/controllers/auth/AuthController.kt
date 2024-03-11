@@ -22,6 +22,8 @@ import me.nathanfallet.usecases.models.create.ICreateModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetModelSuspendUseCase
 
 class AuthController(
+    private val listAssociationsUseCase: IGetAssociationsUseCase,
+    private val getAssociationUseCase: IGetModelSuspendUseCase<Association, String>,
     private val getAssociationForCallUseCase: IGetAssociationForCallUseCase,
     private val requireAssociationForCallUseCase: IRequireAssociationForCallUseCase,
     private val loginUseCase: ILoginUseCase,
@@ -58,12 +60,22 @@ class AuthController(
         return RedirectResponse(redirect ?: "/")
     }
 
-    override fun register() {}
+    override suspend fun associations(): List<Association> {
+        return listAssociationsUseCase(true)
+    }
 
-    override suspend fun register(call: ApplicationCall, payload: RegisterPayload): Map<String, Any> {
-        val association = getAssociationForCallUseCase(call) ?: throw ControllerException(
-            HttpStatusCode.NotFound, "auth_register_no_association"
-        )
+    override suspend fun register(call: ApplicationCall, associationId: String?): Association {
+        return getAssociationForCallUseCase(call)
+            ?: associationId?.let { getAssociationUseCase(associationId) }
+            ?: throw RedirectResponse("associations")
+    }
+
+    override suspend fun register(
+        call: ApplicationCall,
+        payload: RegisterPayload,
+        associationId: String?,
+    ): Map<String, Any> {
+        val association = register(call, associationId)
         val code = createCodeInEmailUseCase(payload.email, association.id) ?: throw ControllerException(
             HttpStatusCode.BadRequest, "auth_register_email_taken"
         )
@@ -78,7 +90,7 @@ class AuthController(
         return mapOf("success" to "auth_register_code_created")
     }
 
-    override suspend fun register(call: ApplicationCall, code: String): RegisterPayload {
+    override suspend fun registerCode(call: ApplicationCall, code: String): RegisterPayload {
         val codeInEmail = getCodeInEmailUseCase(code)?.takeIf {
             it.associationId == requireAssociationForCallUseCase(call).id
         } ?: throw ControllerException(
@@ -87,7 +99,7 @@ class AuthController(
         return RegisterPayload(codeInEmail.email)
     }
 
-    override suspend fun register(
+    override suspend fun registerCode(
         call: ApplicationCall,
         code: String,
         payload: RegisterCodePayload,
@@ -136,14 +148,14 @@ class AuthController(
         return mapOf("success" to "auth_join_email_sent")
     }
 
-    override suspend fun join(code: String): JoinPayload {
+    override suspend fun joinCode(code: String): JoinPayload {
         return getCodeInEmailUseCase(code)?.let {
             JoinPayload(it.email)
         } ?: throw ControllerException(HttpStatusCode.NotFound, "auth_code_invalid")
     }
 
-    override suspend fun join(code: String, payload: JoinCodePayload): Map<String, Any> {
-        val originalPayload = join(code)
+    override suspend fun joinCode(code: String, payload: JoinCodePayload): Map<String, Any> {
+        val originalPayload = joinCode(code)
         createAssociationUseCase(
             CreateAssociationPayload(
                 name = payload.name,

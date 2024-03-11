@@ -52,8 +52,8 @@ class AuthControllerTest {
         val loginPayload = LoginPayload("email", "password")
         val sessionPayload = SessionPayload("id")
         val controller = AuthController(
-            mockk(), mockk(), loginUseCase, mockk(), setSessionForCallUseCase, mockk(), mockk(), mockk(), mockk(),
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), loginUseCase, mockk(), setSessionForCallUseCase, mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
         )
         coEvery { loginUseCase(loginPayload) } returns user
         every { setSessionForCallUseCase(call, sessionPayload) } returns Unit
@@ -69,8 +69,8 @@ class AuthControllerTest {
         val loginPayload = LoginPayload("email", "password")
         val sessionPayload = SessionPayload("id")
         val controller = AuthController(
-            mockk(), mockk(), loginUseCase, mockk(), setSessionForCallUseCase, mockk(), mockk(), mockk(), mockk(),
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), loginUseCase, mockk(), setSessionForCallUseCase, mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
         )
         coEvery { loginUseCase(loginPayload) } returns user
         every { setSessionForCallUseCase(call, sessionPayload) } returns Unit
@@ -84,7 +84,7 @@ class AuthControllerTest {
         val call = mockk<ApplicationCall>()
         val loginPayload = LoginPayload("email", "password")
         val controller = AuthController(
-            mockk(), mockk(), loginUseCase, mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), loginUseCase, mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
             mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
         )
         coEvery { loginUseCase(loginPayload) } returns null
@@ -100,8 +100,8 @@ class AuthControllerTest {
         val clearSessionForCallUseCase = mockk<IClearSessionForCallUseCase>()
         val call = mockk<ApplicationCall>()
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), clearSessionForCallUseCase, mockk(), mockk(), mockk(),
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), clearSessionForCallUseCase, mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
         )
         every { clearSessionForCallUseCase(call) } returns Unit
         assertEquals(RedirectResponse("/"), controller.logout(call, null))
@@ -113,8 +113,8 @@ class AuthControllerTest {
         val clearSessionForCallUseCase = mockk<IClearSessionForCallUseCase>()
         val call = mockk<ApplicationCall>()
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), clearSessionForCallUseCase, mockk(), mockk(), mockk(),
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), clearSessionForCallUseCase, mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
         )
         every { clearSessionForCallUseCase(call) } returns Unit
         assertEquals(RedirectResponse("/redirect"), controller.logout(call, "/redirect"))
@@ -131,8 +131,8 @@ class AuthControllerTest {
         val call = mockk<ApplicationCall>()
         val registerPayload = RegisterPayload("email")
         val controller = AuthController(
-            getAssociationForCallUseCase, mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
-            mockk(), mockk(), mockk(), createCodeInEmailUseCase, mockk(), mockk(), mockk(),
+            mockk(), mockk(), getAssociationForCallUseCase, mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(), createCodeInEmailUseCase, mockk(), mockk(), mockk(),
             sendEmailUseCase, getLocaleForCallUseCase, translateUseCase
         )
         val now = Clock.System.now()
@@ -151,7 +151,7 @@ class AuthControllerTest {
         every {
             translateUseCase(Locale.ENGLISH, any(), any())
         } answers { "t:${secondArg<String>()}:${thirdArg<List<String>>()}" }
-        controller.register(call, registerPayload)
+        controller.register(call, registerPayload, null)
         coVerify {
             sendEmailUseCase(
                 Email(
@@ -169,14 +169,15 @@ class AuthControllerTest {
         val getCodeInEmailUseCase = mockk<IGetCodeInEmailUseCase>()
         val call = mockk<ApplicationCall>()
         val controller = AuthController(
-            mockk(), requireAssociationForCallUseCase, mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
-            mockk(), mockk(), mockk(), mockk(), getCodeInEmailUseCase, mockk(), mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), requireAssociationForCallUseCase, mockk(), mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), getCodeInEmailUseCase, mockk(), mockk(), mockk(),
+            mockk(), mockk()
         )
         coEvery { requireAssociationForCallUseCase(call) } returns association
         coEvery { getCodeInEmailUseCase("code") } returns CodeInEmail(
             "email", "code", "associationId", Clock.System.now()
         )
-        assertEquals(RegisterPayload("email"), controller.register(call, "code"))
+        assertEquals(RegisterPayload("email"), controller.registerCode(call, "code"))
     }
 
     @Test
@@ -184,12 +185,12 @@ class AuthControllerTest {
         val getCodeInEmailUseCase = mockk<IGetCodeInEmailUseCase>()
         val call = mockk<ApplicationCall>()
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
             mockk(), mockk(), mockk(), getCodeInEmailUseCase, mockk(), mockk(), mockk(), mockk(), mockk()
         )
         coEvery { getCodeInEmailUseCase("code") } returns null
         val exception = assertFailsWith(ControllerException::class) {
-            controller.register(call, "code")
+            controller.registerCode(call, "code")
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
         assertEquals("auth_code_invalid", exception.key)
@@ -204,14 +205,14 @@ class AuthControllerTest {
         val registerPayload = RegisterCodePayload("password", "firstname", "lastname")
         val sessionPayload = SessionPayload("id")
         val controller = AuthController(
-            mockk(), mockk(), mockk(), registerUseCase, setSessionForCallUseCase, mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(), registerUseCase, setSessionForCallUseCase, mockk(),
             mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), deleteCodeInEmailUseCase,
             mockk(), mockk(), mockk(), mockk()
         )
         coEvery { registerUseCase("code", registerPayload) } returns user
         every { setSessionForCallUseCase(call, sessionPayload) } returns Unit
         coEvery { deleteCodeInEmailUseCase("code") } returns Unit
-        controller.register(call, "code", registerPayload, null)
+        controller.registerCode(call, "code", registerPayload, null)
         coVerify { deleteCodeInEmailUseCase("code") }
         verify { setSessionForCallUseCase(call, sessionPayload) }
     }
@@ -222,12 +223,12 @@ class AuthControllerTest {
         val call = mockk<ApplicationCall>()
         val registerPayload = RegisterCodePayload("password", "firstname", "lastname")
         val controller = AuthController(
-            mockk(), mockk(), mockk(), registerUseCase, mockk(), mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(), registerUseCase, mockk(), mockk(), mockk(), mockk(), mockk(),
             mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
         )
         coEvery { registerUseCase("code", registerPayload) } returns null
         val exception = assertFailsWith(ControllerException::class) {
-            controller.register(call, "code", registerPayload, null)
+            controller.registerCode(call, "code", registerPayload, null)
         }
         assertEquals(HttpStatusCode.InternalServerError, exception.code)
         assertEquals("error_internal", exception.key)
@@ -239,8 +240,9 @@ class AuthControllerTest {
         val getClientUseCase = mockk<IGetModelSuspendUseCase<Client, String>>()
         val call = mockk<ApplicationCall>()
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), requireUserForCallUseCase, getClientUseCase,
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), requireUserForCallUseCase,
+            getClientUseCase, mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk()
         )
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { getClientUseCase("cid") } returns client
@@ -253,8 +255,9 @@ class AuthControllerTest {
         val getClientUseCase = mockk<IGetModelSuspendUseCase<Client, String>>()
         val call = mockk<ApplicationCall>()
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), requireUserForCallUseCase, getClientUseCase,
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), requireUserForCallUseCase,
+            getClientUseCase, mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk()
         )
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { getClientUseCase("cid") } returns null
@@ -273,8 +276,9 @@ class AuthControllerTest {
         val call = mockk<ApplicationCall>()
         val client = ClientForUser(client, user)
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), requireUserForCallUseCase, getClientUseCase, mockk(),
-            createAuthCodeUseCase, mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), requireUserForCallUseCase,
+            getClientUseCase, mockk(), createAuthCodeUseCase, mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk()
         )
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { getClientUseCase("cid") } returns client.client
@@ -293,8 +297,9 @@ class AuthControllerTest {
         val call = mockk<ApplicationCall>()
         val client = ClientForUser(client, user)
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), requireUserForCallUseCase, getClientUseCase, mockk(),
-            createAuthCodeUseCase, mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), requireUserForCallUseCase,
+            getClientUseCase, mockk(), createAuthCodeUseCase, mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk()
         )
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { getClientUseCase("cid") } returns client.client
@@ -313,8 +318,8 @@ class AuthControllerTest {
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
-            mockk(), mockk(), mockk(), mockk(), createCodeInEmailUseCase, mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(), createCodeInEmailUseCase, mockk(),
             mockk(), mockk(), sendEmailUseCase, getLocaleForCallUseCase, translateUseCase
         )
         coEvery { createCodeInEmailUseCase("email", null) } returns CodeInEmail(
@@ -351,7 +356,7 @@ class AuthControllerTest {
     fun testJoinEmailTaken() = runBlocking {
         val createCodeInEmailUseCase = mockk<ICreateCodeInEmailUseCase>()
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
             mockk(), mockk(), createCodeInEmailUseCase, mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
         )
         coEvery { createCodeInEmailUseCase("email", null) } returns null
@@ -366,25 +371,25 @@ class AuthControllerTest {
     fun testJoinCode() = runBlocking {
         val getCodeInEmailUseCase = mockk<IGetCodeInEmailUseCase>()
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
-            mockk(), mockk(), mockk(), getCodeInEmailUseCase, mockk(), mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), getCodeInEmailUseCase, mockk(), mockk(), mockk(), mockk(), mockk()
         )
         coEvery { getCodeInEmailUseCase("code") } returns CodeInEmail(
             "email", "code", null, Clock.System.now()
         )
-        assertEquals(JoinPayload("email"), controller.join("code"))
+        assertEquals(JoinPayload("email"), controller.joinCode("code"))
     }
 
     @Test
     fun testJoinCodeInvalid() = runBlocking {
         val getCodeInEmailUseCase = mockk<IGetCodeInEmailUseCase>()
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
-            mockk(), mockk(), mockk(), getCodeInEmailUseCase, mockk(), mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), getCodeInEmailUseCase, mockk(), mockk(), mockk(), mockk(), mockk()
         )
         coEvery { getCodeInEmailUseCase("code") } returns null
         val exception = assertFailsWith(ControllerException::class) {
-            controller.join("code")
+            controller.joinCode("code")
         }
         assertEquals(HttpStatusCode.NotFound, exception.code)
         assertEquals("auth_code_invalid", exception.key)
@@ -396,8 +401,8 @@ class AuthControllerTest {
         val createAssociationUseCase = mockk<ICreateModelSuspendUseCase<Association, CreateAssociationPayload>>()
         val deleteCodeInEmailUseCase = mockk<IDeleteCodeInEmailUseCase>()
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
-            mockk(), mockk(), mockk(), mockk(), getCodeInEmailUseCase, deleteCodeInEmailUseCase,
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(), getCodeInEmailUseCase, deleteCodeInEmailUseCase,
             createAssociationUseCase, mockk(), mockk(), mockk()
         )
         val now = Clock.System.now()
@@ -409,7 +414,7 @@ class AuthControllerTest {
             false, now, now
         )
         coEvery { deleteCodeInEmailUseCase("code") } returns Unit
-        controller.join(
+        controller.joinCode(
             "code",
             JoinCodePayload(
                 "name", "school", "city",
@@ -433,7 +438,8 @@ class AuthControllerTest {
         val getCodeInEmailUseCase = mockk<IGetCodeInEmailUseCase>()
         val controller = AuthController(
             mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
-            mockk(), mockk(), getCodeInEmailUseCase, mockk(), createAssociationUseCase, mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), getCodeInEmailUseCase, mockk(), createAssociationUseCase,
+            mockk(), mockk(), mockk()
         )
         val now = Clock.System.now()
         coEvery { getCodeInEmailUseCase("code") } returns CodeInEmail(
@@ -441,7 +447,7 @@ class AuthControllerTest {
         )
         coEvery { createAssociationUseCase(any()) } returns null
         val exception = assertFailsWith(ControllerException::class) {
-            controller.join(
+            controller.joinCode(
                 "code",
                 JoinCodePayload(
                     "name", "school", "city",
@@ -462,9 +468,9 @@ class AuthControllerTest {
         val payload = AuthRequest(client.client.clientId, client.client.clientSecret, "code")
         val token = AuthToken("token", "refresh")
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), getAuthCodeUseCase, mockk(),
-            deleteAuthCodeUseCase, generateAuthTokenUseCase, mockk(), mockk(), mockk(), mockk(), mockk(),
-            mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            getAuthCodeUseCase, mockk(), deleteAuthCodeUseCase, generateAuthTokenUseCase, mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk()
         )
         coEvery { getAuthCodeUseCase("code") } returns client
         coEvery { generateAuthTokenUseCase(client) } returns token
@@ -482,9 +488,9 @@ class AuthControllerTest {
         val payload = AuthRequest(client.client.clientId, client.client.clientSecret, "code")
         val token = AuthToken("token", "refresh")
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), getAuthCodeUseCase, mockk(),
-            deleteAuthCodeUseCase, generateAuthTokenUseCase, mockk(), mockk(), mockk(), mockk(), mockk(),
-            mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            getAuthCodeUseCase, mockk(), deleteAuthCodeUseCase, generateAuthTokenUseCase, mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
         )
         coEvery { getAuthCodeUseCase("code") } returns client
         coEvery { generateAuthTokenUseCase(client) } returns token
@@ -502,8 +508,9 @@ class AuthControllerTest {
         val client = ClientForUser(client, user)
         val payload = AuthRequest("otherClientId", client.client.clientSecret, "code")
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), getAuthCodeUseCase, mockk(),
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            getAuthCodeUseCase, mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk()
         )
         coEvery { getAuthCodeUseCase("code") } returns client
         val exception = assertFailsWith(ControllerException::class) {
@@ -519,8 +526,9 @@ class AuthControllerTest {
         val client = ClientForUser(client, user)
         val payload = AuthRequest(client.client.clientId, "otherSecret", "code")
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), getAuthCodeUseCase, mockk(),
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            getAuthCodeUseCase, mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk()
         )
         coEvery { getAuthCodeUseCase("code") } returns client
         val exception = assertFailsWith(ControllerException::class) {
@@ -536,8 +544,9 @@ class AuthControllerTest {
         val client = ClientForUser(client, user)
         val payload = AuthRequest(client.client.clientId, client.client.clientSecret, "code")
         val controller = AuthController(
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), getAuthCodeUseCase, mockk(),
-            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            getAuthCodeUseCase, mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
+            mockk(), mockk()
         )
         coEvery { getAuthCodeUseCase("code") } returns null
         val exception = assertFailsWith(ControllerException::class) {

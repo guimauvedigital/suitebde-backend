@@ -4,6 +4,7 @@ import io.ktor.server.application.*
 import me.nathanfallet.ktorx.controllers.IUnitController
 import me.nathanfallet.ktorx.models.annotations.*
 import me.nathanfallet.ktorx.models.responses.RedirectResponse
+import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.auth.*
 import me.nathanfallet.usecases.auth.AuthRequest
 import me.nathanfallet.usecases.auth.AuthToken
@@ -29,21 +30,29 @@ interface IAuthController : IUnitController {
         @QueryParameter redirect: String?,
     ): RedirectResponse
 
+    @TemplateMapping("auth/associations.ftl")
+    @Path("GET", "/associations")
+    suspend fun associations(): List<Association>
+
     @TemplateMapping("auth/register.ftl")
     @Path("GET", "/register")
-    fun register()
+    suspend fun register(call: ApplicationCall, @QueryParameter associationId: String?): Association
 
     @TemplateMapping("auth/register.ftl")
     @Path("POST", "/register")
-    suspend fun register(call: ApplicationCall, @Payload payload: RegisterPayload): Map<String, Any>
+    suspend fun register(
+        call: ApplicationCall,
+        @Payload payload: RegisterPayload,
+        @QueryParameter associationId: String?,
+    ): Map<String, Any>
 
     @TemplateMapping("auth/register.ftl")
     @Path("GET", "/register/{code}")
-    suspend fun register(call: ApplicationCall, @PathParameter code: String): RegisterPayload
+    suspend fun registerCode(call: ApplicationCall, @PathParameter code: String): RegisterPayload
 
     @TemplateMapping("auth/register.ftl")
     @Path("POST", "/register/{code}")
-    suspend fun register(
+    suspend fun registerCode(
         call: ApplicationCall,
         @PathParameter code: String,
         @Payload payload: RegisterCodePayload,
@@ -68,11 +77,11 @@ interface IAuthController : IUnitController {
 
     @TemplateMapping("auth/join.ftl")
     @Path("GET", "/join/{code}")
-    suspend fun join(@PathParameter code: String): JoinPayload
+    suspend fun joinCode(@PathParameter code: String): JoinPayload
 
     @TemplateMapping("auth/join.ftl")
     @Path("POST", "/join/{code}")
-    suspend fun join(@PathParameter code: String, @Payload payload: JoinCodePayload): Map<String, Any>
+    suspend fun joinCode(@PathParameter code: String, @Payload payload: JoinCodePayload): Map<String, Any>
 
     @APIMapping
     @Path("POST", "/token")
