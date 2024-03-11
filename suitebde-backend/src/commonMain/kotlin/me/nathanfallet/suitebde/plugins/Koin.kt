@@ -248,7 +248,9 @@ fun Application.configureKoin() {
             single<ICreateModelSuspendUseCase<Association, CreateAssociationPayload>>(named<Association>()) {
                 CreateAssociationUseCase(
                     get(),
-                    get(named<User>())
+                    get(named<User>()),
+                    get(named<WebPage>()),
+                    get(named<WebMenu>())
                 )
             }
             single<IUpdateModelSuspendUseCase<Association, String, UpdateAssociationPayload>>(named<Association>()) {
