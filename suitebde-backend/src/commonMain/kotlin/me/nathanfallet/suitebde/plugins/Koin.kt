@@ -792,7 +792,8 @@ fun Application.configureKoin() {
                     get(named<Club>()),
                     get(named<Club>()),
                     get(named<Club>()),
-                    get(named<Club>())
+                    get(named<Club>()),
+                    get(named<UserInClub>())
                 )
             }
             single<IUsersInClubsController> {

@@ -11,12 +11,14 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.clubs.Club
 import me.nathanfallet.suitebde.models.clubs.CreateClubPayload
 import me.nathanfallet.suitebde.models.clubs.UpdateClubPayload
+import me.nathanfallet.suitebde.models.clubs.UserInClub
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.OptionalUserContext
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.usecases.models.create.context.ICreateChildModelWithContextSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.context.IGetChildModelWithContextSuspendUseCase
+import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.context.IListChildModelWithContextSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.context.IListSliceChildModelWithContextSuspendUseCase
 import me.nathanfallet.usecases.models.update.context.IUpdateChildModelWithContextSuspendUseCase
@@ -33,6 +35,7 @@ class ClubsController(
     private val createClubUseCase: ICreateChildModelWithContextSuspendUseCase<Club, CreateClubPayload, String>,
     private val updateClubUseCase: IUpdateChildModelWithContextSuspendUseCase<Club, String, UpdateClubPayload, String>,
     private val deleteClubUseCase: IDeleteChildModelSuspendUseCase<Club, String, String>,
+    private val listUsersInClubsUseCase: IListChildModelSuspendUseCase<UserInClub, String>,
 ) : IClubsController {
 
     override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateClubPayload): Club {
@@ -68,9 +71,15 @@ class ClubsController(
     override suspend fun get(call: ApplicationCall, parent: Association, id: String): Club {
         val user = (getUserForCallUseCase(call) as? User)
         return getClubUseCase(id, parent.id, OptionalUserContext(user?.id))
-            ?: throw ControllerException(
-                HttpStatusCode.NotFound, "clubs_not_found"
-            )
+            ?: throw ControllerException(HttpStatusCode.NotFound, "clubs_not_found")
+    }
+
+    override suspend fun details(call: ApplicationCall, parent: Association, id: String): Map<String, Any> {
+        val club = get(call, parent, id)
+        return mapOf(
+            "item" to club,
+            "users" to listUsersInClubsUseCase(club.id)
+        )
     }
 
     override suspend fun list(

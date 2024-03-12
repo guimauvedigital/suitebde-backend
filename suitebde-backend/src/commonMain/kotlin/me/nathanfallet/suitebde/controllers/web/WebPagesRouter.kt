@@ -10,6 +10,7 @@ import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
 import me.nathanfallet.suitebde.controllers.associations.IAssociationForCallRouter
 import me.nathanfallet.suitebde.controllers.models.AdminChildModelRouter
+import me.nathanfallet.suitebde.controllers.models.PublicChildModelRouter
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.web.WebPage
 import me.nathanfallet.suitebde.models.web.WebPagePayload
@@ -49,17 +50,23 @@ class WebPagesRouter(
         requireUserForCallUseCase,
         getAdminMenuForCallUseCase
     ),
-    WebPagesPublicRouter(
+    PublicChildModelRouter(
+        typeInfo<WebPage>(),
+        typeInfo<WebPagePayload>(),
+        typeInfo<WebPagePayload>(),
         webPagesController,
+        IWebPagesController::class,
         associationForCallRouter,
         getUserForCallUseCase,
         getPublicMenuForCallUseCase,
-        getLocaleForCallUseCase
-    ) { template, model ->
-        respondTemplate(
-            template, model + mapOf(
-                "title" to (model["item"] as? WebPage)?.title
+        getLocaleForCallUseCase,
+        { template, model ->
+            respondTemplate(
+                template, model + mapOf(
+                    "title" to (model["item"] as? WebPage)?.title
+                )
             )
-        )
-    }
+        },
+        route = "pages"
+    )
 )

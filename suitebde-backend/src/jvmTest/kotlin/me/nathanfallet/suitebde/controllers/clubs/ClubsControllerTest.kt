@@ -53,7 +53,7 @@ class ClubsControllerTest {
         } returns listOf(club)
         val controller = ClubsController(
             getUserForCallUseCase, mockk(), mockk(), mockk(), getClubsInAssociationUseCase,
-            mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk()
         )
         every { call.request.path() } returns "/api/v1/associations/id/clubs"
         assertEquals(listOf(club), controller.list(call, association, 10, 5, null))
@@ -70,7 +70,7 @@ class ClubsControllerTest {
         } returns listOf(club)
         val controller = ClubsController(
             getUserForCallUseCase, mockk(), mockk(), mockk(), getClubsInAssociationUseCase,
-            mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk()
         )
         every { call.request.path() } returns "/api/v1/associations/id/clubs"
         assertEquals(listOf(club), controller.list(call, association, 10, 5, null))
@@ -87,7 +87,7 @@ class ClubsControllerTest {
         } returns listOf(club)
         val controller = ClubsController(
             getUserForCallUseCase, mockk(), mockk(), mockk(), getClubsInAssociationUseCase,
-            mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk()
         )
         every { call.request.path() } returns "/api/v1/associations/id/clubs"
         assertEquals(listOf(club), controller.list(call, association, null, null, null))
@@ -104,7 +104,7 @@ class ClubsControllerTest {
         } returns listOf(club)
         val controller = ClubsController(
             getUserForCallUseCase, mockk(), mockk(), getClubsInAssociationUseCase,
-            mockk(), mockk(), mockk(), mockk(), mockk()
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
         )
         every { call.request.path() } returns "/admin/clubs"
         assertEquals(listOf(club), controller.list(call, association, null, null, null))
@@ -116,7 +116,7 @@ class ClubsControllerTest {
         val getClubUseCase = mockk<IGetChildModelWithContextSuspendUseCase<Club, String, String>>()
         val controller = ClubsController(
             getUserForCallUseCase, mockk(), mockk(), mockk(), mockk(),
-            getClubUseCase, mockk(), mockk(), mockk()
+            getClubUseCase, mockk(), mockk(), mockk(), mockk()
         )
         val call = mockk<ApplicationCall>()
         coEvery { getUserForCallUseCase(call) } returns user
@@ -130,7 +130,7 @@ class ClubsControllerTest {
         val getClubUseCase = mockk<IGetChildModelWithContextSuspendUseCase<Club, String, String>>()
         val controller = ClubsController(
             getUserForCallUseCase, mockk(), mockk(), mockk(), mockk(),
-            getClubUseCase, mockk(), mockk(), mockk()
+            getClubUseCase, mockk(), mockk(), mockk(), mockk()
         )
         val call = mockk<ApplicationCall>()
         coEvery { getUserForCallUseCase(call) } returns null
@@ -144,7 +144,7 @@ class ClubsControllerTest {
         val getClubUseCase = mockk<IGetChildModelWithContextSuspendUseCase<Club, String, String>>()
         val controller = ClubsController(
             getUserForCallUseCase, mockk(), mockk(), mockk(), mockk(),
-            getClubUseCase, mockk(), mockk(), mockk()
+            getClubUseCase, mockk(), mockk(), mockk(), mockk()
         )
         val call = mockk<ApplicationCall>()
         coEvery { getUserForCallUseCase(call) } returns null
@@ -161,15 +161,8 @@ class ClubsControllerTest {
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val createClubUseCase = mockk<ICreateChildModelWithContextSuspendUseCase<Club, CreateClubPayload, String>>()
         val controller = ClubsController(
-            mockk(),
-            requireUserForCallUseCase,
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk(),
-            createClubUseCase,
-            mockk(),
-            mockk()
+            mockk(), requireUserForCallUseCase, mockk(), mockk(), mockk(), mockk(),
+            createClubUseCase, mockk(), mockk(), mockk()
         )
         val payload = CreateClubPayload("name", "description", "image", "member", "admin")
         coEvery { requireUserForCallUseCase(any()) } returns user
@@ -181,17 +174,9 @@ class ClubsControllerTest {
     fun testCreateForbiddenValidated() = runBlocking {
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val checkPermissionUseCase = mockk<ICheckPermissionSuspendUseCase>()
-        val createClubUseCase = mockk<ICreateChildModelWithContextSuspendUseCase<Club, CreateClubPayload, String>>()
         val controller = ClubsController(
-            mockk(),
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            mockk(),
-            mockk(),
-            mockk(),
-            createClubUseCase,
-            mockk(),
-            mockk()
+            mockk(), requireUserForCallUseCase, checkPermissionUseCase, mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk(), mockk()
         )
         val payload = CreateClubPayload("name", "description", "image", "member", "admin", true)
         coEvery { requireUserForCallUseCase(any()) } returns user
@@ -208,15 +193,8 @@ class ClubsControllerTest {
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
         val createClubUseCase = mockk<ICreateChildModelWithContextSuspendUseCase<Club, CreateClubPayload, String>>()
         val controller = ClubsController(
-            mockk(),
-            requireUserForCallUseCase,
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk(),
-            createClubUseCase,
-            mockk(),
-            mockk()
+            mockk(), requireUserForCallUseCase, mockk(), mockk(), mockk(), mockk(),
+            createClubUseCase, mockk(), mockk(), mockk()
         )
         val payload = CreateClubPayload("name", "description", "image", "member", "admin")
         coEvery { requireUserForCallUseCase(any()) } returns user

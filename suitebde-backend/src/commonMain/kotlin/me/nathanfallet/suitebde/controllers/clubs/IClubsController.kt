@@ -36,10 +36,13 @@ interface IClubsController :
     ): Club
 
     @APIMapping
-    @TemplateMapping("public/clubs/details.ftl")
     @GetModelPath
     @DocumentedError(404, "clubs_not_found")
     suspend fun get(call: ApplicationCall, @ParentModel parent: Association, @Id id: String): Club
+
+    @TemplateMapping("public/clubs/details.ftl")
+    @Path("GET", "/{clubId}")
+    suspend fun details(call: ApplicationCall, @ParentModel parent: Association, @Id id: String): Map<String, Any>
 
     @APIMapping
     @AdminTemplateMapping

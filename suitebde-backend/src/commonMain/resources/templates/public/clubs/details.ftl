@@ -19,6 +19,26 @@
                         </p>
                     </div>
                 </div>
+
+                <div class="md:w-1/2 lg:w-[27.7%]">
+                    <div class="animate_top mb-10">
+                        <h4 class="text-2xl text-black dark:text-white mb-7.5"><@t key="clubs_members_title" /></h4>
+
+                        <#list users as user>
+                            <div class="flex gap-4 2xl:gap-6 mb-7.5">
+                                <div class="w-[44px] rounded overflow-hidden">
+                                    <img src="" class="aspect-square" alt="User avatar"/>
+                                </div>
+                                <div>
+                                    <p class="text-black dark:text-white hover:text-primary dark:hover:text-primary ease-in-out duration-300">
+                                        <a href="/users/${user.userId}">${user.user.firstName} ${user.user.lastName}</a>
+                                    </p>
+                                    <p>${user.role.name}</p>
+                                </div>
+                            </div>
+                        </#list>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
