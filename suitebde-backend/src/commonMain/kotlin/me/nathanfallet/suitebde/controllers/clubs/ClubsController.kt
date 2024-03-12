@@ -90,7 +90,7 @@ class ClubsController(
         search: String?,
     ): List<Club> {
         val user = (getUserForCallUseCase(call) as? User)
-        if (call.request.path().contains("/admin/")) return getClubsInAssociationUseCase(
+        if (!call.request.path().contains("/api/")) return getClubsInAssociationUseCase(
             parent.id,
             OptionalUserContext(user?.id)
         )

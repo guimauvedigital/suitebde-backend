@@ -67,7 +67,7 @@ class EventsController(
     }
 
     override suspend fun list(call: ApplicationCall, parent: Association, limit: Long?, offset: Long?): List<Event> {
-        if (call.request.path().contains("/admin/")) return getEventsInAssociationUseCase(parent.id)
+        if (!call.request.path().contains("/api/")) return getEventsInAssociationUseCase(parent.id)
         return getEventsInAssociationSlicedUseCase(
             Pagination(
                 limit ?: 25,
