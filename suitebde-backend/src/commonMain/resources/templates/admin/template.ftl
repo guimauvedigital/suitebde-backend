@@ -32,7 +32,7 @@
                @click.outside="sidebarToggle = false">
             <!-- SIDEBAR HEADER -->
             <div class="flex items-center justify-between gap-2 px-6 py-5.5 lg:py-6.5">
-                <a href="/${locale}"><img src="/img/logo_rounded.png" alt="Logo"></a>
+                <a href="/${locale}"><img src="/img/logo_large_dark.svg" alt="Logo Dark"></a>
 
                 <button class="block lg:hidden" @click.stop="sidebarToggle = !sidebarToggle">
                     <svg class="fill-current"
@@ -179,8 +179,8 @@
                             </span>
                         </button>
                         <!-- Hamburger Toggle BTN -->
-                        <a class="block flex-shrink-0 lg:hidden" href="index.html">
-                            <img src="src/images/logo/logo-icon.svg" alt="Logo"/>
+                        <a class="block flex-shrink-0 lg:hidden" href="/${locale}">
+                            <img src="/img/logo_large_dark.svg" alt="Logo Dark">
                         </a>
                     </div>
                     <div class="sm:block"></div>

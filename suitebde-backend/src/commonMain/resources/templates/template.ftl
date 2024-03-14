@@ -21,7 +21,10 @@
             @scroll.window="stickyMenu = (window.pageYOffset > 20) ? true : false">
         <div class="mx-auto max-w-1390 px-4 md:px-8 2xl:px-0 lg:flex items-center justify-between relative">
             <div class="w-full lg:w-1/4 flex items-center justify-between">
-                <a href="/${locale}"><img src="/img/logo_rounded.png" alt="Logo"></a>
+                <a href="/${locale}">
+                    <img class="dark:hidden" src="/img/logo_large_light.svg" alt="Logo Light">
+                    <img class="hidden dark:block" src="/img/logo_large_dark.svg" alt="Logo Dark">
+                </a>
 
                 <!-- Hamburger Toggle BTN -->
                 <button class="lg:hidden block" @click="navigationOpen = !navigationOpen">
@@ -141,7 +144,10 @@
             <div class="py-20 lg:py-25">
                 <div class="flex flex-wrap lg:justify-between gap-8 lg:gap-0">
                     <div class="animate_top w-1/2 lg:w-1/4">
-                        <a href="/${locale}"><img src="/img/logo_rounded.png" alt="Logo"></a>
+                        <a href="/${locale}">
+                            <img class="dark:hidden" src="/img/logo_large_light.svg" alt="Logo Light">
+                            <img class="hidden dark:block" src="/img/logo_large_dark.svg" alt="Logo Dark">
+                        </a>
 
                         <p class="mt-5 mb-10"><@t key="admin_developed_with_love" args=[
                             "<i class=\"fa fa-heart text-danger\"></i>",
