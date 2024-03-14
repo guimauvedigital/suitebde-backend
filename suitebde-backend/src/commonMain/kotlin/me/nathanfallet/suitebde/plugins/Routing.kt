@@ -17,6 +17,7 @@ import me.nathanfallet.suitebde.controllers.clubs.UsersInClubsRouter
 import me.nathanfallet.suitebde.controllers.dashboard.DashboardRouter
 import me.nathanfallet.suitebde.controllers.events.EventsRouter
 import me.nathanfallet.suitebde.controllers.notifications.NotificationTokensRouter
+import me.nathanfallet.suitebde.controllers.notifications.NotificationsRouter
 import me.nathanfallet.suitebde.controllers.roles.PermissionsInRolesRouter
 import me.nathanfallet.suitebde.controllers.roles.RolesRouter
 import me.nathanfallet.suitebde.controllers.roles.UsersInRolesRouter
@@ -49,6 +50,7 @@ fun Application.configureRouting() {
                 get<RootRouter>(),
                 get<WebhooksRouter>(),
                 get<DashboardRouter>(),
+                get<NotificationsRouter>(),
                 get<AssociationsRouter>(),
                 get<DomainsInAssociationsRouter>(),
                 get<SubscriptionsInAssociationsRouter>(),

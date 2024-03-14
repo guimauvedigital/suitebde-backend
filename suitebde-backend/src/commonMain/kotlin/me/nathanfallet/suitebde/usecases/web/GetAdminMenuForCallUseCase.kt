@@ -47,13 +47,21 @@ class GetAdminMenuForCallUseCase(
         )
 
         val locale = getLocaleForCallUseCase(input)
-        return listOf("dashboard", "subscriptions", "users", "roles", "webpages", "webmenus", "events", "clubs")
+        return listOf(
+            "dashboard",
+            "subscriptions",
+            "users",
+            "roles",
+            "webpages",
+            "webmenus",
+            "events",
+            "clubs",
+            "notifications"
+        )
             .filter {
-                it == "dashboard" || Permission.entries.firstOrNull { p -> p.name == "${it.uppercase()}_VIEW" }
-                    ?.let { permission ->
-                        checkPermissionUseCase(user, permission inAssociation association.id)
-                    } ?: true
-
+                it == "dashboard" || it.permission?.let { permission ->
+                    checkPermissionUseCase(user, permission inAssociation association.id)
+                } ?: true
             }
             .map {
                 WebMenu(
@@ -64,5 +72,9 @@ class GetAdminMenuForCallUseCase(
                 )
             }
     }
+
+    private val String.permission: Permission?
+        get() = Permission.entries.firstOrNull { p -> p.name == "${uppercase()}_VIEW" }
+            ?: Permission.entries.firstOrNull { p -> p.name == "${uppercase()}_SEND" }
 
 }
