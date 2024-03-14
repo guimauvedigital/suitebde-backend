@@ -22,6 +22,9 @@ import me.nathanfallet.suitebde.controllers.dashboard.IDashboardController
 import me.nathanfallet.suitebde.controllers.events.EventsController
 import me.nathanfallet.suitebde.controllers.events.EventsRouter
 import me.nathanfallet.suitebde.controllers.events.IEventsController
+import me.nathanfallet.suitebde.controllers.notifications.INotificationTokensController
+import me.nathanfallet.suitebde.controllers.notifications.NotificationTokensController
+import me.nathanfallet.suitebde.controllers.notifications.NotificationTokensRouter
 import me.nathanfallet.suitebde.controllers.roles.*
 import me.nathanfallet.suitebde.controllers.root.IRootController
 import me.nathanfallet.suitebde.controllers.root.RootController
@@ -41,6 +44,7 @@ import me.nathanfallet.suitebde.database.clubs.ClubsDatabaseRepository
 import me.nathanfallet.suitebde.database.clubs.RolesInClubsDatabaseRepository
 import me.nathanfallet.suitebde.database.clubs.UsersInClubsDatabaseRepository
 import me.nathanfallet.suitebde.database.events.EventsDatabaseRepository
+import me.nathanfallet.suitebde.database.notifications.NotificationTokensDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.PermissionsInRolesDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.RolesDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.UsersInRolesDatabaseRepository
@@ -57,6 +61,8 @@ import me.nathanfallet.suitebde.models.clubs.*
 import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
 import me.nathanfallet.suitebde.models.events.UpdateEventPayload
+import me.nathanfallet.suitebde.models.notifications.CreateNotificationTokenPayload
+import me.nathanfallet.suitebde.models.notifications.NotificationToken
 import me.nathanfallet.suitebde.models.roles.*
 import me.nathanfallet.suitebde.models.stripe.*
 import me.nathanfallet.suitebde.models.users.*
@@ -68,6 +74,7 @@ import me.nathanfallet.suitebde.repositories.associations.ISubscriptionsInAssoci
 import me.nathanfallet.suitebde.repositories.clubs.IClubsRepository
 import me.nathanfallet.suitebde.repositories.clubs.IRolesInClubsRepository
 import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRepository
+import me.nathanfallet.suitebde.repositories.notifications.INotificationTokensRepository
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRepository
 import me.nathanfallet.suitebde.repositories.stripe.IStripeAccountsRepository
@@ -88,6 +95,7 @@ import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.*
 import me.nathanfallet.suitebde.usecases.clubs.CreateClubUseCase
 import me.nathanfallet.suitebde.usecases.clubs.DeleteClubUseCase
+import me.nathanfallet.suitebde.usecases.notifications.CreateNotificationTokenUseCase
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.roles.GetPermissionsForUserUseCase
 import me.nathanfallet.suitebde.usecases.roles.IGetPermissionsForUserUseCase
@@ -192,6 +200,9 @@ fun Application.configureKoin() {
             single<IUsersRepository> { UsersDatabaseRepository(get()) }
             single<IClientsInUsersRepository> { ClientsInUsersDatabaseRepository(get()) }
             single<ISubscriptionsInUsersRepository> { SubscriptionsInUsersDatabaseRepository(get()) }
+
+            // Notifications
+            single<INotificationTokensRepository> { NotificationTokensDatabaseRepository(get()) }
 
             // Roles
             single<IChildModelSuspendRepository<Role, String, CreateRolePayload, UpdateRolePayload, String>>(named<Role>()) {
@@ -408,6 +419,19 @@ fun Application.configureKoin() {
             single<IUpdateChildModelSuspendUseCase<User, String, UpdateUserPayload, String>>(named<User>()) {
                 UpdateUserUseCase(get(), get(), get())
             }
+            single<IDeleteChildModelSuspendUseCase<User, String, String>>(named<User>()) {
+                DeleteUserUseCase(
+                    get(),
+                    get(named<SubscriptionInUser>()),
+                    get(named<SubscriptionInUser>()),
+                    get(named<NotificationToken>()),
+                    get(named<NotificationToken>()),
+                    get(named<UserInRole>()),
+                    get(named<UserInRole>()),
+                    get(named<UserInClub>()),
+                    get(named<UserInClub>())
+                )
+            }
 
             // Subscriptions in users
             single<IListChildModelSuspendUseCase<SubscriptionInUser, String>>(named<SubscriptionInUser>()) {
@@ -426,6 +450,17 @@ fun Application.configureKoin() {
             }
             single<IDeleteChildModelSuspendUseCase<SubscriptionInUser, String, String>>(named<SubscriptionInUser>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get<ISubscriptionsInUsersRepository>())
+            }
+
+            // Notifications
+            single<IListChildModelSuspendUseCase<NotificationToken, String>>(named<NotificationToken>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<INotificationTokensRepository>())
+            }
+            single<ICreateChildModelSuspendUseCase<NotificationToken, CreateNotificationTokenPayload, String>>(named<NotificationToken>()) {
+                CreateNotificationTokenUseCase(get())
+            }
+            single<IDeleteChildModelSuspendUseCase<NotificationToken, String, String>>(named<NotificationToken>()) {
+                DeleteChildModelFromRepositorySuspendUseCase(get<INotificationTokensRepository>())
             }
 
             // Roles
@@ -704,6 +739,12 @@ fun Application.configureKoin() {
                     get(named<SubscriptionInUser>())
                 )
             }
+            single<INotificationTokensController> {
+                NotificationTokensController(
+                    get(),
+                    get(named<NotificationToken>())
+                )
+            }
 
             // Roles
             single<IRolesController> {
@@ -818,6 +859,7 @@ fun Application.configureKoin() {
             single { SubscriptionsInAssociationsRouter(get(), get(), get(), get(), get(), get(), get()) }
             single { UsersRouter(get(), get(), get(), get(), get(), get(), get()) }
             single { SubscriptionsInUsersRouter(get(), get()) }
+            single { NotificationTokensRouter(get(), get()) }
             single { AuthRouter(get(), get()) }
             single { RolesRouter(get(), get(), get(), get(), get(), get(), get()) }
             single { UsersInRolesRouter(get(), get()) }
