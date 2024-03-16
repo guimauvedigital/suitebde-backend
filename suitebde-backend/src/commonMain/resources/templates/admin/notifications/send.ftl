@@ -20,9 +20,12 @@
                                 <label for="topic" class="mb-2.5 block text-black dark:text-white">
                                     <@t key="admin_notifications_topic" />
                                 </label>
-                                <input type="text"
-                                       class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
-                                       name="topic" id="topic">
+                                <select class="relative z-20 w-full appearance-none rounded border border-stroke bg-transparent py-3 px-5 outline-none transition focus:border-primary active:border-primary dark:border-form-strokedark dark:bg-form-input"
+                                        name="topic" id="topic">
+                                    <#list topics.topics as key, name>
+                                        <option value="${key}">${name}</option>
+                                    </#list>
+                                </select>
                             </div>
                             <div class="mb-4.5 col-span-12">
                                 <label for="title" class="mb-2.5 block text-black dark:text-white">

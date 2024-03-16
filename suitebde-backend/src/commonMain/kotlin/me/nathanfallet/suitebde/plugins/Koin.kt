@@ -95,9 +95,7 @@ import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.*
 import me.nathanfallet.suitebde.usecases.clubs.CreateClubUseCase
 import me.nathanfallet.suitebde.usecases.clubs.DeleteClubUseCase
-import me.nathanfallet.suitebde.usecases.notifications.CreateNotificationTokenUseCase
-import me.nathanfallet.suitebde.usecases.notifications.ISendNotificationUseCase
-import me.nathanfallet.suitebde.usecases.notifications.SendNotificationUseCase
+import me.nathanfallet.suitebde.usecases.notifications.*
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.roles.GetPermissionsForUserUseCase
 import me.nathanfallet.suitebde.usecases.roles.IGetPermissionsForUserUseCase
@@ -457,6 +455,7 @@ fun Application.configureKoin() {
 
             // Notifications
             single<ISendNotificationUseCase> { SendNotificationUseCase(get()) }
+            single<IListNotificationTopicsUseCase> { ListNotificationTopicsUseCase() }
             single<IListChildModelSuspendUseCase<NotificationToken, String>>(named<NotificationToken>()) {
                 ListChildModelFromRepositorySuspendUseCase(get<INotificationTokensRepository>())
             }
@@ -696,7 +695,7 @@ fun Application.configureKoin() {
             }
             single<IRootController> { RootController(get(), get()) }
             single<IDashboardController> { DashboardController(get(), get(), get(), get()) }
-            single<INotificationsController> { NotificationsController(get(), get(), get(), get()) }
+            single<INotificationsController> { NotificationsController(get(), get(), get(), get(), get()) }
 
             // Auth
             single<IAuthController> {

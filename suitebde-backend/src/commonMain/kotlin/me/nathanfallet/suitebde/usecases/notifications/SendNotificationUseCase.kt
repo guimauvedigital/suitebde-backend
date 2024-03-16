@@ -7,8 +7,8 @@ class SendNotificationUseCase(
     private val firebaseService: IFirebaseService,
 ) : ISendNotificationUseCase {
 
-    override suspend fun invoke(input1: String, input2: CreateNotificationPayload): Boolean {
-        firebaseService.sendNotification(input2)
+    override suspend fun invoke(input: CreateNotificationPayload): Boolean {
+        firebaseService.sendNotification(input)
         return true
     }
 
