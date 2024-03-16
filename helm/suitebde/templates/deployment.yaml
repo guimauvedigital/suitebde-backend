@@ -131,20 +131,32 @@ spec:
                   name: {{ .Values.existingSecret }}
                   {{- end }}
                   key: stripe-secret
+            - name: GOOGLE_APPLICATION_CREDENTIALS
+              value: "/app/firebase-admin-sdk.json"
           livenessProbe:
             {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
             {{- toYaml .Values.readinessProbe | nindent 12 }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          {{- with .Values.volumeMounts }}
           volumeMounts:
+            {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
-          {{- end }}
-      {{- with .Values.volumes }}
+            {{- end }}
+            - name: suitebde-firebase-admin-sdk
+              mountPath: "/app/firebase-admin-sdk.json"
+              subPath: firebase-admin-sdk.json
+              readOnly: true
       volumes:
+        {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
-      {{- end }}
+        {{- end }}
+        - name: suitebde-firebase-admin-sdk
+          configMap:
+            name: {{ include "suitebde.fullname" . }}
+            items:
+              - key: firebase-admin-sdk.json
+                path: firebase-admin-sdk.json
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

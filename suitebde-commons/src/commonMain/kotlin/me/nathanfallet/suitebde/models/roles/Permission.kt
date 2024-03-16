@@ -3,6 +3,7 @@ package me.nathanfallet.suitebde.models.roles
 enum class Permission {
 
     ADMIN,
+    NOTIFICATIONS_SEND,
     DOMAINS_CREATE,
     DOMAINS_UPDATE,
     DOMAINS_DELETE,

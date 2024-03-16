@@ -59,6 +59,12 @@ class GetAdminMenuForCallUseCaseTest {
         coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_VIEW inAssociation association.id) } returns true
         coEvery { checkPermissionUseCase(user, Permission.EVENTS_VIEW inAssociation association.id) } returns true
         coEvery { checkPermissionUseCase(user, Permission.CLUBS_VIEW inAssociation association.id) } returns true
+        coEvery {
+            checkPermissionUseCase(
+                user,
+                Permission.NOTIFICATIONS_SEND inAssociation association.id
+            )
+        } returns true
         every { getLocaleForCallUseCase(call) } returns Locale.ENGLISH
         every { translateUseCase(Locale.ENGLISH, any()) } answers { "t:${secondArg<String>()}" }
         assertEquals(
@@ -110,6 +116,12 @@ class GetAdminMenuForCallUseCaseTest {
                     "associationId",
                     "t:admin_menu_clubs",
                     "/admin/clubs"
+                ),
+                WebMenu(
+                    "notifications",
+                    "associationId",
+                    "t:admin_menu_notifications",
+                    "/admin/notifications"
                 )
             ),
             useCase(call)
@@ -140,6 +152,12 @@ class GetAdminMenuForCallUseCaseTest {
         coEvery { checkPermissionUseCase(user, Permission.WEBMENUS_VIEW inAssociation association.id) } returns false
         coEvery { checkPermissionUseCase(user, Permission.EVENTS_VIEW inAssociation association.id) } returns false
         coEvery { checkPermissionUseCase(user, Permission.CLUBS_VIEW inAssociation association.id) } returns false
+        coEvery {
+            checkPermissionUseCase(
+                user,
+                Permission.NOTIFICATIONS_SEND inAssociation association.id
+            )
+        } returns false
         every { getLocaleForCallUseCase(call) } returns Locale.ENGLISH
         every { translateUseCase(Locale.ENGLISH, any()) } answers { "t:${secondArg<String>()}" }
         assertEquals(

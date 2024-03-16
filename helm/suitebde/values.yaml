@@ -156,6 +156,9 @@ stripe:
   key: ''
   secret: ''
 
+firebase:
+  credentials: ''
+
 # MySQL configuration
 
 mysql:

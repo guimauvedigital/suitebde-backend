@@ -8,6 +8,8 @@ import me.nathanfallet.suitebde.repositories.auth.IAuthAPIRemoteRepository
 import me.nathanfallet.suitebde.repositories.clubs.IClubsRemoteRepository
 import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRemoteRepository
 import me.nathanfallet.suitebde.repositories.events.IEventsRemoteRepository
+import me.nathanfallet.suitebde.repositories.notifications.INotificationTokensRemoteRepository
+import me.nathanfallet.suitebde.repositories.notifications.INotificationsRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.IRolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRemoteRepository
@@ -22,8 +24,10 @@ interface ISuiteBDEClient : IAPIClient {
     val associations: IAssociationsRemoteRepository
     val domainsInAssociations: IDomainsInAssociationsRemoteRepository
     val subscriptionsInAssociations: ISubscriptionsInAssociationsRemoteRepository
+    val notifications: INotificationsRemoteRepository
     val users: IUsersRemoteRepository
     val subscriptionsInUsers: ISubscriptionsInUsersRemoteRepository
+    val notificationTokens: INotificationTokensRemoteRepository
     val webMenus: IWebMenusRemoteRepository
     val webPages: IWebPagesRemoteRepository
     val events: IEventsRemoteRepository

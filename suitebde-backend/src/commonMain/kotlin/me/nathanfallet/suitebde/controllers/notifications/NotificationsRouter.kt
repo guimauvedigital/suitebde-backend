@@ -1,0 +1,43 @@
+package me.nathanfallet.suitebde.controllers.notifications
+
+import io.ktor.util.reflect.*
+import me.nathanfallet.ktorx.routers.api.APIModelRouter
+import me.nathanfallet.ktorx.routers.concat.ConcatModelRouter
+import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
+import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
+import me.nathanfallet.suitebde.controllers.models.AdminModelRouter
+import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
+import me.nathanfallet.suitebde.models.associations.UpdateAssociationPayload
+import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
+import me.nathanfallet.usecases.localization.ITranslateUseCase
+
+class NotificationsRouter(
+    controller: INotificationsController,
+    getLocaleForCallUseCase: IGetLocaleForCallUseCase,
+    translateUseCase: ITranslateUseCase,
+    requireUserForCallUseCase: IRequireUserForCallUseCase,
+    getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
+) : ConcatModelRouter<Association, String, CreateAssociationPayload, UpdateAssociationPayload>(
+    APIModelRouter(
+        typeInfo<Association>(),
+        typeInfo<CreateAssociationPayload>(),
+        typeInfo<UpdateAssociationPayload>(),
+        controller,
+        INotificationsController::class,
+        route = "",
+        prefix = "/api/v1"
+    ),
+    AdminModelRouter(
+        typeInfo<Association>(),
+        typeInfo<CreateAssociationPayload>(),
+        typeInfo<UpdateAssociationPayload>(),
+        controller,
+        INotificationsController::class,
+        getLocaleForCallUseCase,
+        translateUseCase,
+        requireUserForCallUseCase,
+        getAdminMenuForCallUseCase,
+        route = ""
+    )
+)
