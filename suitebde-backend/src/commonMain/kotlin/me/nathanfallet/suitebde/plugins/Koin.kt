@@ -84,6 +84,8 @@ import me.nathanfallet.suitebde.repositories.web.IWebMenusRepository
 import me.nathanfallet.suitebde.repositories.web.IWebPagesRepository
 import me.nathanfallet.suitebde.services.emails.EmailsService
 import me.nathanfallet.suitebde.services.emails.IEmailsService
+import me.nathanfallet.suitebde.services.firebase.FirebaseService
+import me.nathanfallet.suitebde.services.firebase.IFirebaseService
 import me.nathanfallet.suitebde.services.jwt.IJWTService
 import me.nathanfallet.suitebde.services.jwt.JWTService
 import me.nathanfallet.suitebde.services.stripe.IStripeService
@@ -161,6 +163,7 @@ fun Application.configureKoin() {
                     environment.config.property("email.password").getString()
                 )
             }
+            single<IFirebaseService> { FirebaseService() }
             single<IJWTService> {
                 JWTService(
                     environment.config.property("jwt.secret").getString(),
@@ -453,7 +456,7 @@ fun Application.configureKoin() {
             }
 
             // Notifications
-            single<ISendNotificationUseCase> { SendNotificationUseCase() }
+            single<ISendNotificationUseCase> { SendNotificationUseCase(get()) }
             single<IListChildModelSuspendUseCase<NotificationToken, String>>(named<NotificationToken>()) {
                 ListChildModelFromRepositorySuspendUseCase(get<INotificationTokensRepository>())
             }

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "suitebde.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+{{ include "suitebde.labels" . | indent 4 }}
+data:
+  firebase-admin-sdk.json: |
+    {{ .Values.firebase.credentials | nindent 4 }}

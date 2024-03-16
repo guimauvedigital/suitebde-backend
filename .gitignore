@@ -48,3 +48,6 @@ helm/*/charts
 
 ### JS ###
 yarn.lock
+
+### Keys ###
+firebase-admin-sdk.json
