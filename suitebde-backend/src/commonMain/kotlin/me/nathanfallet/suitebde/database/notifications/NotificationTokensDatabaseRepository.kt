@@ -5,6 +5,7 @@ import me.nathanfallet.suitebde.models.notifications.NotificationToken
 import me.nathanfallet.suitebde.repositories.notifications.INotificationTokensRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
@@ -32,10 +33,18 @@ class NotificationTokensDatabaseRepository(
         context: IContext?,
     ): NotificationToken? =
         database.suspendedTransaction {
-            NotificationTokens.insert {
-                it[token] = payload.token
-                it[userId] = parentId
-            }.resultedValues?.map(NotificationTokens::toNotificationToken)?.singleOrNull()
+            try {
+                NotificationTokens.insert {
+                    it[token] = payload.token
+                    it[userId] = parentId
+                }.resultedValues?.map(NotificationTokens::toNotificationToken)?.singleOrNull()
+            } catch (e: ExposedSQLException) {
+                NotificationTokens
+                    .selectAll()
+                    .where { NotificationTokens.token eq payload.token and (NotificationTokens.userId eq parentId) }
+                    .map(NotificationTokens::toNotificationToken)
+                    .singleOrNull()
+            }
         }
 
     override suspend fun delete(id: String, parentId: String, context: IContext?): Boolean =
