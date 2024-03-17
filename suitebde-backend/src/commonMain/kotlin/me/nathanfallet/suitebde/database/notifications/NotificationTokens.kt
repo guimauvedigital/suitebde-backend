@@ -9,6 +9,8 @@ object NotificationTokens : Table() {
     val token = varchar("token", 255)
     val userId = varchar("user_id", 32)
 
+    override val primaryKey = PrimaryKey(token)
+
     fun toNotificationToken(
         row: ResultRow,
     ) = NotificationToken(
