@@ -2,7 +2,9 @@ package me.nathanfallet.suitebde.controllers.notifications
 
 import io.ktor.http.*
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.models.responses.RedirectResponse
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.notifications.CreateNotificationPayload
 import me.nathanfallet.suitebde.models.notifications.NotificationTopics
@@ -46,6 +48,7 @@ class NotificationsController(
         if (!sendNotificationUseCase(payload)) throw ControllerException(
             HttpStatusCode.InternalServerError, "error_internal"
         )
+        if (call.request.path().contains("/admin/")) throw RedirectResponse("/admin/notifications")
     }
 
     override suspend fun topics(call: ApplicationCall): NotificationTopics {
