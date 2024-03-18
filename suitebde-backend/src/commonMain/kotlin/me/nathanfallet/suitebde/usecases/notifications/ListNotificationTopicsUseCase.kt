@@ -9,8 +9,8 @@ class ListNotificationTopicsUseCase : IListNotificationTopicsUseCase {
         // TODO: More topics available
         return NotificationTopics(
             mapOf(
-                "associations/${input.id}" to input.name,
-                "associations/${input.id}/events" to "${input.name} (events)"
+                "associations_${input.id}" to input.name,
+                "associations_${input.id}_events" to "${input.name} (events)"
             )
         )
     }
