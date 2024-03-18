@@ -32,7 +32,7 @@ class FirebaseService : IFirebaseService {
                         .setBody(payload.body)
                         .build()
                 )
-                putAllData(payload.data)
+                payload.data?.let { putAllData(it) }
             }.build()
         )
     }
