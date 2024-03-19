@@ -1,5 +1,8 @@
 package me.nathanfallet.suitebde.models.roles
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 enum class Permission {
 
     ADMIN,

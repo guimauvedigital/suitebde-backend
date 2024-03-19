@@ -20,6 +20,7 @@ import me.nathanfallet.suitebde.controllers.associations.AssociationsRouter
 import me.nathanfallet.suitebde.controllers.associations.IAssociationsController
 import me.nathanfallet.suitebde.models.application.SuiteBDEJson
 import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.plugins.configureI18n
 import me.nathanfallet.suitebde.plugins.configureSecurity
@@ -82,6 +83,30 @@ class UsersRouterTest {
         val response = client.get("/api/v1/associations/id/users")
         assertEquals(HttpStatusCode.OK, response.status)
         assertEquals(listOf(user), response.body())
+    }
+
+    @Test
+    fun testGetPermissionsAPIv1() = testApplication {
+        val client = installApp(this)
+        val associationController = mockk<IAssociationsController>()
+        val controller = mockk<IUsersController>()
+        val router = UsersRouter(
+            controller,
+            mockk(),
+            mockk(),
+            mockk(),
+            mockk(),
+            AssociationForCallRouter(mockk(), mockk()),
+            AssociationsRouter(associationController, mockk(), mockk(), mockk(), mockk())
+        )
+        coEvery { associationController.get(any(), "id") } returns association
+        coEvery { controller.listPermissions(any(), association, "userId") } returns listOf(Permission.USERS_VIEW)
+        routing {
+            router.createRoutes(this)
+        }
+        val response = client.get("/api/v1/associations/id/users/userId/permissions")
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(listOf(Permission.USERS_VIEW), response.body())
     }
 
     @Test
