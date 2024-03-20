@@ -83,7 +83,7 @@ interface IAuthController : IUnitController {
     @Path("POST", "/join/{code}")
     suspend fun joinCode(@PathParameter code: String, @Payload payload: JoinCodePayload): Map<String, Any>
 
-    @APIMapping
+    @APIMapping("createToken")
     @Path("POST", "/token")
     @DocumentedTag("Auth")
     @DocumentedError(400, "auth_invalid_code")

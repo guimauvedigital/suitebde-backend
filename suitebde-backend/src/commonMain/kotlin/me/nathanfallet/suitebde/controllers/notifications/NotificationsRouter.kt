@@ -25,7 +25,7 @@ class NotificationsRouter(
         typeInfo<UpdateAssociationPayload>(),
         controller,
         INotificationsController::class,
-        route = "",
+        route = "associations/{associationId}",
         prefix = "/api/v1"
     ),
     AdminModelRouter(

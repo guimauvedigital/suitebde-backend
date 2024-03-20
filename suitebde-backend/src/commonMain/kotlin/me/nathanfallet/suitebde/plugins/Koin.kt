@@ -698,7 +698,16 @@ fun Application.configureKoin() {
             }
             single<IRootController> { RootController(get(), get()) }
             single<IDashboardController> { DashboardController(get(), get(), get(), get()) }
-            single<INotificationsController> { NotificationsController(get(), get(), get(), get(), get()) }
+            single<INotificationsController> {
+                NotificationsController(
+                    get(named<Association>()),
+                    get(),
+                    get(),
+                    get(),
+                    get(),
+                    get()
+                )
+            }
 
             // Auth
             single<IAuthController> {

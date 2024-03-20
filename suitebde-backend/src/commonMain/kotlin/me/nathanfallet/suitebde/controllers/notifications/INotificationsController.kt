@@ -16,18 +16,22 @@ interface INotificationsController :
     @Path("GET", "/notifications")
     suspend fun form(call: ApplicationCall): Map<String, Any>
 
-    @APIMapping
+    @APIMapping("sendNotification")
     @AdminTemplateMapping("admin/notifications/send.ftl")
     @Path("POST", "/notifications")
     @DocumentedError(400, "notifications_topic_invalid")
     @DocumentedError(401, "auth_invalid_credentials")
     @DocumentedError(403, "notifications_send_not_allowed")
     @DocumentedError(500, "error_internal")
-    suspend fun send(call: ApplicationCall, @Payload payload: CreateNotificationPayload)
+    suspend fun send(
+        call: ApplicationCall,
+        @PathParameter associationId: String?,
+        @Payload payload: CreateNotificationPayload,
+    )
 
-    @APIMapping
+    @APIMapping("listNotificationTopic")
     @Path("GET", "/notifications/topics")
     @DocumentedError(403, "notifications_send_not_allowed")
-    suspend fun topics(call: ApplicationCall): NotificationTopics
+    suspend fun topics(call: ApplicationCall, @PathParameter associationId: String?): NotificationTopics
 
 }
