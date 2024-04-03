@@ -98,7 +98,9 @@
                 <a href="/pages/${item[key.key]}">/pages/${item[key.key]}</a>
                 <#break>
             <#default>
-                ${item[key.key]}
+                <#if item[key.key]??>
+                    ${item[key.key]}
+                </#if>
         </#switch>
     </td>
 </#macro>

@@ -115,7 +115,7 @@
                 <input type="text"
                        class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                        name="${key.key}" id="${key.key}"
-                       <#if item??>value="${item[key.key]}"</#if>
+                       <#if item?? && item[key.key]??>value="${item[key.key]}"</#if>
                         <#if !key.editable>disabled</#if>>
         </#switch>
     </div>
