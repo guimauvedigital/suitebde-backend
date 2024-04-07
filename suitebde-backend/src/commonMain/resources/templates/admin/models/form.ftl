@@ -46,6 +46,9 @@
                 </form>
             </div>
         </div>
+        <#if item??>
+            <@children name=route />
+        </#if>
     </div>
     <!-- ====== Form Layout Section End -->
 
@@ -119,4 +122,25 @@
                         <#if !key.editable>disabled</#if>>
         </#switch>
     </div>
+</#macro>
+
+<#macro children name>
+    <#switch name>
+        <#case "clubs">
+            <div class="flex flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark p-6.5">
+                <h6 id="admin_children"><@t key="admin_menu_clubs" /></h6>
+                <a href="users" class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray">
+                    <@t key="admin_menu_clubs_users" />
+                </a>
+            </div>
+            <#break>
+        <#case "roles">
+            <div class="flex flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark p-6.5">
+                <h6 id="admin_children"><@t key="admin_menu_roles" /></h6>
+                <a href="users" class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray">
+                    <@t key="admin_menu_roles_users" />
+                </a>
+            </div>
+            <#break>
+    </#switch>
 </#macro>

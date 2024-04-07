@@ -879,13 +879,13 @@ fun Application.configureKoin() {
             single { NotificationTokensRouter(get(), get()) }
             single { AuthRouter(get(), get()) }
             single { RolesRouter(get(), get(), get(), get(), get(), get(), get()) }
-            single { UsersInRolesRouter(get(), get()) }
+            single { UsersInRolesRouter(get(), get(), get(), get(), get(), get()) }
             single { PermissionsInRolesRouter(get(), get()) }
             single { WebPagesRouter(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             single { WebMenusRouter(get(), get(), get(), get(), get(), get(), get()) }
             single { EventsRouter(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             single { ClubsRouter(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-            single { UsersInClubsRouter(get(), get()) }
+            single { UsersInClubsRouter(get(), get(), get(), get(), get(), get()) }
         }
 
         modules(

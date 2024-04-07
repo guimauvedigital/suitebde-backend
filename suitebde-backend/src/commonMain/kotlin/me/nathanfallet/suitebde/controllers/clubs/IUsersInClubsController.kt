@@ -36,7 +36,7 @@ interface IUsersInClubsController :
     suspend fun get(call: ApplicationCall, @ParentModel parent: Club, @Id id: String): UserInClub
 
     @APIMapping
-    @AdminTemplateMapping
+    @AdminTemplateMapping("admin/clubs/users.ftl")
     @ListModelPath
     suspend fun list(
         call: ApplicationCall,
