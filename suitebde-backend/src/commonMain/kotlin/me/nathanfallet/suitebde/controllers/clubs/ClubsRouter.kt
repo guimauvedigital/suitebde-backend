@@ -15,6 +15,7 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.clubs.Club
 import me.nathanfallet.suitebde.models.clubs.CreateClubPayload
 import me.nathanfallet.suitebde.models.clubs.UpdateClubPayload
+import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetPublicMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
@@ -25,6 +26,7 @@ class ClubsRouter(
     translateUseCase: ITranslateUseCase,
     getUserForCallUseCase: IGetUserForCallUseCase,
     requireUserForCallUseCase: IRequireUserForCallUseCase,
+    getAssociationForCallUseCase: IGetAssociationForCallUseCase,
     getPublicMenuForCallUseCase: IGetPublicMenuForCallUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     associationForCallRouter: IAssociationForCallRouter,
@@ -49,6 +51,7 @@ class ClubsRouter(
         getLocaleForCallUseCase,
         translateUseCase,
         requireUserForCallUseCase,
+        getAssociationForCallUseCase,
         getAdminMenuForCallUseCase
     ),
     PublicChildModelRouter(

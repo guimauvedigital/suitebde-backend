@@ -126,7 +126,7 @@
                         hey@suitebde.com
                     </a>
 
-                    <p class="mb-3 text-xs">On est aussi sur mobile !</p>
+                    <p class="mb-3 text-xs"><@t key="admin_also_mobile" /></p>
                     <a href="https://apps.apple.com/app/suite-bde/id6476325543"
                        class="flex items-center justify-center rounded-md bg-black p-2 text-white hover:bg-opacity-95 mb-3">
                         App Store

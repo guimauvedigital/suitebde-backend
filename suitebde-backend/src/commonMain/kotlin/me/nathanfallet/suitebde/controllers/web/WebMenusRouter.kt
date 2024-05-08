@@ -12,6 +12,7 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.web.CreateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.UpdateWebMenuPayload
 import me.nathanfallet.suitebde.models.web.WebMenu
+import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 
@@ -20,6 +21,7 @@ class WebMenusRouter(
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
     requireUserForCallUseCase: IRequireUserForCallUseCase,
+    getAssociationForCallUseCase: IGetAssociationForCallUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     associationForCallRouter: IAssociationForCallRouter,
     associationsRouter: AssociationsRouter,
@@ -43,6 +45,7 @@ class WebMenusRouter(
         getLocaleForCallUseCase,
         translateUseCase,
         requireUserForCallUseCase,
+        getAssociationForCallUseCase,
         getAdminMenuForCallUseCase
     )
 )

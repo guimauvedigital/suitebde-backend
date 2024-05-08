@@ -28,6 +28,7 @@ import me.nathanfallet.suitebde.plugins.configureI18n
 import me.nathanfallet.suitebde.plugins.configureSecurity
 import me.nathanfallet.suitebde.plugins.configureSerialization
 import me.nathanfallet.suitebde.plugins.configureTemplating
+import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.associations.IRequireAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetPublicMenuForCallUseCase
@@ -81,8 +82,9 @@ class WebPagesRouterTest {
             mockk(),
             mockk(),
             mockk(),
+            mockk(),
             AssociationForCallRouter(mockk(), mockk()),
-            AssociationsRouter(associationController, mockk(), mockk(), mockk(), mockk())
+            AssociationsRouter(associationController, mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { associationController.get(any(), "id") } returns association
         coEvery { controller.list(any(), association, null, null) } returns listOf(page)
@@ -102,6 +104,7 @@ class WebPagesRouterTest {
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
+        val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = WebPagesRouter(
             controller,
@@ -109,14 +112,16 @@ class WebPagesRouterTest {
             translateUseCase,
             mockk(),
             requireUserForCallUseCase,
+            getAssociationForCallUseCase,
             mockk(),
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
-            AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
+            AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.list(any(), association, null, null) } returns listOf(page)
         coEvery { requireUserForCallUseCase(any()) } returns user
+        coEvery { getAssociationForCallUseCase(any()) } returns association
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
@@ -137,6 +142,7 @@ class WebPagesRouterTest {
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
+        val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = WebPagesRouter(
             controller,
@@ -144,14 +150,16 @@ class WebPagesRouterTest {
             translateUseCase,
             mockk(),
             requireUserForCallUseCase,
+            getAssociationForCallUseCase,
             mockk(),
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
-            AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
+            AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { controller.get(any(), association, "id") } returns page
         coEvery { requireUserForCallUseCase(any()) } returns user
+        coEvery { getAssociationForCallUseCase(any()) } returns association
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
@@ -179,10 +187,11 @@ class WebPagesRouterTest {
             translateUseCase,
             getUserForCallUseCase,
             mockk(),
+            mockk(),
             getPublicMenuForCallUseCase,
             mockk(),
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
-            AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
+            AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { getUserForCallUseCase(any()) } returns user
@@ -214,10 +223,11 @@ class WebPagesRouterTest {
             translateUseCase,
             getUserForCallUseCase,
             mockk(),
+            mockk(),
             getPublicMenuForCallUseCase,
             mockk(),
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
-            AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk())
+            AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { getUserForCallUseCase(any()) } returns user

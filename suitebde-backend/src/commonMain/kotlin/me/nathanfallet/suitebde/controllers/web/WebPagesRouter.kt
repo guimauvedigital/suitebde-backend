@@ -14,6 +14,7 @@ import me.nathanfallet.suitebde.controllers.models.PublicChildModelRouter
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.web.WebPage
 import me.nathanfallet.suitebde.models.web.WebPagePayload
+import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetPublicMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
@@ -24,6 +25,7 @@ class WebPagesRouter(
     translateUseCase: ITranslateUseCase,
     getUserForCallUseCase: IGetUserForCallUseCase,
     requireUserForCallUseCase: IRequireUserForCallUseCase,
+    getAssociationForCallUseCase: IGetAssociationForCallUseCase,
     getPublicMenuForCallUseCase: IGetPublicMenuForCallUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     associationForCallRouter: IAssociationForCallRouter,
@@ -48,6 +50,7 @@ class WebPagesRouter(
         getLocaleForCallUseCase,
         translateUseCase,
         requireUserForCallUseCase,
+        getAssociationForCallUseCase,
         getAdminMenuForCallUseCase
     ),
     PublicChildModelRouter(

@@ -10,6 +10,7 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateSubscriptionInAssociationPayload
 import me.nathanfallet.suitebde.models.associations.SubscriptionInAssociation
 import me.nathanfallet.suitebde.models.associations.UpdateSubscriptionInAssociationPayload
+import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 
@@ -18,6 +19,7 @@ class SubscriptionsInAssociationsRouter(
     getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     translateUseCase: ITranslateUseCase,
     requireUserForCallUseCase: IRequireUserForCallUseCase,
+    getAssociationForCallUseCase: IGetAssociationForCallUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
     associationForCallRouter: IAssociationForCallRouter,
     associationsRouter: AssociationsRouter,
@@ -42,6 +44,7 @@ class SubscriptionsInAssociationsRouter(
         getLocaleForCallUseCase,
         translateUseCase,
         requireUserForCallUseCase,
+        getAssociationForCallUseCase,
         getAdminMenuForCallUseCase,
         route = "subscriptions"
     )

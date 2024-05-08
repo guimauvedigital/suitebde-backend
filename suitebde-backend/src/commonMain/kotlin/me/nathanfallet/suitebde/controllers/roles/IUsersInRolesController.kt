@@ -36,7 +36,7 @@ interface IUsersInRolesController :
     suspend fun get(call: ApplicationCall, @ParentModel parent: Role, @Id id: String): UserInRole
 
     @APIMapping
-    @AdminTemplateMapping
+    @AdminTemplateMapping("admin/roles/users.ftl")
     @ListModelPath
     suspend fun list(
         call: ApplicationCall,

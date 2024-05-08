@@ -22,6 +22,7 @@ import me.nathanfallet.suitebde.plugins.configureI18n
 import me.nathanfallet.suitebde.plugins.configureSecurity
 import me.nathanfallet.suitebde.plugins.configureSerialization
 import me.nathanfallet.suitebde.plugins.configureTemplating
+import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
 import me.nathanfallet.usecases.localization.ITranslateUseCase
 import org.jsoup.Jsoup
@@ -62,7 +63,7 @@ class AssociationsRouterTest {
     fun testGetAllAPIv1() = testApplication {
         val client = installApp(this)
         val controller = mockk<IAssociationsController>()
-        val router = AssociationsRouter(controller, mockk(), mockk(), mockk(), mockk())
+        val router = AssociationsRouter(controller, mockk(), mockk(), mockk(), mockk(), mockk())
         coEvery { controller.list(any()) } returns listOf(association)
         routing {
             router.createRoutes(this)
@@ -79,16 +80,19 @@ class AssociationsRouterTest {
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
+        val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = AssociationsRouter(
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
             requireUserForCallUseCase,
+            getAssociationForCallUseCase,
             getAdminMenuForCallUseCase,
         )
         coEvery { controller.list(any()) } returns listOf(association)
         coEvery { requireUserForCallUseCase(any()) } returns user
+        coEvery { getAssociationForCallUseCase(any()) } returns association
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
@@ -108,16 +112,19 @@ class AssociationsRouterTest {
         val getLocaleForCallUseCase = mockk<IGetLocaleForCallUseCase>()
         val translateUseCase = mockk<ITranslateUseCase>()
         val requireUserForCallUseCase = mockk<IRequireUserForCallUseCase>()
+        val getAssociationForCallUseCase = mockk<IGetAssociationForCallUseCase>()
         val getAdminMenuForCallUseCase = mockk<IGetAdminMenuForCallUseCase>()
         val router = AssociationsRouter(
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
             requireUserForCallUseCase,
+            getAssociationForCallUseCase,
             getAdminMenuForCallUseCase,
         )
         coEvery { controller.get(any(), "id") } returns association
         coEvery { requireUserForCallUseCase(any()) } returns user
+        coEvery { getAssociationForCallUseCase(any()) } returns association
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }
