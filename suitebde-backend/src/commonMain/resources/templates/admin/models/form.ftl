@@ -66,6 +66,9 @@
             }
         </script>
     </#if>
+    <#if usersearch?? && usersearch>
+        <script src="/js/user-search.js"></script>
+    </#if>
 </@template.page>
 
 <#macro field key>
@@ -113,6 +116,18 @@
                            aria-describedby="${key.key}-prefix" <#if item??>value="${item[key.key]}"</#if>
                             <#if !key.editable>disabled</#if>>
                 </div>
+                <#break>
+            <#case "user">
+                <input type="hidden" name="${key.key}" id="${key.key}">
+                <input type="text"
+                       class="w-full rounded border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary datetimepicker"
+                       name="user-dropdown-input" id="user-dropdown-input"
+                       associationId="${association.id}"
+                       targetId="${key.key}"
+                       <#if item??>value="${item[key.key]}"</#if>
+                        <#if !key.editable>disabled</#if>>
+                <div id="user-dropdown-menu"
+                     class="absolute mt-2 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 p-1 space-y-1"></div>
                 <#break>
             <#default>
                 <input type="text"

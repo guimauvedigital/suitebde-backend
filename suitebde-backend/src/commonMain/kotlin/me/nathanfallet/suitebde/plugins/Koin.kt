@@ -869,23 +869,23 @@ fun Application.configureKoin() {
             single<IAssociationForCallRouter> { AssociationForCallRouter(get(), get()) }
             single { WebhooksRouter(get()) }
             single { RootRouter(get(), get(), get()) }
-            single { DashboardRouter(get(), get(), get(), get(), get()) }
-            single { NotificationsRouter(get(), get(), get(), get(), get()) }
-            single { AssociationsRouter(get(), get(), get(), get(), get()) }
-            single { DomainsInAssociationsRouter(get(), get(), get(), get(), get(), get()) }
-            single { SubscriptionsInAssociationsRouter(get(), get(), get(), get(), get(), get(), get()) }
-            single { UsersRouter(get(), get(), get(), get(), get(), get(), get()) }
+            single { DashboardRouter(get(), get(), get(), get(), get(), get()) }
+            single { NotificationsRouter(get(), get(), get(), get(), get(), get()) }
+            single { AssociationsRouter(get(), get(), get(), get(), get(), get()) }
+            single { DomainsInAssociationsRouter(get(), get(), get(), get(), get(), get(), get()) }
+            single { SubscriptionsInAssociationsRouter(get(), get(), get(), get(), get(), get(), get(), get()) }
+            single { UsersRouter(get(), get(), get(), get(), get(), get(), get(), get()) }
             single { SubscriptionsInUsersRouter(get(), get()) }
             single { NotificationTokensRouter(get(), get()) }
             single { AuthRouter(get(), get()) }
-            single { RolesRouter(get(), get(), get(), get(), get(), get(), get()) }
-            single { UsersInRolesRouter(get(), get(), get(), get(), get(), get()) }
+            single { RolesRouter(get(), get(), get(), get(), get(), get(), get(), get()) }
+            single { UsersInRolesRouter(get(), get(), get(), get(), get(), get(), get()) }
             single { PermissionsInRolesRouter(get(), get()) }
-            single { WebPagesRouter(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-            single { WebMenusRouter(get(), get(), get(), get(), get(), get(), get()) }
-            single { EventsRouter(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-            single { ClubsRouter(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
-            single { UsersInClubsRouter(get(), get(), get(), get(), get(), get()) }
+            single { WebPagesRouter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+            single { WebMenusRouter(get(), get(), get(), get(), get(), get(), get(), get()) }
+            single { EventsRouter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+            single { ClubsRouter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+            single { UsersInClubsRouter(get(), get(), get(), get(), get(), get(), get()) }
         }
 
         modules(
