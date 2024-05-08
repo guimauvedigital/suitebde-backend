@@ -23,7 +23,7 @@
             <#list items as user>
                 <div class="flex-col">
                     ${user.user.firstName} ${user.user.lastName}<br/>
-                    TODO: Make that shit looks great
+                    <a href="${route}/${user.id}/delete"><@t key="admin_clubs_users_delete" /></a>
                 </div>
             </#list>
         </div>
