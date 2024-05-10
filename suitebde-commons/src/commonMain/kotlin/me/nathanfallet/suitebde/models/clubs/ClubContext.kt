@@ -4,5 +4,5 @@ import me.nathanfallet.usecases.context.IContext
 
 data class ClubContext(
     val userId: String? = null,
-    val showValidated: Boolean = false,
+    val showValidated: Boolean = true,
 ) : IContext

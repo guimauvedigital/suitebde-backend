@@ -13,6 +13,7 @@ import me.nathanfallet.ktorx.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.clubs.Club
+import me.nathanfallet.suitebde.models.clubs.ClubContext
 import me.nathanfallet.suitebde.models.clubs.CreateClubPayload
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.OptionalUserContext
@@ -100,7 +101,7 @@ class ClubsControllerTest {
         val call = mockk<ApplicationCall>()
         coEvery { getUserForCallUseCase(call) } returns user
         coEvery {
-            getClubsInAssociationUseCase(association.id, OptionalUserContext(user.id))
+            getClubsInAssociationUseCase(association.id, ClubContext(user.id, false))
         } returns listOf(club)
         val controller = ClubsController(
             getUserForCallUseCase, mockk(), mockk(), getClubsInAssociationUseCase,
