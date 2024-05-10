@@ -14,7 +14,7 @@ data class CreateClubPayload(
     val description: String,
     @PayloadProperty("string")
     @Schema("Logo of the club", "https://example.com/logo.png")
-    val logo: String?,
+    val logo: String? = null,
     @PayloadProperty("string")
     @Schema("Name of the default member role", "Member")
     val memberRoleName: String,
@@ -22,6 +22,6 @@ data class CreateClubPayload(
     @Schema("Name of the default admin role", "Admin")
     val adminRoleName: String,
     @PayloadProperty("boolean")
-    @Schema("Is the event validated?", "true")
+    @Schema("Is the club validated?", "true")
     val validated: Boolean? = null,
 )

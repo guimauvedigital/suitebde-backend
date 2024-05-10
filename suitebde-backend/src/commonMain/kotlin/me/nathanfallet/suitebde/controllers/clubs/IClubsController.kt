@@ -25,6 +25,7 @@ interface IClubsController :
 
     @APIMapping
     @AdminTemplateMapping
+    @TemplateMapping("public/clubs/suggest.ftl")
     @CreateModelPath
     @DocumentedError(401, "auth_invalid_credentials")
     @DocumentedError(403, "clubs_validated_not_allowed")
