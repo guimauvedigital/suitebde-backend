@@ -880,7 +880,7 @@ fun Application.configureKoin() {
             single { AuthRouter(get(), get()) }
             single { RolesRouter(get(), get(), get(), get(), get(), get(), get(), get()) }
             single { UsersInRolesRouter(get(), get(), get(), get(), get(), get(), get()) }
-            single { PermissionsInRolesRouter(get(), get()) }
+            single { PermissionsInRolesRouter(get(), get(), get(), get(), get(), get(), get()) }
             single { WebPagesRouter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             single { WebMenusRouter(get(), get(), get(), get(), get(), get(), get(), get()) }
             single { EventsRouter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
