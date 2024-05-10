@@ -8,10 +8,7 @@ import me.nathanfallet.ktorx.usecases.users.IGetUserForCallUseCase
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.application.SearchOptions
 import me.nathanfallet.suitebde.models.associations.Association
-import me.nathanfallet.suitebde.models.clubs.Club
-import me.nathanfallet.suitebde.models.clubs.CreateClubPayload
-import me.nathanfallet.suitebde.models.clubs.UpdateClubPayload
-import me.nathanfallet.suitebde.models.clubs.UserInClub
+import me.nathanfallet.suitebde.models.clubs.*
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.OptionalUserContext
 import me.nathanfallet.suitebde.models.users.User
@@ -92,7 +89,7 @@ class ClubsController(
         val user = (getUserForCallUseCase(call) as? User)
         if (!call.request.path().contains("/api/")) return getClubsInAssociationUseCase(
             parent.id,
-            OptionalUserContext(user?.id)
+            ClubContext(user?.id, !call.request.path().contains("/admin/"))
         )
         return getClubsInAssociationSlicedUseCase(
             Pagination(

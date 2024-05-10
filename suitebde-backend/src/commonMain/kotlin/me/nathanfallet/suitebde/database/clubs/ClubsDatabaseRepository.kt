@@ -3,6 +3,7 @@ package me.nathanfallet.suitebde.database.clubs
 import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.application.SearchOptions
 import me.nathanfallet.suitebde.models.clubs.Club
+import me.nathanfallet.suitebde.models.clubs.ClubContext
 import me.nathanfallet.suitebde.models.clubs.CreateClubPayload
 import me.nathanfallet.suitebde.models.clubs.UpdateClubPayload
 import me.nathanfallet.suitebde.models.users.OptionalUserContext
@@ -27,20 +28,22 @@ class ClubsDatabaseRepository(
 
     override suspend fun list(parentId: String, context: IContext?): List<Club> =
         database.suspendedTransaction {
-            customJoin((context as? OptionalUserContext)?.userId)
+            customJoin((context as? ClubContext)?.userId ?: (context as? OptionalUserContext)?.userId)
                 .where { Clubs.associationId eq parentId }
+                .andWhere(context as? ClubContext)
                 .groupBy(Clubs.id)
-                .orderByMemberAndName((context as? OptionalUserContext)?.userId)
+                .orderByMemberAndName((context as? ClubContext)?.userId ?: (context as? OptionalUserContext)?.userId)
                 .map(Clubs::toClub)
         }
 
     override suspend fun list(pagination: Pagination, parentId: String, context: IContext?): List<Club> =
         database.suspendedTransaction {
-            customJoin((context as? OptionalUserContext)?.userId)
+            customJoin((context as? ClubContext)?.userId ?: (context as? OptionalUserContext)?.userId)
                 .where { Clubs.associationId eq parentId }
                 .andWhere(pagination.options)
+                .andWhere(context as? ClubContext)
                 .groupBy(Clubs.id)
-                .orderByMemberAndName((context as? OptionalUserContext)?.userId)
+                .orderByMemberAndName((context as? ClubContext)?.userId ?: (context as? OptionalUserContext)?.userId)
                 .limit(pagination.limit.toInt(), pagination.offset)
                 .map(Clubs::toClub)
         }
@@ -62,7 +65,7 @@ class ClubsDatabaseRepository(
 
     override suspend fun get(id: String, parentId: String, context: IContext?): Club? =
         database.suspendedTransaction {
-            customJoin((context as? OptionalUserContext)?.userId)
+            customJoin((context as? ClubContext)?.userId ?: (context as? OptionalUserContext)?.userId)
                 .where { Clubs.id eq id and (Clubs.associationId eq parentId) }
                 .groupBy(Clubs.id)
                 .map(Clubs::toClub)
@@ -122,5 +125,9 @@ class ClubsDatabaseRepository(
 
         else -> this
     }
+
+    private fun Query.andWhere(context: ClubContext?): Query = context?.takeIf { it.showValidated }?.let {
+        andWhere { Clubs.validated eq true }
+    } ?: this
 
 }
