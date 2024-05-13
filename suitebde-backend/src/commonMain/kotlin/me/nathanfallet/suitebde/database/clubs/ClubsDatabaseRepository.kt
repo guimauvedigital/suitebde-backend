@@ -126,8 +126,8 @@ class ClubsDatabaseRepository(
         else -> this
     }
 
-    private fun Query.andWhere(context: ClubContext?): Query = context?.takeIf { it.showValidated }?.let {
-        andWhere { Clubs.validated eq true }
-    } ?: this
+    private fun Query.andWhere(context: ClubContext?): Query =
+        if (context?.onlyShowValidated != false) andWhere { Clubs.validated eq true }
+        else this
 
 }

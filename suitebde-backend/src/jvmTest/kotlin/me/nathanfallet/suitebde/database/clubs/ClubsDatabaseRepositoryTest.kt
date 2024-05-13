@@ -2,6 +2,7 @@ package me.nathanfallet.suitebde.database.clubs
 
 import kotlinx.coroutines.runBlocking
 import me.nathanfallet.suitebde.database.Database
+import me.nathanfallet.suitebde.models.clubs.ClubContext
 import me.nathanfallet.suitebde.models.clubs.CreateClubPayload
 import me.nathanfallet.suitebde.models.clubs.UpdateClubPayload
 import me.nathanfallet.suitebde.models.users.OptionalUserContext
@@ -26,7 +27,7 @@ class ClubsDatabaseRepositoryTest {
             ),
             "associationId",
         ) ?: fail("Unable to create club")
-        val clubFromDatabase = repository.list("associationId")
+        val clubFromDatabase = repository.list("associationId", ClubContext(onlyShowValidated = false))
         assertEquals(1, clubFromDatabase.size)
         assertEquals(clubFromDatabase.first().id, club.id)
         assertEquals(clubFromDatabase.first().associationId, club.associationId)
@@ -51,7 +52,7 @@ class ClubsDatabaseRepositoryTest {
             ),
             "associationId",
         ) ?: fail("Unable to create club")
-        val clubFromDatabase = repository.list("otherAssociationId")
+        val clubFromDatabase = repository.list("otherAssociationId", ClubContext(onlyShowValidated = false))
         assertEquals(0, clubFromDatabase.size)
     }
 
