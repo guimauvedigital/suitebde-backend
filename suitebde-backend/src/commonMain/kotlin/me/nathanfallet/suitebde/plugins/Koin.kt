@@ -188,7 +188,6 @@ fun Application.configureKoin() {
                 ClientsDatabaseRepository(get())
             }
             single<ISessionsRepository> { SessionsDatabaseRepository(get()) }
-            single<IAddDurationUseCase> { AddDurationUseCase() }
 
             // Associations
             single<IAssociationsRepository> { AssociationsDatabaseRepository(get()) }
@@ -235,6 +234,7 @@ fun Application.configureKoin() {
             single<IExpireUseCase> { ExpireUseCase(get(), get(), get(), get()) }
             single<ITranslateUseCase> { TranslateUseCase() }
             single<IGetLocaleForCallUseCase> { GetLocaleForCallUseCase() }
+            single<IAddDurationUseCase> { AddDurationUseCase() }
             single<IGetZoneForDomainUseCase> {
                 GetZoneForDomainUseCase(
                     get(),
