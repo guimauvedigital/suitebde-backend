@@ -13,14 +13,14 @@ import me.nathanfallet.suitebde.models.scans.ScansForDay
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.models.users.UserContext
 import me.nathanfallet.suitebde.usecases.scans.IListScansForDaysUseCase
+import me.nathanfallet.suitebde.usecases.users.IGetUserUseCase
 import me.nathanfallet.usecases.models.create.context.ICreateChildModelWithContextSuspendUseCase
-import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 
 class ScansController(
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
-    private val getUserUseCase: IGetChildModelSuspendUseCase<User, String, String>,
+    private val getUserUseCase: IGetUserUseCase,
     private val createScanUseCase: ICreateChildModelWithContextSuspendUseCase<Scan, CreateScanPayload, String>,
     private val listScansForDaysUseCase: IListScansForDaysUseCase,
 ) : IScansController {
@@ -29,7 +29,7 @@ class ScansController(
         val scanner = requireUserForCallUseCase(call).takeIf {
             checkPermissionUseCase(it, Permission.USERS_VIEW inAssociation parent.id)
         } as? User ?: throw ControllerException(HttpStatusCode.Forbidden, "scans_not_allowed")
-        val user = getUserUseCase(payload.userId, parent.id) ?: throw ControllerException(
+        val user = getUserUseCase(payload.userId) ?: throw ControllerException(
             HttpStatusCode.NotFound, "users_not_found"
         )
         return createScanUseCase(

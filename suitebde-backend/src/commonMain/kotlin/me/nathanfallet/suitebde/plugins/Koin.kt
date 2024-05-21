@@ -780,7 +780,7 @@ fun Application.configureKoin() {
                 ScansController(
                     get(),
                     get(),
-                    get(named<User>()),
+                    get(),
                     get(named<Scan>()),
                     get()
                 )
