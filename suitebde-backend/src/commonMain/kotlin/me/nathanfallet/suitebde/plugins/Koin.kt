@@ -111,6 +111,8 @@ import me.nathanfallet.suitebde.usecases.notifications.SendNotificationUseCase
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.roles.GetPermissionsForUserUseCase
 import me.nathanfallet.suitebde.usecases.roles.IGetPermissionsForUserUseCase
+import me.nathanfallet.suitebde.usecases.scans.IListScansForDaysUseCase
+import me.nathanfallet.suitebde.usecases.scans.ListScansForDaysUseCase
 import me.nathanfallet.suitebde.usecases.stripe.*
 import me.nathanfallet.suitebde.usecases.users.*
 import me.nathanfallet.suitebde.usecases.web.*
@@ -467,6 +469,7 @@ fun Application.configureKoin() {
             single<ICreateChildModelWithContextSuspendUseCase<Scan, CreateScanPayload, String>>(named<Scan>()) {
                 CreateChildModelWithContextFromRepositorySuspendUseCase(get<IScansRepository>())
             }
+            single<IListScansForDaysUseCase> { ListScansForDaysUseCase(get(), get()) }
 
             // Notifications
             single<ISendNotificationUseCase> { SendNotificationUseCase(get()) }
@@ -778,7 +781,8 @@ fun Application.configureKoin() {
                     get(),
                     get(),
                     get(named<User>()),
-                    get(named<Scan>())
+                    get(named<Scan>()),
+                    get()
                 )
             }
 

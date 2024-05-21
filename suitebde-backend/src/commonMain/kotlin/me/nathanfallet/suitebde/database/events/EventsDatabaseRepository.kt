@@ -1,5 +1,6 @@
 package me.nathanfallet.suitebde.database.events
 
+import kotlinx.datetime.LocalDate
 import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
 import me.nathanfallet.suitebde.models.events.UpdateEventPayload
@@ -36,6 +37,15 @@ class EventsDatabaseRepository(
                 .where { Events.associationId eq parentId }
                 .orderBy(Events.startsAt, SortOrder.ASC)
                 .limit(pagination.limit.toInt(), pagination.offset)
+                .map(Events::toEvent)
+        }
+
+    override suspend fun listBetween(parentId: String, startsAt: LocalDate, endsAt: LocalDate): List<Event> =
+        database.suspendedTransaction {
+            Events
+                .selectAll()
+                .where { Events.associationId eq parentId and (Events.startsAt greaterEq startsAt.toString()) and (Events.endsAt lessEq endsAt.toString()) and Events.validated }
+                .orderBy(Events.startsAt, SortOrder.ASC)
                 .map(Events::toEvent)
         }
 

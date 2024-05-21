@@ -1,14 +1,15 @@
 package me.nathanfallet.suitebde.database.scans
 
 import kotlinx.datetime.Clock
+import kotlinx.datetime.LocalDate
+import me.nathanfallet.suitebde.database.users.Users
 import me.nathanfallet.suitebde.models.scans.CreateScanPayload
 import me.nathanfallet.suitebde.models.scans.Scan
 import me.nathanfallet.suitebde.models.users.UserContext
 import me.nathanfallet.suitebde.repositories.scans.IScansRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
-import org.jetbrains.exposed.sql.SchemaUtils
-import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.*
 
 class ScansDatabaseRepository(
     private val database: IDatabase,
@@ -32,5 +33,14 @@ class ScansDatabaseRepository(
             }.resultedValues?.map(Scans::toScan)?.singleOrNull()
         }
     }
+
+    override suspend fun listBetween(parentId: String, startsAt: LocalDate, endsAt: LocalDate): List<Scan> =
+        database.suspendedTransaction {
+            Scans
+                .join(Users, JoinType.LEFT, Scans.userId, Users.id)
+                .selectAll()
+                .where { Scans.associationId eq parentId and (Scans.scannedAt greaterEq startsAt.toString()) and (Scans.scannedAt lessEq endsAt.toString()) }
+                .map { Scans.toScan(it, Users.toUser(it)) }
+        }
 
 }
