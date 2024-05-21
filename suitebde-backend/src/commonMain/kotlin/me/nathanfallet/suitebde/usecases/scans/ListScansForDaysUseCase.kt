@@ -22,12 +22,12 @@ class ListScansForDaysUseCase(
                     scan.key,
                     scan.value,
                     events.filter {
-                        // TODO: Fix event not included if starts and ends are on different days
                         scan.key >= it.startsAt.toLocalDateTime(timeZone).date &&
                                 scan.key <= it.endsAt.toLocalDateTime(timeZone).date
                     }
                 )
             }
+            .sortedByDescending { it.date }
     }
 
 }

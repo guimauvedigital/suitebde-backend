@@ -44,7 +44,8 @@ class EventsDatabaseRepository(
         database.suspendedTransaction {
             Events
                 .selectAll()
-                .where { Events.associationId eq parentId and (Events.startsAt greaterEq startsAt.toString()) and (Events.endsAt lessEq endsAt.toString()) and Events.validated }
+                .where { Events.associationId eq parentId and Events.validated }
+                .andWhere { Events.startsAt lessEq endsAt.toString() and (Events.endsAt greaterEq startsAt.toString()) }
                 .orderBy(Events.startsAt, SortOrder.ASC)
                 .map(Events::toEvent)
         }
