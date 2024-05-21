@@ -1,18 +1,19 @@
 package me.nathanfallet.suitebde.database.events
 
+import kotlinx.datetime.LocalDate
 import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
 import me.nathanfallet.suitebde.models.events.UpdateEventPayload
+import me.nathanfallet.suitebde.repositories.events.IEventsRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
-import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class EventsDatabaseRepository(
     private val database: IDatabase,
-) : IChildModelSuspendRepository<Event, String, CreateEventPayload, UpdateEventPayload, String> {
+) : IEventsRepository {
 
     init {
         database.transaction {
@@ -36,6 +37,15 @@ class EventsDatabaseRepository(
                 .where { Events.associationId eq parentId }
                 .orderBy(Events.startsAt, SortOrder.ASC)
                 .limit(pagination.limit.toInt(), pagination.offset)
+                .map(Events::toEvent)
+        }
+
+    override suspend fun listBetween(parentId: String, startsAt: LocalDate, endsAt: LocalDate): List<Event> =
+        database.suspendedTransaction {
+            Events
+                .selectAll()
+                .where { Events.associationId eq parentId and (Events.startsAt greaterEq startsAt.toString()) and (Events.endsAt lessEq endsAt.toString()) and Events.validated }
+                .orderBy(Events.startsAt, SortOrder.ASC)
                 .map(Events::toEvent)
         }
 

@@ -22,6 +22,7 @@ import me.nathanfallet.suitebde.controllers.roles.PermissionsInRolesRouter
 import me.nathanfallet.suitebde.controllers.roles.RolesRouter
 import me.nathanfallet.suitebde.controllers.roles.UsersInRolesRouter
 import me.nathanfallet.suitebde.controllers.root.RootRouter
+import me.nathanfallet.suitebde.controllers.scans.ScansRouter
 import me.nathanfallet.suitebde.controllers.users.SubscriptionsInUsersRouter
 import me.nathanfallet.suitebde.controllers.users.UsersRouter
 import me.nathanfallet.suitebde.controllers.web.WebMenusRouter
@@ -58,6 +59,7 @@ fun Application.configureRouting() {
                 get<UsersRouter>(),
                 get<SubscriptionsInUsersRouter>(),
                 get<NotificationTokensRouter>(),
+                get<ScansRouter>(),
                 get<RolesRouter>(),
                 get<UsersInRolesRouter>(),
                 get<PermissionsInRolesRouter>(),

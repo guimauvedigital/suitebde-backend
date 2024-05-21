@@ -16,6 +16,7 @@ import me.nathanfallet.suitebde.repositories.notifications.NotificationsRemoteRe
 import me.nathanfallet.suitebde.repositories.roles.PermissionsInRolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.RolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.UsersInRolesRemoteRepository
+import me.nathanfallet.suitebde.repositories.scans.ScansRemoteRepository
 import me.nathanfallet.suitebde.repositories.users.SubscriptionsInUsersRemoteRepository
 import me.nathanfallet.suitebde.repositories.users.UsersRemoteRepository
 import me.nathanfallet.suitebde.repositories.web.WebMenusRemoteRepository
@@ -38,6 +39,7 @@ class SuiteBDEClient(
     override val users = UsersRemoteRepository(this, associations)
     override val subscriptionsInUsers = SubscriptionsInUsersRemoteRepository(this, users)
     override val notificationTokens = NotificationTokensRemoteRepository(this, users)
+    override val scans = ScansRemoteRepository(this, associations)
     override val webMenus = WebMenusRemoteRepository(this, associations)
     override val webPages = WebPagesRemoteRepository(this, associations)
     override val events = EventsRemoteRepository(this, associations)
