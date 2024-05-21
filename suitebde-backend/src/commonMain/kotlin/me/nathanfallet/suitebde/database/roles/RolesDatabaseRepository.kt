@@ -3,16 +3,16 @@ package me.nathanfallet.suitebde.database.roles
 import me.nathanfallet.suitebde.models.roles.CreateRolePayload
 import me.nathanfallet.suitebde.models.roles.Role
 import me.nathanfallet.suitebde.models.roles.UpdateRolePayload
+import me.nathanfallet.suitebde.repositories.roles.IRolesRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
-import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class RolesDatabaseRepository(
     private val database: IDatabase,
-) : IChildModelSuspendRepository<Role, String, CreateRolePayload, UpdateRolePayload, String> {
+) : IRolesRepository {
 
     init {
         database.transaction {

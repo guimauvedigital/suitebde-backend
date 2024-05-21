@@ -13,6 +13,7 @@ import me.nathanfallet.suitebde.repositories.notifications.INotificationsRemoteR
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.IRolesRemoteRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRemoteRepository
+import me.nathanfallet.suitebde.repositories.scans.IScansRemoteRepository
 import me.nathanfallet.suitebde.repositories.users.ISubscriptionsInUsersRemoteRepository
 import me.nathanfallet.suitebde.repositories.users.IUsersRemoteRepository
 import me.nathanfallet.suitebde.repositories.web.IWebMenusRemoteRepository
@@ -28,6 +29,7 @@ interface ISuiteBDEClient : IAPIClient {
     val users: IUsersRemoteRepository
     val subscriptionsInUsers: ISubscriptionsInUsersRemoteRepository
     val notificationTokens: INotificationTokensRemoteRepository
+    val scans: IScansRemoteRepository
     val webMenus: IWebMenusRemoteRepository
     val webPages: IWebPagesRemoteRepository
     val events: IEventsRemoteRepository

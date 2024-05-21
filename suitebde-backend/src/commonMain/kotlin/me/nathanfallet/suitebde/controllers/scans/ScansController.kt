@@ -1,0 +1,36 @@
+package me.nathanfallet.suitebde.controllers.scans
+
+import io.ktor.http.*
+import io.ktor.server.application.*
+import me.nathanfallet.ktorx.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
+import me.nathanfallet.suitebde.models.associations.Association
+import me.nathanfallet.suitebde.models.roles.Permission
+import me.nathanfallet.suitebde.models.scans.CreateScanPayload
+import me.nathanfallet.suitebde.models.scans.Scan
+import me.nathanfallet.suitebde.models.users.User
+import me.nathanfallet.suitebde.models.users.UserContext
+import me.nathanfallet.usecases.models.create.context.ICreateChildModelWithContextSuspendUseCase
+import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
+import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
+
+class ScansController(
+    private val requireUserForCallUseCase: IRequireUserForCallUseCase,
+    private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
+    private val getUserUseCase: IGetChildModelSuspendUseCase<User, String, String>,
+    private val createScanUseCase: ICreateChildModelWithContextSuspendUseCase<Scan, CreateScanPayload, String>,
+) : IScansController {
+
+    override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateScanPayload): Scan {
+        val scanner = requireUserForCallUseCase(call).takeIf {
+            checkPermissionUseCase(it, Permission.USERS_VIEW inAssociation parent.id)
+        } as? User ?: throw ControllerException(HttpStatusCode.Forbidden, "scans_not_allowed")
+        val user = getUserUseCase(payload.userId, parent.id) ?: throw ControllerException(
+            HttpStatusCode.NotFound, "users_not_found"
+        )
+        return createScanUseCase(
+            CreateScanPayload(user.id), parent.id, UserContext(scanner.id)
+        ) ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
+    }
+
+}

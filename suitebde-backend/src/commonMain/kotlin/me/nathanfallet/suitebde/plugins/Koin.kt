@@ -27,6 +27,9 @@ import me.nathanfallet.suitebde.controllers.roles.*
 import me.nathanfallet.suitebde.controllers.root.IRootController
 import me.nathanfallet.suitebde.controllers.root.RootController
 import me.nathanfallet.suitebde.controllers.root.RootRouter
+import me.nathanfallet.suitebde.controllers.scans.IScansController
+import me.nathanfallet.suitebde.controllers.scans.ScansController
+import me.nathanfallet.suitebde.controllers.scans.ScansRouter
 import me.nathanfallet.suitebde.controllers.users.*
 import me.nathanfallet.suitebde.controllers.web.*
 import me.nathanfallet.suitebde.controllers.webhooks.IWebhooksController
@@ -46,6 +49,7 @@ import me.nathanfallet.suitebde.database.notifications.NotificationTokensDatabas
 import me.nathanfallet.suitebde.database.roles.PermissionsInRolesDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.RolesDatabaseRepository
 import me.nathanfallet.suitebde.database.roles.UsersInRolesDatabaseRepository
+import me.nathanfallet.suitebde.database.scans.ScansDatabaseRepository
 import me.nathanfallet.suitebde.database.stripe.StripeAccountsDatabaseRepository
 import me.nathanfallet.suitebde.database.stripe.StripeOrdersDatabaseRepository
 import me.nathanfallet.suitebde.database.users.ClientsInUsersDatabaseRepository
@@ -62,6 +66,8 @@ import me.nathanfallet.suitebde.models.events.UpdateEventPayload
 import me.nathanfallet.suitebde.models.notifications.CreateNotificationTokenPayload
 import me.nathanfallet.suitebde.models.notifications.NotificationToken
 import me.nathanfallet.suitebde.models.roles.*
+import me.nathanfallet.suitebde.models.scans.CreateScanPayload
+import me.nathanfallet.suitebde.models.scans.Scan
 import me.nathanfallet.suitebde.models.stripe.*
 import me.nathanfallet.suitebde.models.users.*
 import me.nathanfallet.suitebde.models.web.*
@@ -72,9 +78,12 @@ import me.nathanfallet.suitebde.repositories.associations.ISubscriptionsInAssoci
 import me.nathanfallet.suitebde.repositories.clubs.IClubsRepository
 import me.nathanfallet.suitebde.repositories.clubs.IRolesInClubsRepository
 import me.nathanfallet.suitebde.repositories.clubs.IUsersInClubsRepository
+import me.nathanfallet.suitebde.repositories.events.IEventsRepository
 import me.nathanfallet.suitebde.repositories.notifications.INotificationTokensRepository
 import me.nathanfallet.suitebde.repositories.roles.IPermissionsInRolesRepository
+import me.nathanfallet.suitebde.repositories.roles.IRolesRepository
 import me.nathanfallet.suitebde.repositories.roles.IUsersInRolesRepository
+import me.nathanfallet.suitebde.repositories.scans.IScansRepository
 import me.nathanfallet.suitebde.repositories.stripe.IStripeAccountsRepository
 import me.nathanfallet.suitebde.repositories.stripe.IStripeOrdersRepository
 import me.nathanfallet.suitebde.repositories.users.IClientsInUsersRepository
@@ -130,7 +139,6 @@ import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUse
 import me.nathanfallet.usecases.models.list.slice.ListSliceChildModelFromRepositorySuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.context.IListSliceChildModelWithContextSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.context.ListSliceChildModelWithContextFromRepositorySuspendUseCase
-import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 import me.nathanfallet.usecases.models.repositories.IModelSuspendRepository
 import me.nathanfallet.usecases.models.update.IUpdateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.update.IUpdateModelSuspendUseCase
@@ -204,13 +212,14 @@ fun Application.configureKoin() {
             single<IClientsInUsersRepository> { ClientsInUsersDatabaseRepository(get()) }
             single<ISubscriptionsInUsersRepository> { SubscriptionsInUsersDatabaseRepository(get()) }
 
+            // Scans
+            single<IScansRepository> { ScansDatabaseRepository(get()) }
+
             // Notifications
             single<INotificationTokensRepository> { NotificationTokensDatabaseRepository(get()) }
 
             // Roles
-            single<IChildModelSuspendRepository<Role, String, CreateRolePayload, UpdateRolePayload, String>>(named<Role>()) {
-                RolesDatabaseRepository(get())
-            }
+            single<IRolesRepository> { RolesDatabaseRepository(get()) }
             single<IPermissionsInRolesRepository> { PermissionsInRolesDatabaseRepository(get()) }
             single<IUsersInRolesRepository> { UsersInRolesDatabaseRepository(get()) }
 
@@ -219,9 +228,7 @@ fun Application.configureKoin() {
             single<IWebMenusRepository> { WebMenusDatabaseRepository(get()) }
 
             // Events
-            single<IChildModelSuspendRepository<Event, String, CreateEventPayload, UpdateEventPayload, String>>(named<Event>()) {
-                EventsDatabaseRepository(get())
-            }
+            single<IEventsRepository> { EventsDatabaseRepository(get()) }
 
             // Clubs
             single<IClubsRepository> { ClubsDatabaseRepository(get()) }
@@ -456,6 +463,11 @@ fun Application.configureKoin() {
                 DeleteChildModelFromRepositorySuspendUseCase(get<ISubscriptionsInUsersRepository>())
             }
 
+            // Scans
+            single<ICreateChildModelWithContextSuspendUseCase<Scan, CreateScanPayload, String>>(named<Scan>()) {
+                CreateChildModelWithContextFromRepositorySuspendUseCase(get<IScansRepository>())
+            }
+
             // Notifications
             single<ISendNotificationUseCase> { SendNotificationUseCase(get()) }
             single<IListNotificationTopicsUseCase> { ListNotificationTopicsUseCase() }
@@ -473,22 +485,22 @@ fun Application.configureKoin() {
             single<ICheckPermissionSuspendUseCase> { CheckPermissionUseCase(get()) }
             single<IGetPermissionsForUserUseCase> { GetPermissionsForUserUseCase(get()) }
             single<IListChildModelSuspendUseCase<Role, String>>(named<Role>()) {
-                ListChildModelFromRepositorySuspendUseCase(get(named<Role>()))
+                ListChildModelFromRepositorySuspendUseCase(get<IRolesRepository>())
             }
             single<IListSliceChildModelSuspendUseCase<Role, String>>(named<Role>()) {
-                ListSliceChildModelFromRepositorySuspendUseCase(get(named<Role>()))
+                ListSliceChildModelFromRepositorySuspendUseCase(get<IRolesRepository>())
             }
             single<IGetChildModelSuspendUseCase<Role, String, String>>(named<Role>()) {
-                GetChildModelFromRepositorySuspendUseCase(get(named<Role>()))
+                GetChildModelFromRepositorySuspendUseCase(get<IRolesRepository>())
             }
             single<ICreateChildModelSuspendUseCase<Role, CreateRolePayload, String>>(named<Role>()) {
-                CreateChildModelFromRepositorySuspendUseCase(get(named<Role>()))
+                CreateChildModelFromRepositorySuspendUseCase(get<IRolesRepository>())
             }
             single<IUpdateChildModelSuspendUseCase<Role, String, UpdateRolePayload, String>>(named<Role>()) {
-                UpdateChildModelFromRepositorySuspendUseCase(get(named<Role>()))
+                UpdateChildModelFromRepositorySuspendUseCase(get<IRolesRepository>())
             }
             single<IDeleteChildModelSuspendUseCase<Role, String, String>>(named<Role>()) {
-                DeleteChildModelFromRepositorySuspendUseCase(get(named<Role>()))
+                DeleteChildModelFromRepositorySuspendUseCase(get<IRolesRepository>())
             }
 
             // Users in roles
@@ -569,22 +581,22 @@ fun Application.configureKoin() {
 
             // Events
             single<IListChildModelSuspendUseCase<Event, String>>(named<Event>()) {
-                ListChildModelFromRepositorySuspendUseCase(get(named<Event>()))
+                ListChildModelFromRepositorySuspendUseCase(get<IEventsRepository>())
             }
             single<IListSliceChildModelSuspendUseCase<Event, String>>(named<Event>()) {
-                ListSliceChildModelFromRepositorySuspendUseCase(get(named<Event>()))
+                ListSliceChildModelFromRepositorySuspendUseCase(get<IEventsRepository>())
             }
             single<IGetChildModelSuspendUseCase<Event, String, String>>(named<Event>()) {
-                GetChildModelFromRepositorySuspendUseCase(get(named<Event>()))
+                GetChildModelFromRepositorySuspendUseCase(get<IEventsRepository>())
             }
             single<ICreateChildModelSuspendUseCase<Event, CreateEventPayload, String>>(named<Event>()) {
-                CreateChildModelFromRepositorySuspendUseCase(get(named<Event>()))
+                CreateChildModelFromRepositorySuspendUseCase(get<IEventsRepository>())
             }
             single<IUpdateChildModelSuspendUseCase<Event, String, UpdateEventPayload, String>>(named<Event>()) {
-                UpdateChildModelFromRepositorySuspendUseCase(get(named<Event>()))
+                UpdateChildModelFromRepositorySuspendUseCase(get<IEventsRepository>())
             }
             single<IDeleteChildModelSuspendUseCase<Event, String, String>>(named<Event>()) {
-                DeleteChildModelFromRepositorySuspendUseCase(get(named<Event>()))
+                DeleteChildModelFromRepositorySuspendUseCase(get<IEventsRepository>())
             }
 
             // Clubs
@@ -761,6 +773,14 @@ fun Application.configureKoin() {
                     get(named<NotificationToken>())
                 )
             }
+            single<IScansController> {
+                ScansController(
+                    get(),
+                    get(),
+                    get(named<User>()),
+                    get(named<Scan>())
+                )
+            }
 
             // Roles
             single<IRolesController> {
@@ -877,6 +897,7 @@ fun Application.configureKoin() {
             single { UsersRouter(get(), get(), get(), get(), get(), get(), get(), get()) }
             single { SubscriptionsInUsersRouter(get(), get()) }
             single { NotificationTokensRouter(get(), get()) }
+            single { ScansRouter(get(), get()) }
             single { AuthRouter(get(), get()) }
             single { RolesRouter(get(), get(), get(), get(), get(), get(), get(), get()) }
             single { UsersInRolesRouter(get(), get(), get(), get(), get(), get(), get()) }

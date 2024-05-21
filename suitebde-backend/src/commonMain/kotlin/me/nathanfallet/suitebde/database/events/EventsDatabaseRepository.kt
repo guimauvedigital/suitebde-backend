@@ -3,16 +3,16 @@ package me.nathanfallet.suitebde.database.events
 import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
 import me.nathanfallet.suitebde.models.events.UpdateEventPayload
+import me.nathanfallet.suitebde.repositories.events.IEventsRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
-import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 import me.nathanfallet.usecases.pagination.Pagination
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 
 class EventsDatabaseRepository(
     private val database: IDatabase,
-) : IChildModelSuspendRepository<Event, String, CreateEventPayload, UpdateEventPayload, String> {
+) : IEventsRepository {
 
     init {
         database.transaction {
