@@ -2,6 +2,8 @@ package me.nathanfallet.suitebde.client
 
 import me.nathanfallet.ktorx.models.api.AbstractAPIClient
 import me.nathanfallet.ktorx.usecases.api.IGetTokenUseCase
+import me.nathanfallet.ktorx.usecases.api.ILogoutUseCase
+import me.nathanfallet.ktorx.usecases.api.IRenewTokenUseCase
 import me.nathanfallet.suitebde.models.application.SuiteBDEEnvironment
 import me.nathanfallet.suitebde.models.application.SuiteBDEJson
 import me.nathanfallet.suitebde.repositories.associations.AssociationsRemoteRepository
@@ -23,11 +25,15 @@ import me.nathanfallet.suitebde.repositories.web.WebMenusRemoteRepository
 import me.nathanfallet.suitebde.repositories.web.WebPagesRemoteRepository
 
 class SuiteBDEClient(
-    getTokenUseCase: IGetTokenUseCase? = null,
+    getTokenUseCase: IGetTokenUseCase,
+    renewTokenUseCase: IRenewTokenUseCase,
+    logoutUseCase: ILogoutUseCase,
     environment: SuiteBDEEnvironment = SuiteBDEEnvironment.PRODUCTION,
 ) : AbstractAPIClient(
     environment.baseUrl,
     getTokenUseCase,
+    renewTokenUseCase,
+    logoutUseCase,
     SuiteBDEJson.json
 ), ISuiteBDEClient {
 

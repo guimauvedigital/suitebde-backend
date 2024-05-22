@@ -261,6 +261,7 @@ fun Application.configureKoin() {
             single<IGetModelSuspendUseCase<Client, String>>(named<Client>()) {
                 GetModelFromRepositorySuspendUseCase(get(named<Client>()))
             }
+            single<IGetClientForCallUseCase> { GetClientForCallUseCase(get(), get(named<Client>())) }
 
             // Associations
             single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
@@ -737,6 +738,7 @@ fun Application.configureKoin() {
                     get(),
                     get(),
                     get(named<Client>()),
+                    get(),
                     get(),
                     get(),
                     get(),

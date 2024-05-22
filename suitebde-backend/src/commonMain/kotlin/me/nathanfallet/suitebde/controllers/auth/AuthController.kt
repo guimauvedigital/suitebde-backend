@@ -12,6 +12,7 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.associations.CreateAssociationPayload
 import me.nathanfallet.suitebde.models.auth.*
 import me.nathanfallet.suitebde.models.users.User
+import me.nathanfallet.suitebde.usecases.application.IGetClientForCallUseCase
 import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.*
 import me.nathanfallet.usecases.auth.AuthRequest
@@ -32,6 +33,7 @@ class AuthController(
     private val clearSessionForCallUseCase: IClearSessionForCallUseCase,
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val getClientUseCase: IGetModelSuspendUseCase<Client, String>,
+    private val getClientForCallUseCase: IGetClientForCallUseCase,
     private val getAuthCodeUseCase: IGetAuthCodeUseCase,
     private val createAuthCodeUseCase: ICreateAuthCodeUseCase,
     private val deleteAuthCodeUseCase: IDeleteAuthCodeUseCase,
@@ -181,6 +183,15 @@ class AuthController(
             HttpStatusCode.InternalServerError, "error_internal"
         )
         return generateAuthTokenUseCase(client)
+    }
+
+    override suspend fun refreshToken(call: ApplicationCall): AuthToken {
+        val user = requireUserForCallUseCase(call) as? User
+        val client = getClientForCallUseCase(call) as? Client
+        if (user == null || client == null) throw ControllerException(
+            HttpStatusCode.BadRequest, "auth_invalid_code"
+        )
+        return generateAuthTokenUseCase(ClientForUser(client, user))
     }
 
 }
