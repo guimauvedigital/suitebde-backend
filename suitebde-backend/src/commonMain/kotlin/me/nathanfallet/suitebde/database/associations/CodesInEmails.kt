@@ -1,6 +1,6 @@
 package me.nathanfallet.suitebde.database.associations
 
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.Instant
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.Table
 
@@ -14,12 +14,12 @@ object CodesInEmails : Table() {
     override val primaryKey = PrimaryKey(email)
 
     fun toCodeInEmail(
-        row: ResultRow
+        row: ResultRow,
     ) = me.nathanfallet.suitebde.models.associations.CodeInEmail(
         row[email],
         row[code],
         row.getOrNull(associationId),
-        row[expiresAt].toInstant()
+        row[expiresAt].let(Instant::parse)
     )
 
 }

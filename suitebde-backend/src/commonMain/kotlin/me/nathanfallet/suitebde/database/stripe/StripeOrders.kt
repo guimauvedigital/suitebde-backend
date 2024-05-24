@@ -1,6 +1,6 @@
 package me.nathanfallet.suitebde.database.stripe
 
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.models.application.SuiteBDEJson
 import me.nathanfallet.suitebde.models.stripe.StripeOrder
 import org.jetbrains.exposed.sql.ResultRow
@@ -23,7 +23,7 @@ object StripeOrders : Table() {
         row[associationId],
         row[email],
         SuiteBDEJson.json.decodeFromString(row[items]),
-        row[paidAt]?.toInstant()
+        row[paidAt]?.let(Instant::parse)
     )
 
 }

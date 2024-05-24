@@ -1,6 +1,6 @@
 package me.nathanfallet.suitebde.database.scans
 
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.extensions.generateId
 import me.nathanfallet.suitebde.models.scans.Scan
 import me.nathanfallet.suitebde.models.users.User
@@ -32,7 +32,7 @@ object Scans : Table() {
         row[associationId],
         row[userId],
         row[scannerId],
-        row[scannedAt].toInstant(),
+        row[scannedAt].let(Instant::parse),
         user,
         scanner
     )

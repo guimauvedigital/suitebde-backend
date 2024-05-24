@@ -1,6 +1,6 @@
 package me.nathanfallet.suitebde.database.users
 
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.extensions.generateId
 import me.nathanfallet.suitebde.models.users.ClientInUser
 import org.jetbrains.exposed.sql.ResultRow
@@ -27,7 +27,7 @@ object ClientsInUsers : Table() {
         row[code],
         row[userId],
         row[clientId],
-        row[expiration].toInstant()
+        row[expiration].let(Instant::parse)
     )
 
 }

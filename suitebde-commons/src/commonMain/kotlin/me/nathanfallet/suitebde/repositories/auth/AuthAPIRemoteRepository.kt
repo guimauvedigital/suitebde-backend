@@ -5,6 +5,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import me.nathanfallet.ktorx.models.api.IAPIClient
 import me.nathanfallet.ktorx.repositories.api.APIUnitRemoteRepository
+import me.nathanfallet.suitebde.models.auth.RefreshTokenPayload
 import me.nathanfallet.usecases.auth.AuthRequest
 import me.nathanfallet.usecases.auth.AuthToken
 import me.nathanfallet.usecases.models.UnitModel
@@ -28,9 +29,12 @@ open class AuthAPIRemoteRepository(
         setBody(payload)
     }.body()
 
-    override suspend fun refresh(): AuthToken? = client.request(
+    override suspend fun refresh(payload: RefreshTokenPayload): AuthToken? = client.request(
         HttpMethod.Post,
         "${constructFullRoute(RecursiveId<UnitModel, Unit, Unit>(Unit))}/refresh"
-    ).body()
+    ) {
+        contentType(ContentType.Application.Json)
+        setBody(payload)
+    }.body()
 
 }

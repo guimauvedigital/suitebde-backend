@@ -1,6 +1,6 @@
 package me.nathanfallet.suitebde.database.associations
 
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.extensions.generateId
 import me.nathanfallet.suitebde.models.associations.Association
 import org.jetbrains.exposed.sql.ResultRow
@@ -32,8 +32,8 @@ object Associations : Table() {
         row[school],
         row[city],
         row[validated],
-        row[createdAt].toInstant(),
-        row[expiresAt].toInstant()
+        row[createdAt].let(Instant::parse),
+        row[expiresAt].let(Instant::parse)
     )
 
 }

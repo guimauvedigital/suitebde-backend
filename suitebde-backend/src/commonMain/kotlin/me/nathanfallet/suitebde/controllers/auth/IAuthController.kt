@@ -94,7 +94,6 @@ interface IAuthController : IUnitController {
     @Path("POST", "/refresh")
     @DocumentedTag("Auth")
     @DocumentedError(400, "auth_invalid_credentials")
-    @DocumentedError(500, "error_internal")
-    suspend fun refreshToken(call: ApplicationCall): AuthToken
+    suspend fun refreshToken(@Payload payload: RefreshTokenPayload): AuthToken
 
 }

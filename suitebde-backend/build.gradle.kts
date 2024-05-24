@@ -3,7 +3,7 @@ plugins {
     kotlin("plugin.serialization")
     id("org.jetbrains.kotlinx.kover")
     id("com.google.devtools.ksp")
-    id("io.ktor.plugin") version "2.3.9"
+    id("io.ktor.plugin") version "2.3.11"
 }
 
 application {
@@ -12,7 +12,7 @@ application {
 
 ktor {
     docker {
-        jreVersion.set(JavaVersion.VERSION_19)
+        jreVersion.set(JavaVersion.VERSION_21)
         localImageName.set("suitebde-backend")
 
         externalRegistry.set(
@@ -26,8 +26,8 @@ ktor {
 }
 
 kotlin {
+    jvmToolchain(21)
     jvm {
-        jvmToolchain(19)
         withJava()
         testRuns.named("test") {
             executionTask.configure {
@@ -38,11 +38,11 @@ kotlin {
 
     applyDefaultHierarchyTemplate()
 
-    val coroutinesVersion = "1.8.0"
-    val ktorVersion = "2.3.9"
+    val coroutinesVersion = "1.8.1"
+    val ktorVersion = "2.3.11"
     val koinVersion = "3.5.0"
     val logbackVersion = "0.9.30"
-    val ktorxVersion = "2.3.1"
+    val ktorxVersion = "2.3.2"
 
     sourceSets {
         val commonMain by getting {
@@ -69,8 +69,6 @@ kotlin {
                 implementation("ch.qos.logback:logback-core:$logbackVersion")
                 implementation("ch.qos.logback:logback-classic:$logbackVersion")
 
-                implementation("me.nathanfallet.i18n:i18n:1.0.11")
-                implementation("me.nathanfallet.surexposed:surexposed:1.0.2")
                 implementation("me.nathanfallet.ktorx:ktor-database-sessions:$ktorxVersion")
                 implementation("me.nathanfallet.ktorx:ktor-health:$ktorxVersion")
                 implementation("me.nathanfallet.ktorx:ktor-i18n:$ktorxVersion")
@@ -81,12 +79,11 @@ kotlin {
                 implementation("me.nathanfallet.ktorx:ktor-routers-admin-locale:$ktorxVersion")
                 implementation("me.nathanfallet.ktorx:ktor-routers-websockets:$ktorxVersion")
                 implementation("me.nathanfallet.ktorx:ktor-sentry:$ktorxVersion")
-                implementation("me.nathanfallet.cloudflare:cloudflare-api-client:4.3.1")
+                implementation("me.nathanfallet.cloudflare:cloudflare-api-client:4.3.2")
 
                 implementation("com.mysql:mysql-connector-j:8.0.33")
                 implementation("at.favre.lib:bcrypt:0.9.0")
                 implementation("org.apache.commons:commons-email:1.5")
-                implementation("io.sentry:sentry:7.5.0")
                 implementation("io.github.g0dkar:qrcode-kotlin:3.3.0")
                 implementation("com.stripe:stripe-java:24.17.0")
                 implementation("com.google.code.gson:gson:2.10.1")
@@ -99,7 +96,7 @@ kotlin {
             dependencies {
                 implementation(kotlin("test"))
                 implementation("io.ktor:ktor-server-test-host:$ktorVersion")
-                implementation("io.mockk:mockk:1.13.8")
+                implementation("io.mockk:mockk:1.13.11")
                 implementation("org.jsoup:jsoup:1.16.2")
                 implementation("com.h2database:h2:2.2.224")
             }

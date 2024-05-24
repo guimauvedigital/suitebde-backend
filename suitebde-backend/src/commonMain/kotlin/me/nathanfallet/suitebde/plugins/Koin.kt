@@ -261,7 +261,6 @@ fun Application.configureKoin() {
             single<IGetModelSuspendUseCase<Client, String>>(named<Client>()) {
                 GetModelFromRepositorySuspendUseCase(get(named<Client>()))
             }
-            single<IGetClientForCallUseCase> { GetClientForCallUseCase(get(), get(named<Client>())) }
 
             // Associations
             single<IGetAssociationsUseCase> { GetAssociationsUseCase(get()) }
@@ -356,25 +355,12 @@ fun Application.configureKoin() {
                 UpdateChildModelFromRepositorySuspendUseCase(get<IStripeAccountsRepository>())
             }
             single<IRefreshStripeAccountUseCase> {
-                RefreshStripeAccountUseCase(
-                    get(),
-                    get(named<StripeAccount>()),
-                    get(named<StripeAccount>())
-                )
+                RefreshStripeAccountUseCase(get(), get(named<StripeAccount>()), get(named<StripeAccount>()))
             }
             single<ICreateStripeAccountLinkUseCase> {
-                CreateStripeAccountLinkUseCase(
-                    get(),
-                    get(named<StripeAccount>()),
-                    get(named<StripeAccount>())
-                )
+                CreateStripeAccountLinkUseCase(get(), get(named<StripeAccount>()), get(named<StripeAccount>()))
             }
-            single<ICreateCheckoutSessionUseCase> {
-                CreateCheckoutSessionUseCase(
-                    get(),
-                    get(named<StripeAccount>())
-                )
-            }
+            single<ICreateCheckoutSessionUseCase> { CreateCheckoutSessionUseCase(get(), get(named<StripeAccount>())) }
             single<IGetChildModelSuspendUseCase<StripeOrder, String, String>>(named<StripeOrder>()) {
                 GetChildModelFromRepositorySuspendUseCase(get<IStripeOrdersRepository>())
             }
@@ -385,10 +371,7 @@ fun Application.configureKoin() {
                 UpdateStripeOrderUseCase(get(), get(named<Association>()), get())
             }
             single<ICreateStripeOrderForSessionUseCase> {
-                CreateStripeOrderForSessionUseCase(
-                    get(),
-                    get(named<StripeOrder>())
-                )
+                CreateStripeOrderForSessionUseCase(get(), get(named<StripeOrder>()))
             }
             single<IFulfillCheckoutItemUseCase> {
                 FulfillCheckoutItemUseCase(
@@ -412,6 +395,9 @@ fun Application.configureKoin() {
             single<IGetAuthCodeUseCase> { GetAuthCodeUseCase(get(), get(named<Client>()), get()) }
             single<IDeleteAuthCodeUseCase> { DeleteAuthCodeUseCase(get()) }
             single<IGenerateAuthTokenUseCase> { GenerateAuthTokenUseCase(get()) }
+            single<IGetClientForUserForRefreshTokenUseCase> {
+                GetClientForUserForRefreshTokenUseCase(get(), get(), get(named<Client>()))
+            }
 
             // Users
             single<IGetUserUseCase> { GetUserUseCase(get()) }

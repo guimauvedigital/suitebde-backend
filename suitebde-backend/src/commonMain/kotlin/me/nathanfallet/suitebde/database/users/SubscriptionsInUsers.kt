@@ -1,6 +1,6 @@
 package me.nathanfallet.suitebde.database.users
 
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.extensions.generateId
 import me.nathanfallet.suitebde.models.associations.SubscriptionInAssociation
 import me.nathanfallet.suitebde.models.users.SubscriptionInUser
@@ -30,8 +30,8 @@ object SubscriptionsInUsers : Table() {
         row[id],
         row[userId],
         row[subscriptionId],
-        row[startsAt].toInstant(),
-        row[endsAt].toInstant(),
+        row[startsAt].let(Instant::parse),
+        row[endsAt].let(Instant::parse),
         subscriptionInAssociation
     )
 

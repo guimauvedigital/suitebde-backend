@@ -1,6 +1,6 @@
 package me.nathanfallet.suitebde.database.clubs
 
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.extensions.generateId
 import me.nathanfallet.suitebde.models.clubs.Club
 import org.jetbrains.exposed.sql.ResultRow
@@ -35,7 +35,7 @@ object Clubs : Table() {
         row[name],
         row[description],
         row[logo],
-        row[createdAt].toInstant(),
+        row[createdAt].let(Instant::parse),
         row[validated],
         row[usersCount],
         row.getOrNull(isMember)?.let { it >= 1L }

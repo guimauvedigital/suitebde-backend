@@ -24,10 +24,7 @@ import me.nathanfallet.suitebde.models.application.SuiteBDEJson
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.models.web.WebPage
-import me.nathanfallet.suitebde.plugins.configureI18n
-import me.nathanfallet.suitebde.plugins.configureSecurity
-import me.nathanfallet.suitebde.plugins.configureSerialization
-import me.nathanfallet.suitebde.plugins.configureTemplating
+import me.nathanfallet.suitebde.plugins.*
 import me.nathanfallet.suitebde.usecases.associations.IGetAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.associations.IRequireAssociationForCallUseCase
 import me.nathanfallet.suitebde.usecases.web.IGetAdminMenuForCallUseCase
@@ -57,6 +54,7 @@ class WebPagesRouterTest {
         }
         application.application {
             configureI18n()
+            configureKoin()
             configureSerialization()
             configureSecurity()
             configureTemplating()

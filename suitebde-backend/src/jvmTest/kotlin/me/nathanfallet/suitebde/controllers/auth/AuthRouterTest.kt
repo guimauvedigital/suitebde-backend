@@ -19,10 +19,7 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.auth.JoinCodePayload
 import me.nathanfallet.suitebde.models.auth.JoinPayload
 import me.nathanfallet.suitebde.models.auth.RegisterPayload
-import me.nathanfallet.suitebde.plugins.configureI18n
-import me.nathanfallet.suitebde.plugins.configureSecurity
-import me.nathanfallet.suitebde.plugins.configureSerialization
-import me.nathanfallet.suitebde.plugins.configureTemplating
+import me.nathanfallet.suitebde.plugins.*
 import org.jsoup.Jsoup
 import java.util.*
 import kotlin.test.Test
@@ -41,6 +38,7 @@ class AuthRouterTest {
         }
         application.application {
             configureI18n()
+            configureKoin()
             configureSerialization()
             configureSecurity()
             configureTemplating()

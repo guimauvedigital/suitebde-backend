@@ -10,6 +10,7 @@ import io.mockk.every
 import io.mockk.mockk
 import me.nathanfallet.ktorx.usecases.localization.IGetLocaleForCallUseCase
 import me.nathanfallet.suitebde.plugins.configureI18n
+import me.nathanfallet.suitebde.plugins.configureKoin
 import me.nathanfallet.suitebde.plugins.configureSecurity
 import me.nathanfallet.suitebde.plugins.configureTemplating
 import me.nathanfallet.suitebde.usecases.web.IGetRootMenuUseCase
@@ -25,6 +26,7 @@ class RootRouterTest {
         }
         application.application {
             configureI18n()
+            configureKoin()
             configureSecurity()
             configureTemplating()
         }

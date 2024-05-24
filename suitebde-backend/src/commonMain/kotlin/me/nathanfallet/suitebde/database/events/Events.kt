@@ -1,6 +1,6 @@
 package me.nathanfallet.suitebde.database.events
 
-import kotlinx.datetime.toInstant
+import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.extensions.generateId
 import me.nathanfallet.suitebde.models.events.Event
 import org.jetbrains.exposed.sql.ResultRow
@@ -33,8 +33,8 @@ object Events : Table() {
         row[name],
         row[description],
         row[image],
-        row[startsAt].toInstant(),
-        row[endsAt].toInstant(),
+        row[startsAt].let(Instant::parse),
+        row[endsAt].let(Instant::parse),
         row[validated]
     )
 
