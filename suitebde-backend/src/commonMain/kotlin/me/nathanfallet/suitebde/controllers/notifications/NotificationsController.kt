@@ -48,9 +48,7 @@ class NotificationsController(
         if (payload.topic !in topics.topics) throw ControllerException(
             HttpStatusCode.BadRequest, "notifications_topic_invalid"
         )
-        if (!sendNotificationUseCase(payload)) throw ControllerException(
-            HttpStatusCode.InternalServerError, "error_internal"
-        )
+        sendNotificationUseCase(payload)
         if (call.request.path().contains("/admin/")) throw RedirectResponse("/admin/notifications")
     }
 
