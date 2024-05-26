@@ -13,8 +13,8 @@ class CreateClubUseCase(
     private val createUserInClubUseCase: ICreateChildModelWithContextSuspendUseCase<UserInClub, CreateUserInClubPayload, String>,
 ) : ICreateChildModelWithContextSuspendUseCase<Club, CreateClubPayload, String> {
 
-    override suspend fun invoke(input1: CreateClubPayload, input2: String, input3: IContext): Club? {
-        return repository.create(input1, input2, input3)?.also { club ->
+    override suspend fun invoke(input1: CreateClubPayload, input2: String, input3: IContext): Club? =
+        repository.create(input1, input2, input3)?.also { club ->
             createRoleInClubUseCase(
                 CreateRoleInClubPayload(input1.memberRoleName, admin = false, default = true),
                 club.id
@@ -31,6 +31,5 @@ class CreateClubUseCase(
                 )
             }
         }
-    }
 
 }

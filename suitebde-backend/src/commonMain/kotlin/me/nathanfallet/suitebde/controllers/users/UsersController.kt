@@ -52,7 +52,7 @@ class UsersController(
     }
 
     override suspend fun get(call: ApplicationCall, parent: Association, id: String): User {
-        (requireUserForCallUseCase(call) as User).takeIf {
+        (requireUserForCallUseCase(call) as? User)?.takeIf {
             it.id == id || checkPermissionUseCase(it, Permission.USERS_VIEW inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "users_view_not_allowed"
@@ -68,7 +68,7 @@ class UsersController(
         id: String,
         payload: UpdateUserPayload,
     ): User {
-        (requireUserForCallUseCase(call) as User).takeIf {
+        (requireUserForCallUseCase(call) as? User)?.takeIf {
             it.id == id || checkPermissionUseCase(it, Permission.USERS_UPDATE inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "users_update_not_allowed"
@@ -84,7 +84,7 @@ class UsersController(
     }
 
     override suspend fun listPermissions(call: ApplicationCall, parent: Association, id: String): List<Permission> {
-        (requireUserForCallUseCase(call) as User).takeIf {
+        (requireUserForCallUseCase(call) as? User)?.takeIf {
             it.id == id || checkPermissionUseCase(it, Permission.USERS_VIEW inAssociation parent.id)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "users_view_not_allowed"

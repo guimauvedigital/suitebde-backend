@@ -9,6 +9,7 @@ import me.nathanfallet.suitebde.models.clubs.Club
 import me.nathanfallet.suitebde.models.clubs.CreateUserInClubPayload
 import me.nathanfallet.suitebde.models.clubs.UserInClub
 import me.nathanfallet.suitebde.models.roles.Permission
+import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
@@ -28,8 +29,9 @@ class UsersInClubsController(
 ) : IUsersInClubsController {
 
     override suspend fun create(call: ApplicationCall, parent: Club, payload: CreateUserInClubPayload): UserInClub {
-        requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.CLUBS_USERS inAssociation parent.associationId)
+        (requireUserForCallUseCase(call) as? User)?.takeIf {
+            it.id == payload.userId ||
+                    checkPermissionUseCase(it, Permission.CLUBS_USERS inAssociation parent.associationId)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "users_in_clubs_not_allowed"
         )
@@ -39,8 +41,8 @@ class UsersInClubsController(
     }
 
     override suspend fun delete(call: ApplicationCall, parent: Club, id: String) {
-        requireUserForCallUseCase(call).takeIf {
-            checkPermissionUseCase(it, Permission.CLUBS_USERS inAssociation parent.associationId)
+        (requireUserForCallUseCase(call) as? User)?.takeIf {
+            it.id == id || checkPermissionUseCase(it, Permission.CLUBS_USERS inAssociation parent.associationId)
         } ?: throw ControllerException(
             HttpStatusCode.Forbidden, "users_in_clubs_not_allowed"
         )
