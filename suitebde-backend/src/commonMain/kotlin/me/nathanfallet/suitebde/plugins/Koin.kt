@@ -457,13 +457,8 @@ fun Application.configureKoin() {
 
             // Notifications
             single<ISendNotificationUseCase> { SendNotificationUseCase(get()) }
-            single<ISendNotificationToUserUseCase> {
-                SendNotificationToUserUseCase(get(named<NotificationToken>()), get())
-            }
+            single<ISendNotificationToUserUseCase> { SendNotificationToUserUseCase(get(), get()) }
             single<IListNotificationTopicsUseCase> { ListNotificationTopicsUseCase() }
-            single<IListChildModelSuspendUseCase<NotificationToken, String>>(named<NotificationToken>()) {
-                ListChildModelFromRepositorySuspendUseCase(get<INotificationTokensRepository>())
-            }
             single<ICreateChildModelSuspendUseCase<NotificationToken, CreateNotificationTokenPayload, String>>(named<NotificationToken>()) {
                 CreateChildModelFromRepositorySuspendUseCase(get<INotificationTokensRepository>())
             }
