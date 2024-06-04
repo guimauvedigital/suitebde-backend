@@ -456,8 +456,9 @@ fun Application.configureKoin() {
             single<IListScansForDaysUseCase> { ListScansForDaysUseCase(get(), get()) }
 
             // Notifications
-            single<ISendNotificationUseCase> { SendNotificationUseCase(get()) }
-            single<ISendNotificationToUserUseCase> { SendNotificationToUserUseCase(get(), get()) }
+            single<ISendNotificationUseCase> { SendNotificationUseCase(get(), get()) }
+            single<ISendNotificationToUserUseCase> { SendNotificationToUserUseCase(get(), get(), get()) }
+            single<ISendNotificationToClubUseCase> { SendNotificationToClubUseCase(get(), get(), get()) }
             single<IListNotificationTopicsUseCase> { ListNotificationTopicsUseCase() }
             single<ICreateChildModelSuspendUseCase<NotificationToken, CreateNotificationTokenPayload, String>>(named<NotificationToken>()) {
                 CreateChildModelFromRepositorySuspendUseCase(get<INotificationTokensRepository>())
@@ -465,6 +466,7 @@ fun Application.configureKoin() {
             single<IDeleteChildModelSuspendUseCase<NotificationToken, String, String>>(named<NotificationToken>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get<INotificationTokensRepository>())
             }
+            single<IDeleteNotificationTokenUseCase> { DeleteNotificationTokenUseCase(get()) }
 
             // Roles
             single<ICheckPermissionSuspendUseCase> { CheckPermissionUseCase(get()) }

@@ -1,5 +1,6 @@
 package me.nathanfallet.suitebde.database.notifications
 
+import me.nathanfallet.suitebde.database.clubs.UsersInClubs
 import me.nathanfallet.suitebde.models.notifications.CreateNotificationTokenPayload
 import me.nathanfallet.suitebde.models.notifications.NotificationToken
 import me.nathanfallet.suitebde.repositories.notifications.INotificationTokensRepository
@@ -24,6 +25,15 @@ class NotificationTokensDatabaseRepository(
             NotificationTokens
                 .selectAll()
                 .where { NotificationTokens.userId eq parentId }
+                .map(NotificationTokens::toNotificationToken)
+        }
+
+    override suspend fun listByClub(clubId: String): List<NotificationToken> =
+        database.suspendedTransaction {
+            NotificationTokens
+                .join(UsersInClubs, JoinType.INNER, NotificationTokens.userId, UsersInClubs.userId)
+                .selectAll()
+                .where { UsersInClubs.clubId eq clubId }
                 .map(NotificationTokens::toNotificationToken)
         }
 
@@ -52,6 +62,11 @@ class NotificationTokensDatabaseRepository(
             NotificationTokens.deleteWhere {
                 token eq id and (userId eq parentId)
             }
+        } == 1
+
+    override suspend fun delete(token: String): Boolean =
+        database.suspendedTransaction {
+            NotificationTokens.deleteWhere { NotificationTokens.token eq token }
         } == 1
 
 }

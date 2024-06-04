@@ -4,20 +4,20 @@ import com.google.firebase.messaging.FirebaseMessagingException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import me.nathanfallet.suitebde.models.notifications.CreateClubNotificationPayload
 import me.nathanfallet.suitebde.models.notifications.CreateNotificationPayload
-import me.nathanfallet.suitebde.models.notifications.CreateUserNotificationPayload
 import me.nathanfallet.suitebde.repositories.notifications.INotificationTokensRepository
 import me.nathanfallet.suitebde.services.firebase.IFirebaseService
 
-class SendNotificationToUserUseCase(
+class SendNotificationToClubUseCase(
     private val repository: INotificationTokensRepository,
     private val firebaseService: IFirebaseService,
     private val deleteNotificationTokenUseCase: IDeleteNotificationTokenUseCase,
-) : ISendNotificationToUserUseCase {
+) : ISendNotificationToClubUseCase {
 
-    override suspend fun invoke(input: CreateUserNotificationPayload) {
+    override suspend fun invoke(input: CreateClubNotificationPayload) {
         CoroutineScope(Job()).launch {
-            repository.list(input.userId).forEach {
+            repository.listByClub(input.clubId).forEach {
                 try {
                     firebaseService.sendNotification(
                         CreateNotificationPayload(
