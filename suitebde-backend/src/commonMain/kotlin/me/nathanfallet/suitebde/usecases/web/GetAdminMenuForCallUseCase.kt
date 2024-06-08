@@ -49,6 +49,7 @@ class GetAdminMenuForCallUseCase(
         val locale = getLocaleForCallUseCase(input)
         return listOf(
             "dashboard",
+            "files",
             "subscriptions",
             "users",
             "roles",

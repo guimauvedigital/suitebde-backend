@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 enum class Permission {
 
     ADMIN,
+    FILES_VIEW,
     NOTIFICATIONS_SEND,
     DOMAINS_CREATE,
     DOMAINS_UPDATE,

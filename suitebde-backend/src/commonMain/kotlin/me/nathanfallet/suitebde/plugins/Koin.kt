@@ -3,6 +3,8 @@ package me.nathanfallet.suitebde.plugins
 import io.ktor.server.application.*
 import me.nathanfallet.cloudflare.client.CloudflareClient
 import me.nathanfallet.cloudflare.client.ICloudflareClient
+import me.nathanfallet.cloudflare.r2.IR2Client
+import me.nathanfallet.cloudflare.r2.R2Client
 import me.nathanfallet.i18n.usecases.localization.TranslateUseCase
 import me.nathanfallet.ktorx.database.sessions.SessionsDatabaseRepository
 import me.nathanfallet.ktorx.repositories.sessions.ISessionsRepository
@@ -22,6 +24,9 @@ import me.nathanfallet.suitebde.controllers.dashboard.IDashboardController
 import me.nathanfallet.suitebde.controllers.events.EventsController
 import me.nathanfallet.suitebde.controllers.events.EventsRouter
 import me.nathanfallet.suitebde.controllers.events.IEventsController
+import me.nathanfallet.suitebde.controllers.files.FilesController
+import me.nathanfallet.suitebde.controllers.files.FilesRouter
+import me.nathanfallet.suitebde.controllers.files.IFilesController
 import me.nathanfallet.suitebde.controllers.notifications.*
 import me.nathanfallet.suitebde.controllers.roles.*
 import me.nathanfallet.suitebde.controllers.root.IRootController
@@ -106,6 +111,10 @@ import me.nathanfallet.suitebde.usecases.clubs.CreateClubUseCase
 import me.nathanfallet.suitebde.usecases.clubs.DeleteClubUseCase
 import me.nathanfallet.suitebde.usecases.events.IListAllEventsUseCase
 import me.nathanfallet.suitebde.usecases.events.ListAllEventsUseCase
+import me.nathanfallet.suitebde.usecases.files.IListFilesUseCase
+import me.nathanfallet.suitebde.usecases.files.IUploadFileUseCase
+import me.nathanfallet.suitebde.usecases.files.ListFilesUseCase
+import me.nathanfallet.suitebde.usecases.files.UploadFileUseCase
 import me.nathanfallet.suitebde.usecases.notifications.*
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.roles.GetPermissionsForUserUseCase
@@ -188,6 +197,13 @@ fun Application.configureKoin() {
             single<ICloudflareClient> {
                 CloudflareClient(
                     environment.config.property("cloudflare.token").getString()
+                )
+            }
+            single<IR2Client> {
+                R2Client(
+                    environment.config.property("cloudflare.id").getString(),
+                    environment.config.property("cloudflare.secret").getString(),
+                    environment.config.property("cloudflare.account").getString()
                 )
             }
         }
@@ -378,6 +394,21 @@ fun Application.configureKoin() {
                     get(),
                     get(named<SubscriptionInAssociation>()),
                     get(named<SubscriptionInUser>())
+                )
+            }
+
+            // Files
+            single<IListFilesUseCase> {
+                ListFilesUseCase(
+                    get(),
+                    environment.config.property("cloudflare.bucket").getString()
+                )
+            }
+            single<IUploadFileUseCase> {
+                UploadFileUseCase(
+                    get(),
+                    get(),
+                    environment.config.property("cloudflare.bucket").getString()
                 )
             }
 
@@ -700,6 +731,7 @@ fun Application.configureKoin() {
             }
             single<IRootController> { RootController(get(), get()) }
             single<IDashboardController> { DashboardController(get(), get(), get(), get()) }
+            single<IFilesController> { FilesController(get(), get(), get()) }
             single<INotificationsController> {
                 NotificationsController(
                     get(named<Association>()),
@@ -883,6 +915,7 @@ fun Application.configureKoin() {
             single { WebhooksRouter(get()) }
             single { RootRouter(get(), get(), get()) }
             single { DashboardRouter(get(), get(), get(), get(), get(), get()) }
+            single { FilesRouter(get(), get(), get(), get(), get(), get()) }
             single { NotificationsRouter(get(), get(), get(), get(), get(), get()) }
             single { AssociationsRouter(get(), get(), get(), get(), get(), get()) }
             single { DomainsInAssociationsRouter(get(), get(), get(), get(), get(), get(), get()) }
