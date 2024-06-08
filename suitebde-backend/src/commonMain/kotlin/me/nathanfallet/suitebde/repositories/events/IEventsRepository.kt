@@ -9,6 +9,7 @@ import me.nathanfallet.usecases.models.repositories.IChildModelSuspendRepository
 interface IEventsRepository :
     IChildModelSuspendRepository<Event, String, CreateEventPayload, UpdateEventPayload, String> {
 
+    suspend fun listAll(associationId: String): List<Event>
     suspend fun listBetween(parentId: String, startsAt: LocalDate, endsAt: LocalDate): List<Event>
 
 }

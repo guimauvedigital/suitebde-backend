@@ -1,5 +1,6 @@
 package me.nathanfallet.suitebde.database.events
 
+import kotlinx.datetime.Clock
 import kotlinx.datetime.LocalDate
 import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
@@ -21,11 +22,23 @@ class EventsDatabaseRepository(
         }
     }
 
+    override suspend fun listAll(associationId: String): List<Event> =
+        database.suspendedTransaction {
+            Events
+                .selectAll()
+                .where { Events.associationId eq associationId }
+                .orderBy(Events.startsAt, SortOrder.ASC)
+                .map(Events::toEvent)
+        }
+
     override suspend fun list(parentId: String, context: IContext?): List<Event> =
         database.suspendedTransaction {
             Events
                 .selectAll()
-                .where { Events.associationId eq parentId }
+                .where {
+                    Events.associationId eq parentId and Events.validated and
+                            (Events.endsAt greaterEq Clock.System.now().toString())
+                }
                 .orderBy(Events.startsAt, SortOrder.ASC)
                 .map(Events::toEvent)
         }
@@ -34,7 +47,10 @@ class EventsDatabaseRepository(
         database.suspendedTransaction {
             Events
                 .selectAll()
-                .where { Events.associationId eq parentId }
+                .where {
+                    Events.associationId eq parentId and Events.validated and
+                            (Events.endsAt greaterEq Clock.System.now().toString())
+                }
                 .orderBy(Events.startsAt, SortOrder.ASC)
                 .limit(pagination.limit.toInt(), pagination.offset)
                 .map(Events::toEvent)

@@ -10,6 +10,7 @@ import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
 import me.nathanfallet.suitebde.models.events.UpdateEventPayload
 import me.nathanfallet.suitebde.models.roles.Permission
+import me.nathanfallet.suitebde.usecases.events.IListAllEventsUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
@@ -22,6 +23,7 @@ import me.nathanfallet.usecases.permissions.ICheckPermissionSuspendUseCase
 class EventsController(
     private val requireUserForCallUseCase: IRequireUserForCallUseCase,
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
+    private val listAllEventsUseCase: IListAllEventsUseCase,
     private val getEventsInAssociationUseCase: IListChildModelSuspendUseCase<Event, String>,
     private val getEventsInAssociationSlicedUseCase: IListSliceChildModelSuspendUseCase<Event, String>,
     private val getEventUseCase: IGetChildModelSuspendUseCase<Event, String, String>,
@@ -67,6 +69,7 @@ class EventsController(
     }
 
     override suspend fun list(call: ApplicationCall, parent: Association, limit: Long?, offset: Long?): List<Event> {
+        if (call.request.path().contains("/admin/")) return listAllEventsUseCase(parent.id)
         if (!call.request.path().contains("/api/")) return getEventsInAssociationUseCase(parent.id)
         return getEventsInAssociationSlicedUseCase(
             Pagination(

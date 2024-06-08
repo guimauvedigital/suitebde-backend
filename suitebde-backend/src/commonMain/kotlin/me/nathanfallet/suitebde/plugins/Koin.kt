@@ -104,6 +104,8 @@ import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.*
 import me.nathanfallet.suitebde.usecases.clubs.CreateClubUseCase
 import me.nathanfallet.suitebde.usecases.clubs.DeleteClubUseCase
+import me.nathanfallet.suitebde.usecases.events.IListAllEventsUseCase
+import me.nathanfallet.suitebde.usecases.events.ListAllEventsUseCase
 import me.nathanfallet.suitebde.usecases.notifications.*
 import me.nathanfallet.suitebde.usecases.roles.CheckPermissionUseCase
 import me.nathanfallet.suitebde.usecases.roles.GetPermissionsForUserUseCase
@@ -585,6 +587,7 @@ fun Application.configureKoin() {
             single<IDeleteChildModelSuspendUseCase<Event, String, String>>(named<Event>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get<IEventsRepository>())
             }
+            single<IListAllEventsUseCase> { ListAllEventsUseCase(get()) }
 
             // Clubs
             single<IListChildModelWithContextSuspendUseCase<Club, String>>(named<Club>()) {
@@ -836,6 +839,7 @@ fun Application.configureKoin() {
             // Events
             single<IEventsController> {
                 EventsController(
+                    get(),
                     get(),
                     get(),
                     get(named<Event>()),
