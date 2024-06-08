@@ -50,6 +50,7 @@ class GetAdminMenuForCallUseCaseTest {
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { checkPermissionUseCase(user, Permission.ADMIN inAssociation association.id) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.FILES_VIEW inAssociation association.id) } returns true
         coEvery {
             checkPermissionUseCase(user, Permission.SUBSCRIPTIONS_VIEW inAssociation association.id)
         } returns true
@@ -74,6 +75,12 @@ class GetAdminMenuForCallUseCaseTest {
                     "associationId",
                     "t:admin_menu_dashboard",
                     "/admin"
+                ),
+                WebMenu(
+                    "files",
+                    "associationId",
+                    "t:admin_menu_files",
+                    "/admin/files"
                 ),
                 WebMenu(
                     "subscriptions",
@@ -143,6 +150,7 @@ class GetAdminMenuForCallUseCaseTest {
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { getAssociationForCallUseCase(call) } returns association
         coEvery { checkPermissionUseCase(user, Permission.ADMIN inAssociation association.id) } returns true
+        coEvery { checkPermissionUseCase(user, Permission.FILES_VIEW inAssociation association.id) } returns false
         coEvery {
             checkPermissionUseCase(user, Permission.SUBSCRIPTIONS_VIEW inAssociation association.id)
         } returns false
