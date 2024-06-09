@@ -1,0 +1,6 @@
+package me.nathanfallet.suitebde.usecases.notifications
+
+import me.nathanfallet.suitebde.models.notifications.CreatePermissionNotificationPayload
+import me.nathanfallet.usecases.base.ISuspendUseCase
+
+interface ISendNotificationToPermissionUseCase : ISuspendUseCase<CreatePermissionNotificationPayload, Unit>

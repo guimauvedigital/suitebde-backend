@@ -9,8 +9,11 @@ import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.events.CreateEventPayload
 import me.nathanfallet.suitebde.models.events.Event
 import me.nathanfallet.suitebde.models.events.UpdateEventPayload
+import me.nathanfallet.suitebde.models.notifications.CreatePermissionNotificationPayload
 import me.nathanfallet.suitebde.models.roles.Permission
+import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.events.IListAllEventsUseCase
+import me.nathanfallet.suitebde.usecases.notifications.ISendNotificationToPermissionUseCase
 import me.nathanfallet.usecases.models.create.ICreateChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
@@ -30,10 +33,11 @@ class EventsController(
     private val createEventUseCase: ICreateChildModelSuspendUseCase<Event, CreateEventPayload, String>,
     private val updateEventUseCase: IUpdateChildModelSuspendUseCase<Event, String, UpdateEventPayload, String>,
     private val deleteEventUseCase: IDeleteChildModelSuspendUseCase<Event, String, String>,
+    private val sendNotificationToPermissionUseCase: ISendNotificationToPermissionUseCase,
 ) : IEventsController {
 
     override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateEventPayload): Event {
-        val user = requireUserForCallUseCase(call)
+        val user = requireUserForCallUseCase(call) as User
         payload.validated?.let {
             if (!checkPermissionUseCase(
                     user,
@@ -43,9 +47,19 @@ class EventsController(
                 HttpStatusCode.Forbidden, "events_validated_not_allowed"
             )
         }
-        return createEventUseCase(payload, parent.id) ?: throw ControllerException(
+        val event = createEventUseCase(payload, parent.id) ?: throw ControllerException(
             HttpStatusCode.InternalServerError, "error_internal"
         )
+        if (!event.validated) sendNotificationToPermissionUseCase(
+            CreatePermissionNotificationPayload(
+                Permission.EVENTS_UPDATE,
+                "notification_event_suggested_title",
+                "notification_event_suggested_description",
+                bodyArgs = listOf(event.name, user.firstName),
+                data = mapOf("eventId" to event.id)
+            )
+        )
+        return event
     }
 
     override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {

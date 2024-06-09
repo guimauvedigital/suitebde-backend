@@ -1,8 +1,11 @@
 package me.nathanfallet.suitebde.database.notifications
 
 import me.nathanfallet.suitebde.database.clubs.UsersInClubs
+import me.nathanfallet.suitebde.database.roles.PermissionsInRoles
+import me.nathanfallet.suitebde.database.roles.UsersInRoles
 import me.nathanfallet.suitebde.models.notifications.CreateNotificationTokenPayload
 import me.nathanfallet.suitebde.models.notifications.NotificationToken
+import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.repositories.notifications.INotificationTokensRepository
 import me.nathanfallet.surexposed.database.IDatabase
 import me.nathanfallet.usecases.context.IContext
@@ -25,6 +28,17 @@ class NotificationTokensDatabaseRepository(
             NotificationTokens
                 .selectAll()
                 .where { NotificationTokens.userId eq parentId }
+                .map(NotificationTokens::toNotificationToken)
+        }
+
+    override suspend fun listByPermission(permission: Permission): List<NotificationToken> =
+        database.suspendedTransaction {
+            NotificationTokens
+                .join(UsersInRoles, JoinType.INNER, NotificationTokens.userId, UsersInRoles.userId)
+                .join(PermissionsInRoles, JoinType.INNER, UsersInRoles.roleId, PermissionsInRoles.roleId)
+                .selectAll()
+                .where { PermissionsInRoles.permission eq permission.name }
+                .groupBy(NotificationTokens.token)
                 .map(NotificationTokens::toNotificationToken)
         }
 

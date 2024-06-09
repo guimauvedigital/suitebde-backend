@@ -9,9 +9,13 @@ import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.application.SearchOptions
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.clubs.*
+import me.nathanfallet.suitebde.models.notifications.CreateClubNotificationPayload
+import me.nathanfallet.suitebde.models.notifications.CreatePermissionNotificationPayload
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.OptionalUserContext
 import me.nathanfallet.suitebde.models.users.User
+import me.nathanfallet.suitebde.usecases.notifications.ISendNotificationToClubUseCase
+import me.nathanfallet.suitebde.usecases.notifications.ISendNotificationToPermissionUseCase
 import me.nathanfallet.usecases.models.create.context.ICreateChildModelWithContextSuspendUseCase
 import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.context.IGetChildModelWithContextSuspendUseCase
@@ -33,6 +37,8 @@ class ClubsController(
     private val updateClubUseCase: IUpdateChildModelWithContextSuspendUseCase<Club, String, UpdateClubPayload, String>,
     private val deleteClubUseCase: IDeleteChildModelSuspendUseCase<Club, String, String>,
     private val listUsersInClubsUseCase: IListChildModelSuspendUseCase<UserInClub, String>,
+    private val sendNotificationToClubUseCase: ISendNotificationToClubUseCase,
+    private val sendNotificationToPermissionUseCase: ISendNotificationToPermissionUseCase,
 ) : IClubsController {
 
     override suspend fun create(call: ApplicationCall, parent: Association, payload: CreateClubPayload): Club {
@@ -46,9 +52,19 @@ class ClubsController(
                 HttpStatusCode.Forbidden, "clubs_validated_not_allowed"
             )
         }
-        return createClubUseCase(payload, parent.id, OptionalUserContext(user.id)) ?: throw ControllerException(
+        val club = createClubUseCase(payload, parent.id, OptionalUserContext(user.id)) ?: throw ControllerException(
             HttpStatusCode.InternalServerError, "error_internal"
         )
+        if (!club.validated) sendNotificationToPermissionUseCase(
+            CreatePermissionNotificationPayload(
+                Permission.EVENTS_UPDATE,
+                "notification_club_suggested_title",
+                "notification_club_suggested_description",
+                bodyArgs = listOf(club.name, user.firstName),
+                data = mapOf("clubId" to club.id)
+            )
+        )
+        return club
     }
 
     override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {
@@ -57,11 +73,20 @@ class ClubsController(
         } as? User ?: throw ControllerException(
             HttpStatusCode.Forbidden, "clubs_delete_not_allowed"
         )
-        val event = getClubUseCase(id, parent.id, OptionalUserContext(user.id)) ?: throw ControllerException(
+        val club = getClubUseCase(id, parent.id, OptionalUserContext(user.id)) ?: throw ControllerException(
             HttpStatusCode.NotFound, "clubs_not_found"
         )
-        if (!deleteClubUseCase(event.id, parent.id)) throw ControllerException(
+        if (!deleteClubUseCase(club.id, parent.id)) throw ControllerException(
             HttpStatusCode.InternalServerError, "error_internal"
+        )
+        if (!club.validated) sendNotificationToClubUseCase(
+            CreateClubNotificationPayload(
+                club.id,
+                "notification_club_rejected_title",
+                "notification_club_rejected_description",
+                bodyArgs = listOf(user.firstName, club.name),
+                data = mapOf("clubId" to club.id)
+            )
         )
     }
 
@@ -113,13 +138,21 @@ class ClubsController(
         } as? User ?: throw ControllerException(
             HttpStatusCode.Forbidden, "clubs_update_not_allowed"
         )
-        val event = getClubUseCase(id, parent.id, OptionalUserContext(user.id)) ?: throw ControllerException(
+        val club = getClubUseCase(id, parent.id, OptionalUserContext(user.id)) ?: throw ControllerException(
             HttpStatusCode.NotFound, "clubs_not_found"
         )
-        return updateClubUseCase(event.id, payload, parent.id, OptionalUserContext(user.id))
-            ?: throw ControllerException(
-                HttpStatusCode.InternalServerError, "error_internal"
+        val updatedClub = updateClubUseCase(club.id, payload, parent.id, OptionalUserContext(user.id))
+            ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
+        if (!club.validated && updatedClub.validated) sendNotificationToClubUseCase(
+            CreateClubNotificationPayload(
+                club.id,
+                "notification_club_validated_title",
+                "notification_club_validated_description",
+                bodyArgs = listOf(user.firstName, club.name),
+                data = mapOf("clubId" to club.id)
             )
+        )
+        return updatedClub
     }
 
 }
