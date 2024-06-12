@@ -7,6 +7,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.auth.SessionPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.auth.IGetJWTPrincipalForCallUseCase
@@ -52,7 +53,7 @@ class GetUserForCallUseCaseTest {
         val attributes = Attributes()
         val call = mockk<ApplicationCall>()
         val principal = mockk<JWTPrincipal>()
-        val user = User("id", "name", "email", "password", "first", "last", false)
+        val user = User("id", "name", "email", "password", "first", "last", false, Clock.System.now())
         every { call.attributes } returns attributes
         every { getJWTPrincipalForCall(call) } returns principal
         every { principal.subject } returns "id"
@@ -71,7 +72,7 @@ class GetUserForCallUseCaseTest {
         val useCase = GetUserForCallUseCase(getJWTPrincipalForCall, getSessionForCallUseCase, getUserUseCase)
         val attributes = Attributes()
         val call = mockk<ApplicationCall>()
-        val user = User("id", "name", "email", "password", "first", "last", false)
+        val user = User("id", "name", "email", "password", "first", "last", false, Clock.System.now())
         every { call.attributes } returns attributes
         every { getJWTPrincipalForCall(call) } returns null
         every { getSessionForCallUseCase(call) } returns SessionPayload("id")

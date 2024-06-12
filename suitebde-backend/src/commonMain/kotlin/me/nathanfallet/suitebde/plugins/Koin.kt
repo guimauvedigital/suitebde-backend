@@ -255,7 +255,13 @@ fun Application.configureKoin() {
         val useCaseModule = module {
             // Application
             single<ISendEmailUseCase> { SendEmailUseCase(get()) }
-            single<IExpireUseCase> { ExpireUseCase(get(), get(), get(), get()) }
+            single<IExpireUseCase> {
+                ExpireUseCase(
+                    get(), get(),
+                    get(), get(),
+                    get(), get(named<User>()),
+                )
+            }
             single<ITranslateUseCase> { TranslateUseCase() }
             single<IGetLocaleForCallUseCase> { GetLocaleForCallUseCase() }
             single<IAddDurationUseCase> { AddDurationUseCase() }
@@ -462,6 +468,8 @@ fun Application.configureKoin() {
                     get(named<UserInClub>())
                 )
             }
+            single<IListUsersLastLoggedBeforeUseCase> { ListUsersLastLoggedBeforeUseCase(get()) }
+            single<IUpdateUserLastLoginUseCase> { UpdateUserLastLoginUseCase(get()) }
             single<IExportUsersAsCsvUseCase> { ExportUsersAsCsvUseCase(get(named<SubscriptionInUser>())) }
 
             // Subscriptions in users
@@ -761,6 +769,7 @@ fun Application.configureKoin() {
                     get(),
                     get(),
                     get(named<Client>()),
+                    get(),
                     get(),
                     get(),
                     get(),

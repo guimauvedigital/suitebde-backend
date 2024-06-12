@@ -35,7 +35,7 @@ class DomainsInAssociationsControllerTest {
     )
     private val user = User(
         "id", "associationId", "email", null,
-        "firstname", "lastname", false
+        "firstname", "lastname", false, Clock.System.now()
     )
     private val domain = DomainInAssociation(
         "domain", "associationId"

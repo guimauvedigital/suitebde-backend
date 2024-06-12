@@ -14,6 +14,7 @@ import me.nathanfallet.suitebde.models.auth.*
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.associations.*
 import me.nathanfallet.suitebde.usecases.auth.*
+import me.nathanfallet.suitebde.usecases.users.IUpdateUserLastLoginUseCase
 import me.nathanfallet.usecases.auth.AuthRequest
 import me.nathanfallet.usecases.auth.AuthToken
 import me.nathanfallet.usecases.emails.ISendEmailUseCase
@@ -37,6 +38,7 @@ class AuthController(
     private val createAuthCodeUseCase: ICreateAuthCodeUseCase,
     private val deleteAuthCodeUseCase: IDeleteAuthCodeUseCase,
     private val generateAuthTokenUseCase: IGenerateAuthTokenUseCase,
+    private val updateUserLastLoginUseCase: IUpdateUserLastLoginUseCase,
     private val createCodeInEmailUseCase: ICreateCodeInEmailUseCase,
     private val getCodeInEmailUseCase: IGetCodeInEmailUseCase,
     private val deleteCodeInEmailUseCase: IDeleteCodeInEmailUseCase,
@@ -181,6 +183,7 @@ class AuthController(
         if (!deleteAuthCodeUseCase(payload.code)) throw ControllerException(
             HttpStatusCode.InternalServerError, "error_internal"
         )
+        updateUserLastLoginUseCase(client.user.id)
         return generateAuthTokenUseCase(client)
     }
 
@@ -188,6 +191,7 @@ class AuthController(
         val client = getClientForUserForRefreshTokenUseCase(payload.refreshToken) ?: throw ControllerException(
             HttpStatusCode.BadRequest, "auth_invalid_code"
         )
+        updateUserLastLoginUseCase(client.user.id)
         return generateAuthTokenUseCase(client)
     }
 

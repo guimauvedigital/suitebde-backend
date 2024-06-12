@@ -36,7 +36,7 @@ class ClubsControllerTest {
     )
     private val user = User(
         "id", "associationId", "email", null,
-        "firstname", "lastname", false
+        "firstname", "lastname", false, Clock.System.now()
     )
     private val club = Club(
         "roleId", "associationId", "name", "description",

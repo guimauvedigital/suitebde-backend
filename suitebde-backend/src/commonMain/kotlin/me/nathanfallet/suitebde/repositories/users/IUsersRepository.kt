@@ -1,5 +1,6 @@
 package me.nathanfallet.suitebde.repositories.users
 
+import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
@@ -9,5 +10,7 @@ interface IUsersRepository : IChildModelSuspendRepository<User, String, CreateUs
 
     suspend fun get(id: String): User?
     suspend fun getForEmail(email: String, includePassword: Boolean): User?
+    suspend fun updateLastLogin(id: String): Boolean
+    suspend fun listLastLoggedBefore(date: Instant): List<User>
 
 }

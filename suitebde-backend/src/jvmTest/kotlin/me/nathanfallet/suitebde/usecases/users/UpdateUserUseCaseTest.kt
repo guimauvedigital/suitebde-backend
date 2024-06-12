@@ -4,6 +4,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
@@ -20,7 +21,7 @@ class UpdateUserUseCaseTest {
         val useCase = UpdateUserUseCase(usersRepository, mockk(), getUserUseCase)
         val user = User(
             "id", "associationId", "email", null,
-            "first", "last", false
+            "first", "last", false, Clock.System.now()
         )
         val payload = UpdateUserPayload("first", "last", null)
         coEvery { usersRepository.update(user.id, payload, "associationId") } returns true
@@ -36,7 +37,7 @@ class UpdateUserUseCaseTest {
         val useCase = UpdateUserUseCase(usersRepository, hashPasswordUseCase, getUserUseCase)
         val user = User(
             "id", "associationId", "email", "password",
-            "first", "last", false
+            "first", "last", false, Clock.System.now()
         )
         val payload = UpdateUserPayload("first", "last", "password")
         val hashedUser = user.copy(password = "hash")
@@ -53,7 +54,7 @@ class UpdateUserUseCaseTest {
         val useCase = UpdateUserUseCase(usersRepository, mockk(), mockk())
         val user = User(
             "id", "associationId", "email", null,
-            "first", "last", false
+            "first", "last", false, Clock.System.now()
         )
         val payload = UpdateUserPayload("first", "last", null)
         coEvery { usersRepository.update(user.id, payload, "associationId") } returns false

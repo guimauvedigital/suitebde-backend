@@ -4,6 +4,7 @@ import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.auth.LoginPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.users.IGetUserForEmailUseCase
@@ -17,7 +18,7 @@ class LoginUseCaseTest {
         val getUserForEmail = mockk<IGetUserForEmailUseCase>()
         val verifyPasswordUseCase = mockk<IVerifyPasswordUseCase>()
         val useCase = LoginUseCase(getUserForEmail, verifyPasswordUseCase)
-        val user = User("id", "association", "email", "hash", "first", "last", false)
+        val user = User("id", "association", "email", "hash", "first", "last", false, Clock.System.now())
         coEvery { getUserForEmail("email", true) } returns user
         every { verifyPasswordUseCase("password", "hash") } returns true
         assertEquals(user, useCase(LoginPayload("email", "password")))
@@ -37,7 +38,7 @@ class LoginUseCaseTest {
         val getUserForEmail = mockk<IGetUserForEmailUseCase>()
         val verifyPasswordUseCase = mockk<IVerifyPasswordUseCase>()
         val useCase = LoginUseCase(getUserForEmail, verifyPasswordUseCase)
-        val user = User("id", "association", "email", "hash", "first", "last", false)
+        val user = User("id", "association", "email", "hash", "first", "last", false, Clock.System.now())
         coEvery { getUserForEmail("email", true) } returns user
         every { verifyPasswordUseCase("password", "hash") } returns false
         assertEquals(null, useCase(LoginPayload("email", "password")))

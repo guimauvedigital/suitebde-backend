@@ -1,5 +1,6 @@
 package me.nathanfallet.suitebde.database.users
 
+import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.extensions.generateId
 import me.nathanfallet.suitebde.models.users.User
 import org.jetbrains.exposed.sql.ResultRow
@@ -15,6 +16,7 @@ object Users : Table() {
     val firstName = varchar("first_name", 255)
     val lastName = varchar("last_name", 255)
     val superuser = bool("superuser")
+    val lastLoginAt = varchar("last_login_at", 255)
 
     override val primaryKey = PrimaryKey(id)
 
@@ -33,7 +35,8 @@ object Users : Table() {
         row[password].takeIf { includePassword },
         row[firstName],
         row[lastName],
-        row[superuser]
+        row[superuser],
+        row[lastLoginAt].let(Instant::parse)
     )
 
 }

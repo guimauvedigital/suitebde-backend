@@ -1,5 +1,7 @@
 package me.nathanfallet.suitebde.database.users
 
+import kotlinx.datetime.Clock
+import kotlinx.datetime.Instant
 import me.nathanfallet.suitebde.models.application.SearchOptions
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
@@ -22,6 +24,14 @@ class UsersDatabaseRepository(
         }
     }
 
+    override suspend fun listLastLoggedBefore(date: Instant): List<User> =
+        database.suspendedTransaction {
+            Users
+                .selectAll()
+                .where { Users.lastLoginAt lessEq date.toString() }
+                .map(Users::toUser)
+        }
+
     override suspend fun create(payload: CreateUserPayload, parentId: String, context: IContext?): User? =
         database.suspendedTransaction {
             Users.insert {
@@ -32,6 +42,7 @@ class UsersDatabaseRepository(
                 it[firstName] = payload.firstName
                 it[lastName] = payload.lastName
                 it[superuser] = payload.superuser
+                it[lastLoginAt] = Clock.System.now().toString()
             }
         }.resultedValues?.map(Users::toUser)?.singleOrNull()
 
@@ -98,6 +109,13 @@ class UsersDatabaseRepository(
                 payload.password?.let { password ->
                     it[Users.password] = password
                 }
+            }
+        } == 1
+
+    override suspend fun updateLastLogin(id: String): Boolean =
+        database.suspendedTransaction {
+            Users.update({ Users.id eq id }) {
+                it[lastLoginAt] = Clock.System.now().toString()
             }
         } == 1
 

@@ -5,6 +5,7 @@ import io.mockk.coVerifyOrder
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
+import kotlinx.datetime.Clock
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.repositories.users.IUsersRepository
@@ -21,7 +22,7 @@ class CreateUserUseCaseTest {
         val useCase = CreateUserUseCase(usersRepository, hashPasswordUseCase)
         val user = User(
             "id", "associationId", "email", null,
-            "firstName", "lastName", true
+            "firstName", "lastName", true, Clock.System.now()
         )
         every { hashPasswordUseCase(any()) } returns "hash"
         coEvery { usersRepository.create(any(), "associationId") } returns user

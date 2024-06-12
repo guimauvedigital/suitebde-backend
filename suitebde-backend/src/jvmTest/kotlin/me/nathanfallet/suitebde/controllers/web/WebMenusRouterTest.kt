@@ -39,7 +39,7 @@ class WebMenusRouterTest {
     )
     private val user = User(
         "id", "associationId", "email", null,
-        "firstname", "lastname", false
+        "firstname", "lastname", false, Clock.System.now()
     )
     private val menu = WebMenu(
         "id", "associationId", "title", "url", 1

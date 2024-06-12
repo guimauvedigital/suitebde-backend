@@ -35,13 +35,7 @@ class DeleteAssociationUseCaseTest {
         coEvery { repository.delete(association.id) } returns true
         coEvery { listUsersUseCase(association.id) } returns listOf(
             User(
-                "userId",
-                "associationId",
-                "name",
-                "password",
-                "firstName",
-                "lastName",
-                false
+                "userId", "associationId", "name", "password", "firstName", "lastName", false, Clock.System.now()
             )
         )
         coEvery { deleteUserUseCase("userId", "associationId") } returns true

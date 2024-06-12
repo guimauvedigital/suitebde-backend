@@ -35,7 +35,7 @@ import kotlin.test.assertEquals
 class UsersRouterTest {
 
     private val user = User(
-        "id", "associationId", "email", null, "firstname", "lastname", false
+        "id", "associationId", "email", null, "firstname", "lastname", false, Clock.System.now()
     )
     private val association = Association(
         "associationId", "name", "school", "city", true, Clock.System.now(), Clock.System.now()

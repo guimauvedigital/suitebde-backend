@@ -26,7 +26,7 @@ class RegisterUseCaseTest {
         )
         val user = User(
             "id", "associationId", "email", "password",
-            "firstname", "lastname", false
+            "firstname", "lastname", false, Clock.System.now()
         )
         coEvery { getCodeInEmailUseCase("code") } returns CodeInEmail(
             "email", "code", "associationId", Clock.System.now()

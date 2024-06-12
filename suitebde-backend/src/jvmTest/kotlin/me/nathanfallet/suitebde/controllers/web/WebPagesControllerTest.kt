@@ -37,7 +37,7 @@ class WebPagesControllerTest {
     )
     private val user = User(
         "id", "associationId", "email", null,
-        "firstname", "lastname", false
+        "firstname", "lastname", false, Clock.System.now()
     )
     private val page = WebPage(
         "id", "associationId", "url", "title", "content", false

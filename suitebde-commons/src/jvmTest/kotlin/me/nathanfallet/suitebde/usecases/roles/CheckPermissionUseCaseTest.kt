@@ -21,21 +21,23 @@ class CheckPermissionUseCaseTest {
     @Test
     fun invokeNotInAssociation() = runBlocking {
         val useCase = CheckPermissionUseCase(mockk())
-        val user = User("id", "otherAssociationId", "email", "password", "firstName", "lastName", true)
+        val user = User(
+            "id", "otherAssociationId", "email", "password", "firstName", "lastName", true, Clock.System.now()
+        )
         assertEquals(false, useCase(user, Permission.USERS_VIEW inAssociation association.id))
     }
 
     @Test
     fun invokeSuperAdmin() = runBlocking {
         val useCase = CheckPermissionUseCase(mockk())
-        val user = User("id", "admin", "email", "password", "firstName", "lastName", false)
+        val user = User("id", "admin", "email", "password", "firstName", "lastName", false, Clock.System.now())
         assertEquals(true, useCase(user, Permission.USERS_VIEW inAssociation association.id))
     }
 
     @Test
     fun invokeSuperuser() = runBlocking {
         val useCase = CheckPermissionUseCase(mockk())
-        val user = User("id", "associationId", "email", "password", "firstName", "lastName", true)
+        val user = User("id", "associationId", "email", "password", "firstName", "lastName", true, Clock.System.now())
         assertEquals(true, useCase(user, Permission.USERS_VIEW inAssociation association.id))
     }
 
@@ -43,7 +45,7 @@ class CheckPermissionUseCaseTest {
     fun invokeNone() = runBlocking {
         val getPermissionsForUserUseCase = mockk<IGetPermissionsForUserUseCase>()
         val useCase = CheckPermissionUseCase(getPermissionsForUserUseCase)
-        val user = User("id", "associationId", "email", "password", "firstName", "lastName", false)
+        val user = User("id", "associationId", "email", "password", "firstName", "lastName", false, Clock.System.now())
         coEvery { getPermissionsForUserUseCase(user) } returns setOf()
         assertEquals(false, useCase(user, Permission.USERS_VIEW inAssociation association.id))
     }
@@ -52,7 +54,7 @@ class CheckPermissionUseCaseTest {
     fun invokeFromUserPermission() = runBlocking {
         val getPermissionsForUserUseCase = mockk<IGetPermissionsForUserUseCase>()
         val useCase = CheckPermissionUseCase(getPermissionsForUserUseCase)
-        val user = User("id", "associationId", "email", "password", "firstName", "lastName", false)
+        val user = User("id", "associationId", "email", "password", "firstName", "lastName", false, Clock.System.now())
         coEvery { getPermissionsForUserUseCase(user) } returns setOf(Permission.USERS_VIEW)
         assertEquals(true, useCase(user, Permission.USERS_VIEW inAssociation association.id))
     }
@@ -60,14 +62,14 @@ class CheckPermissionUseCaseTest {
     @Test
     fun invokeAdmin() = runBlocking {
         val useCase = CheckPermissionUseCase(mockk())
-        val user = User("id", "admin", "email", "password", "firstName", "lastName", false)
+        val user = User("id", "admin", "email", "password", "firstName", "lastName", false, Clock.System.now())
         assertEquals(true, useCase(user, AdminPermission))
     }
 
     @Test
     fun invokeAdminNotInAssociation() = runBlocking {
         val useCase = CheckPermissionUseCase(mockk())
-        val user = User("id", "associationId", "email", "password", "firstName", "lastName", false)
+        val user = User("id", "associationId", "email", "password", "firstName", "lastName", false, Clock.System.now())
         assertEquals(false, useCase(user, AdminPermission))
     }
 

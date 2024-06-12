@@ -32,15 +32,15 @@ class UsersControllerTest {
     )
     private val user = User(
         "id", "associationId", "email", null,
-        "firstname", "lastname", false
+        "firstname", "lastname", false, Clock.System.now()
     )
     private val targetUser = User(
         "targetId", "associationId", "email", null,
-        "firstname", "lastname", false
+        "firstname", "lastname", false, Clock.System.now()
     )
     private val targetUser2 = User(
         "targetId2", "associationId2", "email2", null,
-        "firstname2", "lastname2", false
+        "firstname2", "lastname2", false, Clock.System.now()
     )
 
     @Test

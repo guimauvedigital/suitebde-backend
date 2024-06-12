@@ -38,7 +38,7 @@ class CreateAssociationUseCaseTest {
         coEvery { associationRepository.create(any()) } returns association
         coEvery { createUserUseCase(any(), "associationId") } returns User(
             "id", "associationId", "email", null,
-            "firstName", "lastName", true
+            "firstName", "lastName", true, Clock.System.now()
         )
         coEvery { createWebPageUseCase(any(), "associationId") } returns mockk()
         coEvery { createWebMenuUseCase(any(), "associationId") } returns mockk()

@@ -32,7 +32,7 @@ class GetAdminMenuForCallUseCaseTest {
     )
     private val user = User(
         "id", "associationId", "email", "password",
-        "firstname", "lastname", false
+        "firstname", "lastname", false, Clock.System.now()
     )
 
     @Test

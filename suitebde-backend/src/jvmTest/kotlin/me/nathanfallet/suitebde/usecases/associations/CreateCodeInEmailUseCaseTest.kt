@@ -68,7 +68,7 @@ class CreateCodeInEmailUseCaseTest {
         val usersRepository = mockk<IUsersRepository>()
         val useCase = CreateCodeInEmailUseCase(mockk(), usersRepository)
         coEvery { usersRepository.getForEmail("email", false) } returns User(
-            "id", "associationId", "email", "password", "firstname", "lastname", false
+            "id", "associationId", "email", "password", "firstname", "lastname", false, Clock.System.now()
         )
         assertEquals(null, useCase("email", "associationId"))
     }

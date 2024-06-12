@@ -35,7 +35,7 @@ class AssociationsRouterTest {
     )
     private val user = User(
         "id", "associationId", "email", null,
-        "firstname", "lastname", false
+        "firstname", "lastname", false, Clock.System.now()
     )
 
     private fun installApp(application: ApplicationTestBuilder): HttpClient {

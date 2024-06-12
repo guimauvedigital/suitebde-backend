@@ -1,5 +1,6 @@
 package me.nathanfallet.suitebde.models.users
 
+import kotlinx.datetime.Instant
 import kotlinx.serialization.Serializable
 import me.nathanfallet.suitebde.models.stripe.ICustomer
 import me.nathanfallet.usecases.models.IChildModel
@@ -26,6 +27,8 @@ data class User(
     val lastName: String,
     @Schema("Is the user a super user in the association?", "true")
     val superuser: Boolean,
+    @Schema("Last login date of the profile", "2021-01-01T00:00:00Z")
+    val lastLoginAt: Instant,
 ) : IChildModel<String, CreateUserPayload, UpdateUserPayload, String>, IUser, ICustomer {
 
     override val parentId: String

@@ -37,7 +37,7 @@ class RolesControllerTest {
     )
     private val user = User(
         "id", "associationId", "email", null,
-        "firstname", "lastname", false
+        "firstname", "lastname", false, Clock.System.now()
     )
     private val role = Role(
         "roleId", "associationId", "name"

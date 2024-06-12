@@ -28,7 +28,7 @@ class GetAuthCodeUseCaseTest {
         val useCase = GetAuthCodeUseCase(repository, getClientUseCase, getUserUseCase)
         val clientForUser = ClientForUser(
             Client("cid", "oid", "name", "description", "secret", "redirect"),
-            User("uid", "associationId", "email", "firstName", "lastName", "password", false)
+            User("uid", "associationId", "email", "password", "firstName", "lastName", false, Clock.System.now())
         )
         coEvery { repository.get("code") } returns ClientInUser("code", "uid", "cid", tomorrow)
         coEvery { getClientUseCase("cid") } returns clientForUser.client
@@ -70,7 +70,7 @@ class GetAuthCodeUseCaseTest {
         val useCase = GetAuthCodeUseCase(repository, getClientUseCase, getUserUseCase)
         val clientForUser = ClientForUser(
             Client("cid", "oid", "name", "description", "secret", "redirect"),
-            User("uid", "associationId", "email", "firstName", "lastName", "password", false)
+            User("uid", "associationId", "email", "password", "firstName", "lastName", false, Clock.System.now())
         )
         coEvery { repository.get("code") } returns ClientInUser("code", "uid", "cid", tomorrow)
         coEvery { getClientUseCase("cid") } returns clientForUser.client

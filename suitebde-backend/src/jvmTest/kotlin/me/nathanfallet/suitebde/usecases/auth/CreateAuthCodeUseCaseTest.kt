@@ -26,7 +26,10 @@ class CreateAuthCodeUseCaseTest {
             useCase(
                 ClientForUser(
                     Client("cid", "oid", "name", "description", "secret", "redirect"),
-                    User("uid", "associationId", "email", "firstName", "lastName", "password", false)
+                    User(
+                        "uid", "associationId", "email", "password",
+                        "firstName", "lastName", false, Clock.System.now()
+                    )
                 )
             )
         )
@@ -42,7 +45,10 @@ class CreateAuthCodeUseCaseTest {
             useCase(
                 ClientForUser(
                     Client("cid", "oid", "name", "description", "secret", "redirect"),
-                    User("uid", "associationId", "email", "firstName", "lastName", "password", false)
+                    User(
+                        "uid", "associationId", "email", "password",
+                        "firstName", "lastName", false, Clock.System.now()
+                    )
                 )
             )
         )
