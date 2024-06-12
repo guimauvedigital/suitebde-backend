@@ -3,6 +3,7 @@ package me.nathanfallet.suitebde.controllers.users
 import io.ktor.server.application.*
 import me.nathanfallet.ktorx.controllers.IChildModelController
 import me.nathanfallet.ktorx.models.annotations.*
+import me.nathanfallet.ktorx.models.responses.BytesResponse
 import me.nathanfallet.suitebde.models.associations.Association
 import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.CreateUserPayload
@@ -56,5 +57,9 @@ interface IUsersController :
         @ParentModel parent: Association,
         @Id id: String,
     ): List<Permission>
+
+    @AdminTemplateMapping("users.csv")
+    @Path("GET", "/users.csv")
+    suspend fun csv(call: ApplicationCall, @ParentModel parent: Association): BytesResponse
 
 }

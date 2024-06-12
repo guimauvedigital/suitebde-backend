@@ -462,6 +462,7 @@ fun Application.configureKoin() {
                     get(named<UserInClub>())
                 )
             }
+            single<IExportUsersAsCsvUseCase> { ExportUsersAsCsvUseCase(get(named<SubscriptionInUser>())) }
 
             // Subscriptions in users
             single<IListChildModelSuspendUseCase<SubscriptionInUser, String>>(named<SubscriptionInUser>()) {
@@ -781,6 +782,7 @@ fun Application.configureKoin() {
                     get(named<User>()),
                     get(named<User>()),
                     get(named<User>()),
+                    get(),
                     get()
                 )
             }

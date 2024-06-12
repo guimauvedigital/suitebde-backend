@@ -3,7 +3,9 @@ package me.nathanfallet.suitebde.controllers.users
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.request.*
+import io.ktor.server.response.*
 import me.nathanfallet.ktorx.models.exceptions.ControllerException
+import me.nathanfallet.ktorx.models.responses.BytesResponse
 import me.nathanfallet.ktorx.usecases.users.IRequireUserForCallUseCase
 import me.nathanfallet.suitebde.models.application.SearchOptions
 import me.nathanfallet.suitebde.models.associations.Association
@@ -11,6 +13,7 @@ import me.nathanfallet.suitebde.models.roles.Permission
 import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.roles.IGetPermissionsForUserUseCase
+import me.nathanfallet.suitebde.usecases.users.IExportUsersAsCsvUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
@@ -26,6 +29,7 @@ class UsersController(
     private val getUserUseCase: IGetChildModelSuspendUseCase<User, String, String>,
     private val updateUserUseCase: IUpdateChildModelSuspendUseCase<User, String, UpdateUserPayload, String>,
     private val getPermissionsForUserUseCase: IGetPermissionsForUserUseCase,
+    private val exportUsersAsCsvUseCase: IExportUsersAsCsvUseCase,
 ) : IUsersController {
 
     override suspend fun list(
@@ -93,6 +97,19 @@ class UsersController(
             HttpStatusCode.NotFound, "users_not_found"
         )
         return getPermissionsForUserUseCase(targetUser).toList()
+    }
+
+    override suspend fun csv(call: ApplicationCall, parent: Association): BytesResponse {
+        requireUserForCallUseCase(call).takeIf {
+            checkPermissionUseCase(it, Permission.USERS_VIEW inAssociation parent.id)
+        } ?: throw ControllerException(
+            HttpStatusCode.Forbidden, "users_view_not_allowed"
+        )
+        call.response.header("Content-Disposition", "attachment; filename=\"users.csv\"")
+        return BytesResponse(
+            exportUsersAsCsvUseCase(getUsersInAssociationUseCase(parent.id).sortedBy { it.lastName }).toByteArray(),
+            ContentType.Text.CSV
+        )
     }
 
 }

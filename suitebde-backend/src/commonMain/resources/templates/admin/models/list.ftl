@@ -8,13 +8,14 @@
         </h2>
 
         <nav>
-            <ol class="flex items-center gap-2">
+            <div class="flex items-center gap-2">
                 <a href="${route}/create"
                    class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray"
                    id="admin_create">
                     <@t key="admin_" + route + "_create" />
                 </a>
-            </ol>
+                <@buttons />
+            </div>
         </nav>
     </div>
     <!-- Breadcrumb End -->
@@ -103,4 +104,16 @@
                 </#if>
         </#switch>
     </td>
+</#macro>
+
+<#macro buttons>
+    <#switch route>
+        <#case "users">
+            <a href="${route}/users.csv"
+               class="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray"
+               id="admin_export_csv">
+                <@t key="admin_users_export_csv" />
+            </a>
+            <#break>
+    </#switch>
 </#macro>

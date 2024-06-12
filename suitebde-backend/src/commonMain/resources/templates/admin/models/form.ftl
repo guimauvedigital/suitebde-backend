@@ -47,7 +47,7 @@
             </div>
         </div>
         <#if item??>
-            <@children name=route />
+            <@children />
         </#if>
     </div>
     <!-- ====== Form Layout Section End -->
@@ -139,8 +139,8 @@
     </div>
 </#macro>
 
-<#macro children name>
-    <#switch name>
+<#macro children>
+    <#switch route>
         <#case "clubs">
             <div class="flex flex-col rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark p-6.5">
                 <h6 id="admin_children" class="text-black dark:text-white"><@t key="admin_menu_clubs" /></h6>
