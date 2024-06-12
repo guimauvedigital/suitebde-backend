@@ -44,6 +44,9 @@ class UsersRemoteRepository(
     override suspend fun update(id: String, payload: UpdateUserPayload, associationId: String): User? =
         update(id, payload, RecursiveId<Association, String, Unit>(associationId), null)
 
+    override suspend fun delete(id: String, associationId: String): Boolean =
+        delete(id, RecursiveId<Association, String, Unit>(associationId), null)
+
     override suspend fun listPermissions(id: String, associationId: String): List<Permission> =
         client
             .request(

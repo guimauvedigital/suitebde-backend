@@ -14,6 +14,7 @@ import me.nathanfallet.suitebde.models.users.UpdateUserPayload
 import me.nathanfallet.suitebde.models.users.User
 import me.nathanfallet.suitebde.usecases.roles.IGetPermissionsForUserUseCase
 import me.nathanfallet.suitebde.usecases.users.IExportUsersAsCsvUseCase
+import me.nathanfallet.usecases.models.delete.IDeleteChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.get.IGetChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.IListChildModelSuspendUseCase
 import me.nathanfallet.usecases.models.list.slice.IListSliceChildModelSuspendUseCase
@@ -28,6 +29,7 @@ class UsersController(
     private val getUsersInAssociationSlicedUseCase: IListSliceChildModelSuspendUseCase<User, String>,
     private val getUserUseCase: IGetChildModelSuspendUseCase<User, String, String>,
     private val updateUserUseCase: IUpdateChildModelSuspendUseCase<User, String, UpdateUserPayload, String>,
+    private val deleteUserUseCase: IDeleteChildModelSuspendUseCase<User, String, String>,
     private val getPermissionsForUserUseCase: IGetPermissionsForUserUseCase,
     private val exportUsersAsCsvUseCase: IExportUsersAsCsvUseCase,
 ) : IUsersController {
@@ -83,6 +85,20 @@ class UsersController(
         return updateUserUseCase(
             targetUser.id, payload, parent.id
         ) ?: throw ControllerException(
+            HttpStatusCode.InternalServerError, "error_internal"
+        )
+    }
+
+    override suspend fun delete(call: ApplicationCall, parent: Association, id: String) {
+        (requireUserForCallUseCase(call) as? User)?.takeIf {
+            it.id == id || checkPermissionUseCase(it, Permission.USERS_DELETE inAssociation parent.id)
+        } ?: throw ControllerException(
+            HttpStatusCode.Forbidden, "users_delete_not_allowed"
+        )
+        val targetUser = getUserUseCase(id, parent.id) ?: throw ControllerException(
+            HttpStatusCode.NotFound, "users_not_found"
+        )
+        if (!deleteUserUseCase(targetUser.id, parent.id)) throw ControllerException(
             HttpStatusCode.InternalServerError, "error_internal"
         )
     }

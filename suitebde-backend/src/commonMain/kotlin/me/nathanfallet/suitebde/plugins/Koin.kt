@@ -495,6 +495,9 @@ fun Application.configureKoin() {
             single<ISendNotificationToPermissionUseCase> { SendNotificationToPermissionUseCase(get(), get(), get()) }
             single<ISendNotificationToClubUseCase> { SendNotificationToClubUseCase(get(), get(), get()) }
             single<IListNotificationTopicsUseCase> { ListNotificationTopicsUseCase() }
+            single<IListChildModelSuspendUseCase<NotificationToken, String>>(named<NotificationToken>()) {
+                ListChildModelFromRepositorySuspendUseCase(get<INotificationTokensRepository>())
+            }
             single<ICreateChildModelSuspendUseCase<NotificationToken, CreateNotificationTokenPayload, String>>(named<NotificationToken>()) {
                 CreateChildModelFromRepositorySuspendUseCase(get<INotificationTokensRepository>())
             }
@@ -782,6 +785,7 @@ fun Application.configureKoin() {
                     get(named<User>()),
                     get(named<User>()),
                     get(named<User>()),
+                    get(named<User>()),
                     get(),
                     get()
                 )
@@ -790,7 +794,11 @@ fun Application.configureKoin() {
                 SubscriptionsInUsersController(
                     get(),
                     get(),
-                    get(named<SubscriptionInUser>())
+                    get(named<SubscriptionInUser>()),
+                    get(named<SubscriptionInUser>()),
+                    get(named<SubscriptionInUser>()),
+                    get(named<SubscriptionInUser>()),
+                    get()
                 )
             }
             single<INotificationTokensController> {

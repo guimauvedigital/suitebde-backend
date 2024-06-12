@@ -10,6 +10,7 @@ interface IUsersRemoteRepository {
     suspend fun list(pagination: Pagination, associationId: String): List<User>
     suspend fun get(id: String, associationId: String): User?
     suspend fun update(id: String, payload: UpdateUserPayload, associationId: String): User?
+    suspend fun delete(id: String, associationId: String): Boolean
     suspend fun listPermissions(id: String, associationId: String): List<Permission>
 
 }

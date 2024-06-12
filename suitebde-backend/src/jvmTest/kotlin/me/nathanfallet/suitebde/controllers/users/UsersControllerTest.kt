@@ -53,14 +53,8 @@ class UsersControllerTest {
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association.id) } returns true
         coEvery { getUsersInAssociationUseCase(Pagination(10, 5), association.id) } returns listOf(targetUser)
         val controller = UsersController(
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            mockk(),
-            getUsersInAssociationUseCase,
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk()
+            requireUserForCallUseCase, checkPermissionUseCase, mockk(), getUsersInAssociationUseCase,
+            mockk(), mockk(), mockk(), mockk(), mockk()
         )
         every { call.request.path() } returns "/api/v1/associations/id/users"
         assertEquals(listOf(targetUser), controller.list(call, association, 10, 5, null))
@@ -76,14 +70,8 @@ class UsersControllerTest {
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association.id) } returns true
         coEvery { getUsersInAssociationUseCase(Pagination(25, 0), association.id) } returns listOf(targetUser)
         val controller = UsersController(
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            mockk(),
-            getUsersInAssociationUseCase,
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk()
+            requireUserForCallUseCase, checkPermissionUseCase, mockk(), getUsersInAssociationUseCase,
+            mockk(), mockk(), mockk(), mockk(), mockk()
         )
         every { call.request.path() } returns "/api/v1/associations/id/users"
         assertEquals(listOf(targetUser), controller.list(call, association, null, null, null))
@@ -99,14 +87,8 @@ class UsersControllerTest {
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association.id) } returns true
         coEvery { getUsersInAssociationUseCase(association.id) } returns listOf(targetUser)
         val controller = UsersController(
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            getUsersInAssociationUseCase,
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk()
+            requireUserForCallUseCase, checkPermissionUseCase, getUsersInAssociationUseCase,
+            mockk(), mockk(), mockk(), mockk(), mockk(), mockk()
         )
         every { call.request.path() } returns "/admin/users"
         assertEquals(listOf(targetUser), controller.list(call, association, null, null, null))
@@ -122,6 +104,7 @@ class UsersControllerTest {
         val controller = UsersController(
             requireUserForCallUseCase,
             checkPermissionUseCase,
+            mockk(),
             mockk(),
             mockk(),
             mockk(),
@@ -146,14 +129,8 @@ class UsersControllerTest {
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association.id) } returns true
         coEvery { getUserUseCase(targetUser.id, association.id) } returns targetUser
         val controller = UsersController(
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            mockk(),
-            mockk(),
-            getUserUseCase,
-            mockk(),
-            mockk(),
-            mockk()
+            requireUserForCallUseCase, checkPermissionUseCase, mockk(), mockk(), getUserUseCase,
+            mockk(), mockk(), mockk(), mockk()
         )
         assertEquals(targetUser, controller.get(call, association, targetUser.id))
     }
@@ -168,14 +145,8 @@ class UsersControllerTest {
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association.id) } returns true
         coEvery { getUserUseCase(targetUser.id, association.id) } returns null
         val controller = UsersController(
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            mockk(),
-            mockk(),
-            getUserUseCase,
-            mockk(),
-            mockk(),
-            mockk()
+            requireUserForCallUseCase, checkPermissionUseCase, mockk(), mockk(), getUserUseCase,
+            mockk(), mockk(), mockk(), mockk()
         )
         val exception = assertFailsWith(ControllerException::class) {
             controller.get(call, association, targetUser.id)
@@ -192,14 +163,8 @@ class UsersControllerTest {
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_VIEW inAssociation association.id) } returns false
         val controller = UsersController(
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk()
+            requireUserForCallUseCase, checkPermissionUseCase, mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk()
         )
         val exception = assertFailsWith(ControllerException::class) {
             controller.get(call, association, targetUser.id)
@@ -218,14 +183,8 @@ class UsersControllerTest {
         coEvery { checkPermissionUseCase(targetUser, Permission.USERS_VIEW inAssociation association.id) } returns false
         coEvery { getUserUseCase(targetUser.id, association.id) } returns targetUser
         val controller = UsersController(
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            mockk(),
-            mockk(),
-            getUserUseCase,
-            mockk(),
-            mockk(),
-            mockk()
+            requireUserForCallUseCase, checkPermissionUseCase, mockk(), mockk(), getUserUseCase,
+            mockk(), mockk(), mockk(), mockk()
         )
         assertEquals(targetUser, controller.get(call, association, targetUser.id))
     }
@@ -249,14 +208,8 @@ class UsersControllerTest {
         coEvery { getUserUseCase(targetUser.id, association.id) } returns targetUser
         coEvery { updateUserUseCase(targetUser.id, payload, association.id) } returns updatedUser
         val controller = UsersController(
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            mockk(),
-            mockk(),
-            getUserUseCase,
-            updateUserUseCase,
-            mockk(),
-            mockk()
+            requireUserForCallUseCase, checkPermissionUseCase, mockk(), mockk(),
+            getUserUseCase, updateUserUseCase, mockk(), mockk(), mockk()
         )
         assertEquals(updatedUser, controller.update(call, association, targetUser.id, payload))
     }
@@ -281,14 +234,8 @@ class UsersControllerTest {
         coEvery { getUserUseCase(targetUser.id, association.id) } returns targetUser
         coEvery { updateUserUseCase(targetUser.id, payload, association.id) } returns updatedUser
         val controller = UsersController(
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            mockk(),
-            mockk(),
-            getUserUseCase,
-            updateUserUseCase,
-            mockk(),
-            mockk()
+            requireUserForCallUseCase, checkPermissionUseCase, mockk(), mockk(),
+            getUserUseCase, updateUserUseCase, mockk(), mockk(), mockk()
         )
         assertEquals(updatedUser, controller.update(call, association, targetUser.id, payload))
     }
@@ -306,14 +253,8 @@ class UsersControllerTest {
         coEvery { getUserUseCase(targetUser.id, association.id) } returns targetUser
         coEvery { updateUserUseCase(targetUser.id, payload, association.id) } returns targetUser
         val controller = UsersController(
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            mockk(),
-            mockk(),
-            getUserUseCase,
-            updateUserUseCase,
-            mockk(),
-            mockk()
+            requireUserForCallUseCase, checkPermissionUseCase, mockk(), mockk(),
+            getUserUseCase, updateUserUseCase, mockk(), mockk(), mockk()
         )
         assertEquals(targetUser, controller.update(call, association, targetUser.id, payload))
     }
@@ -328,14 +269,8 @@ class UsersControllerTest {
         coEvery { checkPermissionUseCase(user, Permission.USERS_UPDATE inAssociation association.id) } returns true
         coEvery { getUserUseCase(targetUser.id, association.id) } returns null
         val controller = UsersController(
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            mockk(),
-            mockk(),
-            getUserUseCase,
-            mockk(),
-            mockk(),
-            mockk()
+            requireUserForCallUseCase, checkPermissionUseCase, mockk(), mockk(), getUserUseCase,
+            mockk(), mockk(), mockk(), mockk()
         )
         val exception = assertFailsWith(ControllerException::class) {
             controller.update(call, association, targetUser.id, UpdateUserPayload(null, null, null))
@@ -352,14 +287,8 @@ class UsersControllerTest {
         coEvery { requireUserForCallUseCase(call) } returns user
         coEvery { checkPermissionUseCase(user, Permission.USERS_UPDATE inAssociation association.id) } returns false
         val controller = UsersController(
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk(),
-            mockk()
+            requireUserForCallUseCase, checkPermissionUseCase, mockk(), mockk(), mockk(),
+            mockk(), mockk(), mockk(), mockk()
         )
         val exception = assertFailsWith(ControllerException::class) {
             controller.update(call, association, targetUser.id, UpdateUserPayload(null, null, null))
@@ -392,14 +321,8 @@ class UsersControllerTest {
         coEvery { getUserUseCase(targetUser.id, association.id) } returns targetUser
         coEvery { updateUserUseCase(targetUser.id, payload, association.id) } returns updatedUser
         val controller = UsersController(
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            mockk(),
-            mockk(),
-            getUserUseCase,
-            updateUserUseCase,
-            mockk(),
-            mockk()
+            requireUserForCallUseCase, checkPermissionUseCase, mockk(), mockk(),
+            getUserUseCase, updateUserUseCase, mockk(), mockk(), mockk()
         )
         assertEquals(updatedUser, controller.update(call, association, targetUser.id, payload))
     }
@@ -417,14 +340,8 @@ class UsersControllerTest {
         coEvery { getUserUseCase(targetUser.id, association.id) } returns targetUser
         coEvery { updateUserUseCase(targetUser.id, payload, association.id) } returns null
         val controller = UsersController(
-            requireUserForCallUseCase,
-            checkPermissionUseCase,
-            mockk(),
-            mockk(),
-            getUserUseCase,
-            updateUserUseCase,
-            mockk(),
-            mockk()
+            requireUserForCallUseCase, checkPermissionUseCase, mockk(), mockk(),
+            getUserUseCase, updateUserUseCase, mockk(), mockk(), mockk()
         )
         val exception = assertFailsWith(ControllerException::class) {
             controller.update(call, association, targetUser.id, payload)

@@ -47,6 +47,16 @@ interface IUsersController :
         @Payload payload: UpdateUserPayload,
     ): User
 
+    @APIMapping
+    @AdminTemplateMapping
+    @DeleteModelPath
+    @DocumentedType(User::class)
+    @DocumentedError(401, "auth_invalid_credentials")
+    @DocumentedError(403, "users_delete_not_allowed")
+    @DocumentedError(404, "users_not_found")
+    @DocumentedError(500, "error_internal")
+    suspend fun delete(call: ApplicationCall, @ParentModel parent: Association, @Id id: String)
+
     @APIMapping("listUserPermissions", "Get user permissions by id")
     @Path("GET", "/{userId}/permissions")
     @DocumentedError(401, "auth_invalid_credentials")

@@ -9,7 +9,7 @@ plugins {
 
 allprojects {
     group = "me.nathanfallet.suitebde"
-    version = "0.0.18"
+    version = "0.0.19"
 
     repositories {
         mavenCentral()

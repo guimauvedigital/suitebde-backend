@@ -31,4 +31,28 @@ class SubscriptionsInUsersRemoteRepository(
             null
         )
 
+    override suspend fun create(
+        payload: CreateSubscriptionInUserPayload,
+        userId: String,
+        associationId: String,
+    ): SubscriptionInUser? =
+        create(
+            payload,
+            RecursiveId<User, String, String>(userId, RecursiveId<Association, String, Unit>(associationId)),
+            null
+        )
+
+    override suspend fun update(
+        id: String,
+        payload: UpdateSubscriptionInUserPayload,
+        userId: String,
+        associationId: String,
+    ): SubscriptionInUser? =
+        update(
+            id,
+            payload,
+            RecursiveId<User, String, String>(userId, RecursiveId<Association, String, Unit>(associationId)),
+            null
+        )
+
 }
