@@ -1,2 +1,2 @@
 ignore:
-  - "suitebde-commons/src/commonMain/kotlin/me/nathanfallet/suitebde/models"
+  - "commons/src/commonMain/kotlin/com/suitebde/models"
