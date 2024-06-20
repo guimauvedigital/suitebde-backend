@@ -1,0 +1,10 @@
+package com.suitebde.repositories.associations
+
+import com.suitebde.models.associations.CreateSubscriptionInAssociationPayload
+import com.suitebde.models.associations.SubscriptionInAssociation
+import com.suitebde.models.associations.UpdateSubscriptionInAssociationPayload
+import dev.kaccelero.models.UUID
+import dev.kaccelero.repositories.IChildModelSuspendRepository
+
+interface ISubscriptionsInAssociationsRepository :
+    IChildModelSuspendRepository<SubscriptionInAssociation, UUID, CreateSubscriptionInAssociationPayload, UpdateSubscriptionInAssociationPayload, UUID>

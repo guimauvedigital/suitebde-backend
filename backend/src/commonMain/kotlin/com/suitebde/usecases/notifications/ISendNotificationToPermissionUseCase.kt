@@ -1,0 +1,6 @@
+package com.suitebde.usecases.notifications
+
+import com.suitebde.models.notifications.CreatePermissionNotificationPayload
+import dev.kaccelero.usecases.ISuspendUseCase
+
+interface ISendNotificationToPermissionUseCase : ISuspendUseCase<CreatePermissionNotificationPayload, Unit>
