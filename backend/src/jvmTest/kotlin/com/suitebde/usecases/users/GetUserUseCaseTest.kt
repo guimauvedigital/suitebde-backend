@@ -17,16 +17,17 @@ class GetUserUseCaseTest {
         val repository = mockk<IUsersRepository>()
         val useCase = GetUserUseCase(repository)
         val user = User(UUID(), UUID(), "email", "password", "first", "last", false, Clock.System.now())
-        coEvery { repository.get(UUID()) } returns user
-        assertEquals(user, useCase(UUID()))
+        coEvery { repository.get(user.id) } returns user
+        assertEquals(user, useCase(user.id))
     }
 
     @Test
     fun invokeNotFound() = runBlocking {
         val repository = mockk<IUsersRepository>()
         val useCase = GetUserUseCase(repository)
-        coEvery { repository.get(UUID()) } returns null
-        assertEquals(null, useCase(UUID()))
+        val id = UUID()
+        coEvery { repository.get(id) } returns null
+        assertEquals(null, useCase(id))
     }
 
 }

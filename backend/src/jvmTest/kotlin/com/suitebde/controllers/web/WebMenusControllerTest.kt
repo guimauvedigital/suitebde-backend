@@ -32,11 +32,11 @@ class WebMenusControllerTest {
         true, Clock.System.now(), Clock.System.now()
     )
     private val user = User(
-        UUID(), UUID(), "email", null,
+        UUID(), association.id, "email", null,
         "firstname", "lastname", false, Clock.System.now()
     )
     private val menu = WebMenu(
-        UUID(), UUID(), "title", "url",
+        UUID(), association.id, "title", "url",
         0, null
     )
 

@@ -25,9 +25,9 @@ class UpdateUserUseCaseTest {
             "first", "last", false, Clock.System.now()
         )
         val payload = UpdateUserPayload("first", "last", null)
-        coEvery { usersRepository.update(user.id, payload, UUID()) } returns true
+        coEvery { usersRepository.update(user.id, payload, user.associationId) } returns true
         coEvery { getUserUseCase(user.id) } returns user
-        assertEquals(user, useCase(user.id, payload, UUID()))
+        assertEquals(user, useCase(user.id, payload, user.associationId))
     }
 
     @Test
@@ -44,9 +44,9 @@ class UpdateUserUseCaseTest {
         val hashedUser = user.copy(password = "hash")
         val hashedPayload = payload.copy(password = "hash")
         every { hashPasswordUseCase("password") } returns "hash"
-        coEvery { usersRepository.update(user.id, hashedPayload, UUID()) } returns true
+        coEvery { usersRepository.update(user.id, hashedPayload, user.associationId) } returns true
         coEvery { getUserUseCase(user.id) } returns hashedUser
-        assertEquals(hashedUser, useCase(user.id, payload, UUID()))
+        assertEquals(hashedUser, useCase(user.id, payload, user.associationId))
     }
 
     @Test
@@ -58,8 +58,8 @@ class UpdateUserUseCaseTest {
             "first", "last", false, Clock.System.now()
         )
         val payload = UpdateUserPayload("first", "last", null)
-        coEvery { usersRepository.update(user.id, payload, UUID()) } returns false
-        assertEquals(null, useCase(user.id, payload, UUID()))
+        coEvery { usersRepository.update(user.id, payload, user.associationId) } returns false
+        assertEquals(null, useCase(user.id, payload, user.associationId))
     }
 
 }

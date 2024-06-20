@@ -26,8 +26,9 @@ class ClearSessionForCallUseCaseTest {
         routing {
             get {
                 val useCase = ClearSessionForCallUseCase()
-                call.sessions.set(SessionPayload(UUID()))
-                assertEquals(SessionPayload(UUID()), call.sessions.get<SessionPayload>())
+                val id = UUID()
+                call.sessions.set(SessionPayload(id))
+                assertEquals(SessionPayload(id), call.sessions.get<SessionPayload>())
                 useCase(call)
                 assertEquals(null, call.sessions.get<SessionPayload>())
             }

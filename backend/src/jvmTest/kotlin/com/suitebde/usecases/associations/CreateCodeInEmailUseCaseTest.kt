@@ -30,10 +30,10 @@ class CreateCodeInEmailUseCaseTest {
             "email", "code", UUID(), now.plus(1, DateTimeUnit.HOUR, TimeZone.currentSystemDefault())
         )
         coEvery { usersRepository.getForEmail("email", false) } returns null
-        coEvery { codesInEmailsRepository.createCodeInEmail("email", any(), UUID(), any()) } returns code
-        val result = useCase("email", UUID())
+        coEvery { codesInEmailsRepository.createCodeInEmail("email", any(), code.associationId, any()) } returns code
+        val result = useCase("email", code.associationId)
         assertEquals("email", result?.email)
-        assertEquals(UUID(), result?.associationId)
+        assertEquals(code.associationId, result?.associationId)
     }
 
     @Test
@@ -41,12 +41,13 @@ class CreateCodeInEmailUseCaseTest {
         val codesInEmailsRepository = mockk<ICodesInEmailsRepository>()
         val usersRepository = mockk<IUsersRepository>()
         val useCase = CreateCodeInEmailUseCase(codesInEmailsRepository, usersRepository)
+        val associationId = UUID()
         coEvery { usersRepository.getForEmail("email", false) } returns null
-        coEvery { codesInEmailsRepository.createCodeInEmail("email", any(), UUID(), any()) } throws Exception()
-        coEvery { codesInEmailsRepository.updateCodeInEmail("email", any(), UUID(), any()) } returns true
-        val result = useCase("email", UUID())
+        coEvery { codesInEmailsRepository.createCodeInEmail("email", any(), associationId, any()) } throws Exception()
+        coEvery { codesInEmailsRepository.updateCodeInEmail("email", any(), associationId, any()) } returns true
+        val result = useCase("email", associationId)
         assertEquals("email", result?.email)
-        assertEquals(UUID(), result?.associationId)
+        assertEquals(associationId, result?.associationId)
     }
 
     @Test
@@ -54,11 +55,12 @@ class CreateCodeInEmailUseCaseTest {
         val codesInEmailsRepository = mockk<ICodesInEmailsRepository>()
         val usersRepository = mockk<IUsersRepository>()
         val useCase = CreateCodeInEmailUseCase(codesInEmailsRepository, usersRepository)
+        val associationId = UUID()
         coEvery { usersRepository.getForEmail("email", false) } returns null
-        coEvery { codesInEmailsRepository.createCodeInEmail("email", any(), UUID(), any()) } throws Exception()
-        coEvery { codesInEmailsRepository.updateCodeInEmail("email", any(), UUID(), any()) } returns false
+        coEvery { codesInEmailsRepository.createCodeInEmail("email", any(), associationId, any()) } throws Exception()
+        coEvery { codesInEmailsRepository.updateCodeInEmail("email", any(), associationId, any()) } returns false
         val exception = assertFailsWith(ControllerException::class) {
-            useCase("email", UUID())
+            useCase("email", associationId)
         }
         assertEquals(HttpStatusCode.InternalServerError, exception.code)
         assertEquals("error_internal", exception.key)

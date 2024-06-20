@@ -43,11 +43,11 @@ class WebPagesRouterTest {
         UUID(), "name", "school", "city", true, Clock.System.now(), Clock.System.now()
     )
     private val user = User(
-        UUID(), UUID(), "email", null,
+        UUID(), association.id, "email", null,
         "firstname", "lastname", false, Clock.System.now()
     )
     private val page = WebPage(
-        UUID(), UUID(), "url", "title", "content", false
+        UUID(), association.id, "url", "title", "content", false
     )
 
     private fun installApp(application: ApplicationTestBuilder): HttpClient {
@@ -86,12 +86,12 @@ class WebPagesRouterTest {
             AssociationForCallRouter(mockk(), mockk()),
             AssociationsRouter(associationController, mockk(), mockk(), mockk(), mockk(), mockk())
         )
-        coEvery { associationController.get(any(), UUID()) } returns association
+        coEvery { associationController.get(any(), association.id) } returns association
         coEvery { controller.list(any(), association, null, null) } returns listOf(page)
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/api/v1/associations/id/webpages")
+        val response = client.get("/api/v1/associations/${association.id}/webpages")
         assertEquals(HttpStatusCode.OK, response.status)
         assertEquals(listOf(page), response.body())
     }
@@ -157,7 +157,7 @@ class WebPagesRouterTest {
             AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
-        coEvery { controller.get(any(), association, UUID()) } returns page
+        coEvery { controller.get(any(), association, page.id) } returns page
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { getAssociationForCallUseCase(any()) } returns association
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
@@ -166,7 +166,7 @@ class WebPagesRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/en/admin/webpages/id/update")
+        val response = client.get("/en/admin/webpages/${page.id}/update")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_update")?.`is`("h2"))

@@ -70,12 +70,12 @@ class DomainsInAssociationsRouterTest {
         val router = DomainsInAssociationsRouter(
             controller, mockk(), mockk(), mockk(), mockk(), mockk(), associationRouter
         )
-        coEvery { associationController.get(any(), UUID()) } returns association
+        coEvery { associationController.get(any(), association.id) } returns association
         coEvery { controller.list(any(), association, null, null) } returns listOf(domain)
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/api/v1/associations/id/domains")
+        val response = client.get("/api/v1/associations/${association.id}/domains")
         assertEquals(HttpStatusCode.OK, response.status)
         assertEquals(listOf(domain), response.body())
     }
@@ -100,7 +100,7 @@ class DomainsInAssociationsRouterTest {
             getAdminMenuForCallUseCase,
             associationRouter
         )
-        coEvery { associationController.get(any(), UUID()) } returns association
+        coEvery { associationController.get(any(), association.id) } returns association
         coEvery { controller.list(any(), association, null, null) } returns listOf(domain)
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { getAssociationForCallUseCase(any()) } returns association
@@ -110,7 +110,7 @@ class DomainsInAssociationsRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/en/admin/associations/id/domains")
+        val response = client.get("/en/admin/associations/${association.id}/domains")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_create")?.`is`("a"))

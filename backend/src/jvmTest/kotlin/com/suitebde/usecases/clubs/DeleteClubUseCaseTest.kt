@@ -19,7 +19,7 @@ class DeleteClubUseCaseTest {
         UUID(), UUID(), "name", true
     )
     private val userInClub = UserInClub(
-        UUID(), UUID(), UUID(), null, null, roleInClub
+        UUID(), roleInClub.clubId, roleInClub.id, null, null, roleInClub
     )
 
     @Test
@@ -36,23 +36,25 @@ class DeleteClubUseCaseTest {
             listRolesInClubUseCase,
             deleteRoleInClubUseCase
         )
-        coEvery { repository.delete(userInClub.clubId, UUID()) } returns true
+        val associationId = UUID()
+        coEvery { repository.delete(userInClub.clubId, associationId) } returns true
         coEvery { listUsersInClubUseCase(userInClub.clubId) } returns listOf(userInClub)
         coEvery { deleteUserInClubUseCase(userInClub.userId, userInClub.clubId) } returns true
         coEvery { listRolesInClubUseCase(userInClub.clubId) } returns listOf(roleInClub)
         coEvery { deleteRoleInClubUseCase(userInClub.roleId, userInClub.clubId) } returns true
-        assertEquals(true, useCase(userInClub.clubId, UUID()))
+        assertEquals(true, useCase(userInClub.clubId, associationId))
         coVerify { deleteUserInClubUseCase(userInClub.userId, userInClub.clubId) }
         coVerify { deleteRoleInClubUseCase(userInClub.roleId, userInClub.clubId) }
-        coVerify { repository.delete(userInClub.clubId, UUID()) }
+        coVerify { repository.delete(userInClub.clubId, associationId) }
     }
 
     @Test
     fun testInvokeFails() = runBlocking {
         val repository = mockk<IClubsRepository>()
         val useCase = DeleteClubUseCase(repository, mockk(), mockk(), mockk(), mockk())
-        coEvery { repository.delete(userInClub.clubId, UUID()) } returns false
-        assertEquals(false, useCase(userInClub.clubId, UUID()))
+        val associationId = UUID()
+        coEvery { repository.delete(userInClub.clubId, associationId) } returns false
+        assertEquals(false, useCase(userInClub.clubId, associationId))
     }
 
 }

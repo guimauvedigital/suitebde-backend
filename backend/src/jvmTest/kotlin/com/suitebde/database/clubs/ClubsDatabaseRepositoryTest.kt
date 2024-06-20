@@ -18,6 +18,7 @@ class ClubsDatabaseRepositoryTest {
     fun getClubsInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getClubsInAssociation")
         val repository = ClubsDatabaseRepository(database)
+        val associationId = UUID()
         val club = repository.create(
             CreateClubPayload(
                 "name",
@@ -26,9 +27,9 @@ class ClubsDatabaseRepositoryTest {
                 "member",
                 "admin"
             ),
-            UUID(),
+            associationId
         ) ?: fail("Unable to create club")
-        val clubFromDatabase = repository.list(UUID(), ClubContext(onlyShowValidated = false))
+        val clubFromDatabase = repository.list(associationId, ClubContext(onlyShowValidated = false))
         assertEquals(1, clubFromDatabase.size)
         assertEquals(clubFromDatabase.first().id, club.id)
         assertEquals(clubFromDatabase.first().associationId, club.associationId)
@@ -61,6 +62,7 @@ class ClubsDatabaseRepositoryTest {
     fun createClub() = runBlocking {
         val database = Database(protocol = "h2", name = "createClub")
         val repository = ClubsDatabaseRepository(database)
+        val associationId = UUID()
         val club = repository.create(
             CreateClubPayload(
                 "name",
@@ -69,7 +71,7 @@ class ClubsDatabaseRepositoryTest {
                 "member",
                 "admin"
             ),
-            UUID(),
+            associationId
         )
         val clubsFromDatabase = database.suspendedTransaction {
             Clubs
@@ -86,7 +88,7 @@ class ClubsDatabaseRepositoryTest {
         assertEquals(clubsFromDatabase?.logo, club?.logo)
         assertEquals(clubsFromDatabase?.usersCount, club?.usersCount)
         assertEquals(clubsFromDatabase?.validated, club?.validated)
-        assertEquals(UUID(), club?.associationId)
+        assertEquals(associationId, club?.associationId)
         assertEquals("name", club?.name)
         assertEquals("description", club?.description)
         assertEquals("logo", club?.logo)
@@ -98,6 +100,7 @@ class ClubsDatabaseRepositoryTest {
     fun getClub() = runBlocking {
         val database = Database(protocol = "h2", name = "getClub")
         val repository = ClubsDatabaseRepository(database)
+        val associationId = UUID()
         val club = repository.create(
             CreateClubPayload(
                 "name",
@@ -106,9 +109,9 @@ class ClubsDatabaseRepositoryTest {
                 "member",
                 "admin"
             ),
-            UUID(),
+            associationId
         ) ?: fail("Unable to create club")
-        val clubFromDatabase = repository.get(club.id, UUID())
+        val clubFromDatabase = repository.get(club.id, associationId)
         assertEquals(clubFromDatabase?.id, club.id)
         assertEquals(clubFromDatabase?.associationId, club.associationId)
         assertEquals(clubFromDatabase?.name, club.name)
@@ -122,6 +125,7 @@ class ClubsDatabaseRepositoryTest {
     fun getClubWithUserContext() = runBlocking {
         val database = Database(protocol = "h2", name = "getClubWithUserContext")
         val repository = ClubsDatabaseRepository(database)
+        val associationId = UUID()
         val userId = UUID()
         val club = repository.create(
             CreateClubPayload(
@@ -131,10 +135,10 @@ class ClubsDatabaseRepositoryTest {
                 "member",
                 "admin"
             ),
-            UUID(),
+            associationId,
             OptionalUserContext(userId)
         ) ?: fail("Unable to create club")
-        val clubFromDatabase = repository.get(club.id, UUID(), OptionalUserContext(userId))
+        val clubFromDatabase = repository.get(club.id, associationId, OptionalUserContext(userId))
         assertEquals(clubFromDatabase?.isMember, club.isMember)
         assertEquals(false, club.isMember)
     }
@@ -169,6 +173,7 @@ class ClubsDatabaseRepositoryTest {
     fun updateClub() = runBlocking {
         val database = Database(protocol = "h2", name = "updateClub")
         val repository = ClubsDatabaseRepository(database)
+        val associationId = UUID()
         val club = repository.create(
             CreateClubPayload(
                 "name",
@@ -177,11 +182,11 @@ class ClubsDatabaseRepositoryTest {
                 "member",
                 "admin"
             ),
-            UUID(),
+            associationId
         ) ?: fail("Unable to create club")
         val payload = UpdateClubPayload("newName", "newDescription", "newLogo")
-        assertEquals(true, repository.update(club.id, payload, UUID()))
-        val clubFromDatabase = repository.get(club.id, UUID())
+        assertEquals(true, repository.update(club.id, payload, associationId))
+        val clubFromDatabase = repository.get(club.id, associationId)
         assertEquals(clubFromDatabase?.name, "newName")
         assertEquals(clubFromDatabase?.description, "newDescription")
         assertEquals(clubFromDatabase?.logo, "newLogo")

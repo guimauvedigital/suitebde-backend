@@ -10,8 +10,8 @@ mavenPublishing {
     publishToMavenCentral(com.vanniktech.maven.publish.SonatypeHost.CENTRAL_PORTAL)
     signAllPublications()
     pom {
-        name.set("suitebde-commons")
-        description.set("Common models and utilities for Suite BDE.")
+        name.set("commons")
+        description.set("Common models and client for Suite BDE.")
         url.set("https://github.com/guimauvesoftware/suitebde-backend")
 
         licenses {

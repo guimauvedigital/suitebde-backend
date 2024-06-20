@@ -30,9 +30,9 @@ class RegisterUseCaseTest {
             "firstname", "lastname", false, Clock.System.now()
         )
         coEvery { getCodeInEmailUseCase("code") } returns CodeInEmail(
-            "email", "code", UUID(), Clock.System.now()
+            "email", "code", user.associationId, Clock.System.now()
         )
-        coEvery { createUserUseCase(payload, UUID()) } returns user
+        coEvery { createUserUseCase(payload, user.associationId) } returns user
         assertEquals(user, useCase("code", RegisterCodePayload("password", "firstname", "lastname")))
     }
 

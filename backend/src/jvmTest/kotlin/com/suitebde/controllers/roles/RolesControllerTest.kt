@@ -32,10 +32,10 @@ class RolesControllerTest {
         true, Clock.System.now(), Clock.System.now()
     )
     private val user = User(
-        UUID(), UUID(), "email", null,
+        UUID(), association.id, "email", null,
         "firstname", "lastname", false, Clock.System.now()
     )
-    private val role = Role(UUID(), UUID(), "name")
+    private val role = Role(UUID(), association.id, "name")
 
     @Test
     fun testList() = runBlocking {

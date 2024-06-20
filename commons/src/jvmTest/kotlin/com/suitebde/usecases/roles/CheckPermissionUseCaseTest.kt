@@ -14,7 +14,6 @@ import kotlin.test.assertEquals
 
 class CheckPermissionUseCaseTest {
 
-    private val adminAssociation = UUID("00000000-0000-0000-0000-000000000000")
     private val association = Association(
         UUID(), "name", "school", "city",
         true, Clock.System.now(), Clock.System.now()
@@ -30,8 +29,10 @@ class CheckPermissionUseCaseTest {
     @Test
     fun invokeSuperAdmin() = runBlocking {
         val useCase = CheckPermissionUseCase(mockk())
-        val user =
-            User(UUID(), adminAssociation, "email", "password", "firstName", "lastName", false, Clock.System.now())
+        val user = User(
+            UUID(), AdminPermission.adminAssociationId, "email", "password",
+            "firstName", "lastName", false, Clock.System.now()
+        )
         assertEquals(true, useCase(user, Permission.USERS_VIEW inAssociation association.id))
     }
 
@@ -65,8 +66,10 @@ class CheckPermissionUseCaseTest {
     @Test
     fun invokeAdmin() = runBlocking {
         val useCase = CheckPermissionUseCase(mockk())
-        val user =
-            User(UUID(), adminAssociation, "email", "password", "firstName", "lastName", false, Clock.System.now())
+        val user = User(
+            UUID(), AdminPermission.adminAssociationId, "email", "password",
+            "firstName", "lastName", false, Clock.System.now()
+        )
         assertEquals(true, useCase(user, AdminPermission))
     }
 

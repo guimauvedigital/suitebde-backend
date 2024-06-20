@@ -57,8 +57,8 @@ class GetUserForCallUseCaseTest {
         val user = User(UUID(), UUID(), "email", "password", "first", "last", false, Clock.System.now())
         every { call.attributes } returns attributes
         every { getJWTPrincipalForCall(call) } returns principal
-        every { principal.subject } returns UUID().toString()
-        coEvery { getUserUseCase(UUID()) } returns user
+        every { principal.subject } returns user.id.toString()
+        coEvery { getUserUseCase(user.id) } returns user
         // Fetch from repository
         assertEquals(user, useCase(call))
         // Fetch from cache
@@ -76,8 +76,8 @@ class GetUserForCallUseCaseTest {
         val user = User(UUID(), UUID(), "email", "password", "first", "last", false, Clock.System.now())
         every { call.attributes } returns attributes
         every { getJWTPrincipalForCall(call) } returns null
-        every { getSessionForCallUseCase(call) } returns SessionPayload(UUID())
-        coEvery { getUserUseCase(UUID()) } returns user
+        every { getSessionForCallUseCase(call) } returns SessionPayload(user.id)
+        coEvery { getUserUseCase(user.id) } returns user
         // Fetch from repository
         assertEquals(user, useCase(call))
         // Fetch from cache
@@ -92,10 +92,11 @@ class GetUserForCallUseCaseTest {
         val attributes = Attributes()
         val call = mockk<ApplicationCall>()
         val principal = mockk<JWTPrincipal>()
+        val id = UUID()
         every { call.attributes } returns attributes
         every { getJWTPrincipalForCall(call) } returns principal
-        every { principal.subject } returns UUID().toString()
-        coEvery { getUserUseCase(UUID()) } returns null
+        every { principal.subject } returns id.toString()
+        coEvery { getUserUseCase(id) } returns null
         assertEquals(null, useCase(call))
     }
 
@@ -107,10 +108,11 @@ class GetUserForCallUseCaseTest {
         val useCase = GetUserForCallUseCase(getJWTPrincipalForCall, getSessionForCallUseCase, getUserUseCase)
         val attributes = Attributes()
         val call = mockk<ApplicationCall>()
+        val id = UUID()
         every { call.attributes } returns attributes
         every { getJWTPrincipalForCall(call) } returns null
-        every { getSessionForCallUseCase(call) } returns SessionPayload(UUID())
-        coEvery { getUserUseCase(UUID()) } returns null
+        every { getSessionForCallUseCase(call) } returns SessionPayload(id)
+        coEvery { getUserUseCase(id) } returns null
         assertEquals(null, useCase(call))
     }
 

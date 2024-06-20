@@ -26,9 +26,10 @@ class GetSessionForCallUseCaseTest {
         routing {
             get {
                 val useCase = GetSessionForCallUseCase()
+                val id = UUID()
                 assertEquals(null, useCase(call))
-                call.sessions.set(SessionPayload(UUID()))
-                assertEquals(SessionPayload(UUID()), useCase(call))
+                call.sessions.set(SessionPayload(id))
+                assertEquals(SessionPayload(id), useCase(call))
             }
         }
         client.get("/")

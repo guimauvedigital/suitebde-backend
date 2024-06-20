@@ -7,6 +7,8 @@ import com.suitebde.usecases.associations.IRequireAssociationForCallUseCase
 import dev.kaccelero.models.UUID
 import dev.kaccelero.routers.AbstractModelRouter
 import dev.kaccelero.routers.ControllerRoute
+import dev.kaccelero.routers.ICall
+import dev.kaccelero.routers.KtorCall
 import io.ktor.server.application.*
 import io.ktor.server.routing.*
 import io.ktor.util.reflect.*
@@ -28,11 +30,10 @@ class AssociationForCallRouter(
     ""
 ), IAssociationForCallRouter {
 
-    override suspend fun get(call: ApplicationCall): Association = requireAssociationForCallUseCase(call)
+    override suspend fun get(call: ICall): Association = requireAssociationForCallUseCase((call as KtorCall).call)
 
     override suspend fun <Payload : Any> decodePayload(call: ApplicationCall, type: KClass<Payload>): Payload =
         throw UnsupportedOperationException()
-
 
     override fun createControllerRoute(root: Route, controllerRoute: ControllerRoute, openAPI: OpenAPI?) = Unit
     override fun getOpenAPIParameters(self: Boolean): List<Parameter> = emptyList()

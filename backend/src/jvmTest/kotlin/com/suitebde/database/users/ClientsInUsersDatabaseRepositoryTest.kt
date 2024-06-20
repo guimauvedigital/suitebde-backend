@@ -17,7 +17,9 @@ class ClientsInUsersDatabaseRepositoryTest {
     fun createClientInUser() = runBlocking {
         val database = Database(protocol = "h2", name = "createClientInUser")
         val repository = ClientsInUsersDatabaseRepository(database)
-        val clientInUser = repository.create(UUID(), UUID(), now)
+        val userId = UUID()
+        val clientId = UUID()
+        val clientInUser = repository.create(userId, clientId, now)
         val clientInUserFromDatabase = database.suspendedTransaction {
             ClientsInUsers
                 .selectAll()
@@ -28,8 +30,8 @@ class ClientsInUsersDatabaseRepositoryTest {
         assertEquals(clientInUserFromDatabase?.userId, clientInUser?.userId)
         assertEquals(clientInUserFromDatabase?.clientId, clientInUser?.clientId)
         assertEquals(clientInUserFromDatabase?.expiration, clientInUser?.expiration)
-        assertEquals(clientInUserFromDatabase?.userId, UUID())
-        assertEquals(clientInUserFromDatabase?.clientId, UUID())
+        assertEquals(clientInUserFromDatabase?.userId, userId)
+        assertEquals(clientInUserFromDatabase?.clientId, clientId)
         assertEquals(clientInUserFromDatabase?.expiration, now)
     }
 

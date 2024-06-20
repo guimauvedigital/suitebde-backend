@@ -19,16 +19,18 @@ class CreateAuthCodeUseCaseTest {
     fun testInvoke() = runBlocking {
         val repository = mockk<IClientsInUsersRepository>()
         val useCase = CreateAuthCodeUseCase(repository)
-        coEvery { repository.create(UUID(), UUID(), any()) } returns ClientInUser(
+        val clientId = UUID()
+        val userId = UUID()
+        coEvery { repository.create(userId, clientId, any()) } returns ClientInUser(
             "code", UUID(), UUID(), Clock.System.now()
         )
         assertEquals(
             "code",
             useCase(
                 ClientForUser(
-                    Client(UUID(), UUID(), "name", "description", "secret", "redirect"),
+                    Client(clientId, UUID(), "name", "description", "secret", "redirect"),
                     User(
-                        UUID(), UUID(), "email", "password",
+                        userId, UUID(), "email", "password",
                         "firstName", "lastName", false, Clock.System.now()
                     )
                 )
@@ -40,14 +42,16 @@ class CreateAuthCodeUseCaseTest {
     fun testInvokeError() = runBlocking {
         val repository = mockk<IClientsInUsersRepository>()
         val useCase = CreateAuthCodeUseCase(repository)
-        coEvery { repository.create(UUID(), UUID(), any()) } returns null
+        val clientId = UUID()
+        val userId = UUID()
+        coEvery { repository.create(userId, clientId, any()) } returns null
         assertEquals(
             null,
             useCase(
                 ClientForUser(
-                    Client(UUID(), UUID(), "name", "description", "secret", "redirect"),
+                    Client(clientId, UUID(), "name", "description", "secret", "redirect"),
                     User(
-                        UUID(), UUID(), "email", "password",
+                        userId, UUID(), "email", "password",
                         "firstName", "lastName", false, Clock.System.now()
                     )
                 )

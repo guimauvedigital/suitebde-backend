@@ -16,9 +16,10 @@ class DeleteDomainInAssociationUseCaseTest {
         val repository = mockk<IDomainsInAssociationsRepository>()
         val shutdownDomainUseCase = mockk<IShutdownDomainUseCase>()
         val useCase = DeleteDomainInAssociationUseCase(repository, shutdownDomainUseCase)
+        val associationId = UUID()
         coEvery { shutdownDomainUseCase("domain") } returns true
-        coEvery { repository.delete("domain", UUID()) } returns true
-        assertEquals(true, useCase("domain", UUID()))
+        coEvery { repository.delete("domain", associationId) } returns true
+        assertEquals(true, useCase("domain", associationId))
     }
 
     @Test
@@ -26,9 +27,10 @@ class DeleteDomainInAssociationUseCaseTest {
         val repository = mockk<IDomainsInAssociationsRepository>()
         val shutdownDomainUseCase = mockk<IShutdownDomainUseCase>()
         val useCase = DeleteDomainInAssociationUseCase(repository, shutdownDomainUseCase)
+        val associationId = UUID()
         coEvery { shutdownDomainUseCase("domain") } returns true
-        coEvery { repository.delete("domain", UUID()) } returns false
-        assertEquals(false, useCase("domain", UUID()))
+        coEvery { repository.delete("domain", associationId) } returns false
+        assertEquals(false, useCase("domain", associationId))
     }
 
     @Test
@@ -36,9 +38,10 @@ class DeleteDomainInAssociationUseCaseTest {
         val repository = mockk<IDomainsInAssociationsRepository>()
         val shutdownDomainUseCase = mockk<IShutdownDomainUseCase>()
         val useCase = DeleteDomainInAssociationUseCase(repository, shutdownDomainUseCase)
+        val associationId = UUID()
         coEvery { shutdownDomainUseCase("domain") } returns false
-        coEvery { repository.delete("domain", UUID()) } returns true
-        assertEquals(false, useCase("domain", UUID()))
+        coEvery { repository.delete("domain", associationId) } returns true
+        assertEquals(false, useCase("domain", associationId))
     }
 
 }

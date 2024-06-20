@@ -21,7 +21,7 @@ dependencyResolutionManagement {
             plugin("maven", "com.vanniktech.maven.publish").version("0.28.0")
 
             // Kaccelero
-            version("kaccelero", "0.1.0")
+            version("kaccelero", "0.1.1")
             library("kaccelero-ktor-client", "dev.kaccelero", "ktor-routers-client").versionRef("kaccelero")
             library("kaccelero-ktor-auth", "dev.kaccelero", "ktor-auth").versionRef("kaccelero")
             library("kaccelero-ktor-auth-apple", "dev.kaccelero", "ktor-auth-apple").versionRef("kaccelero")
@@ -122,6 +122,10 @@ dependencyResolutionManagement {
             library("firebase-admin", "com.google.firebase:firebase-admin:9.2.0")
             library("mysql", "com.mysql:mysql-connector-j:8.0.33")
             library("sentry", "io.sentry:sentry:7.9.0")
+            library("cloudflare-client", "me.nathanfallet.cloudflare:cloudflare-api-client:4.4.0")
+            library("apache-email", "org.apache.commons:commons-email:1.6.0")
+            library("qrcode", "io.github.g0dkar:qrcode-kotlin:4.2.0")
+            library("stripe", "com.stripe:stripe-java:25.13.0")
         }
     }
 }

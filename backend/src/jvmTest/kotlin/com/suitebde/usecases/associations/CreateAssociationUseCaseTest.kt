@@ -37,12 +37,12 @@ class CreateAssociationUseCaseTest {
             createWebPageUseCase, createWebMenuUseCase
         )
         coEvery { associationRepository.create(any()) } returns association
-        coEvery { createUserUseCase(any(), UUID()) } returns User(
-            UUID(), UUID(), "email", null,
+        coEvery { createUserUseCase(any(), association.id) } returns User(
+            UUID(), association.id, "email", null,
             "firstName", "lastName", true, Clock.System.now()
         )
-        coEvery { createWebPageUseCase(any(), UUID()) } returns mockk()
-        coEvery { createWebMenuUseCase(any(), UUID()) } returns mockk()
+        coEvery { createWebPageUseCase(any(), association.id) } returns mockk()
+        coEvery { createWebMenuUseCase(any(), association.id) } returns mockk()
         assertEquals(
             association, useCase(
                 CreateAssociationPayload(
@@ -62,7 +62,7 @@ class CreateAssociationUseCaseTest {
                     "email", "password",
                     "firstName", "lastName", true
                 ),
-                UUID()
+                association.id
             )
         }
     }

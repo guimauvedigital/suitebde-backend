@@ -17,12 +17,13 @@ class UsersDatabaseRepositoryTest {
     fun createUser() = runBlocking {
         val database = Database(protocol = "h2", name = "createUser")
         val repository = UsersDatabaseRepository(database)
+        val associationId = UUID()
         val user = repository.create(
             CreateUserPayload(
                 "email", "password",
                 "firstName", "lastName", false
             ),
-            UUID()
+            associationId
         )
         val userFromDatabase = database.suspendedTransaction {
             Users
@@ -39,7 +40,7 @@ class UsersDatabaseRepositoryTest {
         assertEquals(userFromDatabase?.firstName, user?.firstName)
         assertEquals(userFromDatabase?.lastName, user?.lastName)
         assertEquals(userFromDatabase?.superuser, user?.superuser)
-        assertEquals(userFromDatabase?.associationId, UUID())
+        assertEquals(userFromDatabase?.associationId, associationId)
         assertEquals(userFromDatabase?.email, "email")
         assertEquals(userFromDatabase?.password, "password")
         assertEquals(userFromDatabase?.firstName, "firstName")
@@ -51,14 +52,15 @@ class UsersDatabaseRepositoryTest {
     fun getUser() = runBlocking {
         val database = Database(protocol = "h2", name = "getUser")
         val repository = UsersDatabaseRepository(database)
+        val associationId = UUID()
         val user = repository.create(
             CreateUserPayload(
                 "email", "password",
                 "firstName", "lastName", false
             ),
-            UUID()
+            associationId
         ) ?: fail("Unable to create user")
-        val result = repository.get(user.id, UUID())
+        val result = repository.get(user.id, associationId)
         assertEquals(user.id, result?.id)
         assertEquals(user.associationId, result?.associationId)
         assertEquals(user.email, result?.email)
@@ -171,14 +173,15 @@ class UsersDatabaseRepositoryTest {
     fun getUsersInAssociationLimitOffset() = runBlocking {
         val database = Database(protocol = "h2", name = "getUsersInAssociationLimitOffset")
         val repository = UsersDatabaseRepository(database)
+        val associationId = UUID()
         for (i in 1..4) repository.create(
             CreateUserPayload(
                 "email $i", "password",
                 "firstName", "lastName", false
             ),
-            UUID()
+            associationId
         ) ?: fail("Unable to create user")
-        val result = repository.list(Pagination(1, 2), UUID())
+        val result = repository.list(Pagination(1, 2), associationId)
         assertEquals(1, result.size)
     }
 
@@ -200,12 +203,13 @@ class UsersDatabaseRepositoryTest {
     fun updateUser() = runBlocking {
         val database = Database(protocol = "h2", name = "updateUser")
         val repository = UsersDatabaseRepository(database)
+        val associationId = UUID()
         val user = repository.create(
             CreateUserPayload(
                 "email", "password",
                 "firstName", "lastName", false
             ),
-            UUID()
+            associationId
         ) ?: fail("Unable to create user")
         val updatedUser = user.copy(
             password = "password2",
@@ -213,7 +217,7 @@ class UsersDatabaseRepositoryTest {
             lastName = "lastName2"
         )
         val payload = UpdateUserPayload("firstName2", "lastName2", "password2")
-        assertEquals(true, repository.update(user.id, payload, UUID()))
+        assertEquals(true, repository.update(user.id, payload, associationId))
         val userFromDatabase = database.suspendedTransaction {
             Users
                 .selectAll()
@@ -258,14 +262,15 @@ class UsersDatabaseRepositoryTest {
     fun deleteUser() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteUser")
         val repository = UsersDatabaseRepository(database)
+        val associationId = UUID()
         val user = repository.create(
             CreateUserPayload(
                 "email", "password",
                 "firstName", "lastName", false
             ),
-            UUID()
+            associationId
         ) ?: fail("Unable to create user")
-        assertEquals(true, repository.delete(user.id, UUID()))
+        assertEquals(true, repository.delete(user.id, associationId))
         val count = database.suspendedTransaction {
             Users
                 .selectAll()

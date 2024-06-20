@@ -122,7 +122,7 @@ class AssociationsRouterTest {
             getAssociationForCallUseCase,
             getAdminMenuForCallUseCase,
         )
-        coEvery { controller.get(any(), UUID()) } returns association
+        coEvery { controller.get(any(), association.id) } returns association
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { getAssociationForCallUseCase(any()) } returns association
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
@@ -131,7 +131,7 @@ class AssociationsRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/en/admin/associations/id/update")
+        val response = client.get("/en/admin/associations/${association.id}/update")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_update")?.`is`("h2"))

@@ -36,11 +36,11 @@ class ClubsControllerTest {
         true, Clock.System.now(), Clock.System.now()
     )
     private val user = User(
-        UUID(), UUID(), "email", null,
+        UUID(), association.id, "email", null,
         "firstname", "lastname", false, Clock.System.now()
     )
     private val club = Club(
-        UUID(), UUID(), "name", "description",
+        UUID(), association.id, "name", "description",
         "image", Clock.System.now(), true, 1, true
     )
 

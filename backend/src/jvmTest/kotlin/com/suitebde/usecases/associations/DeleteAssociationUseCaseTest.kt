@@ -33,31 +33,17 @@ class DeleteAssociationUseCaseTest {
         )
         val now = Clock.System.now()
         val association = Association(UUID(), "name", "school", "city", true, now, now)
+        val user = User(UUID(), association.id, "name", "password", "firstName", "lastName", false, Clock.System.now())
+        val club = Club(UUID(), association.id, "name", "description", "logo", now, true, 0, false)
         coEvery { repository.delete(association.id) } returns true
-        coEvery { listUsersUseCase(association.id) } returns listOf(
-            User(
-                UUID(), UUID(), "name", "password", "firstName", "lastName", false, Clock.System.now()
-            )
-        )
-        coEvery { deleteUserUseCase(UUID(), UUID()) } returns true
-        coEvery { listClubsUseCase(association.id, any()) } returns listOf(
-            Club(
-                UUID(),
-                UUID(),
-                "name",
-                "description",
-                "logo",
-                now,
-                true,
-                0,
-                false
-            )
-        )
-        coEvery { deleteClubUseCase(UUID(), UUID()) } returns true
+        coEvery { listUsersUseCase(association.id) } returns listOf(user)
+        coEvery { deleteUserUseCase(user.id, association.id) } returns true
+        coEvery { listClubsUseCase(association.id, any()) } returns listOf(club)
+        coEvery { deleteClubUseCase(club.id, association.id) } returns true
         useCase(association.id)
         coVerify { repository.delete(association.id) }
-        coVerify { deleteUserUseCase(UUID(), UUID()) }
-        coVerify { deleteClubUseCase(UUID(), UUID()) }
+        coVerify { deleteUserUseCase(user.id, association.id) }
+        coVerify { deleteClubUseCase(club.id, association.id) }
     }
 
 }

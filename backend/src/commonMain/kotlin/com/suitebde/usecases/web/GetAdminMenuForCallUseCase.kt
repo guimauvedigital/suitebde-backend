@@ -27,8 +27,8 @@ class GetAdminMenuForCallUseCase(
 
     private fun adminAssociationMenu(input: ApplicationCall) = listOf(
         WebMenu(
-            UUID(),
-            UUID(),
+            UUID(java.util.UUID.nameUUIDFromBytes("associations".toByteArray())),
+            AdminPermission.adminAssociationId,
             translateUseCase(getLocaleForCallUseCase(input), "admin_menu_associations"),
             "/admin/associations"
         )
@@ -67,7 +67,7 @@ class GetAdminMenuForCallUseCase(
             }
             .map {
                 WebMenu(
-                    UUID(),
+                    UUID(java.util.UUID.nameUUIDFromBytes(it.toByteArray())),
                     association.id,
                     translateUseCase(locale, "admin_menu_$it"),
                     if (it == "dashboard") "/admin" else "/admin/$it"

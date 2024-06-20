@@ -36,11 +36,11 @@ class AuthControllerTest {
         true, Clock.System.now(), Clock.System.now()
     )
     private val user = User(
-        UUID(), UUID(), "email", null,
+        UUID(), association.id, "email", null,
         "firstname", "lastname", false, Clock.System.now()
     )
     private val client = Client(
-        UUID(), UUID(), "name", "description",
+        UUID(), association.id, "name", "description",
         "secret", "app://redirect?code={code}"
     )
 
@@ -50,7 +50,7 @@ class AuthControllerTest {
         val setSessionForCallUseCase = mockk<ISetSessionForCallUseCase>()
         val call = mockk<ApplicationCall>()
         val loginPayload = LoginPayload("email", "password")
-        val sessionPayload = SessionPayload(UUID())
+        val sessionPayload = SessionPayload(user.id)
         val controller = AuthController(
             mockk(), mockk(), mockk(), mockk(), loginUseCase, mockk(), setSessionForCallUseCase,
             mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
@@ -68,7 +68,7 @@ class AuthControllerTest {
         val setSessionForCallUseCase = mockk<ISetSessionForCallUseCase>()
         val call = mockk<ApplicationCall>()
         val loginPayload = LoginPayload("email", "password")
-        val sessionPayload = SessionPayload(UUID())
+        val sessionPayload = SessionPayload(user.id)
         val controller = AuthController(
             mockk(), mockk(), mockk(), mockk(), loginUseCase, mockk(), setSessionForCallUseCase,
             mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),
@@ -139,13 +139,9 @@ class AuthControllerTest {
             mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), createCodeInEmailUseCase, mockk(), mockk(),
             mockk(), sendEmailUseCase, getLocaleForCallUseCase, translateUseCase
         )
-        val now = Clock.System.now()
-        coEvery { getAssociationForCallUseCase(call) } returns Association(
-            UUID(), "name", "school", "city",
-            false, now, now
-        )
-        coEvery { createCodeInEmailUseCase("email", UUID()) } returns CodeInEmail(
-            "email", "code", UUID(), Clock.System.now()
+        coEvery { getAssociationForCallUseCase(call) } returns association
+        coEvery { createCodeInEmailUseCase("email", association.id) } returns CodeInEmail(
+            "email", "code", association.id, Clock.System.now()
         )
         coEvery { sendEmailUseCase(any(), any()) } returns Unit
         every {
@@ -179,7 +175,7 @@ class AuthControllerTest {
         )
         coEvery { requireAssociationForCallUseCase(call) } returns association
         coEvery { getCodeInEmailUseCase("code") } returns CodeInEmail(
-            "email", "code", UUID(), Clock.System.now()
+            "email", "code", association.id, Clock.System.now()
         )
         assertEquals(RegisterPayload("email"), controller.registerCode(call, "code"))
     }
@@ -208,7 +204,7 @@ class AuthControllerTest {
         val setSessionForCallUseCase = mockk<ISetSessionForCallUseCase>()
         val call = mockk<ApplicationCall>()
         val registerPayload = RegisterCodePayload("password", "firstname", "lastname")
-        val sessionPayload = SessionPayload(UUID())
+        val sessionPayload = SessionPayload(user.id)
         val controller = AuthController(
             mockk(), mockk(), mockk(), mockk(), mockk(), registerUseCase, setSessionForCallUseCase, mockk(),
             mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(), mockk(),

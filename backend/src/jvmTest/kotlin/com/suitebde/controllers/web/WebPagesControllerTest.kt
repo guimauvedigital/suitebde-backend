@@ -32,11 +32,11 @@ class WebPagesControllerTest {
         true, Clock.System.now(), Clock.System.now()
     )
     private val user = User(
-        UUID(), UUID(), "email", null,
+        UUID(), association.id, "email", null,
         "firstname", "lastname", false, Clock.System.now()
     )
     private val page = WebPage(
-        UUID(), UUID(), "url", "title", "content", false
+        UUID(), association.id, "url", "title", "content", false
     )
 
     @Test

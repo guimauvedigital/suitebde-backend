@@ -17,12 +17,13 @@ class WebMenusDatabaseRepositoryTest {
     fun getWebMenusInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebMenusInAssociation")
         val repository = WebMenusDatabaseRepository(database)
+        val associationId = UUID()
         val menu = repository.create(
             CreateWebMenuPayload(
                 "title", "url", 42
-            ), UUID()
+            ), associationId
         ) ?: fail("Unable to create menu")
-        val menuFromDatabase = repository.list(UUID())
+        val menuFromDatabase = repository.list(associationId)
         assertEquals(1, menuFromDatabase.size)
         assertEquals(menuFromDatabase.first().id, menu.id)
         assertEquals(menuFromDatabase.first().associationId, menu.associationId)
@@ -35,12 +36,13 @@ class WebMenusDatabaseRepositoryTest {
     fun getWebMenusInAssociationLimitOffset() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebMenusInAssociationLimitOffset")
         val repository = WebMenusDatabaseRepository(database)
+        val associationId = UUID()
         for (i in 1..4) repository.create(
             CreateWebMenuPayload(
                 "title $i", "url", 42
-            ), UUID()
+            ), associationId
         )
-        val menuFromDatabase = repository.list(Pagination(1, 2), UUID())
+        val menuFromDatabase = repository.list(Pagination(1, 2), associationId)
         assertEquals(1, menuFromDatabase.size)
     }
 
@@ -61,10 +63,11 @@ class WebMenusDatabaseRepositoryTest {
     fun createWebMenu() = runBlocking {
         val database = Database(protocol = "h2", name = "createWebMenu")
         val repository = WebMenusDatabaseRepository(database)
+        val associationId = UUID()
         val menu = repository.create(
             CreateWebMenuPayload(
                 "title", "url", 42
-            ), UUID()
+            ), associationId
         )
         val menuFromDatabase = database.suspendedTransaction {
             WebMenus
@@ -77,7 +80,7 @@ class WebMenusDatabaseRepositoryTest {
         assertEquals(menuFromDatabase?.title, menu?.title)
         assertEquals(menuFromDatabase?.url, menu?.url)
         assertEquals(menuFromDatabase?.position, menu?.position)
-        assertEquals(menuFromDatabase?.associationId, UUID())
+        assertEquals(menuFromDatabase?.associationId, associationId)
         assertEquals(menuFromDatabase?.title, "title")
         assertEquals(menuFromDatabase?.url, "url")
         assertEquals(menuFromDatabase?.position, 42)

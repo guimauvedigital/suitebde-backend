@@ -16,12 +16,13 @@ class WebPagesDatabaseRepositoryTest {
     fun getWebPagesInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPagesInAssociation")
         val repository = WebPagesDatabaseRepository(database)
+        val associationId = UUID()
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
-            ), UUID()
+            ), associationId
         ) ?: fail("Unable to create page")
-        val pageFromDatabase = repository.list(UUID())
+        val pageFromDatabase = repository.list(associationId)
         assertEquals(1, pageFromDatabase.size)
         assertEquals(pageFromDatabase.first().id, page.id)
         assertEquals(pageFromDatabase.first().associationId, page.associationId)
@@ -35,12 +36,13 @@ class WebPagesDatabaseRepositoryTest {
     fun getWebPagesInAssociationLimitOffset() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPagesInAssociationLimitOffset")
         val repository = WebPagesDatabaseRepository(database)
+        val associationId = UUID()
         for (i in 1..4) repository.create(
             WebPagePayload(
                 "url", "title $i", "content", false
-            ), UUID()
+            ), associationId
         )
-        val pageFromDatabase = repository.list(Pagination(1, 2), UUID())
+        val pageFromDatabase = repository.list(Pagination(1, 2), associationId)
         assertEquals(1, pageFromDatabase.size)
     }
 
@@ -61,10 +63,11 @@ class WebPagesDatabaseRepositoryTest {
     fun createWebPage() = runBlocking {
         val database = Database(protocol = "h2", name = "createWebPage")
         val repository = WebPagesDatabaseRepository(database)
+        val associationId = UUID()
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
-            ), UUID()
+            ), associationId
         )
         val pageFromDatabase = database.suspendedTransaction {
             WebPages
@@ -78,7 +81,7 @@ class WebPagesDatabaseRepositoryTest {
         assertEquals(pageFromDatabase?.title, page?.title)
         assertEquals(pageFromDatabase?.content, page?.content)
         assertEquals(pageFromDatabase?.home, page?.home)
-        assertEquals(pageFromDatabase?.associationId, UUID())
+        assertEquals(pageFromDatabase?.associationId, associationId)
         assertEquals(pageFromDatabase?.url, "url")
         assertEquals(pageFromDatabase?.title, "title")
         assertEquals(pageFromDatabase?.content, "content")
@@ -89,12 +92,13 @@ class WebPagesDatabaseRepositoryTest {
     fun getWebPage() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPage")
         val repository = WebPagesDatabaseRepository(database)
+        val associationId = UUID()
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
-            ), UUID()
+            ), associationId
         ) ?: fail("Unable to create page")
-        val pageFromDatabase = repository.get(page.id, UUID())
+        val pageFromDatabase = repository.get(page.id, associationId)
         assertEquals(pageFromDatabase?.id, page.id)
         assertEquals(pageFromDatabase?.associationId, page.associationId)
         assertEquals(pageFromDatabase?.url, page.url)
@@ -126,12 +130,13 @@ class WebPagesDatabaseRepositoryTest {
     fun getWebPageByUrl() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPageByUrl")
         val repository = WebPagesDatabaseRepository(database)
+        val associationId = UUID()
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
-            ), UUID()
+            ), associationId
         ) ?: fail("Unable to create page")
-        val pageFromDatabase = repository.getByUrl(page.url, UUID())
+        val pageFromDatabase = repository.getByUrl(page.url, associationId)
         assertEquals(pageFromDatabase?.id, page.id)
         assertEquals(pageFromDatabase?.associationId, page.associationId)
         assertEquals(pageFromDatabase?.url, page.url)
@@ -163,12 +168,13 @@ class WebPagesDatabaseRepositoryTest {
     fun getWebPageHome() = runBlocking {
         val database = Database(protocol = "h2", name = "getWebPageHome")
         val repository = WebPagesDatabaseRepository(database)
+        val associationId = UUID()
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", true
-            ), UUID()
+            ), associationId
         ) ?: fail("Unable to create page")
-        val pageFromDatabase = repository.getHome(UUID())
+        val pageFromDatabase = repository.getHome(associationId)
         assertEquals(pageFromDatabase?.id, page.id)
         assertEquals(pageFromDatabase?.associationId, page.associationId)
         assertEquals(pageFromDatabase?.url, page.url)
@@ -200,10 +206,11 @@ class WebPagesDatabaseRepositoryTest {
     fun updateWebPage() = runBlocking {
         val database = Database(protocol = "h2", name = "updateWebPage")
         val repository = WebPagesDatabaseRepository(database)
+        val associationId = UUID()
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
-            ), UUID()
+            ), associationId
         ) ?: fail("Unable to create page")
         val updatedPage = page.copy(
             title = "title2",
@@ -211,7 +218,7 @@ class WebPagesDatabaseRepositoryTest {
             home = true
         )
         val payload = WebPagePayload("url", "title2", "content2", true)
-        assertEquals(true, repository.update(page.id, payload, UUID()))
+        assertEquals(true, repository.update(page.id, payload, associationId))
         val pageFromDatabase = database.suspendedTransaction {
             WebPages
                 .selectAll()
@@ -251,12 +258,13 @@ class WebPagesDatabaseRepositoryTest {
     fun deleteWebPage() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteWebPage")
         val repository = WebPagesDatabaseRepository(database)
+        val associationId = UUID()
         val page = repository.create(
             WebPagePayload(
                 "url", "title", "content", false
-            ), UUID()
+            ), associationId
         ) ?: fail("Unable to create page")
-        assertEquals(true, repository.delete(page.id, UUID()))
+        assertEquals(true, repository.delete(page.id, associationId))
         val count = database.suspendedTransaction {
             WebPages
                 .selectAll()

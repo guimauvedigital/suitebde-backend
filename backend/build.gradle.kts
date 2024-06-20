@@ -52,11 +52,10 @@ kotlin {
                 implementation(libs.sentry)
                 implementation(libs.gson)
                 implementation(libs.firebase.admin)
-
-                implementation("me.nathanfallet.cloudflare:cloudflare-api-client:4.3.2")
-                implementation("org.apache.commons:commons-email:1.5")
-                implementation("io.github.g0dkar:qrcode-kotlin:3.3.0")
-                implementation("com.stripe:stripe-java:24.17.0")
+                implementation(libs.cloudflare.client)
+                implementation(libs.apache.email)
+                implementation(libs.qrcode)
+                implementation(libs.stripe)
             }
         }
         val jvmTest by getting {

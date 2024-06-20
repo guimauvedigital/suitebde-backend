@@ -18,6 +18,7 @@ class UsersInRolesDatabaseRepositoryTest {
         val database = Database(protocol = "h2", name = "getUsersInRole")
         val repository = UsersInRolesDatabaseRepository(database)
         val usersRepository = UsersDatabaseRepository(database)
+        val roleId = UUID()
         val user = usersRepository.create(
             CreateUserPayload(
                 "email", "password",
@@ -28,9 +29,9 @@ class UsersInRolesDatabaseRepositoryTest {
         val userInRole = repository.create(
             CreateUserInRolePayload(
                 user.id
-            ), UUID()
+            ), roleId
         ) ?: fail("Unable to create user in role")
-        val userInRoleFromDatabase = repository.list(UUID())
+        val userInRoleFromDatabase = repository.list(roleId)
         assertEquals(1, userInRoleFromDatabase.size)
         assertEquals(userInRoleFromDatabase.first().userId, userInRole.userId)
         assertEquals(userInRoleFromDatabase.first().roleId, userInRole.roleId)
@@ -82,6 +83,7 @@ class UsersInRolesDatabaseRepositoryTest {
         val database = Database(protocol = "h2", name = "getUserInRole")
         val repository = UsersInRolesDatabaseRepository(database)
         val usersRepository = UsersDatabaseRepository(database)
+        val roleId = UUID()
         val user = usersRepository.create(
             CreateUserPayload(
                 "email", "password",
@@ -92,9 +94,9 @@ class UsersInRolesDatabaseRepositoryTest {
         val userInRole = repository.create(
             CreateUserInRolePayload(
                 user.id
-            ), UUID()
+            ), roleId
         ) ?: fail("Unable to create user in role")
-        val userInRoleFromDatabase = repository.get(user.id, UUID())
+        val userInRoleFromDatabase = repository.get(user.id, roleId)
         assertEquals(userInRoleFromDatabase?.userId, userInRole.userId)
         assertEquals(userInRoleFromDatabase?.roleId, userInRole.roleId)
     }
@@ -127,6 +129,7 @@ class UsersInRolesDatabaseRepositoryTest {
         val database = Database(protocol = "h2", name = "deleteUserInRole")
         val repository = UsersInRolesDatabaseRepository(database)
         val usersRepository = UsersDatabaseRepository(database)
+        val roleId = UUID()
         val user = usersRepository.create(
             CreateUserPayload(
                 "email", "password",
@@ -137,10 +140,10 @@ class UsersInRolesDatabaseRepositoryTest {
         repository.create(
             CreateUserInRolePayload(
                 user.id
-            ), UUID()
+            ), roleId
         ) ?: fail("Unable to create role")
-        assertEquals(true, repository.delete(user.id, UUID()))
-        val userInRoleFromDatabase = repository.get(user.id, UUID())
+        assertEquals(true, repository.delete(user.id, roleId))
+        val userInRoleFromDatabase = repository.get(user.id, roleId)
         assertEquals(userInRoleFromDatabase, null)
     }
 

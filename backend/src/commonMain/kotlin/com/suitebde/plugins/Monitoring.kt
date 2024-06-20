@@ -1,6 +1,6 @@
 package com.suitebde.plugins
 
-import dev.kaccelero.plugins.KtorHealth
+import dev.kaccelero.plugins.Health
 import dev.kaccelero.plugins.KtorSentry
 import io.ktor.server.application.*
 import io.ktor.server.plugins.callloging.*
@@ -12,7 +12,7 @@ fun Application.configureMonitoring() {
         level = Level.INFO
         filter { call -> call.request.path().startsWith("/") }
     }
-    install(KtorHealth)
+    install(Health)
 
     val env = environment.config.property("ktor.environment").getString().takeIf {
         it != "localhost" && it != "test"

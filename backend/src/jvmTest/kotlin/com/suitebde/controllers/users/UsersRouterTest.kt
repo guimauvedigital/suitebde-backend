@@ -36,11 +36,11 @@ import kotlin.test.assertEquals
 
 class UsersRouterTest {
 
-    private val user = User(
-        UUID(), UUID(), "email", null, "firstname", "lastname", false, Clock.System.now()
-    )
     private val association = Association(
         UUID(), "name", "school", "city", true, Clock.System.now(), Clock.System.now()
+    )
+    private val user = User(
+        UUID(), association.id, "email", null, "firstname", "lastname", false, Clock.System.now()
     )
 
     private fun installApp(application: ApplicationTestBuilder): HttpClient {
@@ -77,12 +77,12 @@ class UsersRouterTest {
             AssociationForCallRouter(mockk(), mockk()),
             AssociationsRouter(associationController, mockk(), mockk(), mockk(), mockk(), mockk()),
         )
-        coEvery { associationController.get(any(), UUID()) } returns association
+        coEvery { associationController.get(any(), association.id) } returns association
         coEvery { controller.list(any(), association, null, null, null) } returns listOf(user)
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/api/v1/associations/id/users")
+        val response = client.get("/api/v1/associations/${association.id}/users")
         assertEquals(HttpStatusCode.OK, response.status)
         assertEquals(listOf(user), response.body())
     }
@@ -102,12 +102,12 @@ class UsersRouterTest {
             AssociationForCallRouter(mockk(), mockk()),
             AssociationsRouter(associationController, mockk(), mockk(), mockk(), mockk(), mockk())
         )
-        coEvery { associationController.get(any(), UUID()) } returns association
+        coEvery { associationController.get(any(), association.id) } returns association
         coEvery { controller.listPermissions(any(), association, user.id) } returns listOf(Permission.USERS_VIEW)
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/api/v1/associations/id/users/userId/permissions")
+        val response = client.get("/api/v1/associations/${association.id}/users/${user.id}/permissions")
         assertEquals(HttpStatusCode.OK, response.status)
         assertEquals(listOf(Permission.USERS_VIEW), response.body())
     }
@@ -169,7 +169,7 @@ class UsersRouterTest {
             AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
-        coEvery { controller.get(any(), association, UUID()) } returns user
+        coEvery { controller.get(any(), association, user.id) } returns user
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { getAssociationForCallUseCase(any()) } returns association
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
@@ -178,7 +178,7 @@ class UsersRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/en/admin/users/id/update")
+        val response = client.get("/en/admin/users/${user.id}/update")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_update")?.`is`("h2"))

@@ -18,8 +18,8 @@ class GetWebPageByUrlUseCaseTest {
         val page = WebPage(
             UUID(), UUID(), "url", "title", "content", true
         )
-        coEvery { repository.getByUrl(page.url, UUID()) } returns page
-        assertEquals(page, useCase(page.url, UUID()))
+        coEvery { repository.getByUrl(page.url, page.associationId) } returns page
+        assertEquals(page, useCase(page.url, page.associationId))
     }
 
 }

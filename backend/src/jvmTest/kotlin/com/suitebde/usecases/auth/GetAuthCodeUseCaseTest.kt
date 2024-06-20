@@ -63,8 +63,9 @@ class GetAuthCodeUseCaseTest {
         val repository = mockk<IClientsInUsersRepository>()
         val getClientUseCase = mockk<IGetModelSuspendUseCase<Client, UUID>>()
         val useCase = GetAuthCodeUseCase(repository, getClientUseCase, mockk())
-        coEvery { repository.get("code") } returns ClientInUser("code", UUID(), UUID(), tomorrow)
-        coEvery { getClientUseCase(UUID()) } returns null
+        val client = ClientInUser("code", UUID(), UUID(), tomorrow)
+        coEvery { repository.get(client.code) } returns client
+        coEvery { getClientUseCase(client.clientId) } returns null
         assertEquals(null, useCase("code"))
     }
 
@@ -78,7 +79,9 @@ class GetAuthCodeUseCaseTest {
             Client(UUID(), UUID(), "name", "description", "secret", "redirect"),
             User(UUID(), UUID(), "email", "password", "firstName", "lastName", false, Clock.System.now())
         )
-        coEvery { repository.get("code") } returns ClientInUser("code", UUID(), UUID(), tomorrow)
+        coEvery { repository.get("code") } returns ClientInUser(
+            "code", clientForUser.user.id, clientForUser.client.id, tomorrow
+        )
         coEvery { getClientUseCase(clientForUser.client.id) } returns clientForUser.client
         coEvery { getUserUseCase(clientForUser.user.id) } returns null
         assertEquals(null, useCase("code"))

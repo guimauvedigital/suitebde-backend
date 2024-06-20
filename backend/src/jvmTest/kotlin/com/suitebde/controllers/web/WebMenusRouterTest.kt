@@ -40,11 +40,11 @@ class WebMenusRouterTest {
         UUID(), "name", "school", "city", true, Clock.System.now(), Clock.System.now()
     )
     private val user = User(
-        UUID(), UUID(), "email", null,
+        UUID(), association.id, "email", null,
         "firstname", "lastname", false, Clock.System.now()
     )
     private val menu = WebMenu(
-        UUID(), UUID(), "title", "url", 1
+        UUID(), association.id, "title", "url", 1
     )
 
     private fun installApp(application: ApplicationTestBuilder): HttpClient {
@@ -81,12 +81,12 @@ class WebMenusRouterTest {
             AssociationForCallRouter(mockk(), mockk()),
             AssociationsRouter(associationController, mockk(), mockk(), mockk(), mockk(), mockk())
         )
-        coEvery { associationController.get(any(), UUID()) } returns association
+        coEvery { associationController.get(any(), association.id) } returns association
         coEvery { controller.list(any(), association, null, null) } returns listOf(menu)
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/api/v1/associations/id/webmenus")
+        val response = client.get("/api/v1/associations/${association.id}/webmenus")
         assertEquals(HttpStatusCode.OK, response.status)
         assertEquals(listOf(menu), response.body())
     }
@@ -148,7 +148,7 @@ class WebMenusRouterTest {
             AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
-        coEvery { controller.get(any(), association, UUID()) } returns menu
+        coEvery { controller.get(any(), association, menu.id) } returns menu
         coEvery { requireUserForCallUseCase(any()) } returns user
         coEvery { getAssociationForCallUseCase(any()) } returns association
         coEvery { getAdminMenuForCallUseCase(any()) } returns listOf()
@@ -157,7 +157,7 @@ class WebMenusRouterTest {
         routing {
             router.createRoutes(this)
         }
-        val response = client.get("/en/admin/webmenus/id/update")
+        val response = client.get("/en/admin/webmenus/${menu.id}/update")
         assertEquals(HttpStatusCode.OK, response.status)
         val document = Jsoup.parse(response.bodyAsText())
         assertEquals(true, document.getElementById("admin_update")?.`is`("h2"))

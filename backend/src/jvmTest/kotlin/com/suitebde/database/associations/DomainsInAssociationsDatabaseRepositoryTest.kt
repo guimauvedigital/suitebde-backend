@@ -18,7 +18,8 @@ class DomainsInAssociationsDatabaseRepositoryTest {
     fun createDomain() = runBlocking {
         val database = Database(protocol = "h2", name = "createDomain")
         val repository = DomainsInAssociationsDatabaseRepository(database)
-        val domain = repository.create(CreateDomainInAssociationPayload("domain"), UUID())
+        val associationId = UUID()
+        val domain = repository.create(CreateDomainInAssociationPayload("domain"), associationId)
         val domainFromDatabase = database.suspendedTransaction {
             DomainsInAssociations
                 .selectAll()
@@ -28,16 +29,17 @@ class DomainsInAssociationsDatabaseRepositoryTest {
         assertEquals(domainFromDatabase?.domain, domain?.domain)
         assertEquals(domainFromDatabase?.associationId, domain?.associationId)
         assertEquals(domainFromDatabase?.domain, "domain")
-        assertEquals(domainFromDatabase?.associationId, UUID())
+        assertEquals(domainFromDatabase?.associationId, associationId)
     }
 
     @Test
     fun createDomainAlreadyExists(): Unit = runBlocking {
         val database = Database(protocol = "h2", name = "createDomainAlreadyExists")
         val repository = DomainsInAssociationsDatabaseRepository(database)
-        repository.create(CreateDomainInAssociationPayload("domain"), UUID())
+        val associationId = UUID()
+        repository.create(CreateDomainInAssociationPayload("domain"), associationId)
         assertFailsWith(ExposedSQLException::class) {
-            repository.create(CreateDomainInAssociationPayload("domain"), UUID())
+            repository.create(CreateDomainInAssociationPayload("domain"), associationId)
         }
     }
 
@@ -45,9 +47,10 @@ class DomainsInAssociationsDatabaseRepositoryTest {
     fun deleteDomain() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteDomain")
         val repository = DomainsInAssociationsDatabaseRepository(database)
-        repository.create(CreateDomainInAssociationPayload("domain"), UUID())
+        val associationId = UUID()
+        repository.create(CreateDomainInAssociationPayload("domain"), associationId)
             ?: fail("Unable to create domain")
-        assertEquals(true, repository.delete("domain", UUID()))
+        assertEquals(true, repository.delete("domain", associationId))
         val count = database.suspendedTransaction {
             DomainsInAssociations
                 .selectAll()
@@ -76,9 +79,10 @@ class DomainsInAssociationsDatabaseRepositoryTest {
     fun getDomains() = runBlocking {
         val database = Database(protocol = "h2", name = "getDomains")
         val repository = DomainsInAssociationsDatabaseRepository(database)
-        val domain = repository.create(CreateDomainInAssociationPayload("domain"), UUID())
+        val associationId = UUID()
+        val domain = repository.create(CreateDomainInAssociationPayload("domain"), associationId)
             ?: fail("Unable to create domain")
-        val domains = repository.list(UUID())
+        val domains = repository.list(associationId)
         assertEquals(domains.size, 1)
         assertEquals(domains.first().domain, domain.domain)
     }
@@ -87,8 +91,9 @@ class DomainsInAssociationsDatabaseRepositoryTest {
     fun getDomainsLimitOffset() = runBlocking {
         val database = Database(protocol = "h2", name = "getDomainsLimitOffset")
         val repository = DomainsInAssociationsDatabaseRepository(database)
-        for (i in 1..4) repository.create(CreateDomainInAssociationPayload("domain $i"), UUID())
-        val domains = repository.list(Pagination(1, 2), UUID())
+        val associationId = UUID()
+        for (i in 1..4) repository.create(CreateDomainInAssociationPayload("domain $i"), associationId)
+        val domains = repository.list(Pagination(1, 2), associationId)
         assertEquals(domains.size, 1)
         assertEquals(domains.first().domain, "domain 3")
     }
@@ -107,9 +112,10 @@ class DomainsInAssociationsDatabaseRepositoryTest {
     fun getDomain() = runBlocking {
         val database = Database(protocol = "h2", name = "getDomain")
         val repository = DomainsInAssociationsDatabaseRepository(database)
-        val domain = repository.create(CreateDomainInAssociationPayload("domain"), UUID())
+        val associationId = UUID()
+        val domain = repository.create(CreateDomainInAssociationPayload("domain"), associationId)
             ?: fail("Unable to create domain")
-        val domainFromDatabase = repository.get("domain", UUID())
+        val domainFromDatabase = repository.get("domain", associationId)
         assertEquals(domain.domain, domainFromDatabase?.domain)
         assertEquals(domain.associationId, domainFromDatabase?.associationId)
     }

@@ -16,12 +16,13 @@ class RolesDatabaseRepositoryTest {
     fun getRolesInAssociation() = runBlocking {
         val database = Database(protocol = "h2", name = "getRolesInAssociation")
         val repository = RolesDatabaseRepository(database)
+        val associationId = UUID()
         val role = repository.create(
             CreateRolePayload(
                 "name"
-            ), UUID()
+            ), associationId
         ) ?: fail("Unable to create role")
-        val roleFromDatabase = repository.list(UUID())
+        val roleFromDatabase = repository.list(associationId)
         assertEquals(1, roleFromDatabase.size)
         assertEquals(roleFromDatabase.first().id, role.id)
         assertEquals(roleFromDatabase.first().associationId, role.associationId)
@@ -62,12 +63,13 @@ class RolesDatabaseRepositoryTest {
     fun getRole() = runBlocking {
         val database = Database(protocol = "h2", name = "getRole")
         val repository = RolesDatabaseRepository(database)
+        val associationId = UUID()
         val role = repository.create(
             CreateRolePayload(
                 "name"
-            ), UUID()
+            ), associationId
         ) ?: fail("Unable to create role")
-        val roleFromDatabase = repository.get(role.id, UUID())
+        val roleFromDatabase = repository.get(role.id, associationId)
         assertEquals(roleFromDatabase?.id, role.id)
         assertEquals(roleFromDatabase?.associationId, role.associationId)
         assertEquals(roleFromDatabase?.name, role.name)
@@ -98,14 +100,15 @@ class RolesDatabaseRepositoryTest {
     fun updateRole() = runBlocking {
         val database = Database(protocol = "h2", name = "updateRole")
         val repository = RolesDatabaseRepository(database)
+        val associationId = UUID()
         val role = repository.create(
             CreateRolePayload(
                 "name"
-            ), UUID()
+            ), associationId
         ) ?: fail("Unable to create role")
         val payload = UpdateRolePayload("newName")
-        assertEquals(true, repository.update(role.id, payload, UUID()))
-        val roleFromDatabase = repository.get(role.id, UUID())
+        assertEquals(true, repository.update(role.id, payload, associationId))
+        val roleFromDatabase = repository.get(role.id, associationId)
         assertEquals(roleFromDatabase?.name, "newName")
     }
 
@@ -134,13 +137,14 @@ class RolesDatabaseRepositoryTest {
     fun deleteRole() = runBlocking {
         val database = Database(protocol = "h2", name = "deleteRole")
         val repository = RolesDatabaseRepository(database)
+        val associationId = UUID()
         val role = repository.create(
             CreateRolePayload(
                 "name"
-            ), UUID()
+            ), associationId
         ) ?: fail("Unable to create role")
-        assertEquals(true, repository.delete(role.id, UUID()))
-        val roleFromDatabase = repository.get(role.id, UUID())
+        assertEquals(true, repository.delete(role.id, associationId))
+        val roleFromDatabase = repository.get(role.id, associationId)
         assertEquals(roleFromDatabase, null)
     }
 

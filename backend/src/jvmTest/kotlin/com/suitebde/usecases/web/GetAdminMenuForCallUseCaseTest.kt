@@ -32,7 +32,7 @@ class GetAdminMenuForCallUseCaseTest {
         true, Clock.System.now(), Clock.System.now()
     )
     private val user = User(
-        UUID(), UUID(), "email", "password",
+        UUID(), association.id, "email", "password",
         "firstname", "lastname", false, Clock.System.now()
     )
 
@@ -72,62 +72,62 @@ class GetAdminMenuForCallUseCaseTest {
         assertEquals(
             listOf(
                 WebMenu(
-                    UUID(),
-                    UUID(),
+                    UUID(java.util.UUID.nameUUIDFromBytes("dashboard".toByteArray())),
+                    association.id,
                     "t:admin_menu_dashboard",
                     "/admin"
                 ),
                 WebMenu(
-                    UUID(),
-                    UUID(),
+                    UUID(java.util.UUID.nameUUIDFromBytes("files".toByteArray())),
+                    association.id,
                     "t:admin_menu_files",
                     "/admin/files"
                 ),
                 WebMenu(
-                    UUID(),
-                    UUID(),
+                    UUID(java.util.UUID.nameUUIDFromBytes("subscriptions".toByteArray())),
+                    association.id,
                     "t:admin_menu_subscriptions",
                     "/admin/subscriptions"
                 ),
                 WebMenu(
-                    UUID(),
-                    UUID(),
+                    UUID(java.util.UUID.nameUUIDFromBytes("users".toByteArray())),
+                    association.id,
                     "t:admin_menu_users",
                     "/admin/users"
                 ),
                 WebMenu(
-                    UUID(),
-                    UUID(),
+                    UUID(java.util.UUID.nameUUIDFromBytes("roles".toByteArray())),
+                    association.id,
                     "t:admin_menu_roles",
                     "/admin/roles"
                 ),
                 WebMenu(
-                    UUID(),
-                    UUID(),
+                    UUID(java.util.UUID.nameUUIDFromBytes("webpages".toByteArray())),
+                    association.id,
                     "t:admin_menu_webpages",
                     "/admin/webpages"
                 ),
                 WebMenu(
-                    UUID(),
-                    UUID(),
+                    UUID(java.util.UUID.nameUUIDFromBytes("webmenus".toByteArray())),
+                    association.id,
                     "t:admin_menu_webmenus",
                     "/admin/webmenus"
                 ),
                 WebMenu(
-                    UUID(),
-                    UUID(),
+                    UUID(java.util.UUID.nameUUIDFromBytes("events".toByteArray())),
+                    association.id,
                     "t:admin_menu_events",
                     "/admin/events"
                 ),
                 WebMenu(
-                    UUID(),
-                    UUID(),
+                    UUID(java.util.UUID.nameUUIDFromBytes("clubs".toByteArray())),
+                    association.id,
                     "t:admin_menu_clubs",
                     "/admin/clubs"
                 ),
                 WebMenu(
-                    UUID(),
-                    UUID(),
+                    UUID(java.util.UUID.nameUUIDFromBytes("notifications".toByteArray())),
+                    association.id,
                     "t:admin_menu_notifications",
                     "/admin/notifications"
                 )
@@ -172,8 +172,8 @@ class GetAdminMenuForCallUseCaseTest {
         assertEquals(
             listOf(
                 WebMenu(
-                    UUID(),
-                    UUID(),
+                    UUID(java.util.UUID.nameUUIDFromBytes("dashboard".toByteArray())),
+                    association.id,
                     "t:admin_menu_dashboard",
                     "/admin"
                 )
@@ -246,8 +246,8 @@ class GetAdminMenuForCallUseCaseTest {
         assertEquals(
             listOf(
                 WebMenu(
-                    UUID(),
-                    UUID(),
+                    UUID(java.util.UUID.nameUUIDFromBytes("associations".toByteArray())),
+                    AdminPermission.adminAssociationId,
                     "t:admin_menu_associations",
                     "/admin/associations"
                 )

@@ -21,7 +21,7 @@ class RootControllerTest {
         true, Clock.System.now(), Clock.System.now()
     )
     private val homePage = WebPage(
-        UUID(), UUID(), "home", "home", "content", true
+        UUID(), association.id, "home", "home", "content", true
     )
 
     @Test
