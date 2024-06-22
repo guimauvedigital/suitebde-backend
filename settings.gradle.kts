@@ -21,28 +21,22 @@ dependencyResolutionManagement {
             plugin("maven", "com.vanniktech.maven.publish").version("0.28.0")
 
             // Kaccelero
-            version("kaccelero", "0.1.1")
-            library("kaccelero-ktor-client", "dev.kaccelero", "ktor-routers-client").versionRef("kaccelero")
-            library("kaccelero-ktor-auth", "dev.kaccelero", "ktor-auth").versionRef("kaccelero")
-            library("kaccelero-ktor-auth-apple", "dev.kaccelero", "ktor-auth-apple").versionRef("kaccelero")
-            library("kaccelero-ktor-database", "dev.kaccelero", "ktor-database-sessions").versionRef("kaccelero")
-            library("kaccelero-ktor-health", "dev.kaccelero", "ktor-health").versionRef("kaccelero")
-            library("kaccelero-ktor-i18n-freemarker", "dev.kaccelero", "ktor-i18n-freemarker").versionRef("kaccelero")
-            library("kaccelero-ktor-routers", "dev.kaccelero", "ktor-routers").versionRef("kaccelero")
-            library("kaccelero-ktor-routers-locale", "dev.kaccelero", "ktor-routers-locale").versionRef("kaccelero")
-            library("kaccelero-ktor-sentry", "dev.kaccelero", "ktor-sentry").versionRef("kaccelero")
+            version("kaccelero", "0.2.0")
+            library("kaccelero-routers-client", "dev.kaccelero", "routers-client-ktor").versionRef("kaccelero")
+            library("kaccelero-routers", "dev.kaccelero", "routers-ktor").versionRef("kaccelero")
+            library("kaccelero-i18n-freemarker", "dev.kaccelero", "i18n-ktor-freemarker").versionRef("kaccelero")
+            library("kaccelero-auth", "dev.kaccelero", "auth").versionRef("kaccelero")
+            library("kaccelero-database-sessions", "dev.kaccelero", "database-ktor-sessions").versionRef("kaccelero")
+            library("kaccelero-health-sentry", "dev.kaccelero", "health-sentry-ktor").versionRef("kaccelero")
             bundle(
                 "kaccelero-ktor",
                 listOf(
-                    "kaccelero-ktor-client",
-                    "kaccelero-ktor-auth",
-                    "kaccelero-ktor-auth-apple",
-                    "kaccelero-ktor-database",
-                    "kaccelero-ktor-health",
-                    "kaccelero-ktor-i18n-freemarker",
-                    "kaccelero-ktor-routers",
-                    "kaccelero-ktor-routers-locale",
-                    "kaccelero-ktor-sentry"
+                    "kaccelero-routers-client",
+                    "kaccelero-routers",
+                    "kaccelero-i18n-freemarker",
+                    "kaccelero-auth",
+                    "kaccelero-database-sessions",
+                    "kaccelero-health-sentry",
                 )
             )
 
@@ -122,7 +116,7 @@ dependencyResolutionManagement {
             library("firebase-admin", "com.google.firebase:firebase-admin:9.2.0")
             library("mysql", "com.mysql:mysql-connector-j:8.0.33")
             library("sentry", "io.sentry:sentry:7.9.0")
-            library("cloudflare-client", "me.nathanfallet.cloudflare:cloudflare-api-client:4.4.0")
+            library("cloudflare-client", "me.nathanfallet.cloudflare:cloudflare-api-client:4.4.1")
             library("apache-email", "org.apache.commons:commons-email:1.6.0")
             library("qrcode", "io.github.g0dkar:qrcode-kotlin:4.2.0")
             library("stripe", "com.stripe:stripe-java:25.13.0")

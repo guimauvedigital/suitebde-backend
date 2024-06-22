@@ -79,7 +79,7 @@ kotlin {
     sourceSets {
         val commonMain by getting {
             dependencies {
-                api(libs.kaccelero.ktor.client)
+                api(libs.kaccelero.routers.client)
             }
         }
         val jvmTest by getting {
