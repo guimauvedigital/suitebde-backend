@@ -156,7 +156,7 @@ class AuthControllerTest {
             sendEmailUseCase(
                 Email(
                     "t:auth_register_email_title",
-                    "t:auth_register_email_body:[code]"
+                    "t:auth_register_email_body:[https://suitebde.com/auth/register/code]"
                 ),
                 listOf("email")
             )
