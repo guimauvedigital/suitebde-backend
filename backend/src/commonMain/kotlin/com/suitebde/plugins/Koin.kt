@@ -531,13 +531,13 @@ fun Application.configureKoin() {
             single<IListChildModelSuspendUseCase<PermissionInRole, UUID>>(named<PermissionInRole>()) {
                 ListChildModelFromRepositorySuspendUseCase(get<IPermissionsInRolesRepository>())
             }
-            single<IGetChildModelSuspendUseCase<PermissionInRole, String, UUID>>(named<PermissionInRole>()) {
+            single<IGetChildModelSuspendUseCase<PermissionInRole, Permission, UUID>>(named<PermissionInRole>()) {
                 GetChildModelFromRepositorySuspendUseCase(get<IPermissionsInRolesRepository>())
             }
             single<ICreateChildModelSuspendUseCase<PermissionInRole, CreatePermissionInRolePayload, UUID>>(named<PermissionInRole>()) {
                 CreateChildModelFromRepositorySuspendUseCase(get<IPermissionsInRolesRepository>())
             }
-            single<IDeleteChildModelSuspendUseCase<PermissionInRole, String, UUID>>(named<PermissionInRole>()) {
+            single<IDeleteChildModelSuspendUseCase<PermissionInRole, Permission, UUID>>(named<PermissionInRole>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get<IPermissionsInRolesRepository>())
             }
 

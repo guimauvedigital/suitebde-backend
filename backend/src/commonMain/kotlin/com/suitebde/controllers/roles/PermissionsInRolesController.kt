@@ -25,8 +25,8 @@ class PermissionsInRolesController(
     private val checkPermissionUseCase: ICheckPermissionSuspendUseCase,
     private val getPermissionsInRolesUseCase: IListChildModelSuspendUseCase<PermissionInRole, UUID>,
     private val createPermissionInRolesUseCase: ICreateChildModelSuspendUseCase<PermissionInRole, CreatePermissionInRolePayload, UUID>,
-    private val getPermissionInRoleUseCase: IGetChildModelSuspendUseCase<PermissionInRole, String, UUID>,
-    private val deletePermissionInRoleUseCase: IDeleteChildModelSuspendUseCase<PermissionInRole, String, UUID>,
+    private val getPermissionInRoleUseCase: IGetChildModelSuspendUseCase<PermissionInRole, Permission, UUID>,
+    private val deletePermissionInRoleUseCase: IDeleteChildModelSuspendUseCase<PermissionInRole, Permission, UUID>,
 ) : IPermissionsInRolesController {
 
     override suspend fun create(
@@ -44,7 +44,7 @@ class PermissionsInRolesController(
         )
     }
 
-    override suspend fun delete(call: ApplicationCall, parent: Role, id: String) {
+    override suspend fun delete(call: ApplicationCall, parent: Role, id: Permission) {
         requireUserForCallUseCase(call).takeIf {
             checkPermissionUseCase(it, Permission.ROLES_PERMISSIONS inAssociation parent.associationId)
         } ?: throw ControllerException(
@@ -58,7 +58,7 @@ class PermissionsInRolesController(
         )
     }
 
-    override suspend fun get(call: ApplicationCall, parent: Role, id: String): PermissionInRole {
+    override suspend fun get(call: ApplicationCall, parent: Role, id: Permission): PermissionInRole {
         return getPermissionInRoleUseCase(id, parent.id) ?: throw ControllerException(
             HttpStatusCode.NotFound, "permissions_in_roles_not_found"
         )

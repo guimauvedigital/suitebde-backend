@@ -21,7 +21,7 @@ class PermissionsInRolesRouter(
     requireUserForCallUseCase: IRequireUserForCallUseCase,
     getAssociationForCallUseCase: IGetAssociationForCallUseCase,
     getAdminMenuForCallUseCase: IGetAdminMenuForCallUseCase,
-) : ConcatChildModelRouter<PermissionInRole, String, CreatePermissionInRolePayload, Unit, Role, UUID>(
+) : ConcatChildModelRouter<PermissionInRole, Permission, CreatePermissionInRolePayload, Unit, Role, UUID>(
     APIChildModelRouter(
         typeInfo<PermissionInRole>(),
         typeInfo<CreatePermissionInRolePayload>(),

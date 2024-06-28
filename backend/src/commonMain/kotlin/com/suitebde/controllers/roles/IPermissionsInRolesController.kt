@@ -1,6 +1,7 @@
 package com.suitebde.controllers.roles
 
 import com.suitebde.models.roles.CreatePermissionInRolePayload
+import com.suitebde.models.roles.Permission
 import com.suitebde.models.roles.PermissionInRole
 import com.suitebde.models.roles.Role
 import dev.kaccelero.annotations.*
@@ -10,7 +11,7 @@ import dev.kaccelero.models.UUID
 import io.ktor.server.application.*
 
 interface IPermissionsInRolesController :
-    IChildModelController<PermissionInRole, String, CreatePermissionInRolePayload, Unit, Role, UUID> {
+    IChildModelController<PermissionInRole, Permission, CreatePermissionInRolePayload, Unit, Role, UUID> {
 
     @APIMapping
     @AdminTemplateMapping
@@ -32,10 +33,10 @@ interface IPermissionsInRolesController :
     @DocumentedError(403, "permissions_in_roles_not_allowed")
     @DocumentedError(404, "permissions_in_roles_not_found")
     @DocumentedError(500, "error_internal")
-    suspend fun delete(call: ApplicationCall, @ParentModel parent: Role, @Id id: String)
+    suspend fun delete(call: ApplicationCall, @ParentModel parent: Role, @Id id: Permission)
 
     @GetModelPath
-    suspend fun get(call: ApplicationCall, @ParentModel parent: Role, @Id id: String): PermissionInRole
+    suspend fun get(call: ApplicationCall, @ParentModel parent: Role, @Id id: Permission): PermissionInRole
 
     @APIMapping
     @ListModelPath

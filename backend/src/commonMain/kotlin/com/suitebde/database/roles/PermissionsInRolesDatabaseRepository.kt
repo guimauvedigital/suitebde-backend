@@ -1,6 +1,7 @@
 package com.suitebde.database.roles
 
 import com.suitebde.models.roles.CreatePermissionInRolePayload
+import com.suitebde.models.roles.Permission
 import com.suitebde.models.roles.PermissionInRole
 import com.suitebde.repositories.roles.IPermissionsInRolesRepository
 import dev.kaccelero.database.IDatabase
@@ -49,11 +50,11 @@ class PermissionsInRolesDatabaseRepository(
         database.suspendedTransaction {
             PermissionsInRoles.insert {
                 it[roleId] = parentId
-                it[permission] = payload.permission.name
+                it[permission] = payload.permission
             }.resultedValues?.map(PermissionsInRoles::toPermissionInRole)?.singleOrNull()
         }
 
-    override suspend fun delete(id: String, parentId: UUID, context: IContext?): Boolean =
+    override suspend fun delete(id: Permission, parentId: UUID, context: IContext?): Boolean =
         database.suspendedTransaction {
             PermissionsInRoles.deleteWhere { roleId eq parentId and (permission eq id) } == 1
         }

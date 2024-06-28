@@ -9,7 +9,7 @@ import org.jetbrains.exposed.sql.Table
 object PermissionsInRoles : Table() {
 
     val roleId = uuid("role_id").index()
-    val permission = varchar("permission", 255)
+    val permission = enumerationByName("permission", 255, Permission::class)
 
     override val primaryKey = PrimaryKey(arrayOf(roleId, permission))
 
@@ -17,7 +17,7 @@ object PermissionsInRoles : Table() {
         row: ResultRow,
     ) = PermissionInRole(
         UUID(row[roleId]),
-        Permission.valueOf(row[permission]),
+        row[permission],
     )
 
 }

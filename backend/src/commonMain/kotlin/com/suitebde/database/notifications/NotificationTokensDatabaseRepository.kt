@@ -42,7 +42,7 @@ class NotificationTokensDatabaseRepository(
                 .join(UsersInRoles, JoinType.LEFT, NotificationTokens.userId, UsersInRoles.userId)
                 .join(PermissionsInRoles, JoinType.LEFT, UsersInRoles.roleId, PermissionsInRoles.roleId)
                 .selectAll()
-                .where { PermissionsInRoles.permission eq permission.name or Users.superuser }
+                .where { PermissionsInRoles.permission eq permission or Users.superuser }
                 .groupBy(NotificationTokens.token)
                 .map(NotificationTokens::toNotificationToken)
         }

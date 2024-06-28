@@ -3,6 +3,7 @@ package com.suitebde.repositories.roles
 import com.suitebde.client.ISuiteBDEClient
 import com.suitebde.models.associations.Association
 import com.suitebde.models.roles.CreatePermissionInRolePayload
+import com.suitebde.models.roles.Permission
 import com.suitebde.models.roles.PermissionInRole
 import com.suitebde.models.roles.Role
 import dev.kaccelero.models.RecursiveId
@@ -15,7 +16,7 @@ import io.ktor.util.reflect.*
 class PermissionsInRolesRemoteRepository(
     client: ISuiteBDEClient,
     parentRepository: IAPIChildModelRemoteRepository<Role, UUID, *, *, *>,
-) : APIChildModelRemoteRepository<PermissionInRole, String, CreatePermissionInRolePayload, Unit, UUID>(
+) : APIChildModelRemoteRepository<PermissionInRole, Permission, CreatePermissionInRolePayload, Unit, UUID>(
     typeInfo<PermissionInRole>(),
     typeInfo<CreatePermissionInRolePayload>(),
     typeInfo<Unit>(),
@@ -48,7 +49,7 @@ class PermissionsInRolesRemoteRepository(
             null
         )
 
-    override suspend fun delete(permission: String, roleId: UUID, associationId: UUID): Boolean =
+    override suspend fun delete(permission: Permission, roleId: UUID, associationId: UUID): Boolean =
         delete(
             permission,
             RecursiveId<Role, UUID, UUID>(roleId, RecursiveId<Association, UUID, Unit>(associationId)),
