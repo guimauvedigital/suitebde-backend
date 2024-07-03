@@ -19,7 +19,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <#list items as file>
+                            <#list item as file>
                                 <tr>
                                     <td class="font-weight-bold">
                                         <span class="my-2 text-xs"><a href="https://cdn.suitebde.com/${file.key}">https://cdn.suitebde.com/${file.key}</a></span>
