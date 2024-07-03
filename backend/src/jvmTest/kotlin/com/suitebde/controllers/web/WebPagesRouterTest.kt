@@ -195,7 +195,9 @@ class WebPagesRouterTest {
         )
         coEvery { requireAssociationForCallUseCase(any()) } returns association
         coEvery { getUserForCallUseCase(any()) } returns user
-        coEvery { controller.getByUrl(any(), association, page.url) } returns page
+        coEvery { controller.getByUrl(any(), association, page.url) } returns mapOf(
+            "item" to page, "content" to "markdown"
+        )
         coEvery { getPublicMenuForCallUseCase(any()) } returns listOf()
         every { getLocaleForCallUseCase(any()) } returns Locale.ENGLISH
         every { translateUseCase(any(), any()) } answers { "t:${secondArg<String>()}" }

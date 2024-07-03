@@ -12,7 +12,7 @@ data class WebPagePayload(
     @PayloadProperty("string")
     @Schema("Title of the page", "Accueil")
     val title: String,
-    @PayloadProperty("string")
+    @PayloadProperty("markdown")
     @Schema("Content of the page", "...")
     val content: String,
     @PayloadProperty("boolean")
