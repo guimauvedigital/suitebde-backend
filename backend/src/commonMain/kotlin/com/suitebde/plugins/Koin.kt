@@ -585,6 +585,7 @@ fun Application.configureKoin() {
             single<IDeleteChildModelSuspendUseCase<WebMenu, UUID, UUID>>(named<WebMenu>()) {
                 DeleteChildModelFromRepositorySuspendUseCase(get<IWebMenusRepository>())
             }
+            single<IRenderMarkdownUseCase> { RenderMarkdownUseCase() }
 
             // Events
             single<IListChildModelSuspendUseCase<Event, UUID>>(named<Event>()) {
@@ -846,7 +847,8 @@ fun Application.configureKoin() {
                     get(named<WebPage>()),
                     get(named<WebPage>()),
                     get(named<WebPage>()),
-                    get(named<WebPage>())
+                    get(named<WebPage>()),
+                    get()
                 )
             }
             single<IWebMenusController> {

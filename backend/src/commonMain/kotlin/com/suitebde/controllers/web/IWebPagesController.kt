@@ -29,7 +29,11 @@ interface IWebPagesController :
 
     @TemplateMapping("public/web/page.ftl")
     @Path("GET", "/{url}")
-    suspend fun getByUrl(call: ApplicationCall, @ParentModel parent: Association, @PathParameter url: String): WebPage
+    suspend fun getByUrl(
+        call: ApplicationCall,
+        @ParentModel parent: Association,
+        @PathParameter url: String,
+    ): Map<String, Any>
 
     @APIMapping
     @AdminTemplateMapping

@@ -5,6 +5,7 @@ import com.suitebde.models.roles.Permission
 import com.suitebde.models.web.WebPage
 import com.suitebde.models.web.WebPagePayload
 import com.suitebde.usecases.web.IGetWebPageByUrlUseCase
+import com.suitebde.usecases.web.IRenderMarkdownUseCase
 import dev.kaccelero.commons.exceptions.ControllerException
 import dev.kaccelero.commons.permissions.ICheckPermissionSuspendUseCase
 import dev.kaccelero.commons.repositories.*
@@ -25,6 +26,7 @@ class WebPagesController(
     private val createWebPageUseCase: ICreateChildModelSuspendUseCase<WebPage, WebPagePayload, UUID>,
     private val updateWebPageUseCase: IUpdateChildModelSuspendUseCase<WebPage, UUID, WebPagePayload, UUID>,
     private val deleteWebPageUseCase: IDeleteChildModelSuspendUseCase<WebPage, UUID, UUID>,
+    private val renderMarkdownUseCase: IRenderMarkdownUseCase,
 ) : IWebPagesController {
 
     override suspend fun list(call: ApplicationCall, parent: Association, limit: Long?, offset: Long?): List<WebPage> {
@@ -44,9 +46,13 @@ class WebPagesController(
         )
     }
 
-    override suspend fun getByUrl(call: ApplicationCall, parent: Association, url: String): WebPage {
-        return getWebPageByUrlUseCase(url, parent.id) ?: throw ControllerException(
+    override suspend fun getByUrl(call: ApplicationCall, parent: Association, url: String): Map<String, Any> {
+        val page = getWebPageByUrlUseCase(url, parent.id) ?: throw ControllerException(
             HttpStatusCode.NotFound, "webpages_not_found"
+        )
+        return mapOf(
+            "item" to page,
+            "content" to renderMarkdownUseCase(page.content)
         )
     }
 
