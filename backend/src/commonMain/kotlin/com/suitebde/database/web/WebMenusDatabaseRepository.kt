@@ -27,6 +27,7 @@ class WebMenusDatabaseRepository(
             WebMenus
                 .selectAll()
                 .where { WebMenus.associationId eq parentId }
+                .orderBy(WebMenus.position)
                 .map(WebMenus::toWebMenu)
         }
 
@@ -35,6 +36,7 @@ class WebMenusDatabaseRepository(
             WebMenus
                 .selectAll()
                 .where { WebMenus.associationId eq parentId }
+                .orderBy(WebMenus.position)
                 .limit(pagination.limit.toInt(), pagination.offset)
                 .map(WebMenus::toWebMenu)
         }
