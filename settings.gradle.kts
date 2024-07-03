@@ -119,7 +119,7 @@ dependencyResolutionManagement {
             library("cloudflare-client", "me.nathanfallet.cloudflare:cloudflare-api-client:4.4.1")
             library("apache-email", "org.apache.commons:commons-email:1.6.0")
             library("qrcode", "io.github.g0dkar:qrcode-kotlin:4.2.0")
-            library("stripe", "com.stripe:stripe-java:25.13.0")
+            library("stripe", "com.stripe:stripe-java:26.1.0")
         }
     }
 }
