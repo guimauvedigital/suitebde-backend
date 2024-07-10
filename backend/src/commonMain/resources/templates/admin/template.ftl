@@ -131,7 +131,7 @@
                        class="flex items-center justify-center rounded-md bg-black p-2 text-white hover:bg-opacity-95 mb-3">
                         App Store
                     </a>
-                    <a href="https://play.google.com/store/apps/details?id=com.suitebde"
+                    <a href="https://play.google.com/store/apps/details?id=me.nathanfallet.suitebde"
                        class="flex items-center justify-center rounded-md bg-black p-2 text-white hover:bg-opacity-95 mb-3">
                         Play Store
                     </a>
