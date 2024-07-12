@@ -58,7 +58,7 @@ class AuthControllerTest {
         )
         coEvery { loginUseCase(loginPayload) } returns user
         every { setSessionForCallUseCase(call, sessionPayload) } returns Unit
-        assertEquals(RedirectResponse("/"), controller.login(call, loginPayload, null))
+        assertEquals(RedirectResponse("/users/${user.id}"), controller.login(call, loginPayload, null))
         verify { setSessionForCallUseCase(call, sessionPayload) }
     }
 

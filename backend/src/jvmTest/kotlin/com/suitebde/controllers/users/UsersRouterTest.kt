@@ -74,6 +74,8 @@ class UsersRouterTest {
             mockk(),
             mockk(),
             mockk(),
+            mockk(),
+            mockk(),
             AssociationForCallRouter(mockk(), mockk()),
             AssociationsRouter(associationController, mockk(), mockk(), mockk(), mockk(), mockk()),
         )
@@ -94,6 +96,8 @@ class UsersRouterTest {
         val controller = mockk<IUsersController>()
         val router = UsersRouter(
             controller,
+            mockk(),
+            mockk(),
             mockk(),
             mockk(),
             mockk(),
@@ -126,8 +130,10 @@ class UsersRouterTest {
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
+            mockk(),
             requireUserForCallUseCase,
             getAssociationForCallUseCase,
+            mockk(),
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
             AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk(), mockk())
@@ -162,8 +168,10 @@ class UsersRouterTest {
             controller,
             getLocaleForCallUseCase,
             translateUseCase,
+            mockk(),
             requireUserForCallUseCase,
             getAssociationForCallUseCase,
+            mockk(),
             getAdminMenuForCallUseCase,
             AssociationForCallRouter(requireAssociationForCallUseCase, mockk()),
             AssociationsRouter(mockk(), mockk(), mockk(), mockk(), mockk(), mockk())

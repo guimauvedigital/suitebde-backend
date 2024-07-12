@@ -54,12 +54,17 @@ class AuthController(
             HttpStatusCode.Unauthorized, "auth_invalid_credentials"
         )
         setSessionForCallUseCase(call, SessionPayload(user.id))
-        return RedirectResponse(redirect ?: "/")
+        return RedirectResponse(redirect ?: "/users/${user.id}")
     }
 
     override suspend fun logout(call: ApplicationCall, redirect: String?): RedirectResponse {
         clearSessionForCallUseCase(call)
         return RedirectResponse(redirect ?: "/")
+    }
+
+    override suspend fun profile(call: ApplicationCall): RedirectResponse {
+        val user = requireUserForCallUseCase(call) as User
+        return RedirectResponse("/users/${user.id}")
     }
 
     override suspend fun associations(): List<Association> {
@@ -116,7 +121,7 @@ class AuthController(
         )
         setSessionForCallUseCase(call, SessionPayload(user.id))
         deleteCodeInEmailUseCase(code)
-        return RedirectResponse(redirect ?: "/")
+        return RedirectResponse(redirect ?: "/users/${user.id}")
     }
 
     override suspend fun authorize(call: ApplicationCall, clientId: UUID?): ClientForUser {

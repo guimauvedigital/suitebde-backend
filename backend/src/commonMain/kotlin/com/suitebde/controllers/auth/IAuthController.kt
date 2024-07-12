@@ -29,6 +29,10 @@ interface IAuthController : IUnitController {
         @QueryParameter redirect: String?,
     ): RedirectResponse
 
+    @TemplateMapping("auth/login.ftl")
+    @Path("GET", "/profile")
+    suspend fun profile(call: ApplicationCall): RedirectResponse
+
     @TemplateMapping("auth/associations.ftl")
     @Path("GET", "/associations")
     suspend fun associations(): List<Association>

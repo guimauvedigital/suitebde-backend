@@ -28,6 +28,7 @@ interface IUsersController :
     ): List<User>
 
     @APIMapping
+    @TemplateMapping("public/users/details.ftl")
     @GetModelPath
     @DocumentedError(401, "auth_invalid_credentials")
     @DocumentedError(403, "users_view_not_allowed")
@@ -49,6 +50,7 @@ interface IUsersController :
     ): User
 
     @APIMapping
+    @TemplateMapping("public/users/delete.ftl")
     @AdminTemplateMapping
     @DeleteModelPath
     @DocumentedType(User::class)

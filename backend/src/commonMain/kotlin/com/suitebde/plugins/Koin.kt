@@ -919,7 +919,7 @@ fun Application.configureKoin() {
             single { AssociationsRouter(get(), get(), get(), get(), get(), get()) }
             single { DomainsInAssociationsRouter(get(), get(), get(), get(), get(), get(), get()) }
             single { SubscriptionsInAssociationsRouter(get(), get(), get(), get(), get(), get(), get(), get()) }
-            single { UsersRouter(get(), get(), get(), get(), get(), get(), get(), get()) }
+            single { UsersRouter(get(), get(), get(), get(), get(), get(), get(), get(), get(), get()) }
             single { SubscriptionsInUsersRouter(get(), get()) }
             single { NotificationTokensRouter(get(), get()) }
             single { ScansRouter(get(), get()) }

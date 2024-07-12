@@ -111,14 +111,16 @@
                     </div>
 
                     <#if user??>
-                        <span class="text-right">
-                            <span class="block text-sm font-medium text-black dark:text-white">${user.firstName} ${user.lastName}</span>
-                            <span class="block text-xs font-medium">${user.email}</span>
-                        </span>
+                        <a href="/${locale}/users/${user.id}">
+                            <span class="text-right">
+                                <span class="block text-sm font-medium text-black dark:text-white">${user.firstName} ${user.lastName}</span>
+                                <span class="block text-xs font-medium">${user.email}</span>
+                            </span>
 
-                        <span class="h-12 w-12 rounded-full">
-                            <img src="src/images/user/user-01.png" alt="User"/>
-                        </span>
+                            <span class="h-12 w-12 rounded-full">
+                                <img src="src/images/user/user-01.png" alt="User"/>
+                            </span>
+                        </a>
                     <#else>
                         <a href="/${locale}/auth/login"
                            :class="{ '!text-white hover:text-white' : page === 'home', '!text-body' : page === 'home' && stickyMenu }"
