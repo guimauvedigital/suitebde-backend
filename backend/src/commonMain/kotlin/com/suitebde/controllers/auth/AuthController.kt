@@ -5,6 +5,7 @@ import com.suitebde.models.application.Email
 import com.suitebde.models.associations.Association
 import com.suitebde.models.associations.CreateAssociationPayload
 import com.suitebde.models.auth.*
+import com.suitebde.models.users.ResetInUser
 import com.suitebde.models.users.User
 import com.suitebde.usecases.associations.*
 import com.suitebde.usecases.auth.*
@@ -42,6 +43,7 @@ class AuthController(
     private val getCodeInEmailUseCase: IGetCodeInEmailUseCase,
     private val deleteCodeInEmailUseCase: IDeleteCodeInEmailUseCase,
     private val createAssociationUseCase: ICreateModelSuspendUseCase<Association, CreateAssociationPayload>,
+    private val createResetPasswordUseCase: ICreateResetPasswordUseCase,
     private val sendEmailUseCase: ISendEmailUseCase,
     private val getLocaleForCallUseCase: IGetLocaleForCallUseCase,
     private val translateUseCase: ITranslateUseCase,
@@ -83,8 +85,8 @@ class AuthController(
         associationId: UUID?,
     ): Map<String, Any> {
         val association = register(call, associationId)
-        val code = createCodeInEmailUseCase(payload.email, association.id) ?: throw ControllerException(
-            HttpStatusCode.BadRequest, "auth_register_email_taken"
+        val code = createCodeInEmailUseCase(payload.email, association.id) ?: return mapOf(
+            "error" to "auth_register_email_taken"
         )
         val locale = getLocaleForCallUseCase(call)
         sendEmailUseCase(
@@ -180,6 +182,35 @@ class AuthController(
         ) ?: throw ControllerException(HttpStatusCode.InternalServerError, "error_internal")
         deleteCodeInEmailUseCase(code)
         return mapOf("success" to "auth_join_submitted")
+    }
+
+    override suspend fun reset() {}
+
+    override suspend fun reset(call: ApplicationCall, payload: RegisterPayload): Map<String, Any> {
+        val code = createResetPasswordUseCase(payload.email) ?: return mapOf(
+            "error" to "auth_reset_email_unknown"
+        )
+        val locale = getLocaleForCallUseCase(call)
+        sendEmailUseCase(
+            Email(
+                translateUseCase(locale, "auth_reset_email_title"),
+                translateUseCase(locale, "auth_reset_email_body", listOf(code.code))
+            ),
+            listOf(payload.email)
+        )
+        return mapOf("success" to "auth_reset_email_sent")
+    }
+
+    override suspend fun resetCode(call: ApplicationCall, code: String): ResetInUser {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun resetCode(
+        call: ApplicationCall,
+        code: String,
+        payload: ResetPasswordPayload,
+    ): RedirectResponse {
+        TODO("Not yet implemented")
     }
 
     override suspend fun token(payload: AuthRequest): AuthToken {

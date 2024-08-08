@@ -45,6 +45,7 @@ import com.suitebde.database.scans.ScansDatabaseRepository
 import com.suitebde.database.stripe.StripeAccountsDatabaseRepository
 import com.suitebde.database.stripe.StripeOrdersDatabaseRepository
 import com.suitebde.database.users.ClientsInUsersDatabaseRepository
+import com.suitebde.database.users.ResetsInUsersDatabaseRepository
 import com.suitebde.database.users.SubscriptionsInUsersDatabaseRepository
 import com.suitebde.database.users.UsersDatabaseRepository
 import com.suitebde.database.web.WebMenusDatabaseRepository
@@ -79,6 +80,7 @@ import com.suitebde.repositories.scans.IScansRepository
 import com.suitebde.repositories.stripe.IStripeAccountsRepository
 import com.suitebde.repositories.stripe.IStripeOrdersRepository
 import com.suitebde.repositories.users.IClientsInUsersRepository
+import com.suitebde.repositories.users.IResetsInUsersRepository
 import com.suitebde.repositories.users.ISubscriptionsInUsersRepository
 import com.suitebde.repositories.users.IUsersRepository
 import com.suitebde.repositories.web.IWebMenusRepository
@@ -201,6 +203,7 @@ fun Application.configureKoin() {
             // Users
             single<IUsersRepository> { UsersDatabaseRepository(get()) }
             single<IClientsInUsersRepository> { ClientsInUsersDatabaseRepository(get()) }
+            single<IResetsInUsersRepository> { ResetsInUsersDatabaseRepository(get()) }
             single<ISubscriptionsInUsersRepository> { SubscriptionsInUsersDatabaseRepository(get()) }
 
             // Scans
@@ -408,6 +411,7 @@ fun Application.configureKoin() {
             single<IGetClientForUserForRefreshTokenUseCase> {
                 GetClientForUserForRefreshTokenUseCase(get(), get(), get(named<Client>()))
             }
+            single<ICreateResetPasswordUseCase> { CreateResetPasswordUseCase(get(), get()) }
 
             // Users
             single<IGetUserUseCase> { GetUserUseCase(get()) }
@@ -754,6 +758,7 @@ fun Application.configureKoin() {
                     get(),
                     get(),
                     get(named<Association>()),
+                    get(),
                     get(),
                     get(),
                     get()
