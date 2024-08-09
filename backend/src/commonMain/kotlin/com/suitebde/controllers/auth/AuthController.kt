@@ -161,7 +161,11 @@ class AuthController(
         sendEmailUseCase(
             Email(
                 translateUseCase(locale, "auth_join_email_title"),
-                translateUseCase(locale, "auth_join_email_body", listOf(code.code))
+                translateUseCase(
+                    locale,
+                    "auth_join_email_body",
+                    listOf("https://suitebde.com/auth/join/${code.code}")
+                )
             ),
             listOf(payload.email)
         )
@@ -201,7 +205,11 @@ class AuthController(
         sendEmailUseCase(
             Email(
                 translateUseCase(locale, "auth_reset_email_title"),
-                translateUseCase(locale, "auth_reset_email_body", listOf(code.code))
+                translateUseCase(
+                    locale,
+                    "auth_reset_email_body",
+                    listOf("https://suitebde.com/auth/reset/${code.code}")
+                )
             ),
             listOf(payload.email)
         )

@@ -349,7 +349,7 @@ class AuthControllerTest {
             sendEmailUseCase(
                 Email(
                     "t:auth_join_email_title",
-                    "t:auth_join_email_body:[code]"
+                    "t:auth_join_email_body:[https://suitebde.com/auth/join/code]"
                 ),
                 listOf("email")
             )
