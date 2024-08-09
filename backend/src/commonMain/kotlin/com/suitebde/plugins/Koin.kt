@@ -236,6 +236,7 @@ fun Application.configureKoin() {
                 ExpireUseCase(
                     get(), get(),
                     get(), get(),
+                    get(), get(),
                     get(), get(named<User>()),
                 )
             }
@@ -412,6 +413,8 @@ fun Application.configureKoin() {
                 GetClientForUserForRefreshTokenUseCase(get(), get(), get(named<Client>()))
             }
             single<ICreateResetPasswordUseCase> { CreateResetPasswordUseCase(get(), get()) }
+            single<IGetResetPasswordUseCase> { GetResetPasswordUseCase(get()) }
+            single<IDeleteResetPasswordUseCase> { DeleteResetPasswordUseCase(get()) }
 
             // Users
             single<IGetUserUseCase> { GetUserUseCase(get()) }
@@ -754,10 +757,14 @@ fun Application.configureKoin() {
                     get(),
                     get(),
                     get(),
+                    get(named<User>()),
+                    get(),
                     get(),
                     get(),
                     get(),
                     get(named<Association>()),
+                    get(),
+                    get(),
                     get(),
                     get(),
                     get(),
