@@ -2,6 +2,7 @@ package com.suitebde.controllers.auth
 
 import com.suitebde.models.associations.Association
 import com.suitebde.models.auth.*
+import com.suitebde.models.users.ResetInUser
 import dev.kaccelero.annotations.*
 import dev.kaccelero.commons.responses.RedirectResponse
 import dev.kaccelero.controllers.IUnitController
@@ -85,6 +86,26 @@ interface IAuthController : IUnitController {
     @TemplateMapping("auth/join.ftl")
     @Path("POST", "/join/{code}")
     suspend fun joinCode(@PathParameter code: String, @Payload payload: JoinCodePayload): Map<String, Any>
+
+    @TemplateMapping("auth/reset.ftl")
+    @Path("GET", "/reset")
+    suspend fun reset()
+
+    @TemplateMapping("auth/reset.ftl")
+    @Path("POST", "/reset")
+    suspend fun reset(call: ApplicationCall, @Payload payload: RegisterPayload): Map<String, Any>
+
+    @TemplateMapping("auth/reset.ftl")
+    @Path("GET", "/reset/{code}")
+    suspend fun resetCode(call: ApplicationCall, @PathParameter code: String): ResetInUser
+
+    @TemplateMapping("auth/reset.ftl")
+    @Path("POST", "/reset/{code}")
+    suspend fun resetCode(
+        call: ApplicationCall,
+        @PathParameter code: String,
+        @Payload payload: ResetPasswordPayload,
+    ): RedirectResponse
 
     @APIMapping("createToken")
     @Path("POST", "/token")
