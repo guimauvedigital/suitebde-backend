@@ -141,8 +141,7 @@
                         <@t key="admin_developed_with_love" args=[
                         "<i class=\"fa fa-heart text-danger\"></i>",
                         "<a href=\"https://kotlinlang.org\" class=\"text-dark font-weight-bold\">Kotlin</a>",
-                        "<a href=\"https://nathanfallet.me\" class=\"text-dark font-weight-bold\">Nathan Fallet</a>",
-                        "<a href=\"https://toastcie.dev\" class=\"text-dark font-weight-bold\">Toast.cie</a>"
+                        "<a href=\"https://guimauve.software\" class=\"text-dark font-weight-bold\">Guimauve Software</a>"
                         ] />
                     </p>
                 </div>
