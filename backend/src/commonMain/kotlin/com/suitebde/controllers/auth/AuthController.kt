@@ -29,7 +29,6 @@ class AuthController(
     private val listAssociationsUseCase: IGetAssociationsUseCase,
     private val getAssociationUseCase: IGetModelSuspendUseCase<Association, UUID>,
     private val getAssociationForCallUseCase: IGetAssociationForCallUseCase,
-    private val requireAssociationForCallUseCase: IRequireAssociationForCallUseCase,
     private val loginUseCase: ILoginUseCase,
     private val registerUseCase: IRegisterUseCase,
     private val setSessionForCallUseCase: ISetSessionForCallUseCase,

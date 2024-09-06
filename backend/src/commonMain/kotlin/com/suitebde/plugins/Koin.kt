@@ -749,7 +749,6 @@ fun Application.configureKoin() {
                     get(),
                     get(),
                     get(),
-                    get(),
                     get(named<Client>()),
                     get(),
                     get(),
