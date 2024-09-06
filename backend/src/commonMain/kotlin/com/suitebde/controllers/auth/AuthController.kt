@@ -111,11 +111,10 @@ class AuthController(
     }
 
     override suspend fun registerCode(call: ApplicationCall, code: String): RegisterPayload {
+        val association = getAssociationForCallUseCase(call)
         val codeInEmail = getCodeInEmailUseCase(code)?.takeIf {
-            it.associationId == requireAssociationForCallUseCase(call).id
-        } ?: throw ControllerException(
-            HttpStatusCode.NotFound, "auth_code_invalid"
-        )
+            association == null || it.associationId == association.id
+        } ?: throw ControllerException(HttpStatusCode.NotFound, "auth_code_invalid")
         return RegisterPayload(codeInEmail.email)
     }
 
