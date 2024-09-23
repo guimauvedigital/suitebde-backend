@@ -22,6 +22,7 @@ import dev.kaccelero.client.AbstractAPIClient
 import dev.kaccelero.commons.auth.IGetTokenUseCase
 import dev.kaccelero.commons.auth.ILogoutUseCase
 import dev.kaccelero.commons.auth.IRenewTokenUseCase
+import io.ktor.http.*
 
 class SuiteBDEClient(
     getTokenUseCase: IGetTokenUseCase,
@@ -52,5 +53,10 @@ class SuiteBDEClient(
     override val permissionsInRoles = PermissionsInRolesRemoteRepository(this, roles)
     override val clubs = ClubsRemoteRepository(this, associations)
     override val usersInClubs = UsersInClubsRemoteRepository(this, clubs)
+
+    override fun shouldIncludeToken(method: HttpMethod, path: String): Boolean {
+        // Don't include token for refresh token endpoint (to avoid infinite loop)
+        return path != "/api/v1/auth/refresh"
+    }
 
 }
