@@ -56,10 +56,13 @@
             <label for="password"><@t key="auth_field_password" /></label>
         </div>
     <#else>
+        <!--
         <div class="form-floating">
             <input type="email" class="form-control" id="email" name="email" required>
             <label for="email"><@t key="auth_field_email" /></label>
         </div>
+        -->
+        <div class="alert alert-info"><@t key="auth_join_unavailable" /></div>
     </#if>
 
     <button class="w-100 btn btn-lg btn-danger" type="submit"><@t key="auth_field_join" /></button>
