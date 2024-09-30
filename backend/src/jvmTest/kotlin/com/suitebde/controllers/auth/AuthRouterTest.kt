@@ -136,6 +136,8 @@ class AuthRouterTest {
         assertEquals(true, document.getElementsByAttributeValue("type", "submit").first()?.`is`("button"))
     }
 
+    /*
+    // Disabled feature for now
     @Test
     fun testGetJoinRoute() = testApplication {
         val client = installApp(this)
@@ -157,6 +159,7 @@ class AuthRouterTest {
         assertEquals(true, document.getElementById("email")?.hasAttr("required"))
         assertEquals(true, document.getElementsByAttributeValue("type", "submit").first()?.`is`("button"))
     }
+    */
 
     @Test
     fun testPostJoinRoute() = testApplication {
